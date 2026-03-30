@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODE:N - 파이썬 중첩 반복문 마스터 클래스</title>
+    <!-- Font: Pretendard -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            /* Theme: Energetic Orange & Deep Navy */
+            --primary: #e17055;
+            --primary-light: #fff3e0; 
+            --secondary: #2d3436;
+            --bg-color: #f5f6fa;
+            --card-bg: #ffffff;
+            --code-bg: #1e272e;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            
+            /* Code Highlight Colors */
+            --code-text: #f1f2f6;
+            --code-kw: #ff7675; /* Keyword */
+            --code-fn: #74b9ff; /* Function */
+            --code-st: #ffeaa7; /* String */
+            --code-nm: #55efc4; /* Number */
+            --code-cm: #b2bec3; /* Comment */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Header --- */
+        header { text-align: center; margin-bottom: 50px; }
+        .brand-badge {
+            background: var(--secondary); color: #fff; padding: 5px 25px;
+            border-radius: 50px; font-size: 1.2rem; font-weight: 800; letter-spacing: 2px;
+        }
+        h1 {
+            font-size: 4rem; font-weight: 900; color: var(--secondary);
+            margin: 20px 0 10px 0; letter-spacing: -1px;
+        }
+        .intro { font-size: 1.8rem; color: var(--text-muted); font-weight: 500; }
+
+        /* --- Visual Concept Section --- */
+        .concept-section {
+            display: flex; gap: 30px; margin-bottom: 60px; justify-content: center;
+        }
+        .concept-card {
+            flex: 1; background: white; border-radius: 24px; padding: 30px;
+            text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-top: 8px solid var(--primary); transition: transform 0.2s;
+        }
+        .concept-card:hover { transform: translateY(-5px); }
+        .concept-icon { font-size: 5rem; margin-bottom: 15px; display: block; }
+        .concept-title { font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 10px; display: block; }
+        .concept-desc { font-size: 1.4rem; color: #636e72; word-break: keep-all; line-height: 1.4; }
+
+        /* --- Section Common --- */
+        section {
+            background: var(--card-bg); border-radius: 24px; padding: 40px;
+            margin-bottom: 50px; border: 1px solid #dcdde1;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+        h2 {
+            font-size: 2.8rem; color: var(--primary); margin-bottom: 30px;
+            font-weight: 800; border-left: 10px solid var(--secondary);
+            padding-left: 20px; line-height: 1.2;
+        }
+        p { margin-bottom: 15px; font-size: 1.5rem; word-break: keep-all; }
+
+        /* --- Code Block (Adjusted for Feedback) --- */
+        .code-wrapper {
+            background-color: var(--code-bg); 
+            border-radius: 16px; 
+            padding: 25px 30px; /* 패딩 축소 */
+            margin: 20px 0; 
+            border-left: 10px solid var(--primary);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4); 
+            overflow-x: auto;
+        }
+        pre {
+            margin: 0; 
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.7rem; 
+            font-weight: 600; 
+            color: var(--code-text); 
+            line-height: 1.5; /* 줄 간격 축소 (1.8 -> 1.5) */
+        }
+        .kw { color: var(--code-kw); } .fn { color: var(--code-fn); }
+        .st { color: var(--code-st); } .nm { color: var(--code-nm); }
+        .cm { color: var(--code-cm); font-weight: 400; font-size: 1.4rem; opacity: 0.8; font-style: italic; }
+        
+        .code-line { display: flex; justify-content: space-between; align-items: center; }
+        .code-content { flex: 1; }
+        .code-comment-side { color: var(--code-cm); font-size: 1.3rem; font-weight: 400; margin-left: 20px; opacity: 0.8; white-space: nowrap; }
+
+        /* Output Box (Adjusted for Feedback) --- */
+        .output {
+            background: #dfe6e9; 
+            border-radius: 10px; 
+            padding: 15px 20px; /* 패딩 대폭 축소 */
+            font-family: 'Consolas', monospace; 
+            font-size: 1.35rem; /* 폰트 살짝 줄임 */
+            color: #2d3436;
+            border: 2px dashed #b2bec3; 
+            margin-top: 15px; 
+            white-space: pre-wrap; /* 불필요한 공백 제거 */
+            line-height: 1.3; /* 줄 간격 촘촘하게 */
+        }
+        .output::before { 
+            content: "💻 실행 결과:"; 
+            display: block; 
+            font-weight: bold; 
+            margin-bottom: 8px; 
+            color: var(--primary); 
+            font-size: 1.2rem;
+        }
+
+        /* --- Mini Drill --- */
+        .mini-drill {
+            background-color: var(--primary-light); border: 2px solid #ffcc80;
+            border-radius: 16px; padding: 25px; margin-top: 40px;
+        }
+        .mini-drill h3 { margin-top: 0; color: #d35400; font-weight: 800; display: flex; align-items: center; gap: 10px; font-size: 1.6rem; }
+        
+        details {
+            margin-top: 15px; background: white; padding: 15px;
+            border-radius: 8px; border: 1px solid #ddd; cursor: pointer;
+        }
+        summary { font-weight: bold; font-size: 1.4rem; color: var(--secondary); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        summary::after { content: "정답 보기 ▼"; font-size: 1.2rem; color: var(--text-muted); }
+        details[open] summary::after { content: "닫기 ▲"; }
+        .answer-content { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; color: #d63031; font-weight: bold; font-size: 1.5rem; }
+
+        /* --- Star Grid --- */
+        .star-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 25px;
+        }
+        .star-item {
+            background: #fdfefe; border: 2px solid #e17055; border-radius: 16px; padding: 20px;
+        }
+        .star-title {
+            text-align: center; font-weight: 800; font-size: 1.5rem;
+            margin-bottom: 10px; color: #2d3436;
+            background: #ffeaa7; padding: 5px; border-radius: 8px;
+        }
+
+        /* --- Challenge Box --- */
+        .challenge-box {
+            background: #fdfefe; border: 3px solid #2d3436; border-radius: 20px;
+            padding: 30px; margin-bottom: 30px; position: relative;
+        }
+        .challenge-badge {
+            background: #2d3436; color: white; padding: 5px 15px;
+            border-radius: 8px; font-weight: bold; font-size: 1.2rem;
+            display: inline-block; margin-bottom: 10px;
+        }
+        .challenge-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; color: #2d3436; }
+        .io-example {
+            background: #ecf0f1; padding: 15px; border-radius: 8px;
+            font-family: 'Consolas', monospace; margin: 15px 0;
+            border-left: 5px solid #2d3436; font-size: 1.3rem; white-space: pre; line-height: 1.4;
+        }
+
+        /* --- Final Quiz --- */
+        .quiz-item {
+            background: white; padding: 25px; border-radius: 15px;
+            border: 1px solid #dfe6e9; margin-bottom: 20px;
+        }
+        .quiz-question { font-weight: bold; margin-bottom: 15px; font-size: 1.5rem; }
+        .quiz-options label {
+            display: block; padding: 12px; cursor: pointer; font-size: 1.3rem;
+            transition: 0.2s; border-radius: 8px; margin-bottom: 5px;
+        }
+        .quiz-options label:hover { background: #f1f2f6; }
+        
+        .btn-check {
+            background: var(--secondary); color: white; border: none;
+            padding: 15px 40px; font-size: 1.6rem; border-radius: 15px;
+            cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s;
+        }
+        .btn-check:hover { background: var(--primary); }
+
+        footer {
+            text-align: center; padding: 50px 0; color: var(--text-muted);
+            border-top: 1px solid #dcdde1; margin-top: 60px; font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <span class="brand-badge">CODE:N ACADEMY</span>
+        <h1>중첩 반복문과 응용 완전 정복</h1>
+        <p class="intro">"시계 바늘부터 별 찍기, 행렬까지! 2차원 데이터를 지배하세요."</p>
+    </header>
+
+    <!-- 1. 비주얼 컨셉 -->
+    <div class="concept-section">
+        <div class="concept-card">
+            <span class="concept-icon">🕰️</span>
+            <span class="concept-title">시계 바늘 (i 와 j)</span>
+            <p class="concept-desc">
+                <strong>시침(외부 루프)</strong>이 한 칸 움직이려면,<br>
+                <strong>분침(내부 루프)</strong>이 한 바퀴를 다 돌아야 합니다.
+            </p>
+        </div>
+        <div class="concept-card">
+            <span class="concept-icon">🏢</span>
+            <span class="concept-title">아파트 (층과 호수)</span>
+            <p class="concept-desc">
+                <strong>1층(외부)</strong>을 방문해서 1호부터 5호까지(내부) 돌고,<br>
+                그 다음에 <strong>2층(외부)</strong>으로 올라갑니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- 2. 중첩 반복문 개념 -->
+    <section>
+        <h2>1. 중첩 반복문의 기본 원리</h2>
+        <p>외부 반복문이 1번 실행될 때마다, 내부 반복문은 <strong>처음부터 끝까지 전체가 실행</strong>됩니다.</p>
+        
+        <div class="code-wrapper">
+<pre>
+<span class="code-line"><span class="code-content"><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">4</span>):</span>        <span class="code-comment-side"># 외부 루프: 1, 2, 3 (총 3회)</span></span>
+<span class="code-line"><span class="code-content">    <span class="fn">print</span>(f<span class="st">"--- {i}번째 큰 반복 ---"</span>)</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-content">    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">3</span>):</span>    <span class="code-comment-side"># 내부 루프: 1, 2 (매번 2회씩)</span></span>
+<span class="code-line"><span class="code-content">        <span class="fn">print</span>(f<span class="st">"  작은 반복: {j}"</span>)</span></span>
+</pre>
+        </div>
+        <div class="output">--- 1번째 큰 반복 ---
+  작은 반복: 1
+  작은 반복: 2
+--- 2번째 큰 반복 ---
+  작은 반복: 1
+  작은 반복: 2
+--- 3번째 큰 반복 ---
+  작은 반복: 1
+  작은 반복: 2</div>
+    </section>
+
+    <!-- 3. 구구단 기본 -->
+    <section>
+        <h2>2. 대표 예제: 구구단 완전 정복</h2>
+        <p>중첩 반복문의 가장 클래식한 예제입니다.</p>
+
+        <div class="code-wrapper">
+<pre>
+<span class="code-line"><span class="code-content"><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">2</span>, <span class="nm">10</span>):</span>      <span class="code-comment-side"># 2단부터 9단까지</span></span>
+<span class="code-line"><span class="code-content">    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">10</span>):</span>  <span class="code-comment-side"># 곱하는 수 1~9</span></span>
+<span class="code-line"><span class="code-content">        <span class="fn">print</span>(f<span class="st">"{i} x {j} = {i*j}"</span>, end=<span class="st">"  "</span>)</span></span>
+<span class="code-line"><span class="code-content">    <span class="fn">print</span>()</span>                 <span class="code-comment-side"># 한 단이 끝나면 줄바꿈</span></span>
+</pre>
+        </div>
+
+        <div class="mini-drill">
+            <h3>✏️ [중간 점검] 실행 횟수 계산</h3>
+            <p>위 코드에서 <code>i * j</code> 계산은 총 몇 번 일어날까요?</p>
+            <details>
+                <summary>정답 확인하기</summary>
+                <div class="answer-content">
+                    정답: <strong>72번</strong><br>
+                    해설: 8개 단(2~9) × 9개 숫자(1~9) = 72회
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- 4. 별 찍기 비주얼 컨셉 -->
+    <div class="concept-section" style="margin-top: 60px;">
+        <div class="concept-card">
+            <span class="concept-icon">🎨</span>
+            <span class="concept-title">캔버스 (행)</span>
+            <p class="concept-desc">
+                외부 반복문(i)은 <strong>몇 번째 줄</strong>을 그릴지 결정합니다.<br>
+                (세로 방향 이동)
+            </p>
+        </div>
+        <div class="concept-card">
+            <span class="concept-icon">🖌️</span>
+            <span class="concept-title">붓 (열)</span>
+            <p class="concept-desc">
+                내부 반복문(j)은 <strong>별을 몇 개</strong> 찍을지 결정합니다.<br>
+                (가로 방향 이동)
+            </p>
+        </div>
+    </div>
+
+    <!-- 5. 별 찍기 연구소 (Star Lab) -->
+    <section>
+        <h2>3. 별 찍기 연구소 (Star Pattern Lab) ⭐</h2>
+        <p>네 가지 기본 패턴을 비교하며 코드의 규칙을 찾아보세요.</p>
+
+        <div class="star-grid">
+            <!-- 패턴 1 -->
+            <div class="star-item">
+                <div class="star-title">1. 정사각형 (5x5)</div>
+                <div class="output" style="margin-top:0; margin-bottom:10px; font-size:1.2rem;">*****
+*****
+*****
+*****
+*****</div>
+                <div class="code-wrapper" style="padding: 15px; margin:0; font-size:1.2rem;">
+<pre><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">5</span>):
+    <span class="fn">print</span>(<span class="st">"*"</span> * <span class="nm">5</span>)</pre>
+                </div>
+            </div>
+            <!-- 패턴 2 -->
+            <div class="star-item">
+                <div class="star-title">2. 역삼각형 (좌측)</div>
+                <div class="output" style="margin-top:0; margin-bottom:10px; font-size:1.2rem;">*****
+****
+***
+**
+*</div>
+                <div class="code-wrapper" style="padding: 15px; margin:0; font-size:1.2rem;">
+<pre><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">5</span>, <span class="nm">0</span>, <span class="nm">-1</span>):
+    <span class="fn">print</span>(<span class="st">"*"</span> * i)</pre>
+                </div>
+            </div>
+            <!-- 패턴 3 -->
+            <div class="star-item">
+                <div class="star-title">3. 역삼각형 (우측)</div>
+                <div class="output" style="margin-top:0; margin-bottom:10px; font-size:1.2rem;">*****
+ ****
+  ***
+   **
+    *</div>
+                <div class="code-wrapper" style="padding: 15px; margin:0; font-size:1.2rem;">
+<pre><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">5</span>):
+    spaces = <span class="st">" "</span> * i
+    stars = <span class="st">"*"</span> * (<span class="nm">5</span>-i)
+    <span class="fn">print</span>(spaces + stars)</pre>
+                </div>
+            </div>
+            <!-- 패턴 4 -->
+            <div class="star-item">
+                <div class="star-title">4. 대각선</div>
+                <div class="output" style="margin-top:0; margin-bottom:10px; font-size:1.2rem;">*
+ *
+  *
+   *
+    *</div>
+                <div class="code-wrapper" style="padding: 15px; margin:0; font-size:1.2rem;">
+<pre><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">5</span>):
+    <span class="fn">print</span>(<span class="st">" "</span> * i + <span class="st">"*"</span>)</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 별 찍기 실전 미션 (트리 & 다이아) -->
+    <section id="star-missions" style="background: #fff8e1; border: 4px solid var(--primary);">
+        <h2 style="border-left: none; text-align: center; color: #d35400;">🚀 별 찍기 스페셜 미션</h2>
+
+        <!-- Mission 1: Half Tree -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Special Mission 1</span>
+            <div class="challenge-title">반쪽 크리스마스 트리 🎄</div>
+            <p>중첩 반복문과 <code>end=''</code> 옵션을 활용하여 빈칸을 채워보세요. 별 뒤에 백슬래시(\)가 붙습니다.</p>
+            
+            <div style="display: flex; gap: 20px; flex-wrap:wrap;">
+                <div class="io-example" style="flex:1;">\
+*\
+**\
+***\
+****\
+^^^^^^
+     |
+     |</div>
+                <div class="code-wrapper" style="flex:2; margin:0;">
+<pre>
+<span class="kw">for</span> a <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">5</span>):
+    <span class="cm"># 내부 루프: 별 개수 증가</span>
+    <span class="kw">for</span> b <span class="kw">in</span> <span class="fn">range</span>(a):
+        <span class="fn">print</span>(<span class="st">'*'</span>, end=<span class="st">''</span>)
+    <span class="fn">print</span>(<span class="st">'\\'</span>)
+<span class="cm"># 바닥과 기둥 생략...</span>
+</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission 2: Diamond -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Special Mission 2</span>
+            <div class="challenge-title">다이아몬드 만들기 💎</div>
+            <p>위쪽 삼각형과 아래쪽 역삼각형을 결합하여 다이아몬드를 만드세요.</p>
+            <div class="io-example">  *
+ ***
+*****
+ ***
+  *</div>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper">
+<pre>
+<span class="cm"># 상단 삼각형</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">4</span>):
+    <span class="fn">print</span>(<span class="st">" "</span> * (<span class="nm">3</span>-i) + <span class="st">"*"</span> * (<span class="nm">2</span>*i-<span class="nm">1</span>))
+<span class="cm"># 하단 역삼각형</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">2</span>, <span class="nm">0</span>, <span class="nm">-1</span>):
+    <span class="fn">print</span>(<span class="st">" "</span> * (<span class="nm">3</span>-i) + <span class="st">"*"</span> * (<span class="nm">2</span>*i-<span class="nm">1</span>))
+</pre>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- 7. 응용 논리: 경우의 수 & 2차원 리스트 -->
+    <section style="margin-top: 60px;">
+        <h2>4. 데이터 처리 응용 (Logic)</h2>
+        
+        <h3>4-1. 모든 경우의 수 (조합)</h3>
+        <p>주사위 두 개를 던져서 합이 4가 되는 경우를 찾아봅시다.</p>
+        <div class="code-wrapper">
+<pre>
+<span class="kw">for</span> dice1 <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">7</span>):
+    <span class="kw">for</span> dice2 <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">7</span>):
+        <span class="kw">if</span> dice1 + dice2 == <span class="nm">4</span>:
+            <span class="fn">print</span>(f<span class="st">"찾았다! ({dice1}, {dice2})"</span>)
+</pre>
+        </div>
+
+        <h3 style="margin-top: 40px;">4-2. 2차원 리스트(행렬) 탐색</h3>
+        <p>리스트 안에 리스트가 있는 구조입니다. <code>for</code>문을 두 번 써서 안쪽 데이터까지 접근합니다.</p>
+        <div class="code-wrapper">
+<pre>
+apt = [
+    [<span class="nm">101</span>, <span class="nm">102</span>], 
+    [<span class="nm">201</span>, <span class="nm">202</span>], 
+    [<span class="nm">301</span>, <span class="nm">302</span>]
+]
+<span class="kw">for</span> floor <span class="kw">in</span> apt:          <span class="cm"># floor는 리스트 [101, 102]...</span>
+    <span class="kw">for</span> room <span class="kw">in</span> floor:     <span class="cm"># room은 숫자 101, 102...</span>
+        <span class="fn">print</span>(f<span class="st">"배달 완료: {room}호"</span>)
+</pre>
+        </div>
+    </section>
+
+    <!-- 8. 퀴즈 섹션 -->
+    <section>
+        <h2>🏆 실전 핵심 문제 (15문항)</h2>
+        <p>중첩 반복문의 흐름과 응용 능력을 점검하는 필수 문제입니다.</p>
+        <div id="quiz-area"></div>
+        <button class="btn-check" onclick="gradeQuiz()">💯 채점하기</button>
+        <div id="result-area" style="margin-top:30px; text-align:center; font-weight:bold; font-size:2rem; display:none;"></div>
+    </section>
+
+    <!-- 9. 최종 챌린지 -->
+    <section id="advanced-missions" style="background: #fff8e1; border: 4px solid var(--primary);">
+        <h2 style="border-left: none; text-align: center; font-size: 3rem; margin-bottom: 10px;">🚀 Final Coding Challenge</h2>
+        <p style="text-align: center; margin-bottom: 40px;">퀴즈로 몸을 풀었으니, 이제 진짜 코드를 작성해 볼까요?</p>
+
+        <!-- Mission 1: Digital Clock -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 1</span>
+            <div class="challenge-title">디지털 시계 만들기</div>
+            <p>0시 0분부터 23시 59분까지 모든 시간을 출력하세요.</p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper">
+<pre>
+<span class="kw">for</span> h <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">24</span>):
+    <span class="kw">for</span> m <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">60</span>):
+        <span class="fn">print</span>(f<span class="st">"{h}시 {m}분"</span>)
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 2: Coordinates -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 2</span>
+            <div class="challenge-title">좌표 평면 출력하기</div>
+            <p>(0,0) 부터 (2,2) 까지 격자판의 좌표를 출력하세요.</p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper">
+<pre>
+<span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">3</span>):
+    <span class="kw">for</span> y <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">3</span>):
+        <span class="fn">print</span>(f<span class="st">"({x}, {y})"</span>, end=<span class="st">" "</span>)
+    <span class="fn">print</span>()
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 3: Matrix Sum -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 3</span>
+            <div class="challenge-title">2차원 리스트 합계</div>
+            <p><code>[[1,2], [3,4], [5,6]]</code>의 모든 숫자의 합을 구하세요.</p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper">
+<pre>
+matrix = [[<span class="nm">1</span>, <span class="nm">2</span>], [<span class="nm">3</span>, <span class="nm">4</span>], [<span class="nm">5</span>, <span class="nm">6</span>]]
+total = <span class="nm">0</span>
+<span class="kw">for</span> row <span class="kw">in</span> matrix:
+    <span class="kw">for</span> num <span class="kw">in</span> row:
+        total += num
+<span class="fn">print</span>(total)
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 4: Different Dice -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 4</span>
+            <div class="challenge-title">서로 다른 주사위 눈 찾기</div>
+            <p>주사위 2개를 던졌을 때, 두 눈의 수가 <strong>서로 다른 경우</strong>만 출력하세요.</p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper">
+<pre>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">7</span>):
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">7</span>):
+        <span class="kw">if</span> i != j:
+            <span class="fn">print</span>(f<span class="st">"({i}, {j})"</span>, end=<span class="st">" "</span>)
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 5: Horizontal Gugudan -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 5</span>
+            <div class="challenge-title">구구단 가로로 출력하기</div>
+            <p>2x1=2  3x1=3 ... 처럼 가로 방향으로 출력하세요.</p>
+            <div class="io-example">2x1=2  3x1=3  ... 9x1=9
+2x2=4  3x2=6  ... 9x2=18
+...</div>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper">
+<pre>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">10</span>):       <span class="cm"># 곱하는 수 (1~9) - 행</span>
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">2</span>, <span class="nm">10</span>):   <span class="cm"># 단 (2~9) - 열</span>
+        <span class="fn">print</span>(f<span class="st">"{j}x{i}={j*i}"</span>, end=<span class="st">"\t"</span>)
+    <span class="fn">print</span>()
+</pre>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <footer>
+        Copyright © 2026 CODE:N. All rights reserved.
+    </footer>
+</div>
+
+<script>
+    // 15문제
+    const questions = [
+        // 1~5: 중첩 반복문 기본 구조
+        { q: "외부 루프가 3회, 내부 루프가 4회 반복된다면, 내부 코드는 총 몇 번 실행될까?", options: ["7번", "12번", "4번", "3번"], a: 1 },
+        { q: "다음 중 중첩 반복문의 올바른 들여쓰기(Indent) 구조는?", options: ["외부와 내부를 같은 라인에 쓴다", "내부 루프는 외부 루프보다 들여쓰기를 더 해야 한다", "내부 루프를 더 앞으로 내어 쓴다", "상관 없다"], a: 1 },
+        { q: "구구단 2단~9단(8개), 곱하는 수 1~9(9개)일 때 총 출력 횟수는?", options: ["17회", "81회", "72회", "100회"], a: 2 },
+        { q: "for i in range(3): 안에 for j in range(2): 가 있다. j는 총 몇 번 0이 될까?", options: ["1번", "2번", "3번", "6번"], a: 2 },
+        { q: "시계의 '분침'이 60번 움직일 때, '시침'은 보통 몇 번의 사이클(시간 변경)을 가지는가?", options: ["60번", "1번", "12번", "24번"], a: 1 },
+
+        // 6~10: 코드 흐름 예측 & 패턴
+        { q: "다음 코드: `for i in range(2): for j in range(2): print(i+j)` 의 마지막 출력값은?", options: ["2", "3", "4", "1"], a: 0 },
+        { q: "별 찍기에서 줄(i)이 바뀔 때마다 별의 개수도 늘어나게 하려면 내부 루프 범위는?", options: ["range(5)", "range(i)", "range(i+1)", "range(5-i)"], a: 2 },
+        { q: "좌표 평면 (0,0) ~ (2,2)를 출력하려 한다. 필요한 반복문 개수는?", options: ["1개", "2개", "3개", "4개"], a: 1 },
+        { q: "주사위 2개를 던져 합이 2가 되는 경우는 몇 가지인가?", options: ["1가지 (1,1)", "2가지 (1,1), (0,2)", "3가지", "없음"], a: 0 },
+        { q: "`matrix = [[1,2], [3,4]]` 에서 숫자 4를 꺼내려면?", options: ["matrix[0][0]", "matrix[1][0]", "matrix[0][1]", "matrix[1][1]"], a: 3 },
+
+        // 11~15: 응용 & 제어 (Break 등)
+        { q: "이중 for 문 안에서 `break`를 만나면 어떻게 되는가?", options: ["프로그램 전체가 종료된다", "내부 반복문만 탈출한다", "외부 반복문까지 모두 탈출한다", "아무 일도 일어나지 않는다"], a: 1 },
+        { q: "디지털 시계 (0시~23시) 코드에서 외부 루프의 적절한 range는?", options: ["range(12)", "range(24)", "range(60)", "range(23)"], a: 1 },
+        { q: "다음 중 중첩 반복문을 쓰기에 가장 적절하지 않은 경우는?", options: ["구구단 출력", "2차원 행렬 데이터 처리", "단순 1부터 100까지 합 구하기", "이미지의 픽셀(x, y) 처리"], a: 2 },
+        { q: "상자(List) 안에 상자가 들어있는 구조를 무엇이라 하는가?", options: ["중첩 리스트 (2차원 리스트)", "딕셔너리", "튜플", "문자열"], a: 0 },
+        { q: "for i in range(5): for j in range(5): if i==j: print(1). 1은 몇 번 출력될까?", options: ["25번", "10번", "5번", "1번"], a: 2 }
+    ];
+
+    function renderQuiz() {
+        const area = document.getElementById('quiz-area');
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-item" id="qBox${idx}">
+                <div class="quiz-question">Q${idx+1}. ${q.q}</div>
+                <div class="quiz-options">
+                    ${q.options.map((opt, oIdx) => `<label><input type="radio" name="q${idx}" value="${oIdx}"> ${opt}</label>`).join('')}
+                </div>
+                <div class="feedback" id="fb${idx}" style="color:#e17055; font-weight:bold; margin-top:10px;"></div>
+            </div>`;
+        });
+        area.innerHTML = html;
+    }
+
+    function gradeQuiz() {
+        let score = 0;
+        let correctCount = 0;
+        questions.forEach((q, idx) => {
+            const sel = document.querySelector(`input[name="q${idx}"]:checked`);
+            const fb = document.getElementById(`fb${idx}`);
+            const box = document.getElementById(`qBox${idx}`);
+            
+            if (sel && parseInt(sel.value) === q.a) {
+                score += (100 / questions.length);
+                correctCount++;
+                fb.innerText = "✅ 정답!";
+                fb.style.color = "#00b894";
+                box.style.border = "2px solid #00b894";
+            } else {
+                fb.innerText = `❌ 오답 (정답: ${q.options[q.a]})`;
+                fb.style.color = "#d63031";
+                box.style.border = "2px solid #d63031";
+            }
+        });
+        const finalScore = Math.round(score);
+        const res = document.getElementById('result-area');
+        res.style.display = 'block';
+        
+        let msg = "";
+        if (correctCount === questions.length) {
+            msg = "🎉 완벽합니다! 중첩 반복문 마스터! 🏆";
+        } else if (finalScore >= 70) {
+            msg = "👍 아주 훌륭해요!";
+        } else {
+            msg = "💪 다시 한 번 복습해봅시다!";
+        }
+        res.innerHTML = `총점: <span style="color:var(--primary)">${finalScore}</span>점 (${correctCount}/${questions.length}개)<br><span style="font-size:1.5rem; color:#2d3436;">${msg}</span>`;
+        res.scrollIntoView({ behavior: "smooth" });
+    }
+    renderQuiz();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,752 @@
+<!-- START OF FILE 파이썬_딕셔너리_v3.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODE:N - 파이썬 딕셔너리(Dictionary) 완전 정복</title>
+    <!-- Font: Pretendard -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            /* Theme: Deep Orange & Dark Grey (딕셔너리 테마) */
+            --primary: #e17055;       
+            --primary-light: #fab1a0; 
+            --secondary: #2d3436;     
+            --bg-color: #f5f6fa;
+            --card-bg: #ffffff;
+            --code-bg: #2d3436;       
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            
+            /* Code Highlight Colors */
+            --code-text: #f1f2f6;     
+            --code-kw: #ff7675;       
+            --code-fn: #74b9ff;       
+            --code-st: #ffeaa7;       
+            --code-nm: #55efc4;       
+            --code-cm: #b2bec3;       
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Header --- */
+        header { text-align: center; margin-bottom: 60px; }
+        .brand-badge {
+            background: var(--secondary); color: #fff; padding: 5px 25px;
+            border-radius: 50px; font-size: 1.2rem; font-weight: 800; letter-spacing: 2px;
+        }
+        h1 {
+            font-size: 4rem; font-weight: 900; color: var(--secondary);
+            margin: 25px 0 10px 0; letter-spacing: -1px;
+        }
+        .intro { font-size: 1.8rem; color: var(--text-muted); font-weight: 500; }
+
+        /* --- Visual Concept Section --- */
+        .concept-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 60px;
+            justify-content: center;
+        }
+
+        .concept-card {
+            flex: 1;
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-top: 8px solid var(--primary);
+            transition: transform 0.2s;
+        }
+        .concept-card:hover { transform: translateY(-5px); }
+        .concept-icon { font-size: 5rem; margin-bottom: 20px; display: block; }
+        .concept-title { font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 15px; display: block; }
+        .concept-desc { font-size: 1.4rem; color: #636e72; word-break: keep-all; line-height: 1.5; }
+
+        /* --- Section Common --- */
+        section {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 50px;
+            margin-bottom: 60px;
+            border: 1px solid #dcdde1;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+
+        h2 {
+            font-size: 2.8rem; color: var(--primary); margin-bottom: 40px;
+            font-weight: 800; border-left: 10px solid var(--secondary);
+            padding-left: 25px; line-height: 1.2;
+        }
+        
+        p { margin-bottom: 20px; font-size: 1.5rem; word-break: keep-all; }
+        h3 { font-size: 1.8rem; margin-top: 40px; margin-bottom: 15px; color: var(--secondary); font-weight: 800; }
+
+        /* --- Code Block Styles --- */
+        .code-wrapper {
+            background-color: var(--code-bg);
+            border-radius: 16px;
+            padding: 25px; 
+            margin: 25px 0;
+            border-left: 10px solid var(--primary);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            overflow-x: auto;
+        }
+
+        pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.6rem; 
+            font-weight: 600; 
+            color: var(--code-text);
+            line-height: 1.5; 
+            white-space: pre; 
+        }
+
+        /* Inline Code Highlight */
+        .inline-code {
+            background-color: #fff3e0;
+            color: #d35400;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-weight: bold;
+            font-size: 0.9em;
+            border: 1px solid #ffe0b2;
+            margin: 0 2px;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: var(--code-kw); }
+        .fn { color: var(--code-fn); }
+        .st { color: var(--code-st); }
+        .nm { color: var(--code-nm); }
+        .cm { color: var(--code-cm); font-weight: 400; font-size: 1.4rem; font-style: italic; }
+
+        /* --- Comparison Box (수평 맞춤 완벽 해결) --- */
+        .comparison-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            align-items: stretch; /* 양쪽 상자의 높이를 무조건 일치시킴 */
+        }
+        .comp-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column; /* 내부 요소들을 세로로 유연하게 배치 */
+            background: #fff;
+            border: 2px solid #eee;
+            padding: 25px;
+            border-radius: 15px;
+            min-width: 300px;
+        }
+        .comp-title { 
+            font-weight: 800; font-size: 1.8rem; margin-bottom: 15px; text-align: center; 
+        }
+        .comp-box p {
+            min-height: 6.5rem; /* 설명 텍스트가 1줄이든 2줄이든 동일한 영역을 차지하게 고정 */
+            margin-bottom: 15px;
+            word-break: keep-all;
+        }
+        
+        /* 비교 상자 안의 예제창 레이아웃 고정 */
+        .comp-box .code-wrapper {
+            flex-grow: 1; /* 코드 블록이 남은 공간을 끝까지 채우도록 하여 하단선 완벽 일치 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 짧은 코드도 예제창 한가운데에 예쁘게 배치 */
+            padding: 20px; 
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: keep-all; 
+        }
+        
+        /* 글씨 크기 복구 및 스크롤 방지용 줄바꿈 */
+        .comp-box pre {
+            font-size: 1.5rem; /* 작아졌던 글씨 크기 원복 (가독성 확보) */
+            line-height: 1.5;
+            white-space: pre-wrap; /* 코드가 길면 예쁘게 단어 단위로 줄바꿈 */
+            letter-spacing: 0; 
+        }
+
+        /* 모바일 뷰어용 반응형 설정 */
+        @media (max-width: 768px) {
+            .comparison-container { flex-direction: column; }
+            .comp-box p { min-height: auto; } /* 모바일에서는 고정 풀기 */
+        }
+
+        /* --- Table --- */
+        .term-table {
+            width: 100%; border-collapse: collapse; margin: 20px 0;
+            font-size: 1.4rem; background: #fff; border: 1px solid #dfe6e9;
+        }
+        .term-table th { background: var(--primary-light); padding: 15px; color: var(--secondary); border: 1px solid #b2bec3; }
+        .term-table td { padding: 15px; border: 1px solid #dfe6e9; text-align: center; }
+
+        /* --- Mini Drill --- */
+        .mini-drill {
+            background-color: #ffeaa7; 
+            border: 2px solid var(--primary); 
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 50px;
+        }
+        .mini-drill h3 { margin-top: 0; color: var(--secondary); font-weight: 800; font-size: 1.8rem; margin-bottom: 15px; }
+
+        /* 퀴즈 보기 스타일 */
+        .drill-options {
+            background: rgba(255,255,255,0.6);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        .drill-option-item { margin-bottom: 8px; font-family: 'Consolas', monospace; color: #2d3436; }
+        
+        details {
+            margin-top: 10px; background: white; padding: 20px;
+            border-radius: 8px; border: 1px solid #ddd; cursor: pointer;
+        }
+        summary { font-weight: bold; font-size: 1.5rem; color: var(--secondary); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        summary::after { content: "정답 보기 ▼"; font-size: 1.2rem; color: var(--text-muted); }
+        details[open] summary::after { content: "닫기 ▲"; }
+        .answer-content { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; color: var(--primary); font-weight: bold; font-size: 1.5rem; }
+
+        /* --- Challenge & Quiz --- */
+        .challenge-box {
+            background: #fdfefe; border: 3px solid #2d3436; border-radius: 20px;
+            padding: 30px; margin-bottom: 40px; position: relative;
+        }
+        .challenge-badge {
+            background: #2d3436; color: white; padding: 5px 15px;
+            border-radius: 8px; font-weight: bold; font-size: 1.2rem;
+            display: inline-block; margin-bottom: 15px;
+        }
+        .challenge-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 15px; color: #2d3436; }
+        .io-example {
+            background: #ecf0f1; padding: 15px; border-radius: 8px;
+            font-family: 'Consolas', monospace; margin: 15px 0;
+            border-left: 5px solid #2d3436; font-size: 1.3rem;
+        }
+
+        .quiz-item {
+            background: white; padding: 30px; border-radius: 15px;
+            border: 1px solid #dfe6e9; margin-bottom: 25px;
+        }
+        .quiz-question { font-weight: bold; margin-bottom: 20px; font-size: 1.6rem; }
+        .quiz-options label {
+            display: block; padding: 15px; cursor: pointer; font-size: 1.4rem;
+            transition: 0.2s; border-radius: 8px; margin-bottom: 5px;
+        }
+        .quiz-options label:hover { background: #f1f2f6; }
+        .quiz-code {
+            display: block; background-color: #f1f2f6; padding: 15px;
+            border-radius: 8px; font-family: 'Consolas', monospace; color: #2d3436;
+            margin: 10px 0; border-left: 5px solid var(--primary); font-size: 1.4rem;
+            white-space: pre-wrap; line-height: 1.5; font-weight: 600;
+        }
+        
+        .btn-check {
+            background: var(--secondary); color: white; border: none;
+            padding: 20px 50px; font-size: 1.8rem; border-radius: 15px;
+            cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s;
+        }
+        .btn-check:hover { background: var(--primary); }
+
+        footer {
+            text-align: center; padding: 60px 0; color: var(--text-muted);
+            border-top: 1px solid #dcdde1; margin-top: 80px; font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <span class="brand-badge">CODE:N ACADEMY</span>
+        <h1>파이썬 딕셔너리(Dictionary) 완전 정복</h1>
+        <p class="intro">Key(열쇠)로 Value(값)을 즉시 찾아내는 초고속 데이터 저장소</p>
+    </header>
+
+    <!-- 1. 비주얼 컨셉 -->
+    <div class="concept-section">
+        <div class="concept-card">
+            <span class="concept-icon">🏷️</span>
+            <span class="concept-title">대형마트 바코드</span>
+            <p class="concept-desc">
+                바코드(Key)를 찍으면<br>
+                즉시 <strong>가격 정보(Value)</strong>가 나옵니다.<br>
+                몇 번째 물건인지 찾을 필요가 없죠.
+            </p>
+        </div>
+        <div class="concept-card">
+            <span class="concept-icon">🗄️</span>
+            <span class="concept-title">사물함 (Locker)</span>
+            <p class="concept-desc">
+                각 칸마다 <strong>이름표(Key)</strong>가 붙어 있습니다.<br>
+                "철수 사물함 열어!" 하면<br>
+                그 안의 <strong>물건(Value)</strong>을 바로 꺼냅니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- 2. 기본 구조 -->
+    <section>
+        <h2>1. 딕셔너리의 기본 구조</h2>
+        <p>
+            딕셔너리는 <strong>중괄호 <code>{}</code></strong>를 사용하며, <code>Key : Value</code> 쌍으로 이루어집니다.<br>
+            리스트가 순서(Index)로 데이터를 관리한다면, 딕셔너리는 이름표(Key)로 관리합니다.
+        </p>
+        
+        <div class="code-wrapper">
+<pre>
+<span class="cm"># 1. 딕셔너리 생성 (Key : Value)</span>
+hero = {
+    <span class="st">"이름"</span>: <span class="st">"아이언맨"</span>,
+    <span class="st">"슈트"</span>: <span class="st">"MK-85"</span>,
+    <span class="st">"파워"</span>: <span class="nm">100</span>
+}
+
+<span class="cm"># 2. 값 꺼내기 (Key를 사용)</span>
+<span class="fn">print</span>(hero[<span class="st">"이름"</span>])  <span class="cm"># 아이언맨</span>
+<span class="fn">print</span>(hero[<span class="st">"파워"</span>])  <span class="cm"># 100</span>
+</pre>
+        </div>
+
+        <div class="mini-drill">
+            <h3>[중간 점검] 문법 체크</h3>
+            <p>다음 중 올바른 딕셔너리 형태는 무엇일까요?</p>
+            
+            <div class="drill-options">
+                <div class="drill-option-item">1. {'name', 'Kim', 'age', 20}</div>
+                <div class="drill-option-item">2.['name': 'Kim', 'age': 20]</div>
+                <div class="drill-option-item">3. {'name': 'Kim', 'age': 20}</div>
+                <div class="drill-option-item">4. ('name': 'Kim', 'age': 20)</div>
+            </div>
+
+            <details>
+                <summary>정답 확인하기</summary>
+                <div class="answer-content">
+                    정답: <strong>3번</strong><br>
+                    딕셔너리는 중괄호 {}를 사용하며, Key와 Value 사이에는 콜론(:), 각 쌍 사이에는 쉼표(,)가 있어야 합니다.
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- 3. 리스트 vs 딕셔너리 -->
+    <section>
+        <h2>2. 리스트(List) vs 딕셔너리(Dict)</h2>
+        <p>언제 무엇을 써야 할까요? 데이터를 찾는 방식이 완전히 다릅니다.</p>
+
+        <div class="comparison-container">
+            <!-- List Box -->
+            <div class="comp-box" style="border-top: 5px solid #0984e3;">
+                <div class="comp-title" style="color:#0984e3;">📋 리스트 (List)</div>
+                <p><strong>번호(Index)</strong>로 관리합니다.<br>순서가 중요할 때 사용합니다.</p>
+                <div class="code-wrapper">
+<pre>
+scores = [<span class="nm">90</span>, <span class="nm">85</span>]
+<span class="fn">print</span>(scores[<span class="nm">1</span>]) 
+<span class="cm"># 85 (누구 점수인지 모름)</span>
+</pre>
+                </div>
+            </div>
+
+            <!-- Dict Box -->
+            <div class="comp-box" style="border-top: 5px solid var(--primary);">
+                <div class="comp-title" style="color:var(--primary);">🔑 딕셔너리 (Dict)</div>
+                <p><strong>이름(Key)</strong>으로 관리합니다.<br>의미를 부여해서 찾을 때 사용합니다.</p>
+                <div class="code-wrapper">
+<pre style="font-size: 1.4rem;">
+scores = {<span class="st">"철수"</span>: <span class="nm">90</span>, <span class="st">"영희"</span>: <span class="nm">85</span>}
+<span class="fn">print</span>(scores[<span class="st">"영희"</span>]) 
+<span class="cm"># 85 (영희 점수 확인!)</span>
+</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. CRUD 조작 -->
+    <section>
+        <h2>3. 데이터 조작하기 (CRUD)</h2>
+        <p>딕셔너리는 데이터를 자유롭게 추가, 수정, 삭제할 수 있습니다.</p>
+        
+        <table class="term-table">
+            <thead>
+                <tr>
+                    <th width="20%">구분</th>
+                    <th>코드 예시</th>
+                    <th>설명</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>추가/수정</strong></td>
+                    <td><code>data['key'] = value</code></td>
+                    <td>Key가 없으면 <strong>추가</strong>, 있으면 <strong>수정</strong>됩니다.</td>
+                </tr>
+                <tr>
+                    <td><strong>삭제</strong></td>
+                    <td><code>del data['key']</code></td>
+                    <td>해당 Key와 쌍을 이루는 값을 삭제합니다.</td>
+                </tr>
+                <tr>
+                    <td><strong>초기화</strong></td>
+                    <td><code>data.clear()</code></td>
+                    <td>모든 내용을 지워서 빈 딕셔너리로 만듭니다.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="code-wrapper">
+<pre>
+my_dict = {<span class="st">"A"</span>: <span class="nm">10</span>}
+
+<span class="cm"># 1. 추가 (B가 없으므로 추가됨)</span>
+my_dict[<span class="st">"B"</span>] = <span class="nm">20</span>  
+
+<span class="cm"># 2. 수정 (A가 있으므로 값만 바뀜)</span>
+my_dict[<span class="st">"A"</span>] = <span class="nm">99</span>  
+
+<span class="cm"># 3. 삭제</span>
+<span class="kw">del</span> my_dict[<span class="st">"B"</span>]   
+
+<span class="fn">print</span>(my_dict) <span class="cm"># {'A': 99}</span>
+</pre>
+        </div>
+    </section>
+
+    <!-- 5. 안전하게 조회하기 (get) -->
+    <section>
+        <h2>4. ★ 안전하게 조회하기 (get 메서드)</h2>
+        <p>베테랑 개발자가 되기 위한 필수 습관! 없는 키를 찾으면 에러가 납니다.</p>
+
+        <div class="comparison-container">
+            <div class="comp-box" style="border-top: 5px solid #d63031;">
+                <div class="comp-title" style="color:#d63031;">❌ 위험한 방식: [ ]</div>
+                <p>없는 키를 넣으면 <strong>KeyError</strong>가 발생하며<br>프로그램이 멈춥니다.</p>
+                <div class="code-wrapper">
+<pre>
+info = {<span class="st">"name"</span>: <span class="st">"Sonic"</span>}
+<span class="cm"># print(info["age"]) 
+# -> 에러 발생! 💥</span>
+</pre>
+                </div>
+            </div>
+
+            <div class="comp-box" style="border-top: 5px solid #00b894;">
+                <div class="comp-title" style="color:#00b894;">✅ 안전한 방식: .get()</div>
+                <p>없는 키를 넣어도 에러 대신 <strong>None</strong>을 반환합니다.</p>
+                <div class="code-wrapper">
+<pre>
+info = {<span class="st">"name"</span>: <span class="st">"Sonic"</span>}
+<span class="fn">print</span>(info.get(<span class="st">"age"</span>)) 
+<span class="cm"># None (프로그램 안 멈춤)</span>
+</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-drill">
+            <h3>[중간 점검] get()의 활용</h3>
+            <p>
+                <span class="inline-code">info.get('age', 0)</span> 처럼 쓰면, 값이 없을 때 None 대신 0을 반환합니다. 이를 '기본값'이라고 합니다.
+            </p>
+            <details>
+                <summary>실행 결과 예측하기</summary>
+                <div class="answer-content">
+                    키 'age'가 없으므로, 기본값으로 설정한 <strong>0</strong>이 반환됩니다.<br>
+                    이를 활용하면 카운팅(투표) 프로그램을 아주 쉽게 짤 수 있습니다.
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- 6. 반복문과 활용 -->
+    <section>
+        <h2>5. 딕셔너리 분해와 반복 (Loop)</h2>
+        <p>딕셔너리 안에 있는 내용물을 반복문(for)으로 꺼내는 방법입니다.</p>
+
+        <h3>① Key만 꺼내기 (기본)</h3>
+        <div class="code-wrapper">
+<pre>
+ages = {<span class="st">"철수"</span>: <span class="nm">10</span>, <span class="st">"영희"</span>: <span class="nm">12</span>}
+<span class="kw">for</span> key <span class="kw">in</span> ages:  <span class="cm"># 또는 ages.keys()</span>
+    <span class="fn">print</span>(key)    <span class="cm"># 철수, 영희 출력</span>
+</pre>
+        </div>
+
+        <h3>② Value(값)만 꺼내기</h3>
+        <div class="code-wrapper">
+<pre>
+<span class="kw">for</span> val <span class="kw">in</span> ages.values():
+    <span class="fn">print</span>(val)    <span class="cm"># 10, 12 출력</span>
+</pre>
+        </div>
+
+        <h3>③ 쌍(Pair)으로 꺼내기 (가장 많이 씀)</h3>
+        <p><code>items()</code>를 사용하면 키와 값을 동시에 꺼낼 수 있습니다.</p>
+        <div class="code-wrapper">
+<pre>
+<span class="kw">for</span> name, age <span class="kw">in</span> ages.items():
+    <span class="fn">print</span>(f<span class="st">"{name}는 {age}살"</span>)
+</pre>
+        </div>
+    </section>
+
+    <!-- 7. 심화 개념 (Key 제약조건) -->
+    <section>
+        <h2>6. 주의! Key가 될 수 없는 것들</h2>
+        <p>딕셔너리의 열쇠(Key)는 <strong>변하지 않는 값(Immutable)</strong>이어야 합니다.</p>
+        
+        <ul style="font-size:1.5rem; margin-bottom:30px; line-height:2;">
+            <li>✅ <strong>가능:</strong> 정수, 실수, 문자열, 튜플(Tuple)</li>
+            <li>❌ <strong>불가능:</strong> 리스트(List), 딕셔너리(Dict) - 내용이 바뀔 수 있기 때문!</li>
+        </ul>
+
+        <div class="code-wrapper">
+<pre>
+<span class="cm"># 에러 발생하는 코드</span>
+my_dict = {}
+my_list = [<span class="nm">1</span>, <span class="nm">2</span>]
+<span class="cm"># my_dict[my_list] = "값" </span>
+<span class="cm"># TypeError: unhashable type: 'list'</span>
+</pre>
+        </div>
+    </section>
+
+
+    <!-- 8. 실전 핵심 퀴즈 (15문항) -->
+    <section>
+        <h2>🏆 실전 핵심 퀴즈 (15문항)</h2>
+        <p>딕셔너리의 문법부터 심화 메서드까지 완벽하게 점검하세요.</p>
+
+        <div id="quiz-area"></div>
+        <button class="btn-check" onclick="gradeQuiz()">💯 채점하기</button>
+        
+        <div id="result-area" style="margin-top:30px; text-align:center; font-weight:bold; font-size:2rem; display:none;"></div>
+    </section>
+
+    <!-- 9. 심화 코딩 챌린지 (4 Missions) -->
+    <section id="advanced-missions" style="background: #fff3e0; border: 4px solid var(--primary);">
+        <h2 style="border-left: none; text-align: center; font-size: 3rem; margin-bottom: 10px; color: var(--primary);">🚀 실전 코딩 챌린지</h2>
+        <p style="text-align: center; margin-bottom: 40px;">배운 내용을 활용해 실제 데이터를 다뤄봅시다.</p>
+
+        <!-- Mission 1 -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 1</span>
+            <div class="challenge-title">단어 투표 집계 (Word Counter)</div>
+            <p>
+                과일 이름이 적힌 리스트가 있습니다. 각 과일이 몇 번 나왔는지 세어서 딕셔너리로 만드세요.<br>
+                입력: <code>['apple', 'banana', 'apple', 'apple']</code><br>
+                목표 출력: <code>{'apple': 3, 'banana': 1}</code>
+            </p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper" style="margin-top: 10px; border-left: 5px solid #2d3436;">
+<pre>
+fruits =[<span class="st">'apple'</span>, <span class="st">'banana'</span>, <span class="st">'apple'</span>, <span class="st">'apple'</span>]
+counts = {}
+
+<span class="kw">for</span> f <span class="kw">in</span> fruits:
+    <span class="kw">if</span> f <span class="kw">in</span> counts:
+        counts[f] += <span class="nm">1</span>
+    <span class="kw">else</span>:
+        counts[f] = <span class="nm">1</span>
+
+<span class="fn">print</span>(counts)
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 2 -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 2</span>
+            <div class="challenge-title">성적 등급 변환기</div>
+            <p>
+                학생들의 점수가 담긴 딕셔너리가 있습니다. 80점 이상인 학생만 골라내어<br>
+                새로운 딕셔너리 <code>passed_students</code>를 만드세요.<br>
+                입력: <code>scores = {'철수': 70, '영희': 90, '민수': 85}</code>
+            </p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper" style="margin-top: 10px; border-left: 5px solid #2d3436;">
+<pre>
+scores = {<span class="st">'철수'</span>: <span class="nm">70</span>, <span class="st">'영희'</span>: <span class="nm">90</span>, <span class="st">'민수'</span>: <span class="nm">85</span>}
+passed_students = {}
+
+<span class="kw">for</span> name, score <span class="kw">in</span> scores.items():
+    <span class="kw">if</span> score >= <span class="nm">80</span>:
+        passed_students[name] = score
+
+<span class="fn">print</span>(passed_students)
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 3 -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 3</span>
+            <div class="challenge-title">카페 키오스크 (가격 계산)</div>
+            <p>
+                메뉴판 딕셔너리가 있습니다. 주문 리스트를 받아 총 금액을 계산하는 함수를 작성하세요.<br>
+                <code>menu = {'아아': 2000, '라떼': 3000}</code><br>
+                <code>order =['아아', '아아', '라떼']</code> -> 결과: 7000
+            </p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper" style="margin-top: 10px; border-left: 5px solid #2d3436;">
+<pre>
+menu = {<span class="st">'아아'</span>: <span class="nm">2000</span>, <span class="st">'라떼'</span>: <span class="nm">3000</span>}
+order =[<span class="st">'아아'</span>, <span class="st">'아아'</span>, <span class="st">'라떼'</span>]
+
+total = <span class="nm">0</span>
+<span class="kw">for</span> item <span class="kw">in</span> order:
+    total += menu[item]
+
+<span class="fn">print</span>(f<span class="st">"총 금액: {total}원"</span>)
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 4 -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 4</span>
+            <div class="challenge-title">중첩 딕셔너리 탐험 (JSON 스타일)</div>
+            <p>
+                다음 데이터에서 '피카츄'의 '스킬' 중 첫 번째 스킬('백만볼트')을 출력하세요.<br>
+                복잡한 데이터 구조에서 원하는 값을 쏙 뽑아내는 능력은 필수입니다!
+            </p>
+            <div class="io-example">
+data = {
+    'trainer': '지우',
+    'pokemon': {
+        'name': '피카츄',
+        'skills':['백만볼트', '전광석화']
+    }
+}
+            </div>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper" style="margin-top: 10px; border-left: 5px solid #2d3436;">
+<pre>
+<span class="cm"># 순서대로 파고 들어가기</span>
+<span class="cm"># 1. pokemon 딕셔너리 접근</span>
+<span class="cm"># 2. skills 리스트 접근</span>
+<span class="cm"># 3. 리스트의 0번째 요소 접근</span>
+
+<span class="fn">print</span>(data[<span class="st">'pokemon'</span>][<span class="st">'skills'</span>][<span class="nm">0</span>])
+</pre>
+                </div>
+            </details>
+        </div>
+
+    </section>
+
+    <footer>
+        Copyright © 2026 CODE:N. All rights reserved.
+    </footer>
+</div>
+
+<script>
+    // 15문제: 딕셔너리 개념 총정리
+    const questions =[
+        { q: "파이썬 딕셔너리를 생성할 때 사용하는 괄호는?", options:["( ) 소괄호", "[ ] 대괄호", "{ } 중괄호", "< > 꺽쇠"], a: 2 },
+        { q: "딕셔너리의 구성 요소로 올바른 설명은?", options:["인덱스와 값(Value)", "키(Key)와 값(Value)의 쌍", "값(Value)들의 집합", "순서가 있는 데이터 나열"], a: 1 },
+        { q: "다음 중 올바른 딕셔너리 문법은?", options:["{'a', 1}", "{'a': 1}", "['a': 1]", "('a': 1)"], a: 1 },
+        { q: "딕셔너리 `d = {'A': 10, 'B': 20}` 에서 값 10을 가져오는 코드는?", options:["d[0]", "d('A')", "d['A']", "d.get(10)"], a: 2 },
+        { q: "딕셔너리에 동일한 Key를 중복해서 넣으면 어떻게 되나요?", options:["에러가 발생한다", "두 값이 모두 저장된다", "나중에 넣은 값으로 덮어씌워진다", "자동으로 키 이름이 바뀐다"], a: 2 },
+        { q: "딕셔너리 `d`에 새로운 쌍을 추가하거나 수정하는 방법은?", options: ["d.add(key, value)", "d[key] = value", "d.append(key, value)", "d.insert(key, value)"], a: 1 },
+        { q: "딕셔너리의 특정 키와 값을 삭제하는 키워드는?", options:["remove", "delete", "del", "erase"], a: 2 },
+        { q: "딕셔너리의 모든 내용을 지워 빈 딕셔너리로 만드는 메서드는?", options:["empty()", "delete_all()", "clear()", "reset()"], a: 2 },
+        { q: "존재하지 않는 키에 접근했을 때, 에러 없이 None을 반환하는 메서드는?", options:["find()", "search()", "get()", "check()"], a: 2 },
+        { q: "딕셔너리의 모든 Key들만 모아서 반환하는 메서드는?", options:[".values()", ".items()", ".keys()", ".list()"], a: 2 },
+        { q: "`for k, v in d.items():` 에서 `v`가 의미하는 것은?", options:["Key (키)", "Value (값)", "Index (순서)", "Tuple (쌍)"], a: 1 },
+        { q: "다음 중 딕셔너리의 Key로 사용할 수 **없는** 데이터 타입은?", options:["정수 (Integer)", "문자열 (String)", "튜플 (Tuple)", "리스트 (List)"], a: 3 },
+        { q: "`'name' in info` 코드의 실행 결과로 올바른 것은?", options:["name이라는 Key가 있으면 True", "name이라는 Value가 있으면 True", "Key와 Value 모두 검사", "name 변수의 값 출력"], a: 0 },
+        { q: "`len(my_dict)` 함수를 사용하면 무엇이 반환되나요?", options:["메모리 크기", "Key-Value 쌍의 개수", "Key들의 글자 수 합", "가장 큰 Value 값"], a: 1 },
+        { q: "다음 코드의 실행 결과는? <div class='quiz-code'>d = {'a': 1}\nd['a'] = 2\nprint(d['a'])</div>", options: ["1", "2", "1, 2", "에러"], a: 1 }
+    ];
+
+    function renderQuiz() {
+        const area = document.getElementById('quiz-area');
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-item" id="qBox${idx}">
+                <div class="quiz-question">Q${idx+1}. ${q.q}</div>
+                <div class="quiz-options">
+                    ${q.options.map((opt, oIdx) => `<label><input type="radio" name="q${idx}" value="${oIdx}"> ${opt}</label>`).join('')}
+                </div>
+                <div class="feedback" id="fb${idx}" style="color:var(--primary); font-weight:bold; margin-top:10px;"></div>
+            </div>`;
+        });
+        area.innerHTML = html;
+    }
+
+    function gradeQuiz() {
+        let score = 0;
+        let correctCount = 0;
+        
+        questions.forEach((q, idx) => {
+            const sel = document.querySelector(`input[name="q${idx}"]:checked`);
+            const fb = document.getElementById(`fb${idx}`);
+            const box = document.getElementById(`qBox${idx}`);
+            
+            if (sel && parseInt(sel.value) === q.a) {
+                score += (100 / questions.length);
+                correctCount++;
+                fb.innerText = "✅ 정답!";
+                fb.style.color = "#00b894"; 
+                box.style.border = "2px solid #00b894";
+            } else {
+                fb.innerText = `❌ 오답 (정답: ${q.options[q.a]})`;
+                fb.style.color = "#d63031"; 
+                box.style.border = "2px solid #d63031";
+            }
+        });
+        
+        const finalScore = Math.round(score);
+        const res = document.getElementById('result-area');
+        res.style.display = 'block';
+        
+        let msg = "";
+        if (correctCount === questions.length) {
+            msg = "🎉 완벽합니다! 딕셔너리 마스터 인정! 🧙‍♂️";
+        } else if (finalScore >= 80) {
+            msg = "👍 아주 훌륭해요! 실수한 부분만 체크해봅시다.";
+        } else {
+            msg = "💪 괜찮아요! 개념 부분을 다시 읽어보면 금방 이해될 거예요.";
+        }
+
+        res.innerHTML = `총점: <span style="color:var(--primary)">${finalScore}</span>점 (${correctCount}/${questions.length}개)<br><span style="font-size:1.5rem; color:#2d3436;">${msg}</span>`;
+        res.scrollIntoView({ behavior: "smooth" });
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+</html>

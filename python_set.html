@@ -1,0 +1,666 @@
+<!-- START OF FILE 파이썬_세트_통합본_v2.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODE:N - 파이썬 세트(Set) 완전 정복</title>
+    <!-- Font: Pretendard -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            /* Theme: Soft Purple (창의력과 논리의 색) */
+            --primary: #6c5ce7;       
+            --primary-light: #a29bfe; 
+            --primary-bg: #ede7f6;
+            --secondary: #2d3436;     
+            --bg-color: #f5f6fa;
+            --card-bg: #ffffff;
+            --code-bg: #2d3436;       
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            
+            /* Code Highlight Colors */
+            --code-text: #f1f2f6;     
+            --code-kw: #ff7675;       
+            --code-fn: #74b9ff;       
+            --code-st: #ffeaa7;       
+            --code-nm: #55efc4;       
+            --code-cm: #b2bec3;       
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Header --- */
+        header { text-align: center; margin-bottom: 60px; }
+        .brand-badge {
+            background: var(--secondary); color: #fff; padding: 5px 25px;
+            border-radius: 50px; font-size: 1.2rem; font-weight: 800; letter-spacing: 2px;
+        }
+        h1 {
+            font-size: 4rem; font-weight: 900; color: var(--secondary);
+            margin: 25px 0 10px 0; letter-spacing: -1px;
+        }
+        .intro { font-size: 1.8rem; color: var(--text-muted); font-weight: 500; }
+
+        /* --- Visual Concept Section --- */
+        .concept-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 60px;
+            justify-content: center;
+        }
+
+        .concept-card {
+            flex: 1;
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-top: 8px solid var(--primary);
+            transition: transform 0.2s;
+        }
+        .concept-card:hover { transform: translateY(-5px); }
+        .concept-icon { font-size: 5rem; margin-bottom: 20px; display: block; }
+        .concept-title { font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 15px; display: block; }
+        .concept-desc { font-size: 1.4rem; color: #636e72; word-break: keep-all; line-height: 1.5; }
+
+        /* --- Section Common --- */
+        section {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 50px;
+            margin-bottom: 60px;
+            border: 1px solid #dcdde1;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+
+        h2 {
+            font-size: 2.8rem; color: var(--primary); margin-bottom: 40px;
+            font-weight: 800; border-left: 10px solid var(--secondary);
+            padding-left: 25px; line-height: 1.2;
+        }
+        
+        p { margin-bottom: 20px; font-size: 1.5rem; word-break: keep-all; }
+        h3 { font-size: 1.8rem; margin-top: 40px; margin-bottom: 15px; color: var(--secondary); font-weight: 800; display: flex; align-items: center; gap: 10px;}
+
+        /* --- Code Block Styles --- */
+        .code-wrapper {
+            background-color: var(--code-bg);
+            border-radius: 16px;
+            padding: 25px; 
+            margin: 25px 0;
+            border-left: 10px solid var(--primary);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            overflow-x: auto;
+        }
+
+        pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.6rem; 
+            font-weight: 600; 
+            color: var(--code-text);
+            line-height: 1.5; 
+            white-space: pre; 
+        }
+
+        /* Inline Code Highlight */
+        .inline-code {
+            background-color: var(--primary-bg);
+            color: #512da8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-weight: bold;
+            font-size: 0.9em;
+            border: 1px solid var(--primary-light);
+            margin: 0 2px;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: var(--code-kw); }
+        .fn { color: var(--code-fn); }
+        .st { color: var(--code-st); }
+        .nm { color: var(--code-nm); }
+        .cm { color: var(--code-cm); font-weight: 400; font-size: 1.4rem; font-style: italic; }
+
+        /* --- Comparison Box --- */
+        .comparison-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            align-items: stretch;
+        }
+        .comp-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border: 2px solid #eee;
+            padding: 25px;
+            border-radius: 15px;
+            min-width: 300px;
+        }
+        .comp-title { 
+            font-weight: 800; font-size: 1.8rem; margin-bottom: 15px; text-align: center; 
+        }
+        .comp-box p {
+            min-height: 6.5rem;
+            margin-bottom: 15px;
+            word-break: keep-all;
+        }
+        .comp-box .code-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px; 
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: keep-all; 
+        }
+        .comp-box pre {
+            font-size: 1.5rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            letter-spacing: 0; 
+        }
+
+        /* --- Venn Diagram Grid --- */
+        .venn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .venn-item {
+            text-align: center;
+            background: #fff;
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid #eee;
+            transition: 0.3s;
+        }
+        .venn-item:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .venn-svg { width: 100%; max-width: 180px; height: auto; margin-bottom: 15px; }
+        .venn-label { font-weight: 800; font-size: 1.6rem; color: var(--secondary); display: block; margin-bottom: 5px; }
+        .venn-desc { font-size: 1.3rem; color: var(--text-muted); }
+        
+        /* SVG Styles */
+        .venn-circle { fill: none; stroke: var(--secondary); stroke-width: 2; opacity: 0.2; }
+        .venn-fill { fill: var(--primary); opacity: 0.7; mix-blend-mode: multiply; }
+        .venn-diff { fill: #e17055; } /* 차집합 강조색 */
+
+        /* --- Mini Drill --- */
+        .mini-drill {
+            background-color: #fff0f6; /* Pinkish for Set drill */
+            border: 2px solid var(--primary); 
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        details {
+            margin-top: 10px; background: white; padding: 20px;
+            border-radius: 8px; border: 1px solid #ddd; cursor: pointer;
+        }
+        summary { font-weight: bold; font-size: 1.5rem; color: var(--secondary); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        summary::after { content: "정답 보기 ▼"; font-size: 1.2rem; color: var(--text-muted); }
+        details[open] summary::after { content: "닫기 ▲"; }
+        .answer-content { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; color: var(--primary); font-weight: bold; font-size: 1.5rem; }
+
+        /* --- Challenge & Quiz --- */
+        .challenge-box {
+            background: #fdfefe; border: 3px solid #2d3436; border-radius: 20px;
+            padding: 30px; margin-bottom: 40px; position: relative;
+        }
+        .challenge-badge {
+            background: #2d3436; color: white; padding: 5px 15px;
+            border-radius: 8px; font-weight: bold; font-size: 1.2rem;
+            display: inline-block; margin-bottom: 15px;
+        }
+        .challenge-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 15px; color: #2d3436; }
+        
+        .quiz-item {
+            background: white; padding: 30px; border-radius: 15px;
+            border: 1px solid #dfe6e9; margin-bottom: 25px;
+        }
+        .quiz-question { font-weight: bold; margin-bottom: 20px; font-size: 1.6rem; }
+        .quiz-options label {
+            display: block; padding: 15px; cursor: pointer; font-size: 1.4rem;
+            transition: 0.2s; border-radius: 8px; margin-bottom: 5px;
+        }
+        .quiz-options label:hover { background: #f1f2f6; }
+        
+        .btn-check {
+            background: var(--secondary); color: white; border: none;
+            padding: 20px 50px; font-size: 1.8rem; border-radius: 15px;
+            cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s;
+        }
+        .btn-check:hover { background: var(--primary); }
+
+        footer {
+            text-align: center; padding: 60px 0; color: var(--text-muted);
+            border-top: 1px solid #dcdde1; margin-top: 80px; font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .concept-section, .comparison-container, .venn-grid { flex-direction: column; }
+            .comp-box p { min-height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <span class="brand-badge">CODE:N ACADEMY</span>
+        <h1>파이썬 세트(Set) 완전 정복</h1>
+        <p class="intro">중복을 거부하고 순서를 무시하는, 아주 특별한 주머니</p>
+    </header>
+
+    <!-- 1. 비주얼 컨셉 -->
+    <div class="concept-section">
+        <div class="concept-card">
+            <span class="concept-icon">🚫</span>
+            <span class="concept-title">중복 제거기</span>
+            <p class="concept-desc">
+                똑같은 물건을 100개 넣어도<br>
+                결국 <strong>단 하나</strong>만 남습니다.<br>
+                데이터 청소의 필수품이죠.
+            </p>
+        </div>
+        <div class="concept-card">
+            <span class="concept-icon">🎱</span>
+            <span class="concept-title">주머니 속 구슬</span>
+            <p class="concept-desc">
+                구슬이 들어있는 주머니와 같습니다.<br>
+                <strong>순서가 뒤죽박죽</strong> 섞여 있어서,<br>
+                "첫 번째 구슬"이라는 개념이 없습니다.
+            </p>
+        </div>
+        <div class="concept-card">
+            <span class="concept-icon">🤝</span>
+            <span class="concept-title">친구 관계</span>
+            <p class="concept-desc">
+                나랑 철수의 <strong>공통</strong> 친구,<br>
+                우리 반 친구 <strong>전체</strong> 등<br>
+                그룹 간의 관계를 따질 때 강력합니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- 2. 기본 구조와 함정 -->
+    <section>
+        <h2>1. 세트의 기본 구조와 절대 규칙</h2>
+        <p>
+            세트는 <strong>중괄호 <code>{}</code></strong>를 사용하여 값을 담습니다. <br>
+            하지만 두 가지 절대 규칙이 있습니다: <strong>① 중복 금지, ② 순서 없음</strong>
+        </p>
+        
+        <div class="code-wrapper">
+<pre>
+<span class="cm"># 1. 세트 생성 (중복된 1, 2는 자동으로 사라짐)</span>
+nums = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">2</span>}
+
+<span class="fn">print</span>(nums)
+<span class="cm"># 결과: {1, 2, 3}</span>
+</pre>
+        </div>
+
+        <div class="mini-drill">
+            <h3>⚠️ [주의] 빈 세트 만들기의 함정</h3>
+            <p>
+                비어있는 세트를 만들 때 <code>my_set = {}</code> 라고 쓰면 될까요?<br>
+                (나중에 배울 '딕셔너리'라는 친구가 이 기호를 선점했거든요!)
+            </p>
+            <details>
+                <summary>정답 확인하기</summary>
+                <div class="answer-content">
+                    ❌ <code>{}</code>는 <strong>빈 딕셔너리</strong>가 됩니다.<br>
+                    ✅ 빈 세트는 반드시 <span class="inline-code">set()</span> 함수로 만들어야 합니다.
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- 3. 리스트 vs 세트 -->
+    <section>
+        <h2>2. 리스트(List) vs 세트(Set)</h2>
+        <p>비슷해 보이지만 용도가 완전히 다릅니다. 상황에 맞춰 골라 써야 합니다.</p>
+
+        <div class="comparison-container">
+            <!-- List Box -->
+            <div class="comp-box" style="border-top: 5px solid #0984e3;">
+                <div class="comp-title" style="color:#0984e3;">📋 리스트 (List)</div>
+                <p>순서대로 줄을 섭니다. (인덱스 O)<br>똑같은 사람이 또 줄을 서도 됩니다.</p>
+                <div class="code-wrapper">
+<pre>
+L = [<span class="nm">1</span>, <span class="nm">1</span>, <span class="nm">2</span>]
+<span class="fn">print</span>(L[<span class="nm">0</span>]) 
+<span class="cm"># 1 (순서가 있어서 0번째 가능)</span>
+</pre>
+                </div>
+            </div>
+
+            <!-- Set Box -->
+            <div class="comp-box" style="border-top: 5px solid var(--primary);">
+                <div class="comp-title" style="color:var(--primary);">🚫 세트 (Set)</div>
+                <p>마구잡이로 모여 있습니다. (인덱스 X)<br>똑같은 사람은 들어올 수 없습니다.</p>
+                <div class="code-wrapper">
+<pre style="font-size: 1.4rem;">
+S = {<span class="nm">1</span>, <span class="nm">1</span>, <span class="nm">2</span>}
+<span class="cm"># print(S[0]) -> 에러! 💥</span>
+<span class="cm"># 순서가 없어서 번호표가 없음</span>
+</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 집합 연산 (벤다이어그램) -->
+    <section>
+        <h2>3. 그림으로 이해하는 집합 연산</h2>
+        <p>
+            아직 학교에서 집합을 안 배웠어도 걱정 마세요.<br>
+            두 그룹(세트)이 겹치는지, 합치는지 그림을 보면 바로 이해됩니다.
+        </p>
+
+        <div class="venn-grid">
+            <!-- 교집합 -->
+            <div class="venn-item">
+                <svg class="venn-svg" viewBox="0 0 100 60">
+                    <circle cx="35" cy="30" r="25" class="venn-circle" />
+                    <circle cx="65" cy="30" r="25" class="venn-circle" />
+                    <!-- 교집합 부분 path -->
+                    <path d="M 50,11 A 25,25 0 0,1 50,49 A 25,25 0 0,1 50,11" fill="var(--primary)" />
+                </svg>
+                <span class="venn-label">교집합 (&)</span>
+                <span class="venn-desc">너랑 나랑 <strong>공통</strong>으로<br>좋아하는 것</span>
+            </div>
+
+            <!-- 합집합 -->
+            <div class="venn-item">
+                <svg class="venn-svg" viewBox="0 0 100 60">
+                    <circle cx="35" cy="30" r="25" class="venn-fill" />
+                    <circle cx="65" cy="30" r="25" class="venn-fill" />
+                </svg>
+                <span class="venn-label">합집합 (|)</span>
+                <span class="venn-desc">네 거 내 거 <strong>모두 다</strong><br>합친 것 (중복은 뺌)</span>
+            </div>
+
+            <!-- 차집합 -->
+            <div class="venn-item">
+                <svg class="venn-svg" viewBox="0 0 100 60">
+                    <defs>
+                        <mask id="cut-b">
+                            <rect x="0" y="0" width="100" height="60" fill="white"/>
+                            <circle cx="65" cy="30" r="25" fill="black"/>
+                        </mask>
+                    </defs>
+                    <circle cx="35" cy="30" r="25" class="venn-diff" mask="url(#cut-b)"/>
+                    <circle cx="35" cy="30" r="25" class="venn-circle" />
+                    <circle cx="65" cy="30" r="25" class="venn-circle" />
+                </svg>
+                <span class="venn-label">차집합 (-)</span>
+                <span class="venn-desc">나한테만 있고<br><strong>너한테는 없는</strong> 것</span>
+            </div>
+        </div>
+
+        <div class="code-wrapper" style="margin-top:30px;">
+<pre>
+pizza = {<span class="st">"치즈"</span>, <span class="st">"밀가루"</span>, <span class="st">"토마토"</span>}
+burger = {<span class="st">"치즈"</span>, <span class="st">"밀가루"</span>, <span class="st">"패티"</span>}
+
+<span class="fn">print</span>(pizza & burger) <span class="cm"># 교집합: {'치즈', '밀가루'}</span>
+<span class="fn">print</span>(pizza | burger) <span class="cm"># 합집합: {'치즈', '밀가루', '토마토', '패티'}</span>
+<span class="fn">print</span>(pizza - burger) <span class="cm"># 차집합: {'토마토'} (버거엔 없는 피자만의 재료)</span>
+</pre>
+        </div>
+    </section>
+
+    <!-- 5. 데이터 조작 (CRUD) -->
+    <section>
+        <h2>4. 데이터 추가 및 삭제 (Methods)</h2>
+        <p>데이터를 넣고 빼는 함수들입니다. 특히 삭제할 때 <code>remove</code>와 <code>discard</code>의 차이를 기억하세요!</p>
+        
+        <h3>① 추가하기</h3>
+        <ul style="font-size:1.5rem; line-height:1.8;">
+            <li><code>add(값)</code>: 데이터 <strong>하나</strong>를 추가합니다.</li>
+            <li><code>update([값1, 값2])</code>: 여러 개를 한 번에 추가합니다. (리스트를 넣어도 됩니다)</li>
+        </ul>
+
+        <h3>② 삭제하기 (안전 vs 엄격)</h3>
+        <div class="comparison-container">
+            <div class="comp-box" style="border-top: 5px solid #d63031;">
+                <div class="comp-title" style="color:#d63031;">⚠️ remove(값)</div>
+                <p>값이 없으면 <strong>에러(Error)</strong>를 내며 화를 냅니다.<br>확실히 있을 때만 쓰세요.</p>
+                <div class="code-wrapper">
+<pre>
+s = {<span class="nm">1</span>, <span class="nm">2</span>}
+s.remove(<span class="nm">3</span>) 
+<span class="cm"># Error 발생! 💥</span>
+</pre>
+                </div>
+            </div>
+
+            <div class="comp-box" style="border-top: 5px solid #00b894;">
+                <div class="comp-title" style="color:#00b894;">🛡️ discard(값)</div>
+                <p>값이 없으면 <strong>그냥 무시</strong>하고 넘어갑니다.<br>있으면 지우고, 없으면 맙니다.</p>
+                <div class="code-wrapper">
+<pre>
+s = {<span class="nm">1</span>, <span class="nm">2</span>}
+s.discard(<span class="nm">3</span>) 
+<span class="cm"># 아무 일도 안 일어남</span>
+</pre>
+                </div>
+            </div>
+        </div>
+
+        <h3>③ 유용한 변환 함수: sorted()</h3>
+        <p>세트는 순서가 없어서 정렬할 수 없지만, <code>sorted()</code>를 쓰면 <strong>정렬된 리스트</strong>로 변환해 줍니다.</p>
+        <div class="code-wrapper">
+<pre>
+s = {<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">2</span>}
+result = <span class="fn">sorted</span>(s)
+<span class="fn">print</span>(result) <span class="cm"># [1, 2, 3] (리스트로 바뀜!)</span>
+</pre>
+        </div>
+    </section>
+
+    <!-- 6. 핵심 퀴즈 (통합본) -->
+    <section>
+        <h2>🏆 실전 핵심 퀴즈 (10문항)</h2>
+        <p>세트의 특징과 집합 연산을 완벽하게 이해했는지 확인해보세요.</p>
+
+        <div id="quiz-area"></div>
+        <button class="btn-check" onclick="gradeQuiz()">💯 채점하기</button>
+        
+        <div id="result-area" style="margin-top:30px; text-align:center; font-weight:bold; font-size:2rem; display:none;"></div>
+    </section>
+
+    <!-- 7. 실전 코딩 챌린지 (Thinking Lab 통합) - 가장 마지막으로 배치 -->
+    <section id="advanced-missions" style="background: var(--primary-bg); border: 4px solid var(--primary);">
+        <h2 style="border-left: none; text-align: center; font-size: 3rem; margin-bottom: 10px; color: var(--primary);">🚀 실전 코딩 챌린지</h2>
+        <p style="text-align: center; margin-bottom: 40px;">배운 내용을 실제 문제 해결에 응용해봅시다.</p>
+
+        <!-- Mission 1 -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 1</span>
+            <div class="challenge-title">숙제 안 해온 사람 찾기 (차집합)</div>
+            <p>
+                전체 학생 명단과 숙제를 제출한 학생 명단이 있습니다.<br>
+                <strong>차집합(-)</strong>을 이용해 숙제를 안 낸 사람을 찾아내고, 가나다순으로 정렬하세요.<br>
+                <code>all = {'철수', '영희', '민수', '지수'}</code><br>
+                <code>submit = {'영희', '민수'}</code>
+            </p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper" style="margin-top: 10px; border-left: 5px solid #2d3436;">
+<pre>
+all_students = {<span class="st">'철수'</span>, <span class="st">'영희'</span>, <span class="st">'민수'</span>, <span class="st">'지수'</span>}
+submitted = {<span class="st">'영희'</span>, <span class="st">'민수'</span>}
+
+<span class="cm"># 전체 - 제출 = 안 낸 사람</span>
+not_submitted = all_students - submitted
+
+<span class="cm"># 가나다순 정렬 (리스트로 변환됨)</span>
+result = <span class="fn">sorted</span>(not_submitted)
+
+<span class="fn">print</span>(result) <span class="cm"># ['지수', '철수']</span>
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 2 -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 2</span>
+            <div class="challenge-title">게임 아이템 정리 (중복 제거)</div>
+            <p>
+                던전에서 아이템을 마구 주웠더니 가방에 똑같은 게 너무 많습니다.<br>
+                리스트를 세트로 변환하여 중복을 없애고, 아이템 종류가 몇 개인지 구하세요.<br>
+                <code>items = ["검", "물약", "검", "방패", "물약"]</code>
+            </p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper" style="margin-top: 10px; border-left: 5px solid #2d3436;">
+<pre>
+items = [<span class="st">"검"</span>, <span class="st">"물약"</span>, <span class="st">"검"</span>, <span class="st">"방패"</span>, <span class="st">"물약"</span>]
+
+<span class="cm"># 세트로 변환하면 중복 자동 제거</span>
+unique_items = <span class="fn">set</span>(items)
+
+<span class="fn">print</span>(unique_items) <span class="cm"># {'검', '물약', '방패'}</span>
+<span class="fn">print</span>(<span class="fn">len</span>(unique_items)) <span class="cm"># 3개</span>
+</pre>
+                </div>
+            </details>
+        </div>
+
+        <!-- Mission 3 -->
+        <div class="challenge-box">
+            <span class="challenge-badge">Mission 3</span>
+            <div class="challenge-title">로또 번호 생성기 (랜덤 + 중복방지)</div>
+            <p>
+                1부터 45까지의 숫자 중 6개를 뽑아야 합니다. <br>
+                랜덤으로 뽑을 때 중복이 나오면 안 되죠? 세트의 성질을 이용해 구현해보세요.<br>
+                (힌트: 세트의 개수가 6개가 될 때까지 계속 뽑으세요!)
+            </p>
+            <details>
+                <summary>정답 코드 확인하기</summary>
+                <div class="code-wrapper" style="margin-top: 10px; border-left: 5px solid #2d3436;">
+<pre>
+<span class="kw">import</span> random
+
+lotto = <span class="fn">set</span>()
+
+<span class="cm"># 세트 안에 6개가 찰 때까지 무한 반복</span>
+<span class="kw">while</span> <span class="fn">len</span>(lotto) < <span class="nm">6</span>:
+    num = random.randint(<span class="nm">1</span>, <span class="nm">45</span>)
+    lotto.add(num) <span class="cm"># 이미 있는 숫자면 알아서 무시됨</span>
+
+<span class="fn">print</span>(<span class="fn">sorted</span>(lotto)) <span class="cm"># 보기 좋게 정렬해서 출력</span>
+</pre>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <footer>
+        Copyright © 2026 CODE:N ACADEMY. All rights reserved.
+    </footer>
+</div>
+
+<script>
+    // 퀴즈 데이터 (두 자료의 핵심 문제 엄선)
+    const questions =[
+        { q: "세트(Set)의 가장 큰 특징 두 가지는?", options:["순서 있음, 중복 허용", "순서 없음, 중복 불가", "키와 값의 쌍, 순서 없음", "변경 불가, 중복 허용"], a: 1 },
+        { q: "비어있는 세트를 만드는 올바른 코드는?", options:["s = {}", "s = []", "s = set()", "s = set{}"], a: 2 },
+        { q: "`s = {1, 2, 3}` 일 때, `s.add(2)`를 실행하면 결과는?", options:["{1, 2, 3, 2}", "{1, 2, 3}", "에러 발생", "{2}"], a: 1 },
+        { q: "여러 개의 데이터를 한 번에 세트에 추가하는 메서드는?", options:["add_all()", "update()", "append()", "insert()"], a: 1 },
+        { q: "값을 삭제할 때, 값이 없어도 에러가 나지 않는 메서드는?", options:["remove()", "delete()", "discard()", "pop()"], a: 2 },
+        { q: "A = {1, 2}, B = {2, 3} 일 때, 교집합(A & B)의 결과는?", options:["{1, 2, 3}", "{2}", "{1, 3}", "{}"], a: 1 },
+        { q: "차집합 (A - B)에 대한 설명으로 올바른 것은?", options:["A와 B를 모두 합친 것", "A와 B의 공통된 것", "A에는 있지만 B에는 없는 것", "B에는 있지만 A에는 없는 것"], a: 2 },
+        { q: "`set('apple')` 코드의 실행 결과로 적절한 것은?", options:["{'apple'}", "{'a', 'p', 'p', 'l', 'e'}", "{'a', 'p', 'l', 'e'}", "['a', 'p', 'l', 'e']"], a: 2 },
+        { q: "세트는 순서가 없으므로 인덱싱(`s[0]`)이 가능하다.", options:["O (가능하다)", "X (불가능하다)"], a: 1 },
+        { q: "`sorted(my_set)` 함수를 사용하면 반환되는 자료형은?", options:["Set (세트)", "List (리스트)", "Dict (딕셔너리)", "Tuple (튜플)"], a: 1 }
+    ];
+
+    function renderQuiz() {
+        const area = document.getElementById('quiz-area');
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-item" id="qBox${idx}">
+                <div class="quiz-question">Q${idx+1}. ${q.q}</div>
+                <div class="quiz-options">
+                    ${q.options.map((opt, oIdx) => `<label><input type="radio" name="q${idx}" value="${oIdx}"> ${opt}</label>`).join('')}
+                </div>
+                <div class="feedback" id="fb${idx}" style="color:var(--primary); font-weight:bold; margin-top:10px;"></div>
+            </div>`;
+        });
+        area.innerHTML = html;
+    }
+
+    function gradeQuiz() {
+        let score = 0;
+        let correctCount = 0;
+        
+        questions.forEach((q, idx) => {
+            const sel = document.querySelector(`input[name="q${idx}"]:checked`);
+            const fb = document.getElementById(`fb${idx}`);
+            const box = document.getElementById(`qBox${idx}`);
+            
+            if (sel && parseInt(sel.value) === q.a) {
+                score += (100 / questions.length);
+                correctCount++;
+                fb.innerText = "✅ 정답!";
+                fb.style.color = "#00b894"; 
+                box.style.border = "2px solid #00b894";
+            } else {
+                fb.innerText = `❌ 오답 (정답: ${q.options[q.a]})`;
+                fb.style.color = "#d63031"; 
+                box.style.border = "2px solid #d63031";
+            }
+        });
+        
+        const finalScore = Math.round(score);
+        const res = document.getElementById('result-area');
+        res.style.display = 'block';
+        
+        let msg = "";
+        if (correctCount === questions.length) {
+            msg = "🎉 완벽합니다! 집합(Set) 마스터 인정! 🧙‍♂️";
+        } else if (finalScore >= 80) {
+            msg = "👍 아주 훌륭해요! 실수한 부분만 체크해봅시다.";
+        } else {
+            msg = "💪 괜찮아요! 개념 부분과 벤다이어그램을 다시 보면 금방 이해될 거예요.";
+        }
+
+        res.innerHTML = `총점: <span style="color:var(--primary)">${finalScore}</span>점 (${correctCount}/${questions.length}개)<br><span style="font-size:1.5rem; color:#2d3436;">${msg}</span>`;
+        res.scrollIntoView({ behavior: "smooth" });
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+</html>
