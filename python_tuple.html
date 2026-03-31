@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파이썬 튜플(Tuple) 완전정복 — 학생용</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Black+Han+Sans&display=swap');
+
+:root {
+  --primary:       #5c49d6;
+  --primary-light: #ede9ff;
+  --primary-mid:   #7b6be8;
+  --accent:        #00b894;
+  --accent-light:  #e0faf4;
+  --warn:          #e17e00;
+  --warn-light:    #fff4e0;
+  --error:         #d63031;
+  --error-light:   #ffeaea;
+  --info:          #0984e3;
+  --info-light:    #e8f4fd;
+  --bg:            #f4f3fb;
+  --card:          #ffffff;
+  --border:        #e2dff7;
+  --text:          #1a1535;
+  --text-sub:      #4a4468;
+  --text-muted:    #7c75a0;
+  --code-bg:       #1e1b35;
+  --tag-bg:        #edeafb;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 18px;
+}
+
+/* ── HEADER ── */
+.page-header {
+  background: #fdfcff;
+  border-bottom: 3px solid var(--border);
+  padding: 52px 24px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+/* 배경 도형 장식 */
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, #ede9ff 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: -40px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, #e0faf4 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.stage-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--primary-light);
+  border: 1.5px solid var(--border);
+  color: var(--primary);
+  padding: 5px 18px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.page-header h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+  font-weight: 400;
+  color: var(--primary);
+  letter-spacing: -1px;
+  margin-bottom: 14px;
+  line-height: 1.15;
+  position: relative;
+}
+/* h1 아래 밑줄 강조선 */
+.page-header h1 span.hl {
+  position: relative;
+  display: inline-block;
+}
+.page-header h1 span.hl::after {
+  content: '';
+  position: absolute;
+  bottom: 2px; left: 0; right: 0;
+  height: 8px;
+  background: rgba(0,184,148,0.25);
+  border-radius: 4px;
+  z-index: -1;
+}
+.page-header p {
+  font-size: 1.08rem;
+  color: var(--text-sub);
+  max-width: 520px;
+  margin: 0 auto 26px;
+  position: relative;
+}
+.header-tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; position: relative; }
+.header-tags span {
+  background: white;
+  border: 1.5px solid var(--border);
+  color: var(--text-sub);
+  padding: 5px 16px;
+  border-radius: 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(92,73,214,0.06);
+}
+
+/* ── NAV ── */
+.chapter-nav {
+  background: var(--card);
+  border-bottom: 2px solid var(--border);
+  padding: 0 16px;
+  position: sticky; top: 0; z-index: 50;
+  display: flex; gap: 0;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chapter-nav::-webkit-scrollbar { display: none; }
+.chapter-nav a {
+  display: flex; align-items: center; gap: 5px;
+  padding: 14px 16px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+.chapter-nav a:hover { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* ── CONTAINER ── */
+.wrap { max-width: 900px; margin: 0 auto; padding: 36px 20px 80px; }
+
+/* ── SECTION ── */
+.section {
+  background: var(--card);
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  padding: 40px;
+  margin-bottom: 28px;
+  box-shadow: 0 2px 12px rgba(92,73,214,0.06);
+}
+
+.section-head {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--bg);
+  margin-bottom: 28px;
+}
+.section-icon {
+  width: 46px; height: 46px;
+  background: var(--primary-light);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+}
+.section-title-text h2 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1.2;
+}
+.section-title-text p {
+  font-size: 0.97rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+h3 {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 28px 0 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+h3 .h3-bar {
+  width: 4px; height: 18px;
+  background: var(--accent);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+p { font-size: 1.03rem; color: var(--text-sub); margin-bottom: 12px; }
+p strong { color: var(--text); }
+
+/* ── TABLE ── */
+.data-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+.data-table thead tr { background: var(--primary); color: white; }
+.data-table th {
+  padding: 13px 18px; text-align: center;
+  font-size: 0.98rem; font-weight: 700; letter-spacing: 0.3px;
+}
+.data-table th:first-child { text-align: left; }
+.data-table td {
+  padding: 12px 18px;
+  border-bottom: 1px solid #f0eeff;
+  font-size: 1rem; text-align: center; color: var(--text-sub);
+}
+.data-table td:first-child { text-align: left; font-weight: 600; color: var(--text); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: #faf9ff; }
+.yes { color: #00875a; font-weight: 700; }
+.no  { color: var(--error); font-weight: 700; }
+.highlight-row td { background: var(--primary-light) !important; }
+
+/* ── CODE ── */
+.code-block {
+  background: var(--code-bg);
+  border-radius: 12px;
+  margin: 16px 0;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.code-top {
+  background: rgba(255,255,255,0.05);
+  padding: 9px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.code-dots { display: flex; gap: 5px; }
+.code-dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.cd-r { background: #ff5f57; }
+.cd-y { background: #febc2e; }
+.cd-g { background: #28c840; }
+.code-fname { font-size: 0.77rem; color: #8b85b0; font-family: 'Consolas', monospace; }
+.code-body-wrap { padding: 20px 22px; }
+pre {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 1rem;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #cdd3de;
+}
+/* syntax */
+.kw  { color: #ff7eb3; }
+.fn  { color: #7ec8f7; }
+.st  { color: #73f0a1; }
+.nm  { color: #ffb86c; }
+.cm  { color: #5c6783; font-style: italic; }
+.out { color: #f4f177; }
+.err { color: #ff6b6b; }
+
+/* inline code */
+code {
+  font-family: 'Consolas', monospace;
+  background: var(--tag-bg);
+  color: var(--primary);
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 0.95em;
+  font-weight: 700;
+  border: 1px solid var(--border);
+}
+
+/* ── INDEX VIZ ── */
+.index-viz {
+  display: flex; margin: 18px 0; border-radius: 10px; overflow: hidden;
+  border: 2px solid var(--border);
+}
+.iv-cell { flex: 1; text-align: center; border-right: 1px solid var(--border); }
+.iv-cell:last-child { border-right: none; }
+.iv-val {
+  padding: 14px 6px;
+  font-family: monospace; font-size: 1.05rem; font-weight: 700;
+  background: var(--primary-light); color: var(--primary);
+  border-bottom: 1px solid var(--border);
+}
+.iv-pos { padding: 5px 4px; font-size: 0.78rem; font-family: monospace; color: var(--info); font-weight: 700; }
+.iv-neg { padding: 3px 4px 6px; font-size: 0.75rem; font-family: monospace; color: #e17e00; }
+
+/* ── INFO BOXES ── */
+.box {
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  display: flex; gap: 14px; align-items: flex-start;
+  font-size: 1rem;
+}
+.box .bicon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+.box p { margin: 0; line-height: 1.7; }
+.box-warn  { background: var(--warn-light);  border-left: 4px solid var(--warn); }
+.box-tip   { background: var(--accent-light); border-left: 4px solid var(--accent); }
+.box-key   { background: var(--primary-light); border-left: 4px solid var(--primary); }
+.box-err   { background: var(--error-light);  border-left: 4px solid var(--error); }
+.box-info  { background: var(--info-light);   border-left: 4px solid var(--info); }
+
+/* ── MINI QUIZ ── */
+.mini-quiz {
+  background: linear-gradient(135deg, var(--primary-light), #fff);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin: 24px 0;
+}
+.mq-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.mq-badge {
+  background: var(--primary); color: white;
+  font-size: 0.8rem; font-weight: 800;
+  padding: 3px 12px; border-radius: 10px;
+  letter-spacing: 1px;
+}
+.mq-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+.mq-q { font-size: 1.03rem; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+.mq-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.mq-opt {
+  background: white;
+  border: 1.5px solid var(--border);
+  color: var(--text-sub);
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.97rem;
+  font-family: monospace;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-weight: 600;
+}
+.mq-opt:hover { border-color: var(--primary-mid); color: var(--primary); background: var(--primary-light); }
+.mq-opt.correct { background: #e0faf4; border-color: var(--accent); color: #006a4e; }
+.mq-opt.wrong   { background: #ffeaea; border-color: var(--error);  color: var(--error); }
+.mq-fb {
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: none;
+  font-weight: 500;
+}
+.mq-fb.show { display: block; }
+.fb-ok { background: #d4f8ec; color: #006a4e; border: 1px solid #a7ecce; }
+.fb-no { background: var(--error-light); color: var(--error); border: 1px solid #ffcaca; }
+
+/* ── FILL BLANK ── */
+.fill-section { margin: 20px 0; }
+.fill-caption { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 14px; font-weight: 500; }
+.fill-row {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 8px; margin-bottom: 10px;
+  padding: 10px 14px;
+  background: #faf9ff;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.fill-code { font-family: monospace; color: var(--primary); font-size: 0.98rem; font-weight: 700; }
+.fill-arrow { color: var(--text-muted); font-size: 0.92rem; }
+.fill-input {
+  background: white;
+  border: 2px solid var(--border);
+  color: var(--text);
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-family: monospace;
+  font-size: 0.97rem;
+  width: 170px;
+  transition: border-color 0.2s;
+}
+.fill-input:focus { outline: none; border-color: var(--primary-mid); }
+.fill-input.ok { border-color: var(--accent); background: var(--accent-light); }
+.fill-input.ng { border-color: var(--error); background: var(--error-light); }
+.btn-check {
+  background: var(--primary);
+  color: white; border: none;
+  padding: 9px 24px; border-radius: 8px;
+  font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; margin-top: 6px;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.2s;
+}
+.btn-check:hover { background: #4a3ab8; transform: translateY(-1px); }
+.fill-result { margin-top: 8px; font-size: 0.94rem; font-weight: 600; }
+
+/* ── CHALLENGE ── */
+.challenge {
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 22px 0;
+}
+.ch-head {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 22px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.ch-num {
+  width: 32px; height: 32px;
+  background: var(--primary); color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 800; flex-shrink: 0;
+}
+.ch-title { font-size: 1.03rem; font-weight: 800; color: var(--text); }
+.ch-body { padding: 20px 22px; background: white; }
+.ch-desc { font-size: 1rem; color: var(--text-sub); margin-bottom: 14px; line-height: 1.8; }
+.ch-expected {
+  font-size: 0.93rem;
+  background: #f9f8ff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  font-family: monospace;
+  color: var(--warn);
+  white-space: pre-line;
+  line-height: 1.8;
+}
+.ch-expected::before { content: '📺 예상 출력\A'; font-weight: 700; font-family: 'Noto Sans KR', sans-serif; }
+.ch-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-hint, .btn-sol {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 0.92rem; font-weight: 700;
+  cursor: pointer; border: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.18s;
+}
+.btn-hint { background: var(--warn-light); color: var(--warn); border: 1.5px solid #f0c060; }
+.btn-hint:hover { background: #ffe8b0; }
+.btn-sol  { background: var(--primary-light); color: var(--primary); border: 1.5px solid var(--border); }
+.btn-sol:hover  { background: #ddd8ff; }
+.reveal-area { display: none; margin-top: 14px; }
+.reveal-area.show { display: block; }
+
+/* ── FUNCTION TABLE ── */
+.fn-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+.fn-table th {
+  background: var(--primary-light); color: var(--primary);
+  padding: 11px 16px; text-align: left;
+  font-size: 0.95rem; font-weight: 800;
+  border-bottom: 2px solid var(--border);
+}
+.fn-table td { padding: 11px 16px; border-bottom: 1px solid #f0eeff; font-size: 1rem; }
+.fn-table td:first-child { font-family: monospace; color: var(--primary); font-weight: 700; font-size: 0.97rem; }
+.fn-table td:nth-child(2) { color: var(--text-sub); }
+.fn-table td:last-child { font-family: monospace; font-size: 0.93rem; color: #00875a; }
+.fn-table tbody tr:last-child td { border-bottom: none; }
+
+/* ── FINAL QUIZ ── */
+.quiz-item {
+  background: #faf9ff;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+.quiz-q { font-size: 1.03rem; font-weight: 800; color: var(--text); margin-bottom: 14px; line-height: 1.6; }
+.quiz-opts label {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px;
+  border-radius: 8px; cursor: pointer;
+  font-size: 1rem; color: var(--text-sub);
+  border: 1px solid transparent;
+  margin-bottom: 5px; transition: all 0.15s;
+}
+.quiz-opts label:hover { background: var(--primary-light); border-color: var(--border); }
+.quiz-opts input[type=radio] { accent-color: var(--primary); }
+.quiz-msg { font-size: 0.95rem; padding: 9px 14px; border-radius: 8px; display: none; margin-top: 8px; font-weight: 600; }
+.quiz-msg.show { display: block; }
+.qm-ok { background: #d4f8ec; color: #006a4e; }
+.qm-ng { background: var(--error-light); color: var(--error); }
+
+.score-card {
+  text-align: center; padding: 36px 24px;
+  background: linear-gradient(135deg, var(--primary-light), #fff);
+  border: 2px solid var(--primary-mid);
+  border-radius: 18px; margin-top: 24px; display: none;
+}
+.score-big {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 3.5rem; color: var(--primary);
+  line-height: 1;
+}
+.score-sub { font-size: 1.08rem; color: var(--text-muted); margin-top: 8px; }
+
+.btn-grade {
+  display: block; margin: 28px auto 0;
+  background: var(--primary); color: white; border: none;
+  padding: 15px 56px; border-radius: 30px;
+  font-size: 1.05rem; font-weight: 800;
+  cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  box-shadow: 0 5px 18px rgba(92,73,214,0.35);
+  transition: all 0.2s;
+}
+.btn-grade:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(92,73,214,0.45); }
+.btn-retry {
+  display: block; margin: 10px auto 0;
+  background: transparent; color: var(--text-muted);
+  border: 1.5px solid var(--border);
+  padding: 9px 28px; border-radius: 20px;
+  font-size: 0.97rem; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s;
+}
+.btn-retry:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center; padding: 36px 20px;
+  color: var(--text-muted); font-size: 0.95rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width: 640px) {
+  .section { padding: 24px 18px; }
+  .index-viz { flex-wrap: wrap; }
+}
+
+/* ── PRINT ── */
+@media print {
+  .chapter-nav, .btn-grade, .btn-retry, .btn-hint, .btn-sol, .mq-opts { display: none; }
+  .section { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+  body { font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="stage-badge">🐍 Python · Stage 5</div>
+  <h1>튜플 <span class="hl">(Tuple)</span> 완전정복</h1>
+  <p>한 번 담으면 절대 안 바뀌는 파이썬의 안전 상자!<br>개념부터 실전 문제까지 함께 정복해요.</p>
+  <div class="header-tags">
+    <span>🔒 불변 Immutable</span>
+    <span>( ) 소괄호</span>
+    <span>🗂️ 군집 자료형</span>
+    <span>⚡ 메모리 효율</span>
+  </div>
+</header>
+
+<nav class="chapter-nav">
+  <a href="#ch1">① 군집자료형</a>
+  <a href="#ch2">② 튜플이란?</a>
+  <a href="#ch3">③ 만들기</a>
+  <a href="#ch4">④ 인덱싱·슬라이싱</a>
+  <a href="#ch5">⑤ 연산</a>
+  <a href="#ch6">⑥ 내장함수</a>
+  <a href="#ch7">⑦ 패킹·언패킹</a>
+  <a href="#ch8">⑧ 실전활용</a>
+  <a href="#ch9">⑨ 도전문제</a>
+  <a href="#ch10">⑩ 최종퀴즈</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ① 군집 자료형 -->
+<section class="section" id="ch1">
+  <div class="section-head">
+    <div class="section-icon">🗂️</div>
+    <div class="section-title-text">
+      <h2>군집 자료형이란?</h2>
+      <p>여러 개의 데이터를 하나의 변수에 저장하는 자료구조</p>
+    </div>
+  </div>
+
+  <p>지금까지 배운 <code>int</code>, <code>str</code>, <code>float</code>, <code>bool</code>은 값을 딱 하나만 저장했어요. <strong>군집 자료형</strong>은 여러 개의 데이터를 한꺼번에 담을 수 있어요!</p>
+
+  <table class="data-table">
+    <thead><tr><th>자료형</th><th>특징</th><th>기호</th><th>예시</th></tr></thead>
+    <tbody>
+      <tr><td>리스트 list</td><td>순서 있음, 수정 가능 ✅</td><td><code>[ ]</code></td><td><code>["사과", "바나나"]</code></td></tr>
+      <tr class="highlight-row"><td>튜플 tuple</td><td>순서 있음, 수정 불가 🔒</td><td><code>( )</code></td><td><code>("사과", "바나나")</code></td></tr>
+      <tr><td>세트 set</td><td>순서 없음, 중복 불가</td><td><code>{ }</code></td><td><code>{"사과", "바나나"}</code></td></tr>
+      <tr><td>딕셔너리 dict</td><td>키:값 쌍으로 구성</td><td><code>{ : }</code></td><td><code>{"이름":"철수"}</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="mini-quiz" id="mq1">
+    <div class="mq-head"><span class="mq-badge">QUIZ 1</span><span class="mq-label">개념 확인</span></div>
+    <p class="mq-q">🤔 리스트, 튜플, 세트, 딕셔너리의 공통점은 무엇일까요?</p>
+    <div class="mq-opts">
+      <button class="mq-opt" onclick="mq('mq1',this,false)">값을 하나만 저장한다</button>
+      <button class="mq-opt" onclick="mq('mq1',this,true)">여러 개의 데이터를 저장할 수 있다</button>
+      <button class="mq-opt" onclick="mq('mq1',this,false)">모두 수정이 가능하다</button>
+      <button class="mq-opt" onclick="mq('mq1',this,false)">모두 순서가 있다</button>
+    </div>
+    <div class="mq-fb fb-ok" id="mq1-ok">✅ 정답! 군집 자료형은 모두 여러 개의 데이터를 저장할 수 있어요.</div>
+    <div class="mq-fb fb-no" id="mq1-no">❌ 다시 생각해봐요! 군집 자료형의 공통점은 여러 데이터를 저장할 수 있다는 거예요.</div>
+  </div>
+</section>
+
+<!-- ② 튜플이란? -->
+<section class="section" id="ch2">
+  <div class="section-head">
+    <div class="section-icon">🔒</div>
+    <div class="section-title-text">
+      <h2>튜플(Tuple)이란?</h2>
+      <p>리스트와 거의 같지만, 값을 절대 수정할 수 없어요</p>
+    </div>
+  </div>
+
+  <h3><span class="h3-bar"></span>리스트 vs 튜플 비교</h3>
+  <table class="data-table">
+    <thead><tr><th>비교 항목</th><th>리스트 [ ]</th><th>튜플 ( )</th></tr></thead>
+    <tbody>
+      <tr><td>기호</td><td><code>[ ]</code> 대괄호</td><td><code>( )</code> 소괄호</td></tr>
+      <tr><td>수정 가능?</td><td class="yes">✅ 가능</td><td class="no">❌ 불가능</td></tr>
+      <tr><td>항목 추가?</td><td class="yes">✅ 가능</td><td class="no">❌ 불가능</td></tr>
+      <tr><td>항목 삭제?</td><td class="yes">✅ 가능</td><td class="no">❌ 불가능</td></tr>
+      <tr><td>인덱싱</td><td class="yes">✅ 가능</td><td class="yes">✅ 가능</td></tr>
+      <tr><td>슬라이싱</td><td class="yes">✅ 가능</td><td class="yes">✅ 가능</td></tr>
+      <tr><td>for문 순회</td><td class="yes">✅ 가능</td><td class="yes">✅ 가능</td></tr>
+      <tr><td>메모리 효율</td><td>보통</td><td class="yes">⚡ 더 빠름</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-key">
+    <span class="bicon">💡</span>
+    <p><strong>Immutable(불변)이란?</strong> 튜플은 한 번 만들면 내용을 바꿀 수 없어요. 마치 유리에 새긴 글자처럼요! 덕분에 실수로 데이터가 바뀌는 걸 막고, 더 빠르게 동작해요.</p>
+  </div>
+
+  <h3><span class="h3-bar"></span>수정하면 어떻게 될까?</h3>
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">immutable_error.py</span></div>
+    <div class="code-body-wrap"><pre>
+tu = (<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>)
+
+<span class="cm"># ❌ 삭제 시도 → 에러!</span>
+<span class="kw">del</span> tu[<span class="nm">0</span>]
+<span class="err"># TypeError: 'tuple' object doesn't support item deletion</span>
+
+<span class="cm"># ❌ 수정 시도 → 에러!</span>
+tu[<span class="nm">0</span>] = <span class="nm">100</span>
+<span class="err"># TypeError: 'tuple' object does not support item assignment</span></pre></div>
+  </div>
+
+  <div class="box box-warn">
+    <span class="bicon">⚠️</span>
+    <p>튜플에 저장된 값을 삭제하거나 변경하면 <strong>TypeError</strong>가 발생해요! 그래서 변경되면 안 되는 데이터를 저장할 때 튜플을 사용해요. (예: 학번, 주민번호, 좌표 등)</p>
+  </div>
+
+  <div class="mini-quiz" id="mq2">
+    <div class="mq-head"><span class="mq-badge">QUIZ 2</span></div>
+    <p class="mq-q">🤔 다음 중 튜플에 대한 설명으로 <strong>옳지 않은</strong> 것은?</p>
+    <div class="mq-opts">
+      <button class="mq-opt" onclick="mq('mq2',this,false)">소괄호 ( )를 사용한다</button>
+      <button class="mq-opt" onclick="mq('mq2',this,false)">순서가 있다</button>
+      <button class="mq-opt" onclick="mq('mq2',this,true)">값을 마음대로 수정할 수 있다</button>
+      <button class="mq-opt" onclick="mq('mq2',this,false)">인덱싱을 사용할 수 있다</button>
+    </div>
+    <div class="mq-fb fb-ok" id="mq2-ok">✅ 정답! 튜플은 값을 수정할 수 없어요. 이것이 리스트와의 가장 큰 차이점!</div>
+    <div class="mq-fb fb-no" id="mq2-no">❌ 튜플은 불변(Immutable)이에요. 수정이 가능한 건 리스트예요.</div>
+  </div>
+</section>
+
+<!-- ③ 만들기 -->
+<section class="section" id="ch3">
+  <div class="section-head">
+    <div class="section-icon">🛠️</div>
+    <div class="section-title-text">
+      <h2>튜플 만들기</h2>
+      <p>소괄호 ( ) 또는 tuple() 함수로 만들어요</p>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">make_tuple.py</span></div>
+    <div class="code-body-wrap"><pre>
+<span class="cm"># ① 기본 방법 — 소괄호</span>
+tu1 = (<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>)
+tu2 = (<span class="st">"사과"</span>, <span class="st">"바나나"</span>, <span class="st">"딸기"</span>)
+tu3 = (<span class="nm">1</span>, <span class="st">"안녕"</span>, <span class="nm">3.14</span>, <span class="kw">True</span>)   <span class="cm"># 서로 다른 타입도 OK!</span>
+
+<span class="cm"># ② tuple() 함수 사용</span>
+tu4 = <span class="fn">tuple</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>])   <span class="cm"># 리스트 → 튜플</span>
+tu5 = <span class="fn">tuple</span>(<span class="st">"hello"</span>)         <span class="cm"># ('h','e','l','l','o')</span>
+
+<span class="cm"># ③ 빈 튜플</span>
+empty1 = ()
+empty2 = <span class="fn">tuple</span>()</pre></div>
+  </div>
+
+  <div class="box box-warn">
+    <span class="bicon">⚠️</span>
+    <p><strong>원소가 1개인 튜플은 반드시 쉼표(,)!</strong><br>
+    <code>t = (1)</code> → ❌ 이건 그냥 숫자 1 (int)<br>
+    <code>t = (1,)</code> → ✅ 이게 진짜 원소 1개짜리 튜플!<br>
+    <code>t = 1,</code> → ✅ 괄호 없이 쉼표만 써도 튜플!</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">single_element.py</span></div>
+    <div class="code-body-wrap"><pre>
+a = (<span class="nm">5</span>)      <span class="cm"># int형  → &lt;class 'int'&gt;</span>
+b = (<span class="nm">5</span>,)     <span class="cm"># tuple형 → &lt;class 'tuple'&gt;</span>
+c = <span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>  <span class="cm"># 괄호 없어도 → (1, 2, 3) 튜플!</span>
+
+<span class="fn">print</span>(<span class="fn">type</span>(a))  <span class="out"># &lt;class 'int'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(b))  <span class="out"># &lt;class 'tuple'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(c))  <span class="out"># &lt;class 'tuple'&gt;</span></pre></div>
+  </div>
+
+  <h3><span class="h3-bar"></span>✏️ 빈칸 채우기</h3>
+  <div class="fill-section" id="fill1">
+    <p class="fill-caption">각 코드의 실행 결과를 예상해서 입력해보세요.</p>
+    <div class="fill-row"><span class="fill-code">x = (3,) → type(x)</span><span class="fill-arrow">→</span><input class="fill-input" id="f1a" placeholder="?" data-ans="&lt;class 'tuple'&gt;"></div>
+    <div class="fill-row"><span class="fill-code">y = (3)  → type(y)</span><span class="fill-arrow">→</span><input class="fill-input" id="f1b" placeholder="?" data-ans="&lt;class 'int'&gt;"></div>
+    <div class="fill-row"><span class="fill-code">tuple("AB")</span><span class="fill-arrow">→</span><input class="fill-input" id="f1c" placeholder="?" data-ans="('A', 'B')"></div>
+    <button class="btn-check" onclick="checkFill('fill1',['f1a','f1b','f1c'])">정답 확인</button>
+    <div class="fill-result" id="fill1-r"></div>
+  </div>
+
+  <div class="mini-quiz" id="mq3">
+    <div class="mq-head"><span class="mq-badge">QUIZ 3</span></div>
+    <p class="mq-q">🤔 원소가 1개인 <strong>튜플</strong>을 올바르게 만든 것은?</p>
+    <div class="mq-opts">
+      <button class="mq-opt" onclick="mq('mq3',this,false)">t = (42)</button>
+      <button class="mq-opt" onclick="mq('mq3',this,true)">t = (42,)</button>
+      <button class="mq-opt" onclick="mq('mq3',this,false)">t = [42]</button>
+      <button class="mq-opt" onclick="mq('mq3',this,false)">t = {42}</button>
+    </div>
+    <div class="mq-fb fb-ok" id="mq3-ok">✅ 정답! 원소 1개일 때는 쉼표(,)를 꼭 붙여야 해요: t = (42,)</div>
+    <div class="mq-fb fb-no" id="mq3-no">❌ 원소 1개짜리 튜플은 반드시 쉼표(,)가 필요해요!</div>
+  </div>
+</section>
+
+<!-- ④ 인덱싱·슬라이싱 -->
+<section class="section" id="ch4">
+  <div class="section-head">
+    <div class="section-icon">🔍</div>
+    <div class="section-title-text">
+      <h2>인덱싱 &amp; 슬라이싱</h2>
+      <p>원하는 요소를 정확히 꺼내는 방법</p>
+    </div>
+  </div>
+
+  <h3><span class="h3-bar"></span>인덱스 구조 이해하기</h3>
+  <p style="font-size:0.88rem; margin-bottom:6px;"><code>tu = (1, 'a', True, 3.14)</code></p>
+  <div class="index-viz">
+    <div class="iv-cell"><div class="iv-val">1</div><div class="iv-pos">0</div><div class="iv-neg">-4</div></div>
+    <div class="iv-cell"><div class="iv-val">'a'</div><div class="iv-pos">1</div><div class="iv-neg">-3</div></div>
+    <div class="iv-cell"><div class="iv-val">True</div><div class="iv-pos">2</div><div class="iv-neg">-2</div></div>
+    <div class="iv-cell"><div class="iv-val">3.14</div><div class="iv-pos">3</div><div class="iv-neg">-1</div></div>
+  </div>
+  <p style="font-size:0.82rem; color:var(--text-muted); text-align:center; margin-top:4px;">🔵 위 = 양수 인덱스 &nbsp;|&nbsp; 🟠 아래 = 음수 인덱스 (뒤에서부터)</p>
+
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">indexing_slicing.py</span></div>
+    <div class="code-body-wrap"><pre>
+tu = (<span class="nm">1</span>, <span class="st">'a'</span>, <span class="kw">True</span>, <span class="nm">3.14</span>)
+
+<span class="cm"># 인덱싱</span>
+<span class="fn">print</span>(tu[<span class="nm">0</span>])    <span class="out"># 1</span>
+<span class="fn">print</span>(tu[<span class="nm">2</span>])    <span class="out"># True</span>
+<span class="fn">print</span>(tu[-<span class="nm">1</span>])   <span class="out"># 3.14  (마지막 요소)</span>
+<span class="fn">print</span>(tu[-<span class="nm">4</span>])   <span class="out"># 1     (첫 번째 요소)</span>
+
+<span class="cm"># 슬라이싱 [시작:끝:간격]  (끝 인덱스는 포함 안됨!)</span>
+<span class="fn">print</span>(tu[<span class="nm">0</span>:<span class="nm">2</span>])  <span class="out"># (1, 'a')</span>
+<span class="fn">print</span>(tu[<span class="nm">1</span>:])   <span class="out"># ('a', True, 3.14)</span>
+<span class="fn">print</span>(tu[:-<span class="nm">1</span>])  <span class="out"># (1, 'a', True)</span>
+<span class="fn">print</span>(tu[::-<span class="nm">1</span>]) <span class="out"># (3.14, True, 'a', 1)  역순!</span></pre></div>
+  </div>
+
+  <h3><span class="h3-bar"></span>✏️ 빈칸 채우기 — <code>tu = (10, 20, 30, 40, 50)</code></h3>
+  <div class="fill-section" id="fill2">
+    <div class="fill-row"><span class="fill-code">tu[2]</span><span class="fill-arrow">→</span><input class="fill-input" id="f2a" placeholder="?" data-ans="30"></div>
+    <div class="fill-row"><span class="fill-code">tu[-1]</span><span class="fill-arrow">→</span><input class="fill-input" id="f2b" placeholder="?" data-ans="50"></div>
+    <div class="fill-row"><span class="fill-code">tu[1:4]</span><span class="fill-arrow">→</span><input class="fill-input" id="f2c" placeholder="?" data-ans="(20, 30, 40)"></div>
+    <div class="fill-row"><span class="fill-code">tu[::-1]</span><span class="fill-arrow">→</span><input class="fill-input" id="f2d" placeholder="?" data-ans="(50, 40, 30, 20, 10)"></div>
+    <button class="btn-check" onclick="checkFill('fill2',['f2a','f2b','f2c','f2d'])">정답 확인</button>
+    <div class="fill-result" id="fill2-r"></div>
+  </div>
+
+  <div class="mini-quiz" id="mq4">
+    <div class="mq-head"><span class="mq-badge">QUIZ 4</span></div>
+    <p class="mq-q">🤔 <code>t = ('가','나','다','라','마')</code> 일 때, <code>t[-2]</code> 의 값은?</p>
+    <div class="mq-opts">
+      <button class="mq-opt" onclick="mq('mq4',this,false)">'나'</button>
+      <button class="mq-opt" onclick="mq('mq4',this,false)">'다'</button>
+      <button class="mq-opt" onclick="mq('mq4',this,true)">'라'</button>
+      <button class="mq-opt" onclick="mq('mq4',this,false)">'마'</button>
+    </div>
+    <div class="mq-fb fb-ok" id="mq4-ok">✅ 정답! t[-1]='마'(마지막), t[-2]='라'(그 앞) 이에요.</div>
+    <div class="mq-fb fb-no" id="mq4-no">❌ 음수 인덱스는 뒤에서 셔요! -1이 '마', -2가 '라'예요.</div>
+  </div>
+</section>
+
+<!-- ⑤ 연산 -->
+<section class="section" id="ch5">
+  <div class="section-head">
+    <div class="section-icon">➕</div>
+    <div class="section-title-text">
+      <h2>튜플 연산하기</h2>
+      <p>값은 못 바꾸지만, 연결하거나 반복할 수 있어요</p>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">tuple_operations.py</span></div>
+    <div class="code-body-wrap"><pre>
+<span class="cm"># + 연결 (Concatenation)</span>
+t1 = (<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>)
+t2 = (<span class="nm">4</span>, <span class="nm">5</span>)
+<span class="fn">print</span>(t1 + t2)    <span class="out"># (1, 2, 3, 4, 5)</span>
+
+<span class="cm"># * 반복 (Repetition)</span>
+t3 = (<span class="st">"짝"</span>, <span class="st">"짝"</span>)
+<span class="fn">print</span>(t3 * <span class="nm">3</span>)     <span class="out"># ('짝', '짝', '짝', '짝', '짝', '짝')</span>
+
+<span class="cm"># in  포함 여부 확인</span>
+menu = (<span class="st">"피자"</span>, <span class="st">"파스타"</span>, <span class="st">"리조또"</span>)
+<span class="fn">print</span>(<span class="st">"피자"</span> <span class="kw">in</span> menu)       <span class="out"># True</span>
+<span class="fn">print</span>(<span class="st">"햄버거"</span> <span class="kw">not in</span> menu)  <span class="out"># True</span>
+
+<span class="cm"># for문으로 순회</span>
+colors = (<span class="st">"빨강"</span>, <span class="st">"주황"</span>, <span class="st">"노랑"</span>)
+<span class="kw">for</span> c <span class="kw">in</span> colors:
+    <span class="fn">print</span>(c, <span class="st">"🎨"</span>)
+<span class="out"># 빨강 🎨 / 주황 🎨 / 노랑 🎨</span></pre></div>
+  </div>
+
+  <div class="mini-quiz" id="mq5">
+    <div class="mq-head"><span class="mq-badge">QUIZ 5</span></div>
+    <p class="mq-q">🤔 <code>(1, 2) * 3</code> 의 결과는?</p>
+    <div class="mq-opts">
+      <button class="mq-opt" onclick="mq('mq5',this,false)">(3, 6)</button>
+      <button class="mq-opt" onclick="mq('mq5',this,true)">(1, 2, 1, 2, 1, 2)</button>
+      <button class="mq-opt" onclick="mq('mq5',this,false)">((1,2),(1,2),(1,2))</button>
+      <button class="mq-opt" onclick="mq('mq5',this,false)">에러 발생</button>
+    </div>
+    <div class="mq-fb fb-ok" id="mq5-ok">✅ 정답! * 연산은 튜플 전체를 3번 반복해요.</div>
+    <div class="mq-fb fb-no" id="mq5-no">❌ * 연산은 각 요소를 곱하는 게 아니라 튜플 전체를 반복해요!</div>
+  </div>
+
+  <div class="challenge">
+    <div class="ch-head"><div class="ch-num">1</div><div class="ch-title">for문 + 조건문으로 짝수만 출력하기</div></div>
+    <div class="ch-body">
+      <p class="ch-desc"><code>tu = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)</code><br>이 튜플에서 짝수만 골라 출력하는 프로그램을 작성하세요.</p>
+      <div class="ch-expected">2  4  6  8  10</div>
+      <div class="ch-btns">
+        <button class="btn-hint" onclick="tog('h1')">💡 힌트</button>
+        <button class="btn-sol"  onclick="tog('s1')">✅ 정답</button>
+      </div>
+      <div class="reveal-area" id="h1"><div class="box box-tip" style="margin-top:10px"><span class="bicon">💡</span><p>짝수 조건: <code>숫자 % 2 == 0</code></p></div></div>
+      <div class="reveal-area" id="s1">
+        <div class="code-block" style="margin-top:10px">
+          <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">정답</span></div>
+          <div class="code-body-wrap"><pre>
+tu = (<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>,<span class="nm">4</span>,<span class="nm">5</span>,<span class="nm">6</span>,<span class="nm">7</span>,<span class="nm">8</span>,<span class="nm">9</span>,<span class="nm">10</span>)
+<span class="kw">for</span> num <span class="kw">in</span> tu:
+    <span class="kw">if</span> num % <span class="nm">2</span> == <span class="nm">0</span>:
+        <span class="fn">print</span>(num, end=<span class="st">" "</span>)
+<span class="out"># 2 4 6 8 10</span></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑥ 내장함수 -->
+<section class="section" id="ch6">
+  <div class="section-head">
+    <div class="section-icon">🔧</div>
+    <div class="section-title-text">
+      <h2>내장함수 &amp; 메서드</h2>
+      <p>튜플에 쓸 수 있는 유용한 함수들</p>
+    </div>
+  </div>
+
+  <table class="fn-table">
+    <thead><tr><th>함수 / 메서드</th><th>기능</th><th>예시 결과</th></tr></thead>
+    <tbody>
+      <tr><td>len(t)</td><td>요소 개수 반환</td><td>len((1,2,3)) → 3</td></tr>
+      <tr><td>max(t)</td><td>가장 큰 값</td><td>max((3,1,2)) → 3</td></tr>
+      <tr><td>min(t)</td><td>가장 작은 값</td><td>min((3,1,2)) → 1</td></tr>
+      <tr><td>sum(t)</td><td>전체 합</td><td>sum((1,2,3)) → 6</td></tr>
+      <tr><td>sorted(t)</td><td>정렬 후 <strong>리스트</strong>로 반환</td><td>sorted((3,1,2)) → [1,2,3]</td></tr>
+      <tr><td>list(t)</td><td>리스트로 변환</td><td>list((1,2)) → [1,2]</td></tr>
+      <tr><td>t.count(값)</td><td>특정 값 개수</td><td>(1,2,1).count(1) → 2</td></tr>
+      <tr><td>t.index(값)</td><td>처음 나오는 위치</td><td>(10,20,30).index(20) → 1</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-warn">
+    <span class="bicon">⚠️</span>
+    <p><code>sorted(t)</code>의 결과는 <strong>리스트</strong>로 반환돼요! 튜플을 유지하려면 <code>tuple(sorted(t))</code>처럼 감싸줘야 해요.</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">tuple_functions.py</span></div>
+    <div class="code-body-wrap"><pre>
+scores = (<span class="nm">85</span>, <span class="nm">92</span>, <span class="nm">78</span>, <span class="nm">96</span>, <span class="nm">88</span>, <span class="nm">92</span>)
+
+<span class="fn">print</span>(<span class="fn">len</span>(scores))            <span class="out"># 6   (총 시험 수)</span>
+<span class="fn">print</span>(<span class="fn">max</span>(scores))            <span class="out"># 96  (최고점)</span>
+<span class="fn">print</span>(<span class="fn">min</span>(scores))            <span class="out"># 78  (최저점)</span>
+<span class="fn">print</span>(<span class="fn">sum</span>(scores))            <span class="out"># 531 (총점)</span>
+avg = <span class="fn">sum</span>(scores) / <span class="fn">len</span>(scores)
+<span class="fn">print</span>(avg)                    <span class="out"># 88.5 (평균)</span>
+
+<span class="fn">print</span>(scores.<span class="fn">count</span>(<span class="nm">92</span>))       <span class="out"># 2  (92점이 2번)</span>
+<span class="fn">print</span>(scores.<span class="fn">index</span>(<span class="nm">78</span>))       <span class="out"># 2  (78의 인덱스)</span>
+
+sorted_scores = <span class="fn">tuple</span>(<span class="fn">sorted</span>(scores))
+<span class="fn">print</span>(sorted_scores)          <span class="out"># (78, 85, 88, 92, 92, 96)</span></pre></div>
+  </div>
+
+  <h3><span class="h3-bar"></span>✏️ 빈칸 채우기 — <code>tu = (4,3,5,7,6,5,7,4,7,2,2)</code></h3>
+  <div class="fill-section" id="fill3">
+    <div class="fill-row"><span class="fill-code">tu.count(7)</span><span class="fill-arrow">→</span><input class="fill-input" id="f3a" placeholder="?" data-ans="3"></div>
+    <div class="fill-row"><span class="fill-code">tu.count(-1)</span><span class="fill-arrow">→</span><input class="fill-input" id="f3b" placeholder="?" data-ans="0"></div>
+    <div class="fill-row"><span class="fill-code">tu.index(2)</span><span class="fill-arrow">→</span><input class="fill-input" id="f3c" placeholder="?" data-ans="9"></div>
+    <div class="fill-row"><span class="fill-code">max(tu)</span><span class="fill-arrow">→</span><input class="fill-input" id="f3d" placeholder="?" data-ans="7"></div>
+    <button class="btn-check" onclick="checkFill('fill3',['f3a','f3b','f3c','f3d'])">정답 확인</button>
+    <div class="fill-result" id="fill3-r"></div>
+  </div>
+
+  <div class="challenge">
+    <div class="ch-head"><div class="ch-num">2</div><div class="ch-title">성적 분석 프로그램</div></div>
+    <div class="ch-body">
+      <p class="ch-desc"><code>scores = (72, 85, 91, 68, 77, 95, 83)</code><br>이 점수 튜플에서 최고점, 최저점, 평균(소수점 1자리)을 출력하세요.</p>
+      <div class="ch-expected">최고점: 95
+최저점: 68
+평균: 81.6</div>
+      <div class="ch-btns">
+        <button class="btn-hint" onclick="tog('h2')">💡 힌트</button>
+        <button class="btn-sol"  onclick="tog('s2')">✅ 정답</button>
+      </div>
+      <div class="reveal-area" id="h2"><div class="box box-tip" style="margin-top:10px"><span class="bicon">💡</span><p>평균 = sum() / len() &nbsp; 소수점: <code>round(값, 1)</code></p></div></div>
+      <div class="reveal-area" id="s2">
+        <div class="code-block" style="margin-top:10px">
+          <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">정답</span></div>
+          <div class="code-body-wrap"><pre>
+scores = (<span class="nm">72</span>,<span class="nm">85</span>,<span class="nm">91</span>,<span class="nm">68</span>,<span class="nm">77</span>,<span class="nm">95</span>,<span class="nm">83</span>)
+<span class="fn">print</span>(<span class="st">"최고점:"</span>, <span class="fn">max</span>(scores))
+<span class="fn">print</span>(<span class="st">"최저점:"</span>, <span class="fn">min</span>(scores))
+<span class="fn">print</span>(<span class="st">"평균:"</span>, <span class="fn">round</span>(<span class="fn">sum</span>(scores)/<span class="fn">len</span>(scores),<span class="nm">1</span>))</pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑦ 패킹·언패킹 -->
+<section class="section" id="ch7">
+  <div class="section-head">
+    <div class="section-icon">🎁</div>
+    <div class="section-title-text">
+      <h2>패킹(Packing) &amp; 언패킹(Unpacking)</h2>
+      <p>값을 묶거나 푸는 파이썬만의 특기!</p>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">pack_unpack.py</span></div>
+    <div class="code-body-wrap"><pre>
+<span class="cm"># ① 패킹 — 여러 값이 자동으로 튜플이 됨</span>
+position = <span class="nm">3</span>, <span class="nm">7</span>               <span class="out"># (3, 7)</span>
+student  = <span class="st">"김민준"</span>, <span class="nm">15</span>, <span class="st">"3학년"</span>  <span class="out"># ('김민준', 15, '3학년')</span>
+
+<span class="cm"># ② 언패킹 — 튜플을 변수에 나눠 담기</span>
+name, age, grade = (<span class="st">"이서연"</span>, <span class="nm">14</span>, <span class="st">"2학년"</span>)
+<span class="fn">print</span>(name)    <span class="out"># 이서연</span>
+<span class="fn">print</span>(age)     <span class="out"># 14</span>
+
+<span class="cm"># ③ split 활용 언패킹</span>
+tu = <span class="fn">tuple</span>(<span class="st">"경상도 서울 경기도 충청도"</span>.<span class="fn">split</span>())
+a, b, c, d = tu
+<span class="fn">print</span>(a, b, c, d)   <span class="out"># 경상도 서울 경기도 충청도</span>
+
+<span class="cm"># ④ 값 교환 (Swap) — 파이썬만의 특기!</span>
+x, y = <span class="nm">10</span>, <span class="nm">20</span>
+x, y = y, x          <span class="cm"># 한 줄로 끝!</span>
+<span class="fn">print</span>(x, y)          <span class="out"># 20 10</span></pre></div>
+  </div>
+
+  <div class="box box-tip">
+    <span class="bicon">💡</span>
+    <p><strong>언패킹의 황금 규칙:</strong> 왼쪽 변수 개수 = 오른쪽 튜플 요소 개수!<br>
+    개수가 다르면 <code>ValueError</code>가 발생해요.</p>
+  </div>
+
+  <div class="mini-quiz" id="mq6">
+    <div class="mq-head"><span class="mq-badge">QUIZ 6</span></div>
+    <p class="mq-q">🤔 <code>a, b = b, a</code> 코드는 무엇을 하는 코드인가요?</p>
+    <div class="mq-opts">
+      <button class="mq-opt" onclick="mq('mq6',this,false)">a와 b를 더한다</button>
+      <button class="mq-opt" onclick="mq('mq6',this,true)">a와 b의 값을 서로 바꾼다</button>
+      <button class="mq-opt" onclick="mq('mq6',this,false)">a와 b를 삭제한다</button>
+      <button class="mq-opt" onclick="mq('mq6',this,false)">a와 b로 튜플을 만든다</button>
+    </div>
+    <div class="mq-fb fb-ok" id="mq6-ok">✅ 정답! 튜플 언패킹을 이용한 값 교환(Swap)이에요. 파이썬에서만 가능한 멋진 문법!</div>
+    <div class="mq-fb fb-no" id="mq6-no">❌ 이건 튜플 언패킹을 이용한 값 교환(Swap) 코드예요!</div>
+  </div>
+
+  <div class="challenge">
+    <div class="ch-head"><div class="ch-num">3</div><div class="ch-title">계절 과일 언패킹 활용하기</div></div>
+    <div class="ch-body">
+      <p class="ch-desc"><code>tu = tuple("딸기 수박 포도 귤".split())</code><br>언패킹 후 아래와 같이 출력하는 프로그램을 완성하세요.</p>
+      <div class="ch-expected">봄에는 딸기가 제철!
+여름에는 수박이 제철!
+가을에는 포도가 제철!
+겨울에는 귤이 제철!
+과일은 제철에 먹어야 제맛!!</div>
+      <div class="ch-btns">
+        <button class="btn-hint" onclick="tog('h3')">💡 힌트</button>
+        <button class="btn-sol"  onclick="tog('s3')">✅ 정답</button>
+      </div>
+      <div class="reveal-area" id="h3"><div class="box box-tip" style="margin-top:10px"><span class="bicon">💡</span><p>언패킹: <code>a,b,c,d = tu</code> &nbsp; f-string: <code>f"봄에는 {a}가 제철!"</code></p></div></div>
+      <div class="reveal-area" id="s3">
+        <div class="code-block" style="margin-top:10px">
+          <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">정답</span></div>
+          <div class="code-body-wrap"><pre>
+tu = <span class="fn">tuple</span>(<span class="st">"딸기 수박 포도 귤"</span>.<span class="fn">split</span>())
+a, b, c, d = tu
+<span class="fn">print</span>(<span class="st">f"봄에는 {a}가 제철!"</span>)
+<span class="fn">print</span>(<span class="st">f"여름에는 {b}이 제철!"</span>)
+<span class="fn">print</span>(<span class="st">f"가을에는 {c}가 제철!"</span>)
+<span class="fn">print</span>(<span class="st">f"겨울에는 {d}이 제철!"</span>)
+<span class="fn">print</span>(<span class="st">"과일은 제철에 먹어야 제맛!!"</span>)</pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑧ 실전활용 -->
+<section class="section" id="ch8">
+  <div class="section-head">
+    <div class="section-icon">🚀</div>
+    <div class="section-title-text">
+      <h2>실전 활용 패턴</h2>
+      <p>튜플이 실제 코드에서 어떻게 쓰이는지</p>
+    </div>
+  </div>
+
+  <h3><span class="h3-bar"></span>① 튜플로 다중 반환값 받기</h3>
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">multi_return.py</span></div>
+    <div class="code-body-wrap"><pre>
+<span class="kw">def</span> <span class="fn">get_minmax</span>(data):
+    <span class="kw">return</span> <span class="fn">min</span>(data), <span class="fn">max</span>(data)   <span class="cm"># 튜플로 반환</span>
+
+scores = (<span class="nm">75</span>, <span class="nm">82</span>, <span class="nm">91</span>, <span class="nm">67</span>, <span class="nm">88</span>)
+low, high = <span class="fn">get_minmax</span>(scores)    <span class="cm"># 언패킹으로 받기</span>
+<span class="fn">print</span>(<span class="st">f"최저: {low}, 최고: {high}"</span>)
+<span class="out"># 최저: 67, 최고: 91</span></pre></div>
+  </div>
+
+  <h3><span class="h3-bar"></span>② 튜플을 꼭 수정해야 할 때</h3>
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">tuple_modify.py</span></div>
+    <div class="code-body-wrap"><pre>
+tu = (<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>)
+temp = <span class="fn">list</span>(tu)     <span class="cm"># ① 리스트로 변환</span>
+temp[<span class="nm">1</span>] = <span class="nm">99</span>       <span class="cm"># ② 수정</span>
+tu = <span class="fn">tuple</span>(temp)   <span class="cm"># ③ 다시 튜플로</span>
+<span class="fn">print</span>(tu)           <span class="out"># (1, 99, 3)</span></pre></div>
+  </div>
+
+  <h3><span class="h3-bar"></span>③ 동물 비교 프로그램</h3>
+  <div class="code-block">
+    <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">animal_compare.py</span></div>
+    <div class="code-body-wrap"><pre>
+rabbit = (<span class="st">"토끼"</span>, <span class="st">"하얀색"</span>, <span class="st">"초식"</span>)
+tiger  = (<span class="st">"호랑이"</span>, <span class="st">"주황색"</span>, <span class="st">"육식"</span>)
+r_name, r_color, r_diet = rabbit
+t_name, t_color, t_diet = tiger
+<span class="fn">print</span>(<span class="st">f"동물이름: {r_name} vs {t_name}"</span>)
+<span class="fn">print</span>(<span class="st">f"색깔:     {r_color} vs {t_color}"</span>)
+<span class="fn">print</span>(<span class="st">f"식성:     {r_diet} vs {t_diet}"</span>)
+<span class="out"># 동물이름: 토끼 vs 호랑이
+# 색깔:     하얀색 vs 주황색
+# 식성:     초식 vs 육식</span></pre></div>
+  </div>
+
+  <div class="challenge">
+    <div class="ch-head"><div class="ch-num">4</div><div class="ch-title">🔥 심화 — 홀수·짝수 튜플 분리하기</div></div>
+    <div class="ch-body">
+      <p class="ch-desc"><code>numbers = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)</code><br>이 튜플을 순회하며 홀수 튜플과 짝수 튜플을 각각 만들어 출력하세요.</p>
+      <div class="ch-expected">홀수: (1, 3, 5, 7, 9)
+짝수: (2, 4, 6, 8, 10)</div>
+      <div class="ch-btns">
+        <button class="btn-hint" onclick="tog('h4')">💡 힌트</button>
+        <button class="btn-sol"  onclick="tog('s4')">✅ 정답</button>
+      </div>
+      <div class="reveal-area" id="h4"><div class="box box-tip" style="margin-top:10px"><span class="bicon">💡</span><p>빈 튜플: <code>odds = ()</code> &nbsp; 요소 추가: <code>odds = odds + (n,)</code></p></div></div>
+      <div class="reveal-area" id="s4">
+        <div class="code-block" style="margin-top:10px">
+          <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">정답</span></div>
+          <div class="code-body-wrap"><pre>
+numbers = (<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>,<span class="nm">4</span>,<span class="nm">5</span>,<span class="nm">6</span>,<span class="nm">7</span>,<span class="nm">8</span>,<span class="nm">9</span>,<span class="nm">10</span>)
+odds = (); evens = ()
+<span class="kw">for</span> n <span class="kw">in</span> numbers:
+    <span class="kw">if</span> n % <span class="nm">2</span> == <span class="nm">0</span>: evens = evens + (n,)
+    <span class="kw">else</span>:          odds  = odds  + (n,)
+<span class="fn">print</span>(<span class="st">"홀수:"</span>, odds)
+<span class="fn">print</span>(<span class="st">"짝수:"</span>, evens)</pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑨ 도전문제 -->
+<section class="section" id="ch9">
+  <div class="section-head">
+    <div class="section-icon">⚔️</div>
+    <div class="section-title-text">
+      <h2>종합 도전 문제</h2>
+      <p>배운 내용을 모두 활용해서 풀어봐요!</p>
+    </div>
+  </div>
+
+  <div class="challenge">
+    <div class="ch-head"><div class="ch-num">5</div><div class="ch-title">음계 튜플 3가지 방법으로 출력하기</div></div>
+    <div class="ch-body">
+      <p class="ch-desc">음계 튜플 <code>scale = ('도','레','미','파','솔','라','시','도')</code>를 만들고 세 가지 방법으로 출력하세요.</p>
+      <div class="ch-expected">('도', '레', '미', '파', '솔', '라', '시', '도')
+도 레 미 파 솔 라 시 도
+도</div>
+      <div class="ch-btns">
+        <button class="btn-hint" onclick="tog('h5')">💡 힌트</button>
+        <button class="btn-sol"  onclick="tog('s5')">✅ 정답</button>
+      </div>
+      <div class="reveal-area" id="h5"><div class="box box-tip" style="margin-top:10px"><span class="bicon">💡</span><p>전체: <code>print(scale)</code> &nbsp; 공백구분: <code>print(*scale)</code> &nbsp; 첫번째: <code>print(scale[0])</code></p></div></div>
+      <div class="reveal-area" id="s5">
+        <div class="code-block" style="margin-top:10px">
+          <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">정답</span></div>
+          <div class="code-body-wrap"><pre>
+scale = (<span class="st">'도'</span>,<span class="st">'레'</span>,<span class="st">'미'</span>,<span class="st">'파'</span>,<span class="st">'솔'</span>,<span class="st">'라'</span>,<span class="st">'시'</span>,<span class="st">'도'</span>)
+<span class="fn">print</span>(scale)      <span class="cm"># 튜플 그대로</span>
+<span class="fn">print</span>(*scale)     <span class="cm"># 공백 구분</span>
+<span class="fn">print</span>(scale[<span class="nm">0</span>])  <span class="cm"># 첫 번째만</span></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="challenge">
+    <div class="ch-head"><div class="ch-num">6</div><div class="ch-title">🔥 동물이름 튜플 3가지 출력</div></div>
+    <div class="ch-body">
+      <p class="ch-desc"><code>mytuple = ('댕댕이','냥이','꼬부기','꿀꿀이','삐약이')</code><br>A·B·C 세 가지 형식으로 각각 출력하세요.</p>
+      <div class="ch-expected">[A] 놀랍게도 이 튜플은 동물이름 모음집이다.
+    댕댕이는 강아지, 냥이는 고양이,
+    꼬부기는 거북이, 꿀꿀이는 돼지, 삐약이는 병아리를 말한다.
+
+[B] 댕댕이 꼬부기 삐약이
+
+[C] ['댕댕이', '냥이', '꼬부기', '꿀꿀이']</div>
+      <div class="ch-btns">
+        <button class="btn-hint" onclick="tog('h6')">💡 힌트</button>
+        <button class="btn-sol"  onclick="tog('s6')">✅ 정답</button>
+      </div>
+      <div class="reveal-area" id="h6"><div class="box box-tip" style="margin-top:10px"><span class="bicon">💡</span><p>B: <code>print(*mytuple[::2])</code> (짝수 인덱스) &nbsp; C: <code>list(mytuple[:-1])</code></p></div></div>
+      <div class="reveal-area" id="s6">
+        <div class="code-block" style="margin-top:10px">
+          <div class="code-top"><div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div><span class="code-fname">정답</span></div>
+          <div class="code-body-wrap"><pre>
+mytuple = (<span class="st">'댕댕이'</span>,<span class="st">'냥이'</span>,<span class="st">'꼬부기'</span>,<span class="st">'꿀꿀이'</span>,<span class="st">'삐약이'</span>)
+a,b,c,d,e = mytuple
+<span class="cm"># A</span>
+<span class="fn">print</span>(<span class="st">"놀랍게도 이 튜플은 동물이름 모음집이다."</span>)
+<span class="fn">print</span>(<span class="st">f"{a}는 강아지, {b}는 고양이,"</span>)
+<span class="fn">print</span>(<span class="st">f"{c}는 거북이, {d}는 돼지, {e}는 병아리를 말한다."</span>)
+<span class="cm"># B</span>
+<span class="fn">print</span>(*mytuple[::<span class="nm">2</span>])
+<span class="cm"># C</span>
+<span class="fn">print</span>(<span class="fn">list</span>(mytuple[:-<span class="nm">1</span>]))</pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑩ 최종퀴즈 -->
+<section class="section" id="ch10">
+  <div class="section-head">
+    <div class="section-icon">🏆</div>
+    <div class="section-title-text">
+      <h2>최종 실력 퀴즈</h2>
+      <p>총 15문제 · 70점 이상이면 합격!</p>
+    </div>
+  </div>
+  <div id="finalQ"></div>
+  <button class="btn-grade" onclick="grade()">🎯 채점하기</button>
+  <button class="btn-retry" onclick="rebuild()">🔄 다시 풀기</button>
+  <div class="score-card" id="sc">
+    <div class="score-big" id="sn"></div>
+    <div class="score-sub" id="sm"></div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p>🐍 파이썬 튜플 완전정복 · Stage 5 &nbsp;|&nbsp; 학생용</p>
+</footer>
+
+<script>
+// ── MINI QUIZ ──
+function mq(id, btn, ok) {
+  document.querySelectorAll('#'+id+' .mq-opt').forEach(b=>b.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  document.getElementById(id+(ok?'-ok':'-no')).classList.add('show');
+}
+
+// ── TOGGLE ──
+function tog(id) {
+  document.getElementById(id).classList.toggle('show');
+}
+
+// ── FILL BLANK ──
+function checkFill(wrap, ids) {
+  let ok=0;
+  ids.forEach(id=>{
+    const inp=document.getElementById(id);
+    const correct = inp.dataset.ans.trim().toLowerCase();
+    const val = inp.value.trim().toLowerCase();
+    inp.classList.remove('ok','ng');
+    if(val===correct){inp.classList.add('ok');ok++;}
+    else inp.classList.add('ng');
+  });
+  const r=document.getElementById(wrap+'-r');
+  r.style.color = ok===ids.length ? '#006a4e' : '#c0392b';
+  r.textContent = ok===ids.length
+    ? '✅ 모두 정답! 훌륭해요!'
+    : `⚠️ ${ok}/${ids.length} 정답. 빨간 칸을 다시 확인해봐요!`;
+}
+
+// ── FINAL QUIZ ──
+const Qs = [
+  {q:"튜플의 가장 큰 특징은?", o:["수정 가능, 순서 없음","수정 불가능(Immutable), 순서 있음","수정 가능, 순서 있음","중복 불가, 순서 없음"], a:1},
+  {q:"튜플을 만드는 기호는?", o:["[] 대괄호","{} 중괄호","() 소괄호","<> 꺾쇠"], a:2},
+  {q:"원소 1개짜리 튜플로 올바른 것은?", o:["t=(7)","t=[7]","t=7","t=(7,)"], a:3},
+  {q:"t=(1,2,3)일 때 t[1]=5 실행 결과는?", o:["(1,5,3)으로 바뀐다","(1,2,3,5)가 된다","아무 일도 없다","TypeError 발생"], a:3},
+  {q:"t=1,2,3 처럼 괄호 없이 나열하는 것은?", o:["패킹(Packing)","언패킹(Unpacking)","슬라이싱","인덱싱"], a:0},
+  {q:"t=(10,20,30,40,50)일 때 t[-1]의 값은?", o:["10","40","50","에러"], a:2},
+  {q:"len((3,1,4,1,5)) 의 값은?", o:["3","4","5","6"], a:2},
+  {q:"(1,2)+(3,4) 의 결과는?", o:["(4,6)","(1,2,3,4)","((1,2),(3,4))","에러"], a:1},
+  {q:"sorted((3,1,2)) 결과의 자료형은?", o:["튜플","리스트","세트","딕셔너리"], a:1},
+  {q:"a,b = b,a 코드의 역할은?", o:["더하기","삭제","값 교환(Swap)","튜플 생성"], a:2},
+  {q:"(4,3,5,7).index(3) 의 값은?", o:["0","1","2","3"], a:1},
+  {q:"(1,1,2,3,1).count(1) 의 값은?", o:["1","2","3","4"], a:2},
+  {q:"t=(10,20,30,40,50)일 때 t[1:4]는?", o:["(10,20,30)","(20,30,40)","(20,30,40,50)","(30,40,50)"], a:1},
+  {q:"튜플을 리스트로 바꾸는 함수는?", o:["list()","tuple()","set()","dict()"], a:0},
+  {q:"t=(1,2,3)일 때 tuple(list(t)+[4])의 결과는?", o:["(1,2,3)","(1,2,3,4)","에러","[1,2,3,4]"], a:1},
+];
+
+function buildQ(){
+  const c=document.getElementById('finalQ');
+  c.innerHTML='';
+  Qs.forEach((q,i)=>{
+    const opts=q.o.map((o,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${o}</label>`).join('');
+    c.innerHTML+=`<div class="quiz-item"><p class="quiz-q">Q${i+1}. ${q.q}</p><div class="quiz-opts">${opts}</div><div class="quiz-msg" id="qm${i}"></div></div>`;
+  });
+}
+buildQ();
+
+function grade(){
+  let s=0;
+  Qs.forEach((q,i)=>{
+    const sel=document.querySelector(`input[name="q${i}"]:checked`);
+    const m=document.getElementById('qm'+i);
+    if(!sel){m.className='quiz-msg show qm-ng';m.textContent='⚠️ 선택해주세요!';return;}
+    if(parseInt(sel.value)===q.a){s++;m.className='quiz-msg show qm-ok';m.textContent='✅ 정답!';}
+    else{m.className='quiz-msg show qm-ng';m.textContent=`❌ 오답 · 정답: ${q.o[q.a]}`;}
+  });
+  const pct=Math.round(s/Qs.length*100);
+  const msgs=[[90,'🏆 완벽! 튜플 마스터!'],[70,'🎉 합격! 훌륭해요!'],[50,'📚 조금 더 복습해봐요!'],[0,'💪 처음부터 다시!']];
+  const msg=msgs.find(([m])=>pct>=m)[1];
+  const sc=document.getElementById('sc');
+  sc.style.display='block';
+  document.getElementById('sn').textContent=`${pct}점  (${s}/${Qs.length})`;
+  document.getElementById('sm').textContent=msg;
+  sc.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function rebuild(){
+  buildQ();
+  document.getElementById('sc').style.display='none';
+  document.getElementById('finalQ').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
