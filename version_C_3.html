@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코딩 마스터 — 나의 학습 홈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Gmarket+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+:root {
+  --bg: #0f1923;
+  --bg2: #162030;
+  --bg3: #1c2a3e;
+  --card: #1a2840;
+  --card-hover: #1f3250;
+  --border: rgba(255,255,255,0.08);
+  --border-bright: rgba(255,255,255,0.18);
+
+  --blue:   #4A9EFF;
+  --blue-d: #1a6fd4;
+  --blue-l: #a8d4ff;
+  --teal:   #2CC9A0;
+  --teal-d: #0d8f70;
+  --green:  #5DD17A;
+  --purple: #A78BFA;
+  --amber:  #FBB040;
+  --amber-d:#c47c00;
+  --red:    #FF6B6B;
+
+  --text:   #F0F4FF;
+  --text2:  #8BA0BC;
+  --text3:  #4e6680;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── WELCOME SCREEN ── */
+#welcome {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  position: relative;
+}
+#welcome::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(74,158,255,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(44,201,160,0.09) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.welcome-logo {
+  font-family: 'Gmarket Sans', 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.welcome-logo::before, .welcome-logo::after {
+  content:'';
+  display:block;
+  width:28px;
+  height:1px;
+  background: var(--blue);
+  opacity:0.5;
+}
+
+.welcome-title {
+  font-family: 'Gmarket Sans', 'Noto Sans KR', sans-serif;
+  font-size: clamp(26px, 6vw, 42px);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.welcome-title em {
+  font-style: normal;
+  color: var(--blue);
+}
+.welcome-sub {
+  font-size: 15px;
+  color: var(--text2);
+  text-align: center;
+  margin-bottom: 48px;
+  line-height: 1.7;
+}
+
+.name-box {
+  background: var(--card);
+  border: 1px solid var(--border-bright);
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  width: 100%;
+  max-width: 420px;
+}
+.name-box label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+.name-input-row {
+  display: flex;
+  gap: 10px;
+}
+.name-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 17px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.name-input:focus { border-color: var(--blue); }
+.name-input::placeholder { color: var(--text3); font-weight: 400; font-size: 14px; }
+.start-btn {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+.start-btn:hover { background: #6ab5ff; transform: translateY(-1px); }
+
+/* ── MAIN APP ── */
+#app { display: none; min-height: 100vh; }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15,25,35,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 58px;
+}
+.topbar-logo {
+  font-family: 'Gmarket Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: 0.05em;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-d), var(--teal-d));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+.user-name-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.change-btn {
+  font-size: 12px;
+  color: var(--text3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.change-btn:hover { background: var(--bg3); color: var(--text2); }
+
+
+
+.main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 36px 20px 80px;
+}
+
+/* ── PROGRESS SUMMARY BAR ── */
+.progress-summary {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 22px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.progress-summary-icon { font-size: 28px; flex-shrink: 0; }
+.progress-summary-info { flex: 1; }
+.progress-summary-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.progress-bar-wrap {
+  background: var(--bg3);
+  border-radius: 100px;
+  height: 8px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.progress-summary-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.greeting {
+  margin-bottom: 36px;
+}
+.greeting h2 {
+  font-family: 'Gmarket Sans', 'Noto Sans KR', sans-serif;
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.greeting h2 .name-hi { color: var(--blue); }
+.greeting p {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+}
+
+.step-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+.step-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+.step-tab:hover { border-color: var(--border-bright); color: var(--text); background: var(--card-hover); }
+.step-tab.active { color: #fff; font-weight: 700; border-color: transparent; }
+.step-tab .tab-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.step-tab .tab-check { font-size: 11px; }
+.step-tab.s1 .tab-dot { background: #60a5fa; }
+.step-tab.s2 .tab-dot { background: var(--teal); }
+.step-tab.s3 .tab-dot { background: var(--green); }
+.step-tab.s4 .tab-dot { background: var(--purple); }
+.step-tab.s5 .tab-dot { background: var(--amber); }
+.step-tab.s1.active { background: #1d4380; border-color: #4A9EFF; color: var(--blue-l); }
+.step-tab.s2.active { background: #0d3d2e; border-color: var(--teal); color: #7ffdd4; }
+.step-tab.s3.active { background: #143520; border-color: var(--green); color: #a7f3b0; }
+.step-tab.s4.active { background: #2d1f5e; border-color: var(--purple); color: #d8b4fe; }
+.step-tab.s5.active { background: #3d2500; border-color: var(--amber); color: #fde68a; }
+
+/* CONTENT PANEL */
+.content-panel { display: none; animation: fadeIn 0.3s ease; }
+.content-panel.visible { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* STAGE HERO */
+.stage-hero {
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  margin-bottom: 18px;
+  border: 1px solid;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.stage-hero::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  opacity:0.04;
+  background:radial-gradient(ellipse at 80% 50%, currentColor 0%, transparent 70%);
+  pointer-events:none;
+}
+.stage-hero.s1 { background:#1a2d50; border-color:rgba(74,158,255,0.35); color:var(--blue); }
+.stage-hero.s2 { background:#0f2e24; border-color:rgba(44,201,160,0.35); color:var(--teal); }
+.stage-hero.s3 { background:#102a1a; border-color:rgba(93,209,122,0.35); color:var(--green); }
+.stage-hero.s4 { background:#21183a; border-color:rgba(167,139,250,0.35); color:var(--purple); }
+.stage-hero.s5 { background:#2d1e08; border-color:rgba(251,176,64,0.4); color:var(--amber); }
+
+.stage-icon { font-size:38px; line-height:1; flex-shrink:0; }
+.stage-info { flex:1; }
+.stage-lv { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; opacity:0.75; margin-bottom:4px; }
+.stage-name { font-family:'Gmarket Sans','Noto Sans KR',sans-serif; font-size:22px; font-weight:700; color:#fff; margin-bottom:6px; line-height:1.2; }
+.stage-desc-short { font-size:13px; color:rgba(255,255,255,0.6); line-height:1.6; }
+.cert-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+.cert-tag { font-size:11px; font-weight:700; padding:3px 10px; border-radius:100px; letter-spacing:0.03em; opacity:0.9; }
+.s1 .cert-tag { background:rgba(74,158,255,0.2); color:var(--blue-l); border:1px solid rgba(74,158,255,0.3); }
+.s2 .cert-tag { background:rgba(44,201,160,0.2); color:#7ffdd4; border:1px solid rgba(44,201,160,0.35); }
+.s3 .cert-tag { background:rgba(93,209,122,0.2); color:#a7f3b0; border:1px solid rgba(93,209,122,0.3); }
+.s4 .cert-tag { background:rgba(167,139,250,0.2); color:#d8b4fe; border:1px solid rgba(167,139,250,0.3); }
+.s5 .cert-tag { background:rgba(251,176,64,0.2); color:#fde68a; border:1px solid rgba(251,176,64,0.35); }
+
+/* ── LESSON BUTTONS ── */
+.lessons-label { font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; }
+.lesson-list { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+
+.lesson-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: 'Noto Sans KR', sans-serif;
+  position: relative;
+}
+.lesson-btn:hover { background:var(--card-hover); border-color:var(--border-bright); transform:translateX(4px); }
+.lesson-btn.done { opacity:0.65; }
+.lesson-btn.done::after { content:'✓'; position:absolute; right:16px; font-size:16px; color:var(--green); font-weight:900; }
+
+.lesson-num { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
+.s1 .lesson-num { background:rgba(74,158,255,0.2); color:var(--blue); }
+.s2 .lesson-num { background:rgba(44,201,160,0.2); color:var(--teal); }
+.s3 .lesson-num { background:rgba(93,209,122,0.2); color:var(--green); }
+.s4 .lesson-num { background:rgba(167,139,250,0.2); color:var(--purple); }
+.s5 .lesson-num { background:rgba(251,176,64,0.2); color:var(--amber); }
+
+.lesson-text { flex:1; }
+.lesson-title { font-size:15px; font-weight:700; color:var(--text); }
+.lesson-sub { font-size:12px; color:var(--text2); margin-top:2px; }
+.lesson-arrow { font-size:16px; color:var(--text3); }
+
+/* ── LESSON COMPLETE TOGGLE ── */
+.lesson-done-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -4px;
+  margin-bottom: 18px;
+  padding: 0 4px;
+}
+.done-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  user-select: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  transition: all 0.15s;
+}
+.done-toggle:hover { border-color:var(--border-bright); }
+.done-toggle input { display:none; }
+.done-toggle .chk { width:14px; height:14px; border-radius:4px; border:2px solid var(--text3); display:flex; align-items:center; justify-content:center; font-size:9px; transition:all 0.15s; }
+.done-toggle.checked .chk { background:var(--green); border-color:var(--green); color:#fff; }
+
+/* ── COMPLETE BTN ── */
+.complete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 18px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+.complete-btn.s1 { background:linear-gradient(135deg,#1a6fd4,#4A9EFF); color:#fff; box-shadow:0 6px 20px rgba(74,158,255,0.3); }
+.complete-btn.s2 { background:linear-gradient(135deg,#0d8f70,#2CC9A0); color:#fff; box-shadow:0 6px 20px rgba(44,201,160,0.3); }
+.complete-btn.s3 { background:linear-gradient(135deg,#1a7a35,#5DD17A); color:#fff; box-shadow:0 6px 20px rgba(93,209,122,0.3); }
+.complete-btn.s4 { background:linear-gradient(135deg,#5b3eb3,#A78BFA); color:#fff; box-shadow:0 6px 20px rgba(167,139,250,0.3); }
+.complete-btn.s5 { background:linear-gradient(135deg,var(--amber-d),var(--amber)); color:#1a0e00; box-shadow:0 6px 20px rgba(251,176,64,0.35); }
+.complete-btn:hover { transform:translateY(-2px); filter:brightness(1.1); }
+
+/* ── RADIO CARD GRID (버전 B) ── */
+.radio-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+  overflow: hidden;
+}
+.radio-card input[type=radio] { display:none; }
+.radio-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--purple); opacity:0; transition:opacity 0.18s;
+}
+.radio-card:hover { background:var(--card-hover); border-color:rgba(167,139,250,0.3); transform:translateY(-2px); }
+.radio-card.selected-today { background:rgba(167,139,250,0.1); border-color:rgba(167,139,250,0.5); }
+.radio-card.selected-today::before { opacity:1; }
+.radio-card.done-last { background:rgba(93,209,122,0.07); border-color:rgba(93,209,122,0.3); }
+.radio-card.done-last::before { background:var(--green); opacity:1; }
+.rc-label { font-size:14px; font-weight:700; color:var(--text); }
+.radio-card.selected-today .rc-label { color:var(--purple); }
+.radio-card.done-last .rc-label { color:var(--green); }
+.rc-open { font-size:11px; color:var(--text3); text-decoration:none; transition:color 0.15s; }
+.rc-open:hover { color:var(--purple); }
+.today-selected-wrap {
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  padding:10px 14px; margin-top:8px;
+  background:rgba(93,209,122,0.08);
+  border:1px solid rgba(93,209,122,0.25);
+  border-radius:10px; font-size:13px;
+}
+.today-selected-label { color:var(--green); font-weight:700; }
+.today-selected-name { color:var(--text); font-weight:700; flex:1; }
+.sim-btn {
+  background:none; border:1px solid var(--border-bright);
+  border-radius:7px; color:var(--text2); font-size:11px;
+  font-weight:700; font-family:'Noto Sans KR',sans-serif;
+  padding:4px 10px; cursor:pointer; transition:all 0.15s; white-space:nowrap;
+}
+.sim-btn:hover { background:var(--purple); border-color:var(--purple); color:#fff; }
+.sim-banner {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px; margin-top:8px;
+  background:rgba(251,176,64,0.08);
+  border:1px solid rgba(251,176,64,0.3);
+  border-radius:10px; font-size:12px; font-weight:700; color:var(--amber);
+}
+.sim-reset-btn {
+  background:none; border:1px solid rgba(251,176,64,0.4);
+  border-radius:6px; color:var(--amber); font-size:11px;
+  font-weight:700; font-family:'Noto Sans KR',sans-serif;
+  padding:3px 10px; cursor:pointer; transition:all 0.15s;
+}
+.sim-reset-btn:hover { background:var(--amber); color:#1a0e00; }
+
+
+.github-section {
+  margin-bottom: 20px;
+}
+.github-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.github-icon {
+  width: 28px; height: 28px;
+  background: rgba(167,139,250,0.12);
+  border: 1px solid rgba(167,139,250,0.25);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+.github-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.github-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+}
+.github-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.18s;
+  position: relative;
+  overflow: hidden;
+}
+.github-link::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--purple);
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+.github-link:hover { background: var(--card-hover); border-color: rgba(167,139,250,0.4); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.2); }
+.github-link:hover::before { opacity: 1; }
+.gh-file { font-family: monospace; font-size: 12px; color: var(--purple); font-weight: 700; }
+.gh-desc { font-size: 13px; font-weight: 700; color: var(--text); }
+.gh-arrow { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ── ROADMAP TOGGLE ── */
+.roadmap-toggle { text-align:center; margin-top:40px; }
+.toggle-btn {
+  background:none;
+  border:1px solid var(--border-bright);
+  border-radius:12px;
+  color:var(--text2);
+  font-size:13px;
+  font-family:'Noto Sans KR',sans-serif;
+  font-weight:500;
+  padding:10px 24px;
+  cursor:pointer;
+  transition:all 0.18s;
+}
+.toggle-btn:hover { background:var(--card); color:var(--text); }
+
+.mini-roadmap { display:none; margin-top:20px; }
+.mini-roadmap.open { display:block; }
+.mini-steps { display:flex; flex-direction:column; gap:2px; background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+.mini-step { display:flex; align-items:center; gap:14px; padding:14px 18px; cursor:pointer; transition:background 0.15s; border-bottom:1px solid var(--border); font-family:'Noto Sans KR',sans-serif; }
+.mini-step:last-child { border-bottom:none; }
+.mini-step:hover { background:var(--card-hover); }
+.mini-step.current { background:var(--bg3); }
+.mini-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.mini-step.ms1 .mini-dot { background:var(--blue); }
+.mini-step.ms2 .mini-dot { background:var(--teal); }
+.mini-step.ms3 .mini-dot { background:var(--green); }
+.mini-step.ms4 .mini-dot { background:var(--purple); }
+.mini-step.ms5 .mini-dot { background:var(--amber); }
+.mini-step-text { flex:1; }
+.mini-step-name { font-size:14px; font-weight:700; color:var(--text); }
+.mini-step-cert { font-size:12px; color:var(--text2); margin-top:1px; }
+.mini-step-go { font-size:12px; color:var(--text3); }
+.mini-step.current .mini-step-go::before { content:'지금 여기 '; color:var(--blue); }
+
+/* ── MEMO BOX ── */
+.memo-section {
+  margin-top: 28px;
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+}
+.memo-label { font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3); margin-bottom:10px; }
+.memo-area {
+  width:100%;
+  min-height:80px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--text);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;
+  padding:14px 16px;
+  resize:vertical;
+  outline:none;
+  transition:border-color 0.2s;
+  line-height:1.6;
+}
+.memo-area:focus { border-color:var(--blue); }
+.memo-save-row { display:flex; justify-content:flex-end; margin-top:8px; }
+.memo-save-btn {
+  background:var(--bg3);
+  border:1px solid var(--border-bright);
+  border-radius:8px;
+  color:var(--text2);
+  font-size:12px;
+  font-weight:700;
+  font-family:'Noto Sans KR',sans-serif;
+  padding:6px 16px;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.memo-save-btn:hover { background:var(--blue); border-color:var(--blue); color:#fff; }
+
+
+
+/* ── COMPLETE MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--border-bright);
+  border-radius: 24px;
+  padding: 32px 28px 28px;
+  width: 100%; max-width: 400px;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+.modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+.modal-icon { font-size: 44px; text-align: center; margin-bottom: 12px; }
+.modal-title {
+  font-family: 'Gmarket Sans','Noto Sans KR',sans-serif;
+  font-size: 20px; font-weight: 700; color: var(--text);
+  text-align: center; margin-bottom: 6px;
+}
+.modal-sub { font-size: 13px; color: var(--text2); text-align: center; line-height: 1.6; margin-bottom: 22px; }
+.modal-info-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.modal-info-row {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px;
+}
+.modal-info-label { color: var(--text3); font-weight: 700; width: 72px; flex-shrink: 0; }
+.modal-info-value { color: var(--text); font-weight: 700; flex: 1; }
+.modal-memo-preview {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px; color: var(--text2); line-height: 1.6;
+  max-height: 72px; overflow-y: auto;
+  font-style: italic;
+  margin-top: -8px; margin-bottom: 20px;
+}
+.modal-btns { display: flex; gap: 10px; }
+.modal-cancel-btn {
+  flex: 1; padding: 13px;
+  background: var(--bg3); border: 1px solid var(--border-bright);
+  border-radius: 12px; color: var(--text2);
+  font-size: 14px; font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+}
+.modal-cancel-btn:hover { background: var(--card-hover); color: var(--text); }
+.modal-confirm-btn {
+  flex: 2; padding: 13px;
+  border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; transition: all 0.2s;
+  color: #fff;
+}
+.modal-confirm-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+.modal-confirm-btn.s1 { background: linear-gradient(135deg,#1a6fd4,#4A9EFF); }
+.modal-confirm-btn.s2 { background: linear-gradient(135deg,#0d8f70,#2CC9A0); }
+.modal-confirm-btn.s3 { background: linear-gradient(135deg,#1a7a35,#5DD17A); }
+.modal-confirm-btn.s4 { background: linear-gradient(135deg,#5b3eb3,#A78BFA); }
+.modal-confirm-btn.s5 { background: linear-gradient(135deg,var(--amber-d),var(--amber)); color:#1a0e00; }
+.modal-loading { text-align:center; padding: 8px 0; font-size:13px; color:var(--text2); display:none; }
+.modal-loading.show { display:block; }
+.modal-result { text-align:center; padding:8px 0; font-size:13px; font-weight:700; display:none; }
+.modal-result.show { display:block; }
+.modal-result.ok { color: var(--green); }
+.modal-result.err { color: var(--red); }
+/* sheets 설정 안내 배너 */
+.sheets-setup-banner {
+  background: rgba(251,176,64,0.08);
+  border: 1px solid rgba(251,176,64,0.3);
+  border-radius: 12px; padding: 12px 16px;
+  font-size: 12px; color: var(--amber); line-height: 1.6;
+  margin-bottom: 20px; display: none;
+}
+.sheets-setup-banner.show { display: block; }
+.sheets-setup-banner strong { font-weight: 700; }
+
+/* ── MEMO SYNC STATUS ── */
+.memo-sync-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 8px; gap: 8px;
+}
+.memo-sync-status { font-size: 11px; color: var(--text3); }
+.memo-sync-status.synced { color: var(--green); }
+.memo-sync-status.error { color: var(--red); }
+
+/* ── CONFETTI STYLE ── */
+.confetti-wrap { position:fixed; inset:0; pointer-events:none; z-index:300; overflow:hidden; }
+.confetti-wrap .c { position:absolute; width:10px; height:10px; border-radius:2px; animation:fall linear forwards; }
+@keyframes fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1;} 100%{transform:translateY(110vh) rotate(720deg);opacity:0;} }
+
+/* PLACEHOLDER */
+#placeholder { text-align:center; padding:60px 20px; color:var(--text3); }
+
+@media(max-width:480px) {
+  .step-tabs { gap:6px; }
+  .step-tab { padding:8px 12px; font-size:12px; }
+  .stage-hero { flex-direction:column; gap:12px; }
+  .stage-icon { font-size:32px; }
+  .progress-summary { flex-direction:column; align-items:flex-start; gap:10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ WELCOME ══ -->
+<div id="welcome">
+  <div class="welcome-logo">코딩 마스터</div>
+  <h1 class="welcome-title">안녕하세요!<br><em>오늘도 코딩 시작해볼까요?</em></h1>
+  <p class="welcome-sub">이름을 입력하면 나만의 학습 홈 화면이 열려요.</p>
+  <div class="name-box">
+    <label>내 이름 입력하기</label>
+    <div class="name-input-row">
+      <input type="text" class="name-input" id="nameInput" placeholder="예) 김민준" maxlength="8" />
+      <button class="start-btn" onclick="startApp()">시작 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="app">
+
+  <div class="topbar">
+    <div class="topbar-logo">⚡ 코딩 마스터</div>
+    <div class="topbar-right">
+      <div class="topbar-user">
+        <div class="user-avatar" id="avatarInitial">?</div>
+        <span class="user-name-label" id="topbarName">이름</span>
+        <button class="change-btn" onclick="resetApp()">변경</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- 전체 진도 요약 -->
+    <div class="progress-summary">
+      <div class="progress-summary-icon">📊</div>
+      <div class="progress-summary-info">
+        <div class="progress-summary-title">전체 학습 진도</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="totalProgressBar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="progress-summary-pct" id="totalProgressPct">0%</div>
+    </div>
+
+    <div class="greeting">
+      <h2>👋 <span class="name-hi" id="greetName">학생</span>, 오늘은 어느 단계 수업인가요?</h2>
+      <p>탭을 눌러 내 단계를 선택하면 바로 교재로 이동할 수 있어요.</p>
+    </div>
+
+    <div class="section-label">📚 내 단계 선택</div>
+    <div class="step-tabs">
+      <button class="step-tab s1" onclick="selectStep(1)"><span class="tab-dot"></span>스크래치 주니어</button>
+      <button class="step-tab s2" onclick="selectStep(2)"><span class="tab-dot"></span>엔트리 COS</button>
+      <button class="step-tab s3" onclick="selectStep(3)"><span class="tab-dot"></span>스크래치 COS</button>
+      <button class="step-tab s4" onclick="selectStep(4)"><span class="tab-dot"></span>파이썬 COS Pro</button>
+      <button class="step-tab s5" onclick="selectStep(5)"><span class="tab-dot"></span>실전 AI</button>
+    </div>
+
+    <!-- ── PANEL 1: 스크래치 주니어 ── -->
+    <div class="content-panel" id="panel1">
+      <div class="stage-hero s1">
+        <div class="stage-icon">🌱</div>
+        <div class="stage-info">
+          <div class="stage-lv">Level 1 · 입문</div>
+          <div class="stage-name">스크래치 주니어</div>
+          <div class="stage-desc-short">블록을 끌어다 캐릭터를 움직여 보세요! 코딩과의 첫 만남이에요.</div>
+          <div class="cert-tags">
+            <span class="cert-tag">흥미 유발 과정</span>
+            <span class="cert-tag">초등 저학년 추천</span>
+          </div>
+        </div>
+      </div>
+      <div class="lessons-label">📖 교재 바로가기</div>
+      <div class="lesson-list s1">
+        <a href="#" class="lesson-btn" data-key="p1-l1" onclick="return goLesson(this)">
+          <div class="lesson-num">1</div>
+          <div class="lesson-text">
+            <div class="lesson-title">1단원 — 움직임 블록 익히기</div>
+            <div class="lesson-sub">캐릭터를 앞으로, 뒤로, 회전시켜 보자</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+        <a href="#" class="lesson-btn" data-key="p1-l2" onclick="return goLesson(this)">
+          <div class="lesson-num">2</div>
+          <div class="lesson-text">
+            <div class="lesson-title">2단원 — 이야기 만들기</div>
+            <div class="lesson-sub">배경을 바꾸고 대화를 넣어보자</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+        <a href="#" class="lesson-btn" data-key="p1-l3" onclick="return goLesson(this)">
+          <div class="lesson-num">3</div>
+          <div class="lesson-text">
+            <div class="lesson-title">3단원 — 나만의 애니메이션</div>
+            <div class="lesson-sub">반복 블록으로 신나는 움직임 만들기</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+      </div>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p1" onclick="toggleDone('p1')">
+          <div class="chk" id="chk-p1">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="complete-btn s1" onclick="openCompleteModal(1)">✅ 오늘 수업 완료 보고하기</button>
+      <div class="memo-section">
+        <div class="memo-label">📝 오늘의 메모</div>
+        <textarea class="memo-area" id="memo-p1" placeholder="오늘 배운 내용, 어려웠던 점, 질문 등을 자유롭게 적어보세요..."></textarea>
+        <div class="memo-sync-row">
+          <span class="memo-sync-status" id="memo-sync-p1"></span>
+          <button class="memo-save-btn" onclick="saveMemo('p1')">저장</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 2: 엔트리 ── -->
+    <div class="content-panel" id="panel2">
+      <div class="stage-hero s2">
+        <div class="stage-icon">🧩</div>
+        <div class="stage-info">
+          <div class="stage-lv">Level 2 · 기초 논리</div>
+          <div class="stage-name">엔트리 (COS 3·2·1급)</div>
+          <div class="stage-desc-short">조건문, 반복문, 변수를 배우고 COS 자격증에 도전해요!</div>
+          <div class="cert-tags">
+            <span class="cert-tag">COS 3급</span>
+            <span class="cert-tag">COS 2급</span>
+            <span class="cert-tag">COS 1급</span>
+          </div>
+        </div>
+      </div>
+      <div class="lessons-label">📖 교재 바로가기</div>
+      <div class="lesson-list s2">
+        <a href="#" class="lesson-btn" data-key="p2-l1" onclick="return goLesson(this)">
+          <div class="lesson-num">3급</div>
+          <div class="lesson-text">
+            <div class="lesson-title">COS 3급 과정</div>
+            <div class="lesson-sub">순서·반복·선택 기본 개념 마스터</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+        <a href="#" class="lesson-btn" data-key="p2-l2" onclick="return goLesson(this)">
+          <div class="lesson-num">2급</div>
+          <div class="lesson-text">
+            <div class="lesson-title">COS 2급 과정</div>
+            <div class="lesson-sub">변수, 리스트, 함수 개념 익히기</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+        <a href="#" class="lesson-btn" data-key="p2-l3" onclick="return goLesson(this)">
+          <div class="lesson-num">1급</div>
+          <div class="lesson-text">
+            <div class="lesson-title">COS 1급 과정</div>
+            <div class="lesson-sub">복잡한 알고리즘 & 프로젝트 완성</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+      </div>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p2" onclick="toggleDone('p2')">
+          <div class="chk" id="chk-p2">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="complete-btn s2" onclick="openCompleteModal(2)">✅ 오늘 수업 완료 보고하기</button>
+      <div class="memo-section">
+        <div class="memo-label">📝 오늘의 메모</div>
+        <textarea class="memo-area" id="memo-p2" placeholder="오늘 배운 내용, 어려웠던 점, 질문 등을 자유롭게 적어보세요..."></textarea>
+        <div class="memo-sync-row">
+          <span class="memo-sync-status" id="memo-sync-p2"></span>
+          <button class="memo-save-btn" onclick="saveMemo('p2')">저장</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 3: 스크래치 ── -->
+    <div class="content-panel" id="panel3">
+      <div class="stage-hero s3">
+        <div class="stage-icon">🐱</div>
+        <div class="stage-info">
+          <div class="stage-lv">Level 3 · 심화 논리</div>
+          <div class="stage-name">스크래치 (COS 3·2·1급)</div>
+          <div class="stage-desc-short">글로벌 플랫폼 스크래치로 더 멋진 게임과 애니메이션을 만들어요!</div>
+          <div class="cert-tags">
+            <span class="cert-tag">COS 3급</span>
+            <span class="cert-tag">COS 2급</span>
+            <span class="cert-tag">COS 1급</span>
+          </div>
+        </div>
+      </div>
+      <div class="lessons-label">📖 교재 바로가기</div>
+      <div class="lesson-list s3">
+        <a href="#" class="lesson-btn" data-key="p3-l1" onclick="return goLesson(this)">
+          <div class="lesson-num">3급</div>
+          <div class="lesson-text">
+            <div class="lesson-title">COS 3급 과정</div>
+            <div class="lesson-sub">스프라이트, 스테이지, 기본 이벤트</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+        <a href="#" class="lesson-btn" data-key="p3-l2" onclick="return goLesson(this)">
+          <div class="lesson-num">2급</div>
+          <div class="lesson-text">
+            <div class="lesson-title">COS 2급 과정</div>
+            <div class="lesson-sub">충돌 감지, 변수 활용 게임 만들기</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+        <a href="#" class="lesson-btn" data-key="p3-l3" onclick="return goLesson(this)">
+          <div class="lesson-num">1급</div>
+          <div class="lesson-text">
+            <div class="lesson-title">COS 1급 과정</div>
+            <div class="lesson-sub">복잡한 로직 & 심화 프로젝트</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+      </div>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p3" onclick="toggleDone('p3')">
+          <div class="chk" id="chk-p3">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="complete-btn s3" onclick="openCompleteModal(3)">✅ 오늘 수업 완료 보고하기</button>
+      <div class="memo-section">
+        <div class="memo-label">📝 오늘의 메모</div>
+        <textarea class="memo-area" id="memo-p3" placeholder="오늘 배운 내용, 어려웠던 점, 질문 등을 자유롭게 적어보세요..."></textarea>
+        <div class="memo-sync-row">
+          <span class="memo-sync-status" id="memo-sync-p3"></span>
+          <button class="memo-save-btn" onclick="saveMemo('p3')">저장</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 4: 파이썬 (깃허브 연결!) ── -->
+    <div class="content-panel" id="panel4">
+      <div class="stage-hero s4">
+        <div class="stage-icon">💻</div>
+        <div class="stage-info">
+          <div class="stage-lv">Level 4 · 텍스트 코딩</div>
+          <div class="stage-name">파이썬 기초 (COS Pro 3·2급)</div>
+          <div class="stage-desc-short">드디어 진짜 코딩! 파이썬으로 실제 프로그램을 만들어 봐요.</div>
+          <div class="cert-tags">
+            <span class="cert-tag">COS Pro 3급</span>
+            <span class="cert-tag">COS Pro 2급</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GitHub Pages 교재 연결 (버전B: 오늘 챕터 1개 선택) -->
+      <div class="github-section">
+        <div class="github-header">
+          <div class="github-icon">🐙</div>
+          <div class="github-title">GitHub 웹교재 — 오늘 배운 챕터를 선택하세요</div>
+        </div>
+        <div class="github-grid">
+          <label class="radio-card" id="rc-p4-0">
+            <input type="radio" name="today-p4" value="0" onchange="selectToday('p4',0)">
+            <span class="rc-label">반복문 (while)</span>
+            <a href="https://kssim00.github.io/web_book/python_while.html" target="_blank" class="rc-open" onclick="event.stopPropagation()">↗ 열기</a>
+          </label>
+          <label class="radio-card" id="rc-p4-1">
+            <input type="radio" name="today-p4" value="1" onchange="selectToday('p4',1)">
+            <span class="rc-label">반복문 (for)</span>
+            <a href="https://kssim00.github.io/web_book/python_for.html" target="_blank" class="rc-open" onclick="event.stopPropagation()">↗ 열기</a>
+          </label>
+          <label class="radio-card" id="rc-p4-2">
+            <input type="radio" name="today-p4" value="2" onchange="selectToday('p4',2)">
+            <span class="rc-label">중첩 반복문</span>
+            <a href="https://kssim00.github.io/web_book/python_nested_loop.html" target="_blank" class="rc-open" onclick="event.stopPropagation()">↗ 열기</a>
+          </label>
+          <label class="radio-card" id="rc-p4-3">
+            <input type="radio" name="today-p4" value="3" onchange="selectToday('p4',3)">
+            <span class="rc-label">유니코드 & 문자열</span>
+            <a href="https://kssim00.github.io/web_book/python_unicode.html" target="_blank" class="rc-open" onclick="event.stopPropagation()">↗ 열기</a>
+          </label>
+          <label class="radio-card" id="rc-p4-4">
+            <input type="radio" name="today-p4" value="4" onchange="selectToday('p4',4)">
+            <span class="rc-label">튜플 (tuple)</span>
+            <a href="https://kssim00.github.io/web_book/python_tuple.html" target="_blank" class="rc-open" onclick="event.stopPropagation()">↗ 열기</a>
+          </label>
+          <label class="radio-card" id="rc-p4-5">
+            <input type="radio" name="today-p4" value="5" onchange="selectToday('p4',5)">
+            <span class="rc-label">집합 (set)</span>
+            <a href="https://kssim00.github.io/web_book/python_set.html" target="_blank" class="rc-open" onclick="event.stopPropagation()">↗ 열기</a>
+          </label>
+          <label class="radio-card" id="rc-p4-6">
+            <input type="radio" name="today-p4" value="6" onchange="selectToday('p4',6)">
+            <span class="rc-label">딕셔너리 (dict)</span>
+            <a href="https://kssim00.github.io/web_book/python_dict.html" target="_blank" class="rc-open" onclick="event.stopPropagation()">↗ 열기</a>
+          </label>
+          <label class="radio-card" id="rc-p4-7">
+            <input type="radio" name="today-p4" value="7" onchange="selectToday('p4',7)">
+            <span class="rc-label">함수 (function)</span>
+            <a href="https://kssim00.github.io/web_book/python_function.html" target="_blank" class="rc-open" onclick="event.stopPropagation()">↗ 열기</a>
+          </label>
+        </div>
+        <!-- 선택된 챕터 표시 -->
+        <div class="today-selected-wrap" id="today-p4-wrap" style="display:none">
+          <span class="today-selected-label">✅ 오늘 선택:</span>
+          <span class="today-selected-name" id="today-p4-name"></span>
+
+        </div>
+        <!-- 시뮬레이션 모드 배너 -->
+        <div class="sim-banner" id="sim-p4-banner" style="display:none">
+          <span>👁 시뮬레이션 중 — 다음 수업 날 이렇게 보여요</span>
+          <button class="sim-reset-btn" onclick="resetSimulation('p4')">돌아가기</button>
+        </div>
+      </div>
+      <button class="complete-btn s4" onclick="openCompleteModal(4)">✅ 오늘 수업 완료 보고하기</button>
+      <div class="memo-section">
+        <div class="memo-label">📝 오늘의 메모</div>
+        <textarea class="memo-area" id="memo-p4" placeholder="오늘 배운 내용, 어려웠던 점, 질문 등을 자유롭게 적어보세요..."></textarea>
+        <div class="memo-sync-row">
+          <span class="memo-sync-status" id="memo-sync-p4"></span>
+          <button class="memo-save-btn" onclick="saveMemo('p4')">저장</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 5: AI ── -->
+    <div class="content-panel" id="panel5">
+      <div class="stage-hero s5">
+        <div class="stage-icon">🤖</div>
+        <div class="stage-info">
+          <div class="stage-lv">Level 5 · AI 마스터 🏆</div>
+          <div class="stage-name">실전 AI (AICE · 바이브코딩)</div>
+          <div class="stage-desc-short">KT 공식 AI 자격증! 데이터 분석부터 AI 모델까지 도전해요.</div>
+          <div class="cert-tags">
+            <span class="cert-tag">AICE Future</span>
+            <span class="cert-tag">AICE Junior</span>
+            <span class="cert-tag">바이브코딩</span>
+          </div>
+        </div>
+      </div>
+      <div class="lessons-label">📖 교재 바로가기</div>
+      <div class="lesson-list s5">
+        <a href="#" class="lesson-btn" data-key="p5-l1" onclick="return goLesson(this)">
+          <div class="lesson-num">AI1</div>
+          <div class="lesson-text">
+            <div class="lesson-title">AICE Future 과정</div>
+            <div class="lesson-sub">AI 기초 원리, 머신러닝 개념 이해</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+        <a href="#" class="lesson-btn" data-key="p5-l2" onclick="return goLesson(this)">
+          <div class="lesson-num">AI2</div>
+          <div class="lesson-text">
+            <div class="lesson-title">AICE Junior 과정</div>
+            <div class="lesson-sub">데이터 분석 & 실전 AI 모델 만들기</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+        <a href="#" class="lesson-btn" data-key="p5-l3" onclick="return goLesson(this)">
+          <div class="lesson-num">바이브</div>
+          <div class="lesson-text">
+            <div class="lesson-title">바이브코딩 과정</div>
+            <div class="lesson-sub">피지컬 컴퓨팅 + AI 연동 프로젝트</div>
+          </div>
+          <span class="lesson-arrow">→</span>
+        </a>
+      </div>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p5" onclick="toggleDone('p5')">
+          <div class="chk" id="chk-p5">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="complete-btn s5" onclick="openCompleteModal(5)">✅ 오늘 수업 완료 보고하기</button>
+      <div class="memo-section">
+        <div class="memo-label">📝 오늘의 메모</div>
+        <textarea class="memo-area" id="memo-p5" placeholder="오늘 배운 내용, 어려웠던 점, 질문 등을 자유롭게 적어보세요..."></textarea>
+        <div class="memo-sync-row">
+          <span class="memo-sync-status" id="memo-sync-p5"></span>
+          <button class="memo-save-btn" onclick="saveMemo('p5')">저장</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER -->
+    <div id="placeholder" style="text-align:center;padding:60px 20px;color:var(--text3);">
+      <div style="font-size:48px;margin-bottom:16px;">☝️</div>
+      <div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:8px;">위에서 오늘의 단계를 눌러봐요!</div>
+      <div style="font-size:13px;line-height:1.7;">탭을 누르면 바로 오늘 배울 교재와<br>학습 완료 버튼이 나타나요.</div>
+    </div>
+
+    <!-- ROADMAP -->
+    <div class="roadmap-toggle">
+      <button class="toggle-btn" onclick="toggleRoadmap()">🗺 전체 로드맵 보기 / 숨기기</button>
+    </div>
+    <div class="mini-roadmap" id="miniRoadmap">
+      <div class="mini-steps">
+        <div class="mini-step ms1" onclick="selectStep(1)">
+          <div class="mini-dot"></div>
+          <div class="mini-step-text">
+            <div class="mini-step-name">Level 1 — 스크래치 주니어</div>
+            <div class="mini-step-cert">자격증 없음 · 입문 과정</div>
+          </div>
+          <div class="mini-step-go">→</div>
+        </div>
+        <div class="mini-step ms2" onclick="selectStep(2)">
+          <div class="mini-dot"></div>
+          <div class="mini-step-text">
+            <div class="mini-step-name">Level 2 — 엔트리 COS</div>
+            <div class="mini-step-cert">COS 3급 · 2급 · 1급</div>
+          </div>
+          <div class="mini-step-go">→</div>
+        </div>
+        <div class="mini-step ms3" onclick="selectStep(3)">
+          <div class="mini-dot"></div>
+          <div class="mini-step-text">
+            <div class="mini-step-name">Level 3 — 스크래치 COS</div>
+            <div class="mini-step-cert">COS 3급 · 2급 · 1급</div>
+          </div>
+          <div class="mini-step-go">→</div>
+        </div>
+        <div class="mini-step ms4" onclick="selectStep(4)">
+          <div class="mini-dot"></div>
+          <div class="mini-step-text">
+            <div class="mini-step-name">Level 4 — 파이썬 COS Pro</div>
+            <div class="mini-step-cert">COS Pro 3급 · 2급 + GitHub 웹교재</div>
+          </div>
+          <div class="mini-step-go">→</div>
+        </div>
+        <div class="mini-step ms5" onclick="selectStep(5)">
+          <div class="mini-dot"></div>
+          <div class="mini-step-text">
+            <div class="mini-step-name">Level 5 — 실전 AI 🏆</div>
+            <div class="mini-step-cert">AICE Future · Junior · 바이브코딩</div>
+          </div>
+          <div class="mini-step-go">→</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+
+
+<!-- ── 수업 완료 확인 모달 ── -->
+<div class="modal-overlay" id="completeModal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">🎉</div>
+    <div class="modal-title" id="modalTitle">수업 완료 보고하기</div>
+    <div class="modal-sub" id="modalSub">아래 내용으로 선생님께 보고할게요!</div>
+    <div class="sheets-setup-banner" id="setupBanner">
+      ⚠️ <strong>구글 시트 미설정</strong> — 아래 설정 가이드를 따라 Apps Script URL을 등록하면 자동으로 기록돼요.<br>
+      지금은 로컬 저장만 됩니다.
+    </div>
+    <div class="modal-info-box" id="modalInfoBox">
+      <div class="modal-info-row">
+        <span class="modal-info-label">👤 학생</span>
+        <span class="modal-info-value" id="mInfoName">—</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="modal-info-label">📅 날짜</span>
+        <span class="modal-info-value" id="mInfoDate">—</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="modal-info-label">🏆 레벨</span>
+        <span class="modal-info-value" id="mInfoLevel">—</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="modal-info-label">📝 메모</span>
+        <span class="modal-info-value" id="mInfoMemoLabel">있음</span>
+      </div>
+    </div>
+    <div class="modal-memo-preview" id="mInfoMemoPreview" style="display:none"></div>
+    <div class="modal-loading" id="modalLoading">⏳ 구글 시트에 기록 중...</div>
+    <div class="modal-result" id="modalResult"></div>
+    <div class="modal-btns" id="modalBtns">
+      <button class="modal-cancel-btn" onclick="closeModal()">취소</button>
+      <button class="modal-confirm-btn s1" id="modalConfirmBtn" onclick="confirmComplete()">✅ 보고 완료!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFETTI ── -->
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script>
+// ── 깃허브 베이스 URL (실제 GitHub Pages 주소로 변경하세요)
+const GITHUB_BASE = 'https://kssim00.github.io/web_book/';
+
+// ════════════════════════════════════════════════
+// ✏️  선생님 설정 구역 — 여기만 수정하면 됩니다!
+// ════════════════════════════════════════════════
+// 1) Google Apps Script 웹앱 URL을 아래에 붙여넣으세요.
+//    (설정 방법은 파일 하단 주석 참고)
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAAf-ZmhaE3AZDvfr3QPn7Od-fgC42YyiA2AHCacv_-2-J4tPGU6UCpX5EMQQskZOvIQ/exec';
+// ════════════════════════════════════════════════
+
+// ── APP STATE (localStorage 기반)
+function _storeKey(key) {
+  // 학생 이름별로 분리 저장 — 같은 컴퓨터에서 다른 학생이 앉아도 데이터가 섞이지 않아요
+  const name = localStorage.getItem('__currentStudent__') || '';
+  // studentName 자체는 공통 키로 유지
+  if (key === 'studentName') return key;
+  return name ? name + '::' + key : key;
+}
+function getStore(key, def) {
+  try { const v = localStorage.getItem(_storeKey(key)); return v !== null ? JSON.parse(v) : def; }
+  catch(e) { return def; }
+}
+function setStore(key, val) {
+  try {
+    localStorage.setItem(_storeKey(key), JSON.stringify(val));
+    // 현재 학생 이름이 studentName이면 __currentStudent__도 업데이트
+    if (key === 'studentName') localStorage.setItem('__currentStudent__', val);
+  } catch(e) {}
+}
+
+// ── 전체 진도 계산
+const TOTAL_LESSONS = 15; // 5패널 × 3레슨씩
+function calcProgress() {
+  const done = ['p1','p2','p3','p4','p5'].filter(p => getStore('done-' + p, false)).length;
+  const pct = Math.round(done / 5 * 100);
+  document.getElementById('totalProgressBar').style.width = pct + '%';
+  document.getElementById('totalProgressPct').textContent = pct + '%';
+}
+
+// ── START APP
+function startApp() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { document.getElementById('nameInput').focus(); return; }
+  // 이전 학생과 다른 이름이면 단계 초기화
+  const prevName = getStore('studentName', null);
+  if (prevName !== name) {
+    setStore('lastStep', 0);
+    hideAllPanels();
+  }
+  localStorage.setItem('__currentStudent__', name);
+  setStore('studentName', name);
+  applyName(name);
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadAllState();
+  calcProgress();
+}
+
+function applyName(name) {
+  document.getElementById('greetName').textContent = name + ' 학생';
+  document.getElementById('topbarName').textContent = name + ' 학생';
+  document.getElementById('avatarInitial').textContent = name[0];
+}
+
+function resetApp() {
+  localStorage.removeItem('studentName');
+  localStorage.removeItem('__currentStudent__');
+  document.getElementById('welcome').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('nameInput').value = '';
+  hideAllPanels();
+}
+
+document.getElementById('nameInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') startApp();
+});
+
+// 항상 로그인 화면부터 시작 (자동 로그인 없음)
+
+// ── PANEL SELECT
+let currentStep = 0;
+function selectStep(n) {
+  document.querySelectorAll('.step-tab').forEach((t,i) => t.classList.toggle('active', i+1===n));
+  hideAllPanels();
+  document.getElementById('panel'+n).classList.add('visible');
+  document.getElementById('placeholder').style.display = 'none';
+  currentStep = n;
+  setStore('lastStep', n);
+  setTimeout(() => {
+    document.getElementById('panel'+n).scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 50);
+  document.querySelectorAll('.mini-step').forEach((s,i) => s.classList.toggle('current', i+1===n));
+}
+
+function hideAllPanels() {
+  document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('visible'));
+  document.getElementById('placeholder').style.display = 'block';
+}
+
+// ── LESSON LINK
+function goLesson(el) {
+  const href = el.getAttribute('href');
+  if (!href || href === '#') {
+    alert('선생님이 이 교재의 링크를 아직 설정 중이에요!\nhref="" 안에 HTML 파일 경로나 URL을 넣어주세요.');
+    return false;
+  }
+  return true;
+}
+
+// ── ROADMAP TOGGLE
+function toggleRoadmap() {
+  document.getElementById('miniRoadmap').classList.toggle('open');
+}
+
+// ── DONE TOGGLE (단계 완료 체크)
+function toggleDone(panelKey) {
+  const current = getStore('done-' + panelKey, false);
+  const next = !current;
+  setStore('done-' + panelKey, next);
+  applyDone(panelKey, next);
+  calcProgress();
+  if (next) fireConfetti();
+}
+function applyDone(panelKey, isDone) {
+  const el = document.getElementById('done-' + panelKey);
+  if (el) el.classList.toggle('checked', isDone);
+}
+
+// ── MEMO (로컬 저장 + 구글 시트 전송)
+async function saveMemo(panelKey) {
+  const val = document.getElementById('memo-' + panelKey).value;
+  setStore('memo-' + panelKey, val);
+  const btn = event.target;
+  const syncEl = document.getElementById('memo-sync-' + panelKey);
+
+  btn.textContent = '저장됨 ✓';
+  btn.style.background = 'var(--green)';
+  btn.style.color = '#fff';
+  btn.style.borderColor = 'var(--green)';
+  setTimeout(() => { btn.textContent = '저장'; btn.style = ''; }, 1500);
+
+  // 구글 시트 연동
+  if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== '여기에_Apps_Script_URL_붙여넣기') {
+    if (syncEl) { syncEl.textContent = '⏳ 시트에 동기화 중...'; syncEl.className = 'memo-sync-status'; }
+    const name = getStore('studentName', '');
+    const level = LEVEL_NAMES[panelKey] || panelKey;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+    const ok = await sendToSheets({ type: 'memo', name, date: dateStr, level, memo: val });
+    if (syncEl) {
+      syncEl.textContent = ok ? '✓ 시트 저장됨' : '⚠ 시트 연결 실패';
+      syncEl.className = 'memo-sync-status ' + (ok ? 'synced' : 'error');
+      setTimeout(() => { if (syncEl) { syncEl.textContent = ''; syncEl.className = 'memo-sync-status'; } }, 3000);
+    }
+  }
+}
+
+// ── 구글 시트 전송 함수
+async function sendToSheets(data) {
+  try {
+    // Apps Script는 no-cors로 호출해야 CORS 오류 없이 작동해요
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(data)
+    });
+    // no-cors는 응답 내용을 못 읽지만, 요청은 정상 전송돼요
+    return true;
+  } catch(e) {
+    console.warn('Sheets 전송 실패:', e);
+    return false;
+  }
+}
+
+// ── 레벨 이름 매핑
+const LEVEL_NAMES = {
+  p1: 'Level 1 — 스크래치 주니어',
+  p2: 'Level 2 — 엔트리 COS',
+  p3: 'Level 3 — 스크래치 COS',
+  p4: 'Level 4 — 파이썬 COS Pro',
+  p5: 'Level 5 — 실전 AI 🏆'
+};
+
+// ── COMPLETE MODAL
+let modalPanelKey = '';
+const EMOJI_MAP = { p1:'🌱', p2:'🧩', p3:'🐱', p4:'💻', p5:'🤖' };
+const STEP_CLASS = { p1:'s1', p2:'s2', p3:'s3', p4:'s4', p5:'s5' };
+
+function openCompleteModal(stepNum) {
+  const panelKey = 'p' + stepNum;
+  modalPanelKey = panelKey;
+
+  const name = getStore('studentName', '이름 없음');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric',weekday:'short'})
+    + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+  const level = LEVEL_NAMES[panelKey] || panelKey;
+  // 메모: textarea 현재 내용 우선, 없으면 localStorage
+  const memoEl = document.getElementById('memo-' + panelKey);
+  const memo = (memoEl && memoEl.value.trim()) ? memoEl.value : getStore('memo-' + panelKey, '');
+
+  document.getElementById('modalIcon').textContent = EMOJI_MAP[panelKey] || '🎉';
+  document.getElementById('modalTitle').textContent = '수업 완료 보고하기';
+  document.getElementById('modalSub').textContent = '아래 내용을 확인하고 보고 완료를 눌러주세요!';
+  document.getElementById('mInfoName').textContent = name;
+  document.getElementById('mInfoDate').textContent = dateStr;
+  document.getElementById('mInfoLevel').textContent = level;
+
+  const memoPreview = document.getElementById('mInfoMemoPreview');
+  if (memo.trim()) {
+    document.getElementById('mInfoMemoLabel').textContent = '있음 ✓';
+    memoPreview.textContent = memo.length > 80 ? memo.slice(0,80) + '…' : memo;
+    memoPreview.style.display = 'block';
+  } else {
+    document.getElementById('mInfoMemoLabel').textContent = '없음';
+    memoPreview.style.display = 'none';
+  }
+
+  // 시트 미설정 시 배너 표시
+  const isSetup = APPS_SCRIPT_URL && APPS_SCRIPT_URL !== '여기에_Apps_Script_URL_붙여넣기';
+  document.getElementById('setupBanner').classList.toggle('show', !isSetup);
+
+  // 버튼 색상 업데이트
+  const confirmBtn = document.getElementById('modalConfirmBtn');
+  confirmBtn.className = 'modal-confirm-btn ' + (STEP_CLASS[panelKey] || 's1');
+  confirmBtn.textContent = '✅ 보고 완료!';
+  confirmBtn.disabled = false;
+
+  document.getElementById('modalLoading').classList.remove('show');
+  document.getElementById('modalResult').classList.remove('show');
+  document.getElementById('modalBtns').style.display = 'flex';
+
+  document.getElementById('completeModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('completeModal').classList.remove('open');
+}
+document.getElementById('completeModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+async function confirmComplete() {
+  const panelKey = modalPanelKey;
+  const name = getStore('studentName', '이름 없음');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+  const level = LEVEL_NAMES[panelKey] || panelKey;
+  // 메모: textarea 현재 내용 우선, 없으면 localStorage
+  const memoEl2 = document.getElementById('memo-' + panelKey);
+  const memo = (memoEl2 && memoEl2.value.trim()) ? memoEl2.value : getStore('memo-' + panelKey, '');
+
+  const isSetup = APPS_SCRIPT_URL && APPS_SCRIPT_URL !== '여기에_Apps_Script_URL_붙여넣기';
+
+  // 로컬 완료 처리
+  setStore('done-' + panelKey, true);
+  applyDone(panelKey, true);
+  calcProgress();
+  fireConfetti();
+
+  if (isSetup) {
+    document.getElementById('modalBtns').style.display = 'none';
+    document.getElementById('modalLoading').classList.add('show');
+
+    const ok = await sendToSheets({ type: 'complete', name, date: dateStr, level, memo });
+
+    document.getElementById('modalLoading').classList.remove('show');
+    const resultEl = document.getElementById('modalResult');
+    resultEl.classList.add('show');
+
+    if (ok) {
+      resultEl.textContent = '🎉 구글 시트에 기록 완료!';
+      resultEl.className = 'modal-result show ok';
+    } else {
+      resultEl.textContent = '⚠ 시트 전송 실패 — 로컬엔 저장되었어요.';
+      resultEl.className = 'modal-result show err';
+    }
+    setTimeout(() => closeModal(), 2200);
+  } else {
+    // 미설정 시: 모달 성공 메시지 후 닫기
+    document.getElementById('modalBtns').style.display = 'none';
+    const resultEl = document.getElementById('modalResult');
+    resultEl.textContent = '✓ 완료 표시 저장됨! (시트 미연동)';
+    resultEl.className = 'modal-result show ok';
+    resultEl.classList.add('show');
+    setTimeout(() => closeModal(), 1800);
+  }
+}
+
+// ── CONFETTI
+function loadAllState() {
+  ['p1','p2','p3','p4','p5'].forEach(p => {
+    const isDone = getStore('done-' + p, false);
+    applyDone(p, isDone);
+    const memo = getStore('memo-' + p, '');
+    const el = document.getElementById('memo-' + p);
+    if (el) el.value = memo;
+  });
+  loadTodaySelect('p4');
+  const lastStep = getStore('lastStep', 0);
+  if (lastStep > 0) selectStep(lastStep);
+}
+
+
+// ── TODAY CHAPTER SELECT (버전 B)
+const CHAPTER_NAMES = ['반복문 (while)','반복문 (for)','중첩 반복문','유니코드 & 문자열','튜플 (tuple)','집합 (set)','딕셔너리 (dict)','함수 (function)'];
+let simMode = false;
+
+function selectToday(panel, idx) {
+  setStore('today-' + panel, idx);
+  applyTodaySelect(panel, idx, false);
+}
+function applyTodaySelect(panel, idx, isDoneMode) {
+  const cards = document.querySelectorAll('[id^="rc-' + panel + '-"]');
+  cards.forEach((c, i) => {
+    c.classList.remove('selected-today', 'done-last');
+    if (isDoneMode) {
+      // 시뮬레이션: 지난번 선택 챕터는 완료 표시, 나머지는 일반
+      if (i === idx) c.classList.add('done-last');
+    } else {
+      if (i === idx) c.classList.add('selected-today');
+      const input = c.querySelector('input[type=radio]');
+      if (input && i === idx) input.checked = true;
+    }
+  });
+  const wrap = document.getElementById('today-' + panel + '-wrap');
+  const name = document.getElementById('today-' + panel + '-name');
+  const banner = document.getElementById('sim-' + panel + '-banner');
+  if (isDoneMode) {
+    if (wrap) wrap.style.display = 'none';
+    if (banner) banner.style.display = 'flex';
+  } else {
+    if (wrap && idx >= 0) { wrap.style.display = 'flex'; }
+    if (name) name.textContent = CHAPTER_NAMES[idx] || '';
+    if (banner) banner.style.display = 'none';
+  }
+}
+function simulateNextVisit(panel) {
+  simMode = true;
+  const saved = getStore('today-' + panel, -1);
+  if (saved >= 0) applyTodaySelect(panel, saved, true);
+}
+function resetSimulation(panel) {
+  simMode = false;
+  const saved = getStore('today-' + panel, -1);
+  applyTodaySelect(panel, saved, false);
+}
+function loadTodaySelect(panel) {
+  const saved = getStore('today-' + panel, -1);
+  if (saved >= 0) applyTodaySelect(panel, saved, false);
+}
+
+// ── CONFETTI
+function fireConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  const colors = ['#4A9EFF','#2CC9A0','#FBB040','#A78BFA','#5DD17A','#FF6B6B'];
+  for (let i = 0; i < 36; i++) {
+    const c = document.createElement('div');
+    c.className = 'c';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.top = '-20px';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.width = (Math.random()*10+6) + 'px';
+    c.style.height = (Math.random()*10+6) + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    c.style.animationDuration = (Math.random()*1.5+1.2) + 's';
+    c.style.animationDelay = (Math.random()*0.5) + 's';
+    wrap.appendChild(c);
+    c.addEventListener('animationend', () => c.remove());
+  }
+}
+
+/*
+════════════════════════════════════════════════════════════
+📋  구글 시트 자동 연동 설정 가이드 (선생님용, 5분이면 완료!)
+════════════════════════════════════════════════════════════
+
+[STEP 1] 구글 스프레드시트 만들기
+  - 새 구글 스프레드시트를 만들고 이름을 "코딩 마스터 수업 기록" 으로 저장
+
+[STEP 2] Apps Script 열기
+  - 스프레드시트 상단 메뉴 → 확장 프로그램 → Apps Script 클릭
+
+[STEP 3] 아래 코드를 통째로 붙여넣기 (기존 내용 삭제 후)
+─────────────────────────────────────
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['유형','학생 이름','날짜/시간','레벨','메모']);
+    }
+    sheet.appendRow([
+      data.type === 'complete' ? '✅ 수업완료' : '📝 메모저장',
+      data.name || '',
+      data.date || '',
+      data.level || '',
+      data.memo || ''
+    ]);
+    return ContentService.createTextOutput('ok').setMimeType(ContentService.MimeType.TEXT);
+  } catch(err) {
+    return ContentService.createTextOutput('error').setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+─────────────────────────────────────
+
+[STEP 4] 배포하기
+  - 우측 상단 "배포" → "새 배포" 클릭
+  - 유형 선택 → "웹 앱" 선택
+  - 액세스 권한 → "모든 사용자" 로 변경
+  - "배포" 버튼 클릭 → 권한 허용
+
+[STEP 5] URL 복사해서 이 파일에 붙여넣기
+  - 배포 완료 후 나오는 "웹 앱 URL" 복사
+  - 이 파일 상단 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAAf-ZmhaE3AZDvfr3QPn7Od-fgC42YyiA2AHCacv_-2-J4tPGU6UCpX5EMQQskZOvIQ/exec'; 부분에 붙여넣기
+
+✅ 완료! 이제 학생이 저장/보고 버튼을 누르면 구글 시트에 자동 기록돼요.
+════════════════════════════════════════════════════════════
+*/
+</script>
+</body>
+</html>
