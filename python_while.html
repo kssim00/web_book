@@ -5,307 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CODE:N - 파이썬 While문 완전 정복</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
     <style>
         :root {
-            --primary: #00b894;
-            --primary-light: #e0fbf6;
-            --secondary: #2d3436;
-            --bg-color: #f8f9fa;
+            --primary: #6c63ff;
+            --primary-light: #ede9ff;
+            --secondary: #1a1a2e;
+            --accent: #00d4aa;
+            --bg-color: #f4f5fb;
             --card-bg: #ffffff;
-            --code-bg: #2d3436;
-            --text-main: #2d3436;
-            --text-muted: #636e72;
-            --code-text: #f1f2f6;
-            --code-kw: #ff7675;
-            --code-fn: #74b9ff;
-            --code-st: #ffeaa7;
-            --code-nm: #55efc4;
-            --code-cm: #b2bec3;
+            --code-bg: #16213e;
+            --text-main: #1a1a2e;
+            --text-muted: #6b7280;
+            --code-text: #e2e8f0;
+            --code-kw: #f472b6;
+            --code-fn: #60a5fa;
+            --code-st: #fbbf24;
+            --code-nm: #34d399;
+            --code-cm: #9ca3af;
         }
-
         * { box-sizing: border-box; }
-
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0; padding: 0;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 33px 22px;
-        }
-
-        /* --- Header --- */
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; font-size: 1rem; line-height: 1.6; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 33px 22px; }
         header { text-align: center; margin-bottom: 40px; }
-        .brand-badge {
-            background: var(--secondary); color: #fff; padding: 4px 15px;
-            border-radius: 50px; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;
-        }
-        h1 {
-            font-size: 2.2rem; font-weight: 900; color: var(--secondary);
-            margin: 15px 0 5px 0; letter-spacing: -1px;
-        }
+        .brand-badge { background: var(--secondary); color: #fff; padding: 4px 15px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px; }
+        h1 { font-size: 2.2rem; font-weight: 900; color: var(--secondary); margin: 15px 0 5px 0; letter-spacing: -1px; }
         .intro { font-size: 1.1rem; color: var(--text-muted); font-weight: 500; }
-
-        /* --- Section Common --- */
-        section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 40px;
-            border: 1px solid #e1e4e8;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        h2 {
-            font-size: 1.6rem; color: var(--primary); margin-bottom: 25px;
-            font-weight: 800; border-left: 6px solid var(--secondary);
-            padding-left: 15px; line-height: 1.2;
-        }
-
+        section { background: var(--card-bg); border-radius: 16px; padding: 30px; margin-bottom: 40px; border: 1px solid #e1e4e8; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        h2 { font-size: 1.6rem; color: var(--primary); margin-bottom: 25px; font-weight: 800; border-left: 6px solid var(--secondary); padding-left: 15px; line-height: 1.2; }
+        h3 { font-size: 1.05rem; font-weight: 800; color: var(--secondary); margin: 20px 0 10px; }
         p { margin-bottom: 15px; font-size: 1rem; word-break: keep-all; }
-
-        /* --- Code Block --- */
-        .code-wrapper {
-            background-color: var(--code-bg);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            border-left: 6px solid var(--primary);
-            overflow-x: auto;
-        }
-
-        pre {
-            margin: 0;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--code-text);
-            line-height: 1.6;
-            white-space: pre;
-        }
-
-        /* Syntax Highlighting */
+        code { background: #ede9ff; color: #6c63ff; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.92em; }
+        .code-wrapper { background-color: var(--code-bg); border-radius: 12px; padding: 20px; margin: 16px 0; border-left: 6px solid var(--primary); overflow-x: auto; }
+        pre { margin: 0; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 500; color: var(--code-text); line-height: 1.7; white-space: pre; }
         .kw { color: var(--code-kw); }
         .fn { color: var(--code-fn); }
         .st { color: var(--code-st); }
         .nm { color: var(--code-nm); }
-        .cm { color: var(--code-cm); font-weight: 400; font-size: 0.9rem; font-style: italic; }
+        .cm { color: var(--code-cm); font-weight: 400; font-size: 0.88rem; font-style: italic; }
+        .output { background: #f1f2f6; border-radius: 8px; padding: 14px 16px; font-family: 'Consolas', monospace; font-size: 0.9rem; color: #2d3436; border: 1px dashed #b2bec3; margin-top: 12px; white-space: pre-wrap; }
+        .output::before { content: "💻 실행 결과:"; display: block; font-weight: bold; margin-bottom: 5px; color: var(--primary); font-size: 0.85rem; }
 
-        /* Output Box */
-        .output {
-            background: #f1f2f6; border-radius: 8px; padding: 15px;
-            font-family: 'Consolas', monospace; font-size: 0.9rem; color: #2d3436;
-            border: 1px dashed #b2bec3; margin-top: 15px;
-        }
-        .output::before { content: "💻 실행 결과:"; display: block; font-weight: bold; margin-bottom: 5px; color: var(--primary); }
+        /* Code + Result pair */
+        .code-result-pair { display: flex; gap: 14px; align-items: stretch; margin: 14px 0; flex-wrap: wrap; }
+        .code-result-pair .code-wrapper { flex: 1; min-width: 240px; margin: 0; }
+        .arrow-col { display: flex; align-items: center; font-size: 1.4rem; color: var(--primary); flex-shrink: 0; }
+        .result-box { flex: 0 0 auto; min-width: 110px; background: #0f172a; border-radius: 12px; padding: 16px 20px; font-family: 'Consolas', monospace; font-size: 1rem; color: var(--accent); font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid #2e3a52; white-space: pre; line-height: 1.6; }
 
-        /* --- Drill Boxes --- */
-        .drill-together {
-            background-color: #f0faf7;
-            border: 1px solid #a8ddd4;
-            border-left: 5px solid var(--primary);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 25px;
-        }
-        .drill-solo {
-            background-color: #eef4fb;
-            border: 1px solid #b3d0ed;
-            border-left: 5px solid #5b9bd5;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 25px;
-        }
-        .drill-together h3,
-        .drill-solo h3 {
-            margin-top: 0;
-            font-weight: 800;
-            font-size: 1rem;
-            color: var(--secondary);
-        }
+        /* Tip / Warn Box */
+        .tip-box { background: linear-gradient(135deg, #e0f7f4, #d4edfa); border-left: 6px solid var(--accent); border-radius: 0 12px 12px 0; padding: 18px 20px; margin: 20px 0; color: #065f46; }
+        .tip-title { font-weight: 800; font-size: 1rem; margin-bottom: 6px; }
+        .warn-box { background: #fff8e1; border-left: 6px solid #f59e0b; border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 16px 0; font-size: 0.93rem; color: #78350f; }
 
-        details {
-            margin-top: 12px;
-            cursor: pointer;
-            display: inline-block;
-        }
-        summary {
-            font-weight: 600; font-size: 0.88rem; color: var(--text-muted);
-            list-style: none; display: inline-flex; align-items: center; gap: 6px;
-            padding: 5px 14px; border: 1px solid #dfe6e9; border-radius: 20px;
-            background: white; transition: 0.2s; user-select: none;
-        }
-        summary:hover { color: var(--primary); border-color: var(--primary); }
-        details[open] summary { color: var(--primary); border-color: var(--primary); }
-        .answer-content {
-            margin-top: 8px; padding: 12px 16px;
-            background: #f8f9fa; border-radius: 8px;
-            border-left: 3px solid var(--primary);
-            color: #636e72; font-size: 0.92rem;
-            max-width: 520px;
-        }
+        /* Drill Boxes */
+        .drill-together { background-color: #f0eeff; border: 1px solid #c4b5fd; border-left: 5px solid var(--primary); border-radius: 12px; padding: 20px; margin-top: 25px; }
+        .drill-solo { background-color: #e6fdf8; border: 1px solid #99e9d8; border-left: 5px solid var(--accent); border-radius: 12px; padding: 20px; margin-top: 25px; }
+        .drill-together h3, .drill-solo h3 { margin-top: 0; font-weight: 800; font-size: 1rem; color: var(--secondary); }
+        details { margin-top: 15px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; }
+        summary { font-weight: bold; font-size: 1rem; color: var(--secondary); list-style: none; display: flex; align-items: center; gap: 8px; }
+        .answer-content { margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; color: #6b7280; font-size: 0.95rem; }
 
-        /* --- Code Editor --- */
-        .code-editor {
-            width: 100%;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.95rem;
-            padding: 16px;
-            border: 2px solid #dfe6e9;
-            border-radius: 8px;
-            resize: vertical;
-            min-height: 220px;
-            outline: none;
-            line-height: 1.9;
-            background: #f8f9fa;
-            color: #2d3436;
-            transition: border-color 0.2s;
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-        .code-editor:focus { border-color: var(--primary); background: #fff; }
-
-        .run-btn {
-            background: var(--secondary); color: white; border: none;
-            padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-size: 0.95rem; font-weight: bold; transition: 0.3s;
-            margin-top: 8px;
-            font-family: 'Pretendard', sans-serif;
-        }
+        /* Code Editor */
+        .code-editor { min-height: 220px; height: auto; width: 100%; font-size: 0.95rem; line-height: 1.7; border: 2px solid #2e3a52; border-radius: 8px; margin: 10px 0; padding: 14px 16px; font-family: 'Consolas', 'Monaco', monospace; white-space: pre; resize: vertical; outline: none; background-color: #16213e; color: #e2e8f0; caret-color: #6c63ff; overflow-y: hidden; display: block; }
+        .code-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108,99,255,0.15); overflow-y: auto; }
+        .run-btn { background: var(--secondary); color: white; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: bold; transition: 0.3s; font-family: 'Pretendard', sans-serif; }
         .run-btn:hover { background: var(--primary); }
-        .run-btn:disabled { background: #b2bec3; cursor: not-allowed; }
+        .output-area { background: #f1f2f6; padding: 12px; border-radius: 8px; font-family: 'Consolas', monospace; margin-top: 10px; white-space: pre-wrap; font-size: 0.9rem; min-height: 40px; border: 1px solid #eee; }
 
-        .output-area {
-            background: #f1f2f6; padding: 12px; border-radius: 8px;
-            font-family: 'Consolas', monospace; margin-top: 10px;
-            white-space: pre-wrap; font-size: 0.9rem; min-height: 40px;
-            border: 1px solid #eee; color: #2d3436;
-        }
-
-        /* --- Blank Input Style --- */
-        .blank-input {
-            font-size: 0.95rem; padding: 3px 8px; border: 2px solid var(--primary);
-            border-radius: 6px; width: 120px; text-align: center;
-            font-family: 'Consolas', monospace; font-weight: 700; outline: none;
-            margin: 0 5px; background-color: #fff; transition: background-color 0.3s;
-            vertical-align: middle;
-        }
-        .blank-input.correct { background: #d4efdf; border-color: #00b894; }
-        .blank-input.wrong { background: #fde8e8; border-color: #d63031; }
-
-        .drill-feedback {
-            margin-top: 15px; font-weight: bold; font-size: 0.95rem;
-            padding: 12px; border-radius: 8px; display: none;
-        }
+        /* Blank Input */
+        .blank-input { font-size: 0.95rem; padding: 3px 8px; border: 2px solid var(--primary); border-radius: 6px; width: 120px; text-align: center; font-family: 'Consolas', monospace; font-weight: 700; outline: none; margin: 0 5px; background-color: #fff; transition: background-color 0.3s; vertical-align: middle; }
+        .drill-feedback { margin-top: 15px; font-weight: bold; font-size: 0.95rem; padding: 12px; border-radius: 8px; display: none; }
         .drill-feedback.show { display: block; }
 
-        /* --- Challenge Box --- */
-        .challenge-box {
-            background: #fdfefe;
-            border: 2px solid #2d3436;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-        .challenge-badge {
-            background: #2d3436; color: white; padding: 3px 10px;
-            border-radius: 6px; font-weight: bold; font-size: 0.8rem;
-            display: inline-block; margin-bottom: 10px;
-        }
-        .challenge-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; color: #2d3436; }
-        .io-example {
-            background: #ffffff; padding: 14px 16px; border-radius: 6px;
-            font-family: 'Consolas', monospace; margin: 10px 0;
-            font-size: 0.9rem; border: 1px solid #e1e4e8;
-            border-left: 4px solid var(--primary);
-        }
+        /* Challenge Box */
+        .challenge-box { background: #fdfefe; border: 2px solid var(--secondary); border-radius: 12px; padding: 22px; margin-bottom: 25px; }
+        .challenge-badge { background: var(--secondary); color: white; padding: 3px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; display: inline-block; margin-bottom: 10px; }
+        .challenge-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; color: var(--secondary); }
+        .io-example { background: #f1f2f6; padding: 12px; border-radius: 6px; font-family: 'Consolas', monospace; margin: 10px 0; font-size: 0.9rem; white-space: pre; line-height: 1.7; }
+        .story-badge { display: inline-block; background: #fff3cd; color: #856404; border: 1px solid #ffc107; border-radius: 20px; padding: 4px 12px; font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; }
 
-        /* --- Quiz --- */
-        .quiz-item {
-            background: white; padding: 20px; border-radius: 12px;
-            border: 1px solid #dfe6e9; margin-bottom: 20px;
-        }
+        /* Compare table */
+        .compare-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.93rem; }
+        .compare-table th { background: var(--secondary); color: white; padding: 11px 14px; text-align: left; }
+        .compare-table th:first-child { border-radius: 8px 0 0 0; }
+        .compare-table th:last-child { border-radius: 0 8px 0 0; }
+        .compare-table td { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; }
+        .compare-table tr:hover td { background: #f8f7ff; }
+
+        /* Quiz */
+        .quiz-item { background: white; padding: 20px; border-radius: 12px; border: 1px solid #dfe6e9; margin-bottom: 20px; }
         .quiz-question { font-weight: bold; margin-bottom: 15px; font-size: 1.05rem; }
-        .quiz-options label {
-            display: block; padding: 10px; cursor: pointer; font-size: 0.95rem;
-            transition: 0.2s; border-radius: 6px; margin-bottom: 3px;
-        }
-        .quiz-options label:hover { background: #f1f2f6; }
-
-        .quiz-code {
-            display: block; background-color: #f1f2f6; padding: 12px;
-            border-radius: 6px; font-family: 'Consolas', monospace; color: #2d3436;
-            margin: 10px 0; border-left: 4px solid var(--primary);
-            font-size: 0.9rem; white-space: pre-wrap; line-height: 1.4; font-weight: 600;
-        }
-
-        .btn-check {
-            background: var(--secondary); color: white; border: none;
-            padding: 15px 30px; font-size: 1.2rem; border-radius: 12px;
-            cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s;
-        }
+        .quiz-code { display: block; background: var(--code-bg); padding: 12px 14px; border-radius: 8px; font-family: 'Consolas', monospace; color: var(--code-text); margin: 10px 0; font-size: 0.9rem; white-space: pre; line-height: 1.6; }
+        .quiz-options label { display: block; padding: 10px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; border-radius: 6px; margin-bottom: 3px; }
+        .quiz-options label:hover { background: #f0eeff; }
+        .btn-check { background: var(--secondary); color: white; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 12px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s; font-family: 'Pretendard', sans-serif; }
         .btn-check:hover { background: var(--primary); }
 
-        footer {
-            text-align: center; padding: 40px 0; color: var(--text-muted);
-            border-top: 1px solid #dcdde1; margin-top: 50px; font-size: 0.9rem;
-        }
+        footer { text-align: center; padding: 40px 0; color: var(--text-muted); border-top: 1px solid #dcdde1; margin-top: 50px; font-size: 0.9rem; }
 
-        /* --- 사이드 네비게이션 --- */
-        nav {
-            width: 264px; height: 100vh; background: white;
-            border-right: 1px solid #e1e8ed; position: fixed;
-            top: 0; left: 0; padding: 33px 16px; box-sizing: border-box;
-            overflow-y: auto; overflow-x: hidden; z-index: 100;
-            transition: width 0.3s ease, padding 0.3s ease;
-        }
+        /* Side Nav */
+        nav { width: 264px; height: 100vh; background: white; border-right: 1px solid #e1e8ed; position: fixed; top: 0; left: 0; padding: 33px 16px; box-sizing: border-box; overflow-y: auto; overflow-x: hidden; z-index: 100; transition: width 0.3s ease, padding 0.3s ease; }
         nav.collapsed { width: 0; padding: 0; }
         nav.collapsed * { opacity: 0; pointer-events: none; }
-        nav h2 {
-            font-size: 1rem; color: var(--primary); margin: 0 0 20px 0;
-            font-weight: 800; letter-spacing: -0.5px; border: none;
-            border-bottom: 2px solid var(--primary-light); padding: 0 0 12px 0; white-space: nowrap;
-        }
+        nav h2 { font-size: 1rem; color: var(--primary); margin: 0 0 20px 0; font-weight: 800; border: none; border-bottom: 2px solid var(--primary-light); padding: 0 0 12px 0; white-space: nowrap; }
         nav ul { list-style: none; padding: 0; margin: 0; }
-        nav li {
-            padding: 10px 14px; border-radius: 8px; margin-bottom: 4px;
-            cursor: pointer; transition: 0.2s; color: var(--text-muted);
-            font-size: 0.88rem; font-weight: 600; line-height: 1.4; white-space: nowrap;
-        }
+        nav li { padding: 10px 14px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; transition: 0.2s; color: var(--text-muted); font-size: 0.88rem; font-weight: 600; line-height: 1.4; white-space: nowrap; }
         nav li:hover { background: var(--primary-light); color: var(--primary); }
         nav li.active { background: var(--primary); color: white; }
-        nav li.nav-check {
-            padding-left: 10px; color: #5b9bd5; font-size: 0.82rem;
-        }
-        nav li.nav-check::before {
-            content: "✔"; display: inline-block;
-            margin-right: 7px; font-size: 0.75rem; color: #5b9bd5;
-        }
-        nav li.nav-check:hover { background: #eef4fb; color: #3a78b5; }
-        nav li.nav-check:hover::before { color: #3a78b5; }
-        nav li.nav-check.active { background: #5b9bd5; color: white; }
+        nav li.nav-check { padding-left: 10px; color: var(--accent); font-size: 0.82rem; }
+        nav li.nav-check::before { content: "✔"; display: inline-block; margin-right: 7px; font-size: 0.75rem; color: var(--accent); }
+        nav li.nav-check:hover { background: #e6fdf8; color: #059669; }
+        nav li.nav-check.active { background: var(--accent); color: white; }
         nav li.nav-check.active::before { color: white; }
-
-        #nav-toggle {
-            position: fixed; top: 50%; left: 264px; transform: translateY(-50%);
-            width: 20px; height: 56px; background: var(--primary);
-            border: none; border-radius: 0 8px 8px 0; cursor: pointer;
-            z-index: 200; display: flex; align-items: center; justify-content: center;
-            transition: left 0.3s ease, background 0.2s;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1); padding: 0;
-        }
-        #nav-toggle:hover { background: #00a381; }
+        #nav-toggle { position: fixed; top: 50%; left: 264px; transform: translateY(-50%); width: 20px; height: 56px; background: var(--primary); border: none; border-radius: 0 8px 8px 0; cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; transition: left 0.3s ease, background 0.2s; box-shadow: 2px 0 8px rgba(0,0,0,0.1); padding: 0; }
+        #nav-toggle:hover { background: #4f46e5; }
         #nav-toggle svg { transition: transform 0.3s ease; }
         #nav-toggle.collapsed-btn { left: 0; }
         #nav-toggle.collapsed-btn svg { transform: rotate(180deg); }
-
         html { font-size: 110%; }
         body { padding-left: 264px; transition: padding-left 0.3s ease; }
         body.nav-collapsed { padding-left: 0; }
@@ -319,909 +135,803 @@
     </svg>
 </button>
 
-<script>
-    // 입력 시 자동 높이 조절
-    document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('code-editor')) {
-            e.target.style.height = 'auto';
-            e.target.style.height = (e.target.scrollHeight) + 'px';
-        }
-    });
-    // 페이지 로드 시 모든 에디터 초기 높이 자동 설정
-    window.addEventListener('load', function() {
-        document.querySelectorAll('.code-editor').forEach(el => {
-            el.style.height = 'auto';
-            el.style.height = Math.max(el.scrollHeight, parseInt(el.style.minHeight) || 220) + 'px';
-        });
-    });
-</script>
-
 <nav>
-    <h2>While 문 완전 정복</h2>
+    <h2>While문 완전 정복</h2>
     <ul>
         <li onclick="goToSection('top')" id="nav-top" class="active">개요</li>
-        <li onclick="goToSection('sec1')" id="nav-sec1">1. While 문의 기본 구조</li>
+        <li onclick="goToSection('sec1')" id="nav-sec1">1. while문 기본 구조</li>
         <li onclick="goToSection('sec2')" id="nav-sec2">2. 보초값(Sentinel)</li>
         <li onclick="goToSection('check1')" id="nav-check1" class="nav-check">Check 1</li>
-        <li onclick="goToSection('sec3')" id="nav-sec3">3. Break &amp; Continue</li>
+        <li onclick="goToSection('sec3')" id="nav-sec3">3. break &amp; continue</li>
         <li onclick="goToSection('sec4')" id="nav-sec4">4. 무한 루프</li>
         <li onclick="goToSection('check2')" id="nav-check2" class="nav-check">Check 2</li>
         <li onclick="goToSection('sec5')" id="nav-sec5">5. while — else</li>
-        <li onclick="goToSection('check3')" id="nav-check3" class="nav-check">Check 3</li>
+        <li onclick="goToSection('check3')" id="nav-check3" class="nav-check">Check 3 (심화)</li>
     </ul>
 </nav>
 
 <div class="container">
     <header>
         <span class="brand-badge">CODE:N ACADEMY</span>
-        <h1>파이썬 While 문 완전 정복</h1>
-        <p class="intro">조건이 '참'인 동안 반복되는 원리를 마스터하세요.</p>
+        <h1>파이썬 while문 완전 정복</h1>
+        <p class="intro">조건이 참인 동안 계속 반복하는 원리를 마스터하세요.</p>
     </header>
 
-    <!-- 개념 소개 -->
+    <!-- 개념 요약 카드 -->
     <div style="display:flex; gap:16px; margin-bottom:40px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:220px; background:white; border-radius:16px; padding:22px 24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-top:5px solid var(--primary);">
-            <p style="font-weight:900; font-size:1.1rem; margin:0 0 6px 0; color:var(--secondary);">while문이란?</p>
-            <p style="font-size:0.95rem; color:#636e72; margin:0; line-height:1.6; word-break:keep-all;"><strong>반복 횟수가 정해지지 않았을 때</strong> 사용합니다.<br>예: 비밀번호가 맞을 때까지 입력 받기, 사용자가 종료할 때까지 메뉴 보여주기</p>
+        <div style="flex:1; min-width:220px; background:white; border-radius:16px; padding:22px 24px; box-shadow:0 4px 12px rgba(108,99,255,0.08); border-top:5px solid var(--primary);">
+            <p style="font-weight:900; font-size:1.1rem; margin:0 0 8px 0; color:var(--secondary);">while문이란?</p>
+            <p style="font-size:0.95rem; color:var(--text-muted); margin:0; line-height:1.7; word-break:keep-all;"><strong>반복 횟수가 정해지지 않았을 때</strong> 사용합니다.<br>예: 비밀번호가 맞을 때까지 입력 받기, 사용자가 종료할 때까지 메뉴 보여주기</p>
         </div>
-        <div style="flex:1; min-width:220px; background:white; border-radius:16px; padding:22px 24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-top:5px solid var(--secondary);">
-            <p style="font-weight:900; font-size:1.1rem; margin:0 0 6px 0; color:var(--secondary);">while문의 핵심 구조</p>
-            <p style="font-size:0.95rem; color:#636e72; margin:0 0 10px 0; line-height:1.6;">조건이 <strong>True인 동안</strong> 계속 반복하고, False가 되면 즉시 종료합니다.</p>
-            <code style="background:#f1f2f6; padding:6px 10px; border-radius:6px; font-size:0.9rem; display:block;">while 조건:<br>&nbsp;&nbsp;&nbsp;&nbsp;실행할 코드</code>
+        <div style="flex:1; min-width:220px; background:white; border-radius:16px; padding:22px 24px; box-shadow:0 4px 12px rgba(108,99,255,0.08); border-top:5px solid var(--secondary);">
+            <p style="font-weight:900; font-size:1.1rem; margin:0 0 8px 0; color:var(--secondary);">while문의 기본 구조</p>
+            <p style="font-size:0.95rem; color:var(--text-muted); margin:0 0 10px 0; line-height:1.7;">조건이 <strong>True인 동안</strong> 계속 반복하고, False가 되면 즉시 종료합니다.</p>
+            <div style="background:var(--code-bg); padding:10px 14px; border-radius:8px; font-family:'Consolas',monospace; font-size:0.9rem; color:var(--code-text); line-height:1.8;">
+                <span style="color:var(--code-kw);">while</span> <span style="color:var(--code-fn);">조건</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--code-text);">실행할 코드</span>
+            </div>
         </div>
     </div>
 
-    <!-- ═══ 1. 기본 구조 ═══ -->
+    <!-- ══ 1. while 기본 구조 ══ -->
     <section id="sec1">
-        <h2>1. While 문의 기본 구조</h2>
-        <p><code>while</code>은 <strong>'~하는 동안'</strong>이라는 뜻입니다. 조건이 맞으면 계속 실행하고, 틀리면 즉시 종료합니다. while문은 <strong>3가지를 항상 직접 써줘야</strong> 합니다.</p>
+        <h2>1. while문의 기본 구조</h2>
+        <p>아래 코드들을 보세요. for문과 무엇이 다른지 생각해보세요.</p>
 
-        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
-            <div style="flex:1; min-width:160px; background:white; border-radius:8px; padding:14px; border-left:4px solid #e17055; text-align:center; border:1px solid #eee;">
-                <p style="font-weight:900; color:#e17055; font-size:1.1rem; margin:0 0 6px 0;">① 시작값</p>
-                <code style="font-size:1rem; background:#f8f9fa; padding:4px 10px; border-radius:4px;">i = 1</code>
-                <p style="font-size:0.85rem; color:#636e72; margin:8px 0 0 0;">반복을 어디서 시작할지</p>
-            </div>
-            <div style="flex:1; min-width:160px; background:white; border-radius:8px; padding:14px; border-left:4px solid #0984e3; text-align:center; border:1px solid #eee;">
-                <p style="font-weight:900; color:#0984e3; font-size:1.1rem; margin:0 0 6px 0;">② 조건식</p>
-                <code style="font-size:1rem; background:#f8f9fa; padding:4px 10px; border-radius:4px;">while i &lt;= 3:</code>
-                <p style="font-size:0.85rem; color:#636e72; margin:8px 0 0 0;">언제까지 반복할지</p>
-            </div>
-            <div style="flex:1; min-width:160px; background:white; border-radius:8px; padding:14px; border-left:4px solid var(--primary); text-align:center; border:1px solid #eee;">
-                <p style="font-weight:900; color:var(--primary); font-size:1.1rem; margin:0 0 6px 0;">③ 증가식</p>
-                <code style="font-size:1rem; background:#f8f9fa; padding:4px 10px; border-radius:4px;">i += 1</code>
-                <p style="font-size:0.85rem; color:#636e72; margin:8px 0 0 0;">매 반복마다 변수를 바꿔줌</p>
-            </div>
-        </div>
-        <p style="background:#fff3cd; border:1px solid #fdcb6e; border-radius:8px; padding:10px 16px; font-size:0.93rem; margin-bottom:20px;">③ 증가식을 빠뜨리면 조건이 영원히 True가 되어 <strong>무한루프</strong>가 발생합니다. ① 시작값을 안 쓰면 <strong>NameError</strong>가 발생합니다.</p>
-
-        <div class="code-wrapper">
-<pre>
-i = <span class="nm">1</span>                  <span class="cm"># ① 시작값 선언 (필수!)</span>
-
-<span class="kw">while</span> i <= <span class="nm">3</span>:         <span class="cm"># ② 조건식 (참일 동안 반복)</span>
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+i = <span class="nm">1</span>
+<span class="kw">while</span> i <= <span class="nm">3</span>:
     <span class="fn">print</span>(i)
-    i += <span class="nm">1</span>             <span class="cm"># ③ 증가식 (없으면 무한루프!)</span>
-</pre>
+    i += <span class="nm">1</span></pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box">1
+2
+3</div>
         </div>
-        <div class="output">
-            1<br>2<br>3
+
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><code>while</code>은 <strong>조건이 참(True)인 동안</strong> 계속 반복합니다.<br>
+            조건이 거짓(False)이 되는 순간 반복이 끝납니다.</p>
+        </div>
+
+        <p style="margin-top: 20px;">while문은 <strong>3가지를 반드시 직접 작성</strong>해야 합니다.</p>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin: 16px 0;">
+            <div style="flex:1; min-width:160px; background:#f8f7ff; border-radius:10px; padding:16px; border-top:4px solid #e17055; text-align:center;">
+                <p style="font-weight:900; color:#e17055; font-size:1rem; margin:0 0 8px 0;">① 시작값</p>
+                <code style="background:var(--code-bg); color:var(--nm,#34d399); padding:5px 10px; border-radius:6px; display:block; margin-bottom:6px;">i = 1</code>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">반복을 어디서 시작할지</p>
+            </div>
+            <div style="flex:1; min-width:160px; background:#f8f7ff; border-radius:10px; padding:16px; border-top:4px solid var(--primary); text-align:center;">
+                <p style="font-weight:900; color:var(--primary); font-size:1rem; margin:0 0 8px 0;">② 조건식</p>
+                <code style="background:var(--code-bg); color:#60a5fa; padding:5px 10px; border-radius:6px; display:block; margin-bottom:6px;">while i &lt;= 3:</code>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">언제까지 반복할지</p>
+            </div>
+            <div style="flex:1; min-width:160px; background:#f8f7ff; border-radius:10px; padding:16px; border-top:4px solid var(--accent); text-align:center;">
+                <p style="font-weight:900; color:var(--accent); font-size:1rem; margin:0 0 8px 0;">③ 증가식</p>
+                <code style="background:var(--code-bg); color:#34d399; padding:5px 10px; border-radius:6px; display:block; margin-bottom:6px;">i += 1</code>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">매 반복마다 변수를 바꿔줌</p>
+            </div>
+        </div>
+
+        <div class="warn-box">
+            ⚠️ <strong>③ 증가식을 빠뜨리면</strong> 조건이 영원히 True가 되어 <strong>무한루프</strong>가 발생합니다.<br>
+            ⚠️ <strong>① 시작값을 선언하지 않으면</strong> NameError가 발생합니다.
         </div>
 
         <div class="drill-together">
-            <h3>Example — 1부터 5까지 출력하기</h3>
-            <p>while문의 3가지 요소(시작값, 조건식, 증가식)를 모두 직접 써서 1부터 5까지 출력하는 코드를 함께 작성해봅시다.</p>
-            <div class="drill-solo" style="margin:12px 0; background:#f0f4fa; border-left:4px solid #5b9bd5;">
-                <p style="margin:0 0 6px 0; font-weight:700;">💡 이렇게 생각해보세요</p>
-                <p style="margin:0; font-size:0.93rem;">① 시작값: <code>i = 1</code><br>② 조건식: 5까지 출력해야 하니 <code>while i &lt;= 5:</code><br>③ 증가식: <code>i += 1</code></p>
-            </div>
-            <textarea id="editor-w1" class="code-editor" placeholder="# 코드를 입력하세요"></textarea>
-            <button class="run-btn" onclick="runCode('editor-w1', 'output-w1')">실행하기</button>
+            <h3>✏️ Example — 1부터 5까지 출력하기</h3>
+            <p>3가지 요소(시작값, 조건식, 증가식)를 모두 직접 써서 1부터 5까지 출력해봅시다.</p>
+            <textarea id="editor-w1" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-w1','output-w1')">실행하기</button>
             <div id="output-w1" class="output-area"></div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — 10부터 1까지 카운트다운</h3>
-            <p>10부터 시작해서 1까지 <strong>거꾸로</strong> 출력하는 코드를 스스로 작성해보세요.<br>
-            시작값·조건식·증가식 세 가지를 모두 직접 생각해야 합니다!</p>
-            <div class="io-example" style="margin-bottom:12px;">
-                출력 예: 10 9 8 7 6 5 4 3 2 1
-            </div>
-            <details>
-                <summary>💡 힌트 확인하기</summary>
+        <div class="drill-solo">
+            <h3>🎯 Mission — 10부터 1까지 카운트다운</h3>
+            <p>10부터 시작해서 1까지 거꾸로 출력하는 코드를 작성해보세요.</p>
+            <div class="io-example">출력 예: 10 9 8 7 6 5 4 3 2 1</div>
+            <details><summary>💡 힌트</summary>
                 <div class="answer-content">
-                    ① 시작값: <code>i = 10</code><br>
-                    ② 조건식: 1까지 출력해야 하니 <code>while i &gt;= 1:</code><br>
-                    ③ 증가식: 숫자가 줄어야 하니 <code>i -= 1</code>
+                    시작값은 10, 조건식은 1까지 출력해야 하므로 <code>>=</code>를 사용하세요.<br>
+                    증가식은 숫자가 줄어야 하므로 <code>-=</code>를 사용하세요.
                 </div>
             </details>
-            <textarea id="editor-countdown" class="code-editor" placeholder="# 코드를 입력하세요"></textarea>
-            <button class="run-btn" onclick="runCode('editor-countdown', 'output-countdown')">실행하기</button>
+            <textarea id="editor-countdown" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-countdown','output-countdown')">실행하기</button>
             <div id="output-countdown" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ 2. 보초값 ═══ -->
+    <!-- ══ 2. 보초값 ══ -->
     <section id="sec2">
         <h2>2. 데이터의 끝을 알리는 보초값(Sentinel)</h2>
-        <p>반복 횟수를 미리 알 수 없을 때, <strong>특별한 값을 입력하면 반복을 멈추도록</strong> 약속하는 것이 보초값입니다. 보초값은 <strong>실제 데이터로 절대 나올 수 없는 값</strong>으로 정해야 합니다.</p>
 
         <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px;">
-            <div style="flex:1; min-width:200px; background:white; border-radius:8px; padding:14px; border-left:4px solid #b2bec3; border:1px solid #eee;">
-                <p style="font-weight:800; margin:0 0 6px 0; color:#636e72;">반복 횟수를 아는 경우</p>
-                <p style="font-size:0.92rem; margin:0; color:#636e72;">"1부터 10까지 출력해" → 횟수가 정해져 있어서 while 조건으로 바로 제어 가능</p>
+            <div style="flex:1; min-width:200px; background:#f8f7ff; border-radius:10px; padding:16px 18px; border-left:5px solid #b2bec3;">
+                <p style="font-weight:800; margin:0 0 6px 0; color:var(--text-muted);">반복 횟수를 아는 경우</p>
+                <p style="font-size:0.92rem; margin:0; color:var(--text-muted); line-height:1.6;">"1부터 10까지 출력해" → 횟수가 정해져 있어서 while 조건으로 바로 제어 가능</p>
             </div>
-            <div style="flex:1; min-width:200px; background:white; border-radius:8px; padding:14px; border-left:4px solid #e17055; border:1px solid #eee;">
-                <p style="font-weight:800; margin:0 0 6px 0; color:#e17055;">반복 횟수를 모르는 경우 — 보초값 필요!</p>
-                <p style="font-size:0.92rem; margin:0; color:#636e72;">"점수를 계속 입력받아" → 몇 개 입력할지 모름. 특별한 값을 입력하면 멈추도록 약속해야 함</p>
+            <div style="flex:1; min-width:200px; background:#fff8e1; border-radius:10px; padding:16px 18px; border-left:5px solid #f59e0b;">
+                <p style="font-weight:800; margin:0 0 6px 0; color:#92400e;">반복 횟수를 모르는 경우 → 보초값 필요!</p>
+                <p style="font-size:0.92rem; margin:0; color:#78350f; line-height:1.6;">"점수를 계속 입력받아" → 몇 개 입력할지 모름. 특별한 값을 입력하면 멈추도록 약속해야 함</p>
             </div>
         </div>
 
-        <div class="code-wrapper">
-<pre>
-score = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"점수 입력(-1 종료): "</span>))   <span class="cm"># 첫 입력</span>
+        <p>아래 코드는 몇 번 반복할지 미리 정해져 있지 않습니다. 어떻게 동작할까요?</p>
 
-<span class="kw">while</span> score != <span class="nm">-1</span>:                          <span class="cm"># -1이 아닌 동안 반복</span>
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+score = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"점수 입력(-1 종료): "</span>))
+
+<span class="kw">while</span> score != <span class="nm">-1</span>:
     <span class="fn">print</span>(<span class="st">"입력된 점수:"</span>, score)
-    score = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"점수 입력(-1 종료): "</span>)) <span class="cm"># 다음 입력</span>
+    score = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"점수 입력(-1 종료): "</span>))
 
-<span class="fn">print</span>(<span class="st">"입력 종료!"</span>)
-</pre>
+<span class="fn">print</span>(<span class="st">"입력 종료!"</span>)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.85rem; min-width:140px;">입력된 점수: 90
+입력된 점수: 75
+입력 종료!</div>
         </div>
-        <p style="background:#f0f4ff; border:1px solid #b2bec3; border-radius:8px; padding:10px 16px; font-size:0.92rem;">💡 <strong>왜 while 전에 먼저 input을 받나요?</strong> — while 조건에서 score를 비교하려면 score가 이미 있어야 해요. 처음부터 값이 없으면 오류가 납니다.</p>
+
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><strong>반복 횟수를 미리 알 수 없을 때</strong>, 특별한 값을 입력하면 반복을 멈추도록 약속합니다.<br>
+            이 특별한 값을 <strong>보초값(Sentinel)</strong>이라고 합니다.<br>
+            보초값은 <strong>실제 데이터로 절대 나올 수 없는 값</strong>으로 정해야 합니다.</p>
+        </div>
+
+        <p>보초값을 선택하는 원칙을 정리하면 다음과 같습니다.</p>
+        <table class="compare-table">
+            <tr><th>상황</th><th>실제 데이터 범위</th><th>적합한 보초값</th></tr>
+            <tr><td>시험 점수 입력</td><td>0 ~ 100</td><td>-1 (범위 밖)</td></tr>
+            <tr><td>주사위 숫자 입력</td><td>1 ~ 6</td><td>0 또는 7 (범위 밖)</td></tr>
+            <tr><td>상품 가격 입력</td><td>0 이상</td><td>-1 (음수)</td></tr>
+        </table>
+
+        <div class="warn-box">
+            ⚠️ <strong>왜 while 전에 먼저 input을 받나요?</strong><br>
+            while 조건에서 score를 비교하려면 score가 이미 선언되어 있어야 합니다. 처음부터 값이 없으면 NameError가 납니다.
+        </div>
 
         <div class="drill-together">
-            <h3>Example — 올바른 보초값 고르기</h3>
+            <h3>✏️ Example — 보초값 선택 판단</h3>
             <p>각 상황에서 보초값으로 적합한 값을 골라보세요.</p>
-            <div style="background:white; border:1px solid #dfe6e9; border-radius:10px; padding:15px; margin-bottom:12px;">
-                <p style="font-weight:700; font-size:1rem; margin:0 0 8px 0;">상황 ① 학생 시험 점수(0~100점) 입력 — 종료 신호로 적합한 값은?</p>
-                <div>
-                    <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="s1" value="0"> a) -1 (음수)</label>
-                    <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="s1" value="1"> b) 50</label>
-                    <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="s1" value="2"> c) 100</label>
-                    <label style="cursor:pointer;"><input type="radio" name="s1" value="3"> d) 0</label>
-                </div>
-                <div id="sr1" style="font-size:0.9rem; font-weight:bold; margin-top:5px; min-height:20px;"></div>
+            <div style="background:white; border:1px solid #e1e4e8; border-radius:10px; padding:16px; margin-bottom:12px;">
+                <p style="font-weight:700; margin:0 0 10px 0;">상황 ① 학생 시험 점수(0~100점) — 종료 신호로 적합한 값은?</p>
+                <label style="margin-right:18px; cursor:pointer;"><input type="radio" name="s1" value="0"> a) -1</label>
+                <label style="margin-right:18px; cursor:pointer;"><input type="radio" name="s1" value="1"> b) 50</label>
+                <label style="margin-right:18px; cursor:pointer;"><input type="radio" name="s1" value="2"> c) 100</label>
+                <label style="cursor:pointer;"><input type="radio" name="s1" value="3"> d) 0</label>
+                <div id="sr1" style="font-size:0.9rem; font-weight:bold; margin-top:8px; min-height:20px;"></div>
             </div>
-            <div style="background:white; border:1px solid #dfe6e9; border-radius:10px; padding:15px; margin-bottom:12px;">
-                <p style="font-weight:700; font-size:1rem; margin:0 0 8px 0;">상황 ② 주사위 굴리기(1~6) 입력 — 보초값으로 쓰면 안 되는 값은?</p>
-                <div>
-                    <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="s3" value="0"> a) 0</label>
-                    <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="s3" value="1"> b) -1</label>
-                    <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="s3" value="2"> c) 4</label>
-                    <label style="cursor:pointer;"><input type="radio" name="s3" value="3"> d) 7</label>
-                </div>
-                <div id="sr3" style="font-size:0.9rem; font-weight:bold; margin-top:5px; min-height:20px;"></div>
+            <div style="background:white; border:1px solid #e1e4e8; border-radius:10px; padding:16px; margin-bottom:12px;">
+                <p style="font-weight:700; margin:0 0 10px 0;">상황 ② 주사위 숫자(1~6) 입력 — 보초값으로 쓰면 안 되는 값은?</p>
+                <label style="margin-right:18px; cursor:pointer;"><input type="radio" name="s3" value="0"> a) 0</label>
+                <label style="margin-right:18px; cursor:pointer;"><input type="radio" name="s3" value="1"> b) -1</label>
+                <label style="margin-right:18px; cursor:pointer;"><input type="radio" name="s3" value="2"> c) 4</label>
+                <label style="cursor:pointer;"><input type="radio" name="s3" value="3"> d) 7</label>
+                <div id="sr3" style="font-size:0.9rem; font-weight:bold; margin-top:8px; min-height:20px;"></div>
             </div>
-            <button class="run-btn" onclick="checkQ2()">정답 확인</button>
-            <div class="drill-feedback" id="fb-q2"></div>
+            <button class="run-btn" onclick="checkSentinelQ()">정답 확인</button>
+            <div class="drill-feedback" id="fb-sentinel-q"></div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — 보초값 프로그램 완성하기</h3>
-            <p>숫자를 계속 입력받아 더하다가 <strong>0을 입력하면 멈추고 합계를 출력</strong>하는 코드를 스스로 작성해보세요.</p>
-            <div class="io-example" style="background:#f1f2f6; border-left:none; margin-bottom:12px;">
-                출력 예:<br>
-                숫자 입력 (0=종료) >> 10<br>
-                숫자 입력 (0=종료) >> 20<br>
-                숫자 입력 (0=종료) >> 0<br>
-                합계: 30
-            </div>
-            <details>
-                <summary>💡 힌트 확인하기</summary>
+        <div class="drill-solo">
+            <h3>🎯 Mission — 보초값 프로그램 완성하기</h3>
+            <p>숫자를 계속 입력받아 더하다가 0을 입력하면 멈추고 합계를 출력하세요.</p>
+            <div class="io-example">숫자 입력 (0=종료) >> 10
+숫자 입력 (0=종료) >> 20
+숫자 입력 (0=종료) >> 0
+합계: 30</div>
+            <details><summary>💡 힌트</summary>
                 <div class="answer-content">
-                    <code>total = 0</code>으로 시작하고, 입력값이 0이면 break, 아니면 total에 더합니다.
+                    <code>total = 0</code>으로 합계 변수를 만들고,<br>
+                    <code>while True:</code>로 무한 반복을 시작하세요.<br>
+                    입력값이 0이면 반복을 끝내고, 아니면 total에 더합니다.
                 </div>
             </details>
-            <textarea id="editor-sentinel" class="code-editor">total = 0
-while True:
-    n = int(input("숫자 입력 (0=종료) >> "))
-    if n == 0:
-        # 반복을 끝내는 코드를 쓰세요
-        pass
-    else:
-        # total에 n을 더하는 코드를 쓰세요
-        pass
-print("합계:", total)</textarea>
-            <button class="run-btn" onclick="runCode('editor-sentinel', 'output-sentinel')">실행하기</button>
+            <textarea id="editor-sentinel" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-sentinel','output-sentinel')">실행하기</button>
             <div id="output-sentinel" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ CHECK 1 — while 기초 + 보초값 ═══ -->
+    <!-- ══ CHECK 1 ══ -->
     <section id="check1" style="background:#fafafa; border:2px solid #e1e4e8;">
         <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 1 — while 기초 &amp; 보초값</h2>
-
         <div id="quiz-area-1"></div>
         <button class="btn-check" onclick="gradeQuiz('quiz-area-1', quizSet1, 'result-area-1')">채점하기</button>
         <div id="result-area-1" style="margin-top:20px; text-align:center; font-weight:bold; font-size:1.3rem; display:none; margin-bottom:30px;"></div>
-
         <hr style="border:none; border-top:1px solid #e1e4e8; margin:30px 0;">
 
-        <!-- 문제 1: 디버깅 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 1</span>
-            <div class="challenge-title">에러 발생 이유 찾기 &amp; 디버깅</div>
-            <p>아래 코드는 <strong>5! 4! 3! 2! 1!</strong>을 출력해야 합니다. 에러 이유를 선택하고, 수정해서 실행해보세요.</p>
-            <div class="code-wrapper">
-<pre>
+            <div class="challenge-title">에러 이유 찾기 &amp; 디버깅</div>
+            <p>아래 코드는 <code>5! 4! 3! 2! 1!</code>을 출력해야 합니다. 에러 이유를 선택하고, 코드를 수정해서 실행해보세요.</p>
+            <div class="code-wrapper"><pre>
 count = <span class="nm">5</span>
-<span class="kw">while</span> count &gt; <span class="nm">0</span>:
+<span class="kw">while</span> count > <span class="nm">0</span>:
     <span class="fn">print</span>(count + <span class="st">"!"</span>)
-    count -= <span class="nm">1</span>
-</pre>
+    count -= <span class="nm">1</span></pre></div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin:14px 0;">
+                <label style="background:#f8f9fa; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.9rem; border:1px solid #e1e4e8;"><input type="radio" name="bug2" value="a"> a) while 조건이 잘못됨</label>
+                <label style="background:#f8f9fa; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.9rem; border:1px solid #e1e4e8;"><input type="radio" name="bug2" value="b"> b) count가 0부터 시작해야 함</label>
+                <label style="background:#f8f9fa; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.9rem; border:1px solid #e1e4e8;"><input type="radio" name="bug2" value="c"> c) 정수와 문자열을 +로 합칠 수 없음</label>
+                <label style="background:#f8f9fa; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.9rem; border:1px solid #e1e4e8;"><input type="radio" name="bug2" value="d"> d) print 들여쓰기가 잘못됨</label>
             </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin:12px 0;">
-                <label style="background:#f8f9fa; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:0.9rem;"><input type="radio" name="bug2" value="a"> a) while 조건이 잘못됨</label>
-                <label style="background:#f8f9fa; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:0.9rem;"><input type="radio" name="bug2" value="b"> b) count가 0부터 시작해야 함</label>
-                <label style="background:#f8f9fa; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:0.9rem;"><input type="radio" name="bug2" value="c"> c) 정수와 문자열을 +로 합칠 수 없음</label>
-                <label style="background:#f8f9fa; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:0.9rem;"><input type="radio" name="bug2" value="d"> d) print 들여쓰기가 잘못됨</label>
-            </div>
-            <textarea id="ta-bug2" class="code-editor" style="min-height:140px;">count = 5
+            <textarea id="ta-bug2" class="code-editor">count = 5
 while count > 0:
     print(count + "!")
     count -= 1</textarea>
-            <button class="run-btn" onclick="runCode('ta-bug2', 'out-bug2')">실행하기</button>
+            <button class="run-btn" onclick="runCode('ta-bug2','out-bug2')">실행하기</button>
             <div id="out-bug2" class="output-area"></div>
             <button class="run-btn" style="margin-top:10px;" onclick="checkQuiz1Q2()">정답 확인</button>
             <div class="drill-feedback" id="fb-quiz1-q2"></div>
         </div>
 
-        <!-- 문제 2: 제곱 출력 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 2</span>
-            <div class="challenge-title">1부터 N까지 각 수의 제곱 출력</div>
-            <p>사용자에게 정수 <strong>N</strong>을 입력받아 1부터 N까지 각각의 제곱을 출력하는 프로그램을 작성하세요.</p>
-            <div class="io-example">입력 예: 3<br>출력 예:<br>1의 제곱은 1<br>2의 제곱은 4<br>3의 제곱은 9</div>
-            <details><summary>💡 힌트 확인하기</summary>
-                <div class="answer-content"><code>print('{}의 제곱은 {}'.format(i, i**2))</code> 를 활용해보세요.</div>
+            <div class="challenge-title">1부터 N까지 제곱 출력</div>
+            <p>정수 N을 입력받아 1부터 N까지 각 수의 제곱을 출력하세요.</p>
+            <div class="io-example">입력: 3
+출력:
+1의 제곱은 1
+2의 제곱은 4
+3의 제곱은 9</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">
+                    제곱은 <code>i ** 2</code>로 구할 수 있습니다.<br>
+                    숫자와 문자를 함께 출력할 때는 <code>format()</code> 또는 <code>f-string</code>을 활용해보세요.
+                </div>
             </details>
             <textarea id="ta-sq" class="code-editor">n = int(input("N을 입력하세요: "))
 i = 1
 while i <= n:
-    # 여기 완성하기!
+    # 여기를 완성하세요!
     i += 1</textarea>
-            <button class="run-btn" onclick="runCode('ta-sq', 'out-sq')">실행하기</button>
+            <button class="run-btn" onclick="runCode('ta-sq','out-sq')">실행하기</button>
             <div id="out-sq" class="output-area"></div>
         </div>
 
-        <!-- 문제 3: 누적합 -->
         <div class="challenge-box">
-            <span class="challenge-badge">문제 3</span>
+            <span class="story-badge">📖 상황 문제</span>
+            <span class="challenge-badge" style="margin-left:6px;">문제 3</span>
             <div class="challenge-title">1부터 100까지 누적 합계</div>
-            <p>아래 순서도를 참고하여, 1부터 100까지의 누적 합계를 출력하는 프로그램을 작성하세요.</p>
-            <div style="display:flex; gap:15px; align-items:flex-start; flex-wrap:wrap;">
-                <div style="flex:1; min-width:180px;">
-                    <svg viewBox="0 0 200 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px;display:block;margin:0 auto;font-family:'Pretendard',sans-serif;">
-                      <rect x="50" y="8" width="100" height="32" rx="16" fill="#2d3436"/>
-                      <text x="100" y="29" text-anchor="middle" fill="white" font-size="13" font-weight="800">시작</text>
-                      <line x1="100" y1="40" x2="100" y2="60" stroke="#636e72" stroke-width="2" marker-end="url(#arr)"/>
-                      <rect x="30" y="60" width="140" height="34" rx="6" fill="#e0fbf6" stroke="#00b894" stroke-width="2"/>
-                      <text x="100" y="82" text-anchor="middle" fill="#2d3436" font-size="13" font-weight="800">i = 1, sum = 0</text>
-                      <line x1="100" y1="94" x2="100" y2="114" stroke="#636e72" stroke-width="2" marker-end="url(#arr)"/>
-                      <polygon points="100,114 170,152 100,190 30,152" fill="#fff3cd" stroke="#fdcb6e" stroke-width="2"/>
-                      <text x="100" y="149" text-anchor="middle" fill="#2d3436" font-size="12" font-weight="900">i &lt;= 100</text>
-                      <text x="100" y="165" text-anchor="middle" fill="#2d3436" font-size="11" font-weight="700">조건 ?</text>
-                      <text x="83" y="208" text-anchor="middle" fill="#00b894" font-size="11" font-weight="800">True</text>
-                      <line x1="100" y1="190" x2="100" y2="218" stroke="#00b894" stroke-width="2" marker-end="url(#arG)"/>
-                      <rect x="30" y="218" width="140" height="34" rx="6" fill="#e0fbf6" stroke="#00b894" stroke-width="2"/>
-                      <text x="100" y="240" text-anchor="middle" fill="#2d3436" font-size="13" font-weight="800">sum += i</text>
-                      <line x1="100" y1="252" x2="100" y2="272" stroke="#636e72" stroke-width="2" marker-end="url(#arr)"/>
-                      <rect x="30" y="272" width="140" height="34" rx="6" fill="#e0fbf6" stroke="#00b894" stroke-width="2"/>
-                      <text x="100" y="294" text-anchor="middle" fill="#2d3436" font-size="13" font-weight="800">i += 1</text>
-                      <path d="M30,289 Q5,289 5,152 Q5,114 30,114" fill="none" stroke="#00b894" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arG)"/>
-                      <rect x="30" y="360" width="140" height="34" rx="6" fill="#d4efdf" stroke="#00b894" stroke-width="2"/>
-                      <text x="100" y="382" text-anchor="middle" fill="#2d3436" font-size="13" font-weight="800">print(sum)</text>
-                      <path d="M170,152 Q195,152 195,377 L140,377" fill="none" stroke="#e17055" stroke-width="2" marker-end="url(#arR)"/>
-                      <text x="207" y="265" text-anchor="middle" fill="#e17055" font-size="11" font-weight="800" transform="rotate(90,207,265)">False</text>
-                      <line x1="100" y1="394" x2="100" y2="414" stroke="#636e72" stroke-width="2" marker-end="url(#arr)"/>
-                      <rect x="50" y="414" width="100" height="32" rx="16" fill="#2d3436"/>
-                      <text x="100" y="435" text-anchor="middle" fill="white" font-size="13" font-weight="800">종료</text>
-                      <defs>
-                        <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#636e72"/></marker>
-                        <marker id="arG" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#00b894"/></marker>
-                        <marker id="arR" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#e17055"/></marker>
-                      </defs>
+            <p>1부터 100까지의 합계를 while문으로 구하세요. 결과는 <strong>5050</strong>이 나와야 합니다.<br>
+            아래 순서도를 참고하면 흐름을 이해하기 쉽습니다.</p>
+            <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; margin-top:16px;">
+                <div style="flex:0 0 auto;">
+                    <svg viewBox="0 0 200 460" xmlns="http://www.w3.org/2000/svg" style="width:190px; display:block; font-family:'Pretendard',sans-serif;">
+                        <defs>
+                            <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#6b7280"/></marker>
+                            <marker id="arG" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#6c63ff"/></marker>
+                            <marker id="arR" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#f472b6"/></marker>
+                        </defs>
+                        <!-- 시작 -->
+                        <rect x="55" y="8" width="90" height="30" rx="15" fill="#1a1a2e"/>
+                        <text x="100" y="28" text-anchor="middle" fill="white" font-size="12" font-weight="800">시작</text>
+                        <line x1="100" y1="38" x2="100" y2="55" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                        <!-- 초기화 -->
+                        <rect x="28" y="55" width="144" height="30" rx="6" fill="#ede9ff" stroke="#6c63ff" stroke-width="1.5"/>
+                        <text x="100" y="75" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="800">i = 1, total = 0</text>
+                        <line x1="100" y1="85" x2="100" y2="102" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                        <!-- 조건 마름모 -->
+                        <polygon points="100,102 168,138 100,174 32,138" fill="#fff8e1" stroke="#f59e0b" stroke-width="1.5"/>
+                        <text x="100" y="135" text-anchor="middle" fill="#1a1a2e" font-size="11" font-weight="900">i &lt;= 100</text>
+                        <text x="100" y="150" text-anchor="middle" fill="#1a1a2e" font-size="10" font-weight="700">조건?</text>
+                        <!-- True 방향 -->
+                        <text x="78" y="192" text-anchor="middle" fill="#6c63ff" font-size="10" font-weight="800">True</text>
+                        <line x1="100" y1="174" x2="100" y2="204" stroke="#6c63ff" stroke-width="1.5" marker-end="url(#arG)"/>
+                        <!-- total += i -->
+                        <rect x="28" y="204" width="144" height="30" rx="6" fill="#ede9ff" stroke="#6c63ff" stroke-width="1.5"/>
+                        <text x="100" y="224" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="800">total += i</text>
+                        <line x1="100" y1="234" x2="100" y2="251" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                        <!-- i += 1 -->
+                        <rect x="28" y="251" width="144" height="30" rx="6" fill="#ede9ff" stroke="#6c63ff" stroke-width="1.5"/>
+                        <text x="100" y="271" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="800">i += 1</text>
+                        <!-- 루프 화살표 -->
+                        <path d="M28,266 Q6,266 6,138 Q6,102 32,102" fill="none" stroke="#6c63ff" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arG)"/>
+                        <!-- False 방향 -->
+                        <path d="M168,138 Q192,138 192,340 L140,340" fill="none" stroke="#f472b6" stroke-width="1.5" marker-end="url(#arR)"/>
+                        <text x="195" y="245" text-anchor="middle" fill="#f472b6" font-size="10" font-weight="800" transform="rotate(90,195,245)">False</text>
+                        <!-- print -->
+                        <rect x="28" y="325" width="144" height="30" rx="6" fill="#e6fdf8" stroke="#00d4aa" stroke-width="1.5"/>
+                        <text x="100" y="345" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="800">print(total)</text>
+                        <line x1="100" y1="355" x2="100" y2="372" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                        <!-- 종료 -->
+                        <rect x="55" y="372" width="90" height="30" rx="15" fill="#1a1a2e"/>
+                        <text x="100" y="392" text-anchor="middle" fill="white" font-size="12" font-weight="800">종료</text>
                     </svg>
                 </div>
-                <div style="flex:2; min-width:280px;">
+                <div style="flex:1; min-width:260px;">
                     <textarea id="ta-sum100" class="code-editor">i = 1
-sum = 0
+total = 0
 while i <= 100:
-    # 여기 완성하기!
+    # 여기를 완성하세요!
 
-print(sum)</textarea>
-                    <button class="run-btn" onclick="runCode('ta-sum100', 'out-sum100')">실행하기</button>
+print(total)</textarea>
+                    <button class="run-btn" onclick="runCode('ta-sum100','out-sum100')">실행하기</button>
                     <div id="out-sum100" class="output-area"></div>
-                    <div style="margin-top:10px; background:#fff3cd; border:1px solid #fdcb6e; border-radius:8px; padding:10px 15px; font-size:0.92rem;">
+                    <div style="margin-top:12px; background:#fff8e1; border:1px solid #f59e0b; border-radius:8px; padding:10px 14px; font-size:0.93rem;">
                         정답 결과값: <strong style="font-size:1.1rem; color:#d63031;">5050</strong>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 문제 4: 짝수 합산 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 4</span>
-            <div class="challenge-title">1부터 100까지 짝수만 합산하기</div>
-            <p>위 문제를 응용하여 1부터 100까지의 수 중 <strong>짝수만</strong> 더한 합계를 출력하세요.</p>
-            <div class="io-example">출력 예: 2550</div>
-            <details><summary>💡 힌트 확인하기</summary>
+            <div class="challenge-title">1부터 100까지 짝수만 합산</div>
+            <p>1부터 100까지의 수 중 <strong>짝수만</strong> 더한 합계를 출력하세요.</p>
+            <div class="io-example">출력: 2550</div>
+            <details><summary>💡 힌트</summary>
                 <div class="answer-content">짝수는 <code>i % 2 == 0</code>으로 확인합니다.</div>
             </details>
             <textarea id="ta-evensum" class="code-editor">i = 1
 total = 0
 while i <= 100:
-    # 짝수만 더하기!
+    # 짝수만 더하세요!
     i += 1
 print(total)</textarea>
-            <button class="run-btn" onclick="runCode('ta-evensum', 'out-evensum')">실행하기</button>
+            <button class="run-btn" onclick="runCode('ta-evensum','out-evensum')">실행하기</button>
             <div id="out-evensum" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ 3. Break & Continue ═══ -->
+    <!-- ══ 3. break & continue ══ -->
     <section id="sec3">
-        <h2>3. 흐름 제어: Break &amp; Continue</h2>
-        <p>반복 중간에 흐름을 제어할 수 있습니다. <code>break</code>는 반복을 즉시 끝내고, <code>continue</code>는 현재 순서를 건너뜁니다.</p>
+        <h2>3. 흐름 제어: break &amp; continue</h2>
+        <p>두 코드의 결과를 비교해보세요. i == 3일 때 어떤 차이가 있나요?</p>
 
-        <div style="display:flex; gap:15px; margin-top:20px; flex-wrap:wrap;">
-            <div style="flex:1; background:#fff; border:1px solid #eee; padding:20px; border-radius:12px; min-width:280px; border-top:4px solid #d63031;">
-                <p style="font-weight:800; font-size:1.2rem; margin-bottom:10px; text-align:center; color:#d63031;">Break</p>
-                <p style="font-size:0.9rem;">반복문을 <strong>완전히 끝냅니다</strong>. 조건과 상관없이 즉시 탈출합니다.</p>
-                <div style="background:#f1f2f6; color:#2d3436; padding:10px; border-radius:6px; font-family:monospace; font-weight:bold; font-size:0.9rem; margin-top:10px; border:1px dashed #b2bec3;">결과: 1 2</div>
-            </div>
-            <div style="flex:1; background:#fff; border:1px solid #eee; padding:20px; border-radius:12px; min-width:280px; border-top:4px solid #0984e3;">
-                <p style="font-weight:800; font-size:1.2rem; margin-bottom:10px; text-align:center; color:#0984e3;">Continue</p>
-                <p style="font-size:0.9rem;">이번 회만 <strong>건너뛰고</strong>, 다음 조건 확인으로 돌아갑니다.</p>
-                <div style="background:#f1f2f6; color:#2d3436; padding:10px; border-radius:6px; font-family:monospace; font-weight:bold; font-size:0.9rem; margin-top:10px; border:1px dashed #b2bec3;">결과: 1 2 4 5</div>
-            </div>
-        </div>
-
-        <div style="margin-top:20px; display:flex; gap:16px; flex-wrap:wrap;">
-            <div style="flex:1; min-width:280px;">
-                <p style="color:#636e72; font-size:0.88rem; margin-bottom:6px;">3을 만나는 순간 반복이 완전히 끝납니다.</p>
-                <div class="code-wrapper" style="margin:0;">
-<pre>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin: 16px 0;">
+            <div style="flex:1; min-width:260px;">
+                <p style="margin:0 0 8px 0; font-size:0.9rem; color:var(--text-muted); font-weight:700;">break — 3을 만나는 순간 반복이 완전히 끝납니다.</p>
+                <div class="code-result-pair" style="flex-direction:column; gap:8px;">
+                    <div class="code-wrapper" style="margin:0;"><pre>
 i = <span class="nm">1</span>
 <span class="kw">while</span> i <= <span class="nm">5</span>:
     <span class="kw">if</span> i == <span class="nm">3</span>:
         <span class="kw">break</span>
     <span class="fn">print</span>(i)
     i += <span class="nm">1</span>
-<span class="fn">print</span>(<span class="st">"반복 끝"</span>)
-</pre>
+<span class="fn">print</span>(<span class="st">"반복 끝"</span>)</pre></div>
+                    <div class="output">1
+2
+반복 끝</div>
                 </div>
             </div>
-            <div style="flex:1; min-width:280px;">
-                <p style="color:#636e72; font-size:0.88rem; margin-bottom:6px;">3만 건너뛰고 반복은 계속됩니다.</p>
-                <div class="code-wrapper" style="margin:0;">
-<pre>
+            <div style="flex:1; min-width:260px;">
+                <p style="margin:0 0 8px 0; font-size:0.9rem; color:var(--text-muted); font-weight:700;">continue — 3만 건너뛰고 반복은 계속됩니다.</p>
+                <div class="code-result-pair" style="flex-direction:column; gap:8px;">
+                    <div class="code-wrapper" style="margin:0;"><pre>
 i = <span class="nm">0</span>
 <span class="kw">while</span> i < <span class="nm">5</span>:
     i += <span class="nm">1</span>
     <span class="kw">if</span> i == <span class="nm">3</span>:
         <span class="kw">continue</span>
     <span class="fn">print</span>(i)
-<span class="fn">print</span>(<span class="st">"반복 끝"</span>)
-</pre>
+<span class="fn">print</span>(<span class="st">"반복 끝"</span>)</pre></div>
+                    <div class="output">1
+2
+4
+5
+반복 끝</div>
                 </div>
             </div>
         </div>
 
-        <div style="margin-top:20px; background:#f8f9fa; border-radius:12px; padding:20px; border:1px solid #dfe6e9;">
-            <p style="font-weight:800; font-size:1rem; margin-bottom:12px; color:#2d3436;">한눈에 비교 — i == 3일 때 무슨 일이 생길까?</p>
-            <table style="width:100%; border-collapse:collapse; font-size:0.93rem;">
-                <thead>
-                    <tr style="background:#2d3436; color:white;">
-                        <th style="padding:10px 14px; text-align:left; border-radius:8px 0 0 0;">키워드</th>
-                        <th style="padding:10px 14px; text-align:left;">i == 3 일 때</th>
-                        <th style="padding:10px 14px; text-align:left; border-radius:0 8px 0 0;">출력 결과</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom:1px solid #dfe6e9;">
-                        <td style="padding:10px 14px; font-weight:800; color:#d63031;">break</td>
-                        <td style="padding:10px 14px;">반복문 자체를 완전히 끝냄</td>
-                        <td style="padding:10px 14px; font-family:monospace; font-weight:700;">1  2  반복 끝</td>
-                    </tr>
-                    <tr>
-                        <td style="padding:10px 14px; font-weight:800; color:#0984e3;">continue</td>
-                        <td style="padding:10px 14px;">3만 건너뛰고 반복은 계속</td>
-                        <td style="padding:10px 14px; font-family:monospace; font-weight:700;">1  2  4  5  반복 끝</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><code>break</code>: 반복문을 <strong>완전히 종료</strong>합니다.<br>
+            <code>continue</code>: 이번 회만 <strong>건너뛰고</strong> 다음 반복으로 돌아갑니다.</p>
         </div>
+
+        <table class="compare-table" style="margin-top:20px;">
+            <tr><th>키워드</th><th>i == 3 일 때</th><th>출력 결과</th></tr>
+            <tr><td><code style="background:none; color:#f472b6; font-weight:800;">break</code></td><td>반복문 자체를 완전히 끝냄</td><td><code style="background:none;">1  2  반복 끝</code></td></tr>
+            <tr><td><code style="background:none; color:#60a5fa; font-weight:800;">continue</code></td><td>3만 건너뛰고 반복은 계속</td><td><code style="background:none;">1  2  4  5  반복 끝</code></td></tr>
+        </table>
 
         <div class="drill-together">
-            <h3>Example — Break vs Continue 상황 판단</h3>
-            <p>각 상황에서 어떤 키워드를 사용해야 할지 골라보세요.</p>
-            <div style="background:white; border:1px solid #dfe6e9; border-radius:10px; padding:15px; margin-bottom:12px;">
-                <p style="font-weight:700; font-size:1rem; margin:0 0 8px 0;">상황 ① 비밀번호가 맞으면 반복문을 완전히 끝낸다</p>
-                <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="bc1" value="break"> break</label>
+            <h3>✏️ Example — 상황에 맞는 키워드 고르기</h3>
+            <div style="background:white; border:1px solid #e1e4e8; border-radius:10px; padding:16px; margin-bottom:12px;">
+                <p style="font-weight:700; margin:0 0 10px 0;">상황 ① 비밀번호가 맞으면 반복문을 완전히 끝낸다</p>
+                <label style="margin-right:18px; cursor:pointer;"><input type="radio" name="bc1" value="break"> break</label>
                 <label style="cursor:pointer;"><input type="radio" name="bc1" value="continue"> continue</label>
-                <div id="bcr1" style="font-size:0.9rem; font-weight:bold; margin-top:5px; min-height:20px;"></div>
+                <div id="bcr1" style="font-size:0.9rem; font-weight:bold; margin-top:8px; min-height:20px;"></div>
             </div>
-            <div style="background:white; border:1px solid #dfe6e9; border-radius:10px; padding:15px; margin-bottom:12px;">
-                <p style="font-weight:700; font-size:1rem; margin:0 0 8px 0;">상황 ② 짝수만 출력하고, 홀수는 건너뛴다</p>
-                <label style="margin-right:16px; cursor:pointer;"><input type="radio" name="bc2" value="break"> break</label>
+            <div style="background:white; border:1px solid #e1e4e8; border-radius:10px; padding:16px; margin-bottom:12px;">
+                <p style="font-weight:700; margin:0 0 10px 0;">상황 ② 짝수만 출력하고, 홀수는 건너뛴다</p>
+                <label style="margin-right:18px; cursor:pointer;"><input type="radio" name="bc2" value="break"> break</label>
                 <label style="cursor:pointer;"><input type="radio" name="bc2" value="continue"> continue</label>
-                <div id="bcr2" style="font-size:0.9rem; font-weight:bold; margin-top:5px; min-height:20px;"></div>
+                <div id="bcr2" style="font-size:0.9rem; font-weight:bold; margin-top:8px; min-height:20px;"></div>
             </div>
-            <button class="run-btn" onclick="checkQ3()">정답 확인</button>
-            <div class="drill-feedback" id="fb-q3"></div>
+            <button class="run-btn" onclick="checkBC()">정답 확인</button>
+            <div class="drill-feedback" id="fb-bc"></div>
         </div>
-
     </section>
 
-    <!-- ═══ 4. 무한 루프 ═══ -->
+    <!-- ══ 4. 무한 루프 ══ -->
     <section id="sec4">
         <h2>4. 무한 루프 (Infinite Loop)</h2>
-        <p><code>while True:</code>로 일부러 무한 반복을 만들고, 원하는 조건이 되면 <code>break</code>로 탈출하는 패턴입니다. <strong>몇 번 반복할지 미리 알 수 없을 때</strong> 사용합니다.</p>
+        <p>아래 코드는 어떻게 종료될까요?</p>
 
-        <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px;">
-            <div style="flex:1; min-width:220px; background:white; border-radius:8px; padding:14px; border:1px solid #eee;">
-                <p style="font-weight:800; margin:0 0 4px 0; color:#0984e3;">while 조건식</p>
-                <p style="font-size:0.88rem; color:#636e72; margin:0 0 8px 0;">끝나는 시점이 <strong>처음부터 정해진</strong> 경우</p>
-                <div class="code-wrapper" style="margin:0;">
-<pre style="font-size:0.88rem;">i = <span class="nm">1</span>
-<span class="kw">while</span> i <= <span class="nm">10</span>:
-    <span class="fn">print</span>(i)
-    i += <span class="nm">1</span></pre>
-                </div>
-            </div>
-            <div style="flex:1; min-width:220px; background:white; border-radius:8px; padding:14px; border:1px solid #eee;">
-                <p style="font-weight:800; margin:0 0 4px 0; color:#e17055;">while True + break</p>
-                <p style="font-size:0.88rem; color:#636e72; margin:0 0 8px 0;">끝나는 시점을 <strong>실행 중에 판단</strong>하는 경우</p>
-                <div class="code-wrapper" style="margin:0;">
-<pre style="font-size:0.88rem;"><span class="kw">while True</span>:
-    pw = <span class="fn">input</span>()
-    <span class="kw">if</span> pw == <span class="st">"1234"</span>:
-        <span class="kw">break</span></pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="code-wrapper">
-<pre>
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
 <span class="kw">while True</span>:
     code = <span class="fn">input</span>(<span class="st">"암호를 입력하세요: "</span>)
     <span class="kw">if</span> code == <span class="st">"1234"</span>:
         <span class="fn">print</span>(<span class="st">"정답! 탈출!"</span>)
-        <span class="kw">break</span>              <span class="cm"># 맞으면 반복 종료</span>
-    <span class="fn">print</span>(<span class="st">"틀렸습니다. 다시 입력하세요."</span>)
-</pre>
+        <span class="kw">break</span>
+    <span class="fn">print</span>(<span class="st">"틀렸습니다. 다시 입력하세요."</span>)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.82rem; min-width:160px;">틀렸습니다. 다시 입력하세요.
+틀렸습니다. 다시 입력하세요.
+정답! 탈출!</div>
         </div>
-        <div class="output">
-            암호를 입력하세요: hello<br>
-            틀렸습니다. 다시 입력하세요.<br>
-            암호를 입력하세요: 1234<br>
-            정답! 탈출!
+
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><code>while True:</code>로 일부러 무한 반복을 만들고, 원하는 조건이 되면 <code>break</code>로 탈출하는 패턴입니다.<br>
+            <strong>몇 번 반복할지 미리 알 수 없을 때</strong> 주로 사용합니다.</p>
+        </div>
+
+        <table class="compare-table">
+            <tr><th>방식</th><th>언제 사용?</th><th>예시</th></tr>
+            <tr><td><code style="background:none; color:#60a5fa; font-weight:800;">while 조건식</code></td><td>끝나는 시점이 <strong>처음부터 정해진</strong> 경우</td><td>1부터 10까지 반복</td></tr>
+            <tr><td><code style="background:none; color:#f472b6; font-weight:800;">while True + break</code></td><td>끝나는 시점을 <strong>실행 중에 판단</strong>하는 경우</td><td>비밀번호가 맞을 때까지</td></tr>
+        </table>
+
+        <div style="display:flex; gap:14px; flex-wrap:wrap; margin: 20px 0;">
+            <div style="flex:1; min-width:220px; background:white; border-radius:10px; padding:16px; border:1px solid #e1e4e8; border-top:4px solid #60a5fa;">
+                <p style="font-weight:800; margin:0 0 6px 0; color:#60a5fa;">while 조건식</p>
+                <p style="font-size:0.88rem; color:var(--text-muted); margin:0 0 10px 0;">끝나는 시점이 처음부터 정해진 경우</p>
+                <div class="code-wrapper" style="margin:0;"><pre style="font-size:0.88rem;">i = <span class="nm">1</span>
+<span class="kw">while</span> i <= <span class="nm">10</span>:
+    <span class="fn">print</span>(i)
+    i += <span class="nm">1</span></pre></div>
+            </div>
+            <div style="flex:1; min-width:220px; background:white; border-radius:10px; padding:16px; border:1px solid #e1e4e8; border-top:4px solid #f472b6;">
+                <p style="font-weight:800; margin:0 0 6px 0; color:#f472b6;">while True + break</p>
+                <p style="font-size:0.88rem; color:var(--text-muted); margin:0 0 10px 0;">끝나는 시점을 실행 중에 판단하는 경우</p>
+                <div class="code-wrapper" style="margin:0;"><pre style="font-size:0.88rem;"><span class="kw">while True</span>:
+    pw = <span class="fn">input</span>()
+    <span class="kw">if</span> pw == <span class="st">"1234"</span>:
+        <span class="kw">break</span></pre></div>
+            </div>
         </div>
 
         <div class="drill-together">
-            <h3>Example — 버그 찾기</h3>
-            <p>아래 코드는 올바르게 작동하지 않습니다. 이유가 무엇일까요?</p>
-            <div class="code-wrapper" style="margin-bottom:14px;">
-<pre>
+            <h3>✏️ Example — 버그 찾기</h3>
+            <p>아래 코드는 올바르게 작동하지 않습니다. 이유는 무엇일까요?</p>
+            <div class="code-wrapper"><pre>
 <span class="kw">while True</span>:
     pw = <span class="fn">input</span>(<span class="st">"비밀번호: "</span>)
-    <span class="fn">print</span>(<span class="st">"완료"</span>)
-</pre>
+    <span class="fn">print</span>(<span class="st">"완료"</span>)</pre></div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin:14px 0;">
+                <label style="background:#f8f9fa; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.9rem; border:1px solid #e1e4e8; flex:1; min-width:200px;"><input type="radio" name="bug4" value="a"> a) input()을 사용하면 안 된다</label>
+                <label style="background:#f8f9fa; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.9rem; border:1px solid #e1e4e8; flex:1; min-width:200px;"><input type="radio" name="bug4" value="b"> b) print()가 반복문 안에 있으면 안 된다</label>
+                <label style="background:#f8f9fa; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.9rem; border:1px solid #e1e4e8; flex:1; min-width:200px;"><input type="radio" name="bug4" value="c"> c) break가 없어서 무한 반복된다</label>
+                <label style="background:#f8f9fa; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.9rem; border:1px solid #e1e4e8; flex:1; min-width:200px;"><input type="radio" name="bug4" value="d"> d) while True를 쓰면 안 된다</label>
             </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
-                <label style="background:#f8f9fa; padding:10px 15px; border-radius:8px; cursor:pointer; font-size:0.92rem; flex:1; min-width:200px;"><input type="radio" name="bug" value="a"> a) input()을 사용하면 안 된다</label>
-                <label style="background:#f8f9fa; padding:10px 15px; border-radius:8px; cursor:pointer; font-size:0.92rem; flex:1; min-width:200px;"><input type="radio" name="bug" value="b"> b) print()가 반복문 안에 있으면 안 된다</label>
-                <label style="background:#f8f9fa; padding:10px 15px; border-radius:8px; cursor:pointer; font-size:0.92rem; flex:1; min-width:200px;"><input type="radio" name="bug" value="c"> c) break가 없어서 무한 반복된다</label>
-                <label style="background:#f8f9fa; padding:10px 15px; border-radius:8px; cursor:pointer; font-size:0.92rem; flex:1; min-width:200px;"><input type="radio" name="bug" value="d"> d) while 다음에 True를 쓰면 안 된다</label>
-            </div>
-            <button class="run-btn" onclick="checkQ4()">정답 확인</button>
-            <div class="drill-feedback" id="fb-q4"></div>
+            <button class="run-btn" onclick="checkBug4()">정답 확인</button>
+            <div class="drill-feedback" id="fb-bug4"></div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — 폭탄 해제 코드</h3>
-            <p>"해제"라고 입력할 때까지 무한 반복하는 코드를 스스로 작성해보세요.</p>
-            <div class="io-example" style="background:#f1f2f6; border-left:none; margin-bottom:12px;">
-                출력 예:<br>
-                코드 입력 >> 틀려<br>
-                틀렸습니다! 다시 입력하세요.<br>
-                코드 입력 >> 해제<br>
-                폭탄이 해제되었습니다!
-            </div>
-            <details>
-                <summary>💡 힌트 확인하기</summary>
+        <div class="drill-solo">
+            <h3>🎯 Mission — 폭탄 해제 코드</h3>
+            <p>"해제"라고 입력할 때까지 계속 반복하는 코드를 작성해보세요.</p>
+            <div class="io-example">코드 입력 >> 틀려
+틀렸습니다! 다시 입력하세요.
+코드 입력 >> 해제
+폭탄이 해제되었습니다!</div>
+            <details><summary>💡 힌트</summary>
                 <div class="answer-content">
-                    <code>while True:</code>로 무한 반복 → <code>if 입력 == "해제": break</code>로 탈출
+                    <code>while True:</code>로 무한 반복을 만들고,<br>
+                    입력값이 "해제"와 같으면 반복을 끝내는 키워드를 사용하세요.<br>
+                    그렇지 않으면 "틀렸습니다!" 메시지를 출력합니다.
                 </div>
             </details>
-            <textarea id="editor-bomb" class="code-editor" placeholder="# 코드를 입력하세요
-while True:
-    code = input('코드 입력 >> ')
-    "></textarea>
-            <button class="run-btn" onclick="runCode('editor-bomb', 'output-bomb')">실행하기</button>
+            <textarea id="editor-bomb" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-bomb','output-bomb')">실행하기</button>
             <div id="output-bomb" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ CHECK 2 — Break/Continue + 무한루프 ═══ -->
+    <!-- ══ CHECK 2 ══ -->
     <section id="check2" style="background:#fafafa; border:2px solid #e1e4e8;">
-        <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 2 — Break/Continue &amp; 무한 루프</h2>
-
+        <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 2 — break/continue &amp; 무한 루프</h2>
         <div id="quiz-area-2"></div>
         <button class="btn-check" onclick="gradeQuiz('quiz-area-2', quizSet2, 'result-area-2')">채점하기</button>
         <div id="result-area-2" style="margin-top:20px; text-align:center; font-weight:bold; font-size:1.3rem; display:none; margin-bottom:30px;"></div>
-
         <hr style="border:none; border-top:1px solid #e1e4e8; margin:30px 0;">
 
-        <!-- 문제 1: 보초값 찾기 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 1</span>
             <div class="challenge-title">보초값으로 쓸 수 없는 값 모두 찾기</div>
-            <p>아래 코드에서 <strong>보초값으로 사용할 수 없는 값</strong>을 모두 선택하세요.<br><span style="color:#636e72; font-size:0.92rem;">(조건: <code>n &gt;= -13 and n &lt; 20</code>)</span></p>
-            <div class="code-wrapper">
-<pre>
+            <p>아래 코드에서 보초값으로 사용할 수 없는 값을 모두 선택하세요.<br>
+            <small style="color:var(--text-muted);">조건: <code>n >= -13 and n &lt; 20</code></small></p>
+            <div class="code-wrapper"><pre>
 n = <span class="nm">0</span>
-<span class="kw">while</span> n &gt;= <span class="nm">-13</span> <span class="kw">and</span> n &lt; <span class="nm">20</span>:
-    n = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">'정수 입력 : '</span>))
-    <span class="kw">if</span> n &gt; <span class="nm">0</span>:
-        <span class="fn">print</span>(<span class="st">'n은 양수'</span>)
-    <span class="kw">elif</span> n==<span class="nm">0</span>:
-        <span class="fn">print</span>(<span class="st">'n은 0'</span>)
-    <span class="kw">else</span>:
-        <span class="fn">print</span>(<span class="st">'n은 음수'</span>)
-</pre>
+<span class="kw">while</span> n >= <span class="nm">-13</span> <span class="kw">and</span> n < <span class="nm">20</span>:
+    n = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">'정수 입력: '</span>))
+    <span class="kw">if</span> n > <span class="nm">0</span>: <span class="fn">print</span>(<span class="st">'양수'</span>)
+    <span class="kw">elif</span> n == <span class="nm">0</span>: <span class="fn">print</span>(<span class="st">'0'</span>)
+    <span class="kw">else</span>: <span class="fn">print</span>(<span class="st">'음수'</span>)</pre></div>
+            <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:12px;">
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="-13"> -13</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="-20"> -20</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="5"> 5</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="1004"> 1004</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="100"> 100</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="-7"> -7</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="0"> 0</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="-12"> -12</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="20"> 20</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="-14"> -14</label>
+                <label style="cursor:pointer;"><input type="checkbox" name="sentinel" value="14"> 14</label>
             </div>
-            <p style="color:#636e72; font-size:0.9rem;">💡 while 조건이 False가 되어야 루프를 탈출할 수 있습니다. 범위 안에 있는 값은 보초값이 될 수 없습니다!</p>
-            <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:10px;">
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="-13"> -13</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="-20"> -20</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="5"> 5</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="1004"> 1004</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="100"> 100</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="-7"> -7</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="0"> 0</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="-12"> -12</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="20"> 20</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="-14"> -14</label>
-                <label style="cursor:pointer; font-size:0.95rem;"><input type="checkbox" name="sentinel" value="14"> 14</label>
-            </div>
-            <button class="run-btn" onclick="checkSentinel()">정답 확인</button>
+            <button class="run-btn" onclick="checkSentinel()" style="margin-top:12px;">정답 확인</button>
             <div class="drill-feedback" id="fb-sentinel"></div>
         </div>
 
-        <!-- 문제 2: 무한 반복 찾기 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 2</span>
-            <div class="challenge-title">무한 반복하는 프로그램 찾기</div>
-            <p>다음 중 <strong>무한 반복하는 프로그램을 모두</strong> 찾아 체크하세요.</p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;">
-                <div style="border-radius:8px; border:2px solid #dfe6e9; overflow:hidden;">
-                    <label style="cursor:pointer; font-weight:700; display:flex; align-items:flex-start; gap:8px; padding:10px 12px; background:#f8f9fa;">
-                        <input type="checkbox" name="infinite" value="a" style="margin-top:3px;"> a)
-                    </label>
-                    <div class="code-wrapper" style="margin:0; border-radius:0; border-left:none;">
-<pre style="font-size:0.88rem;">a=<span class="nm">1</span>; n=<span class="nm">1</span>
+            <div class="challenge-title">무한 반복하는 프로그램 모두 찾기</div>
+            <p>다음 중 무한 반복하는 프로그램을 모두 찾아 체크하세요.</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px;">
+                <div style="border-radius:8px; border:2px solid #e1e4e8; overflow:hidden;">
+                    <label style="cursor:pointer; font-weight:700; display:flex; align-items:center; gap:8px; padding:10px 14px; background:#f8f9fa;"><input type="checkbox" name="infinite" value="a"> a)</label>
+                    <div class="code-wrapper" style="margin:0; border-radius:0; border-left:none;"><pre style="font-size:0.88rem;">a=<span class="nm">1</span>; n=<span class="nm">1</span>
 <span class="kw">while</span> a==n:
     <span class="fn">print</span>(n)
-    a+=<span class="nm">1</span></pre>
-                    </div>
+    a+=<span class="nm">1</span></pre></div>
                 </div>
-                <div style="border-radius:8px; border:2px solid #dfe6e9; overflow:hidden;">
-                    <label style="cursor:pointer; font-weight:700; display:flex; align-items:flex-start; gap:8px; padding:10px 12px; background:#f8f9fa;">
-                        <input type="checkbox" name="infinite" value="b" style="margin-top:3px;"> b)
-                    </label>
-                    <div class="code-wrapper" style="margin:0; border-radius:0; border-left:none;">
-<pre style="font-size:0.88rem;">n=<span class="nm">1</span>
+                <div style="border-radius:8px; border:2px solid #e1e4e8; overflow:hidden;">
+                    <label style="cursor:pointer; font-weight:700; display:flex; align-items:center; gap:8px; padding:10px 14px; background:#f8f9fa;"><input type="checkbox" name="infinite" value="b"> b)</label>
+                    <div class="code-wrapper" style="margin:0; border-radius:0; border-left:none;"><pre style="font-size:0.88rem;">n=<span class="nm">1</span>
 <span class="kw">while</span> n:
-    <span class="fn">print</span>(n)</pre>
-                    </div>
+    <span class="fn">print</span>(n)</pre></div>
                 </div>
-                <div style="border-radius:8px; border:2px solid #dfe6e9; overflow:hidden;">
-                    <label style="cursor:pointer; font-weight:700; display:flex; align-items:flex-start; gap:8px; padding:10px 12px; background:#f8f9fa;">
-                        <input type="checkbox" name="infinite" value="c" style="margin-top:3px;"> c)
-                    </label>
-                    <div class="code-wrapper" style="margin:0; border-radius:0; border-left:none;">
-<pre style="font-size:0.88rem;">n=<span class="st">'HARU'</span>
-<span class="kw">while</span> <span class="st">'H'</span> <span class="kw">in</span> n:
+                <div style="border-radius:8px; border:2px solid #e1e4e8; overflow:hidden;">
+                    <label style="cursor:pointer; font-weight:700; display:flex; align-items:center; gap:8px; padding:10px 14px; background:#f8f9fa;"><input type="checkbox" name="infinite" value="c"> c)</label>
+                    <div class="code-wrapper" style="margin:0; border-radius:0; border-left:none;"><pre style="font-size:0.88rem;">n=<span class="st">'PYTHON'</span>
+<span class="kw">while</span> <span class="st">'P'</span> <span class="kw">in</span> n:
     <span class="fn">print</span>(n)
-    n=n+<span class="st">'!'</span></pre>
-                    </div>
+    n=n+<span class="st">'!'</span></pre></div>
                 </div>
-                <div style="border-radius:8px; border:2px solid #dfe6e9; overflow:hidden;">
-                    <label style="cursor:pointer; font-weight:700; display:flex; align-items:flex-start; gap:8px; padding:10px 12px; background:#f8f9fa;">
-                        <input type="checkbox" name="infinite" value="d" style="margin-top:3px;"> d)
-                    </label>
-                    <div class="code-wrapper" style="margin:0; border-radius:0; border-left:none;">
-<pre style="font-size:0.88rem;">n=<span class="st">'Tr'</span>
-n=n+<span class="st">'ue'</span>
+                <div style="border-radius:8px; border:2px solid #e1e4e8; overflow:hidden;">
+                    <label style="cursor:pointer; font-weight:700; display:flex; align-items:center; gap:8px; padding:10px 14px; background:#f8f9fa;"><input type="checkbox" name="infinite" value="d"> d)</label>
+                    <div class="code-wrapper" style="margin:0; border-radius:0; border-left:none;"><pre style="font-size:0.88rem;">n=<span class="st">'hello'</span>
 <span class="kw">while</span> n:
-    <span class="fn">print</span>(n)</pre>
-                    </div>
+    <span class="fn">print</span>(n)</pre></div>
                 </div>
             </div>
-            <button class="run-btn" onclick="checkInfinite()">정답 확인</button>
+            <button class="run-btn" onclick="checkInfinite()" style="margin-top:12px;">정답 확인</button>
             <div class="drill-feedback" id="fb-infinite"></div>
         </div>
 
-        <!-- 문제 3: 호명 프로그램 -->
         <div class="challenge-box">
-            <span class="challenge-badge">문제 3</span>
+            <span class="story-badge">📖 상황 문제</span>
+            <span class="challenge-badge" style="margin-left:6px;">문제 3</span>
             <div class="challenge-title">1반부터 5반까지 호명하기</div>
-            <p>while문을 사용하여 아래 출력 예시와 같이 출력하는 프로그램을 작성하세요.</p>
-            <div class="io-example">
-                1반, 소리 질러~!<br>2반, 소리 질러~!<br>3반, 소리 질러~!<br>4반, 소리 질러~!<br>5반, 소리 질러~!<br>
-                좋아요. 여러분은 축제를 즐길 자격이 있습니다.<br>자, 그럼 축제를 시작해볼까요?
-            </div>
-            <details><summary>💡 힌트 확인하기</summary>
-                <div class="answer-content"><code>"{}반, 소리 질러~!".format(n)</code> 를 활용해보세요.</div>
-            </details>
+            <p>while문을 사용해 아래와 같이 출력하는 프로그램을 작성하세요.</p>
+            <div class="io-example">1반, 소리 질러~!
+2반, 소리 질러~!
+3반, 소리 질러~!
+4반, 소리 질러~!
+5반, 소리 질러~!
+좋아요. 여러분은 축제를 즐길 자격이 있습니다.
+자, 그럼 축제를 시작해볼까요?</div>
             <textarea id="ta-shout" class="code-editor">n = 1
 while n <= 5:
-    # 여기 완성하기!
+    # 여기를 완성하세요!
     n += 1
 print("좋아요. 여러분은 축제를 즐길 자격이 있습니다.")
 print("자, 그럼 축제를 시작해볼까요?")</textarea>
-            <button class="run-btn" onclick="runCode('ta-shout', 'out-shout')">실행하기</button>
+            <button class="run-btn" onclick="runCode('ta-shout','out-shout')">실행하기</button>
             <div id="out-shout" class="output-area"></div>
         </div>
 
-        <!-- 문제 4: 범위 벗어남 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 4</span>
             <div class="challenge-title">범위 벗어남 에러 처리</div>
-            <p>-1부터 -10까지의 숫자가 아닌 경우 "ERROR 범위 벗어남"을 출력하고 반복을 멈추는 프로그램을 완성하세요.</p>
-            <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                <div class="io-example" style="flex:1; min-width:200px; border-left-color: var(--primary);">
-                    <strong style="color:var(--primary);">정상 입력 시</strong><br><br>
-                    -1부터 -10까지의 숫자 중 하나 입력!<br>
-                    숫자 입력 >> -2 → -2<br>
-                    숫자 입력 >> -10 → -10
+            <p>-1부터 -10 사이의 숫자가 아닌 경우 "ERROR 범위 벗어남"을 출력하고 반복을 멈추세요.</p>
+            <div class="io-example">숫자 입력 >> -2 → -2
+숫자 입력 >> -10 → -10
+숫자 입력 >> 23 → 23
+ERROR 범위 벗어남</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">
+                    <code>while True:</code>로 무한 반복을 시작하세요.<br>
+                    입력받은 숫자가 -1~-10 범위 안에 있으면 계속, 범위 밖이면 에러 메시지를 출력하고 반복을 끝내세요.<br>
+                    범위 조건: <code>-10 <= n <= -1</code>
                 </div>
-                <div class="io-example" style="flex:1; min-width:200px; border-left-color: #e17055;">
-                    <strong style="color:#e17055;">범위 밖 입력 시</strong><br><br>
-                    -1부터 -10까지의 숫자 중 하나 입력!<br>
-                    숫자 입력 >> 23 → 23<br>
-                    ERROR 범위 벗어남
-                </div>
-            </div>
-            <textarea id="ta-range" class="code-editor">print("-1부터 -10까지의 숫자 중 하나 입력!")
-while True:
-    n = int(input("숫자 입력 >> "))
-    print(n)
-    if n >= -10 and n <= -1:
-        pass  # 정상: 계속
-    else:
-        print("ERROR 범위 벗어남")
-        break</textarea>
-            <button class="run-btn" onclick="runCode('ta-range', 'out-range')">실행하기</button>
+            </details>
+            <textarea id="ta-range" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('ta-range','out-range')">실행하기</button>
             <div id="out-range" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ 5. while — else ═══ -->
+    <!-- ══ 5. while-else ══ -->
     <section id="sec5">
         <h2>5. while — else</h2>
-        <p>while문은 <code>else</code>와 짝을 이룰 수 있습니다. 조건이 <strong>False</strong>가 되어 정상 종료되면 <code>else</code> 블록이 실행됩니다.</p>
-        <p style="background:#fff3cd; border:1px solid #fdcb6e; border-radius:8px; padding:10px 16px; font-size:0.93rem;"><code>break</code>로 탈출하면 <code>else</code>가 실행되지 않습니다. 이 차이가 핵심입니다!</p>
+        <p>두 코드를 비교해보세요. else가 언제 실행되고, 언제 실행되지 않나요?</p>
 
-        <div class="code-wrapper">
-<pre>
-count = <span class="nm">0</span>
-<span class="kw">while</span> count &lt; <span class="nm">3</span>:
-    <span class="fn">print</span>(count, <span class="st">'은 3보다 작은 수'</span>)
-    count = count + <span class="nm">1</span>
-<span class="kw">else</span>:
-    <span class="fn">print</span>(count, <span class="st">'이다! stop!!'</span>)
-</pre>
-        </div>
-        <div class="output">
-            0 은 3보다 작은 수<br>
-            1 은 3보다 작은 수<br>
-            2 은 3보다 작은 수<br>
-            3 이다! stop!!
-        </div>
-
-        <div class="drill-together">
-            <h3>Example — break 유무에 따른 else 실행 차이</h3>
-            <p>아래 두 코드를 비교하면서 <code>else</code>가 언제 실행되고, 언제 실행되지 않는지 확인해봅시다.</p>
-            <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:12px;">
-                <div style="flex:1; min-width:260px;">
-                    <p style="margin:0 0 6px 0; font-size:0.88rem; color:#636e72; font-weight:700;">조건이 False가 되어 정상 종료 → else 실행</p>
-                    <div class="code-wrapper" style="margin:0;">
-<pre style="font-size:0.9rem;">
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin: 16px 0;">
+            <div style="flex:1; min-width:260px;">
+                <p style="margin:0 0 8px 0; font-size:0.9rem; color:var(--text-muted); font-weight:700;">조건이 False가 되어 정상 종료 → else 실행</p>
+                <div class="code-wrapper" style="margin:0;"><pre>
 i = <span class="nm">1</span>
 <span class="kw">while</span> i <= <span class="nm">3</span>:
     <span class="fn">print</span>(i)
     i += <span class="nm">1</span>
 <span class="kw">else</span>:
-    <span class="fn">print</span>(<span class="st">"정상 종료"</span>)
-</pre>
-                    </div>
-                    <div class="output" style="margin-top:8px;">1<br>2<br>3<br>정상 종료</div>
-                </div>
-                <div style="flex:1; min-width:260px;">
-                    <p style="margin:0 0 6px 0; font-size:0.88rem; color:#636e72; font-weight:700;">break로 탈출 → else 실행되지 않음</p>
-                    <div class="code-wrapper" style="margin:0;">
-<pre style="font-size:0.9rem;">
+    <span class="fn">print</span>(<span class="st">"정상 종료"</span>)</pre></div>
+                <div class="output">1
+2
+3
+정상 종료</div>
+            </div>
+            <div style="flex:1; min-width:260px;">
+                <p style="margin:0 0 8px 0; font-size:0.9rem; color:var(--text-muted); font-weight:700;">break로 탈출 → else 실행되지 않음</p>
+                <div class="code-wrapper" style="margin:0;"><pre>
 i = <span class="nm">1</span>
 <span class="kw">while</span> i <= <span class="nm">3</span>:
     <span class="kw">if</span> i == <span class="nm">2</span>: <span class="kw">break</span>
     <span class="fn">print</span>(i)
     i += <span class="nm">1</span>
 <span class="kw">else</span>:
-    <span class="fn">print</span>(<span class="st">"정상 종료"</span>)
-</pre>
-                    </div>
-                    <div class="output" style="margin-top:8px;">1</div>
-                </div>
+    <span class="fn">print</span>(<span class="st">"정상 종료"</span>)</pre></div>
+                <div class="output">1</div>
             </div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — while-else 출력 예측하기</h3>
-            <p>아래 코드를 실행하면 어떤 결과가 출력될까요? 직접 예측해서 입력해보세요!</p>
-            <div class="code-wrapper">
-<pre>
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><code>else</code>는 while 조건이 <strong>False가 되어 정상 종료</strong>될 때 실행됩니다.<br>
+            <code>break</code>로 탈출하면 <code>else</code>가 <strong>실행되지 않습니다.</strong> 이 차이가 핵심입니다!</p>
+        </div>
+
+        <div class="drill-solo">
+            <h3>🎯 Mission — while-else 출력 예측하기</h3>
+            <p>아래 코드를 실행하면 어떤 결과가 출력될까요? 직접 예측해보세요.</p>
+            <div class="code-wrapper"><pre>
 n = <span class="nm">3</span>
 <span class="kw">while</span> n > <span class="nm">0</span>:
     <span class="fn">print</span>(n, end=<span class="st">' '</span>)
     n -= <span class="nm">1</span>
 <span class="kw">else</span>:
-    <span class="fn">print</span>(<span class="st">'끝'</span>)
-</pre>
-            </div>
-            <p style="margin-bottom:6px; font-weight:700;">예상 출력을 입력해보세요:</p>
-            <input type="text" id="we-predict" placeholder="출력 결과를 입력하세요..." style="padding:8px 12px; border:2px solid var(--primary); border-radius:8px; font-size:1rem; font-family:monospace; width:280px;">
+    <span class="fn">print</span>(<span class="st">'끝'</span>)</pre></div>
+            <p style="margin:14px 0 6px 0; font-weight:700;">예상 출력을 입력해보세요:</p>
+            <input type="text" id="we-predict" placeholder="출력 결과를 입력하세요..." style="padding:9px 14px; border:2px solid var(--primary); border-radius:8px; font-size:1rem; font-family:Consolas,monospace; width:300px; outline:none;">
             <button class="run-btn" style="margin-left:10px;" onclick="checkWePredict()">정답 확인</button>
             <div class="drill-feedback" id="fb-we-predict"></div>
         </div>
     </section>
 
-    <!-- ═══ CHECK 3 — 심화 문제 ═══ -->
+    <!-- ══ CHECK 3 심화 ══ -->
     <section id="check3" style="background:#fafafa; border:2px solid #e1e4e8;">
         <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 3 — 심화 코딩 문제</h2>
-
         <div id="quiz-area-3"></div>
         <button class="btn-check" onclick="gradeQuiz('quiz-area-3', quizSet3, 'result-area-3')">채점하기</button>
         <div id="result-area-3" style="margin-top:20px; text-align:center; font-weight:bold; font-size:1.3rem; display:none; margin-bottom:30px;"></div>
-
         <hr style="border:none; border-top:1px solid #e1e4e8; margin:30px 0;">
 
-        <!-- 문제 1: break 출력 예측 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 1</span>
-            <div class="challenge-title">break 코드 — 올바른 출력화면 찾기</div>
-            <p>아래 코드의 올바른 출력화면을 선택하세요.</p>
-            <div class="code-wrapper">
-<pre>
+            <div class="challenge-title">break 코드 — 올바른 출력 찾기</div>
+            <p>아래 코드의 올바른 출력을 선택하세요.</p>
+            <div class="code-wrapper"><pre>
 i = <span class="nm">0</span>
 <span class="kw">while True</span>:
     <span class="fn">print</span>(i, <span class="st">'번째 반복'</span>)
-    <span class="cm">#break</span>
-</pre>
+    <span class="cm">#break</span></pre></div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+                <label style="cursor:pointer; display:flex; flex-direction:column; gap:6px;"><input type="radio" name="bc-out1" value="a">
+                    <div style="background:#f1f2f6; font-family:monospace; padding:12px; border-radius:8px; font-size:0.88rem; min-width:150px; border:1px solid #ddd;">0 번째 반복</div></label>
+                <label style="cursor:pointer; display:flex; flex-direction:column; gap:6px;"><input type="radio" name="bc-out1" value="b">
+                    <div style="background:#f1f2f6; font-family:monospace; padding:12px; border-radius:8px; font-size:0.88rem; min-width:150px; border:1px solid #ddd;">0 번째 반복<br>0 번째 반복<br>0 번째 반복<br>… (무한)</div></label>
+                <label style="cursor:pointer; display:flex; flex-direction:column; gap:6px;"><input type="radio" name="bc-out1" value="c">
+                    <div style="background:#f1f2f6; font-family:monospace; padding:12px; border-radius:8px; font-size:0.88rem; min-width:150px; border:1px solid #ddd;">0 번째 반복<br>1 번째 반복<br>2 번째 반복<br>… (무한)</div></label>
             </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-                <label style="cursor:pointer;"><input type="radio" name="bc-out1" value="a">
-                    <div style="background:#f1f2f6; color:#2d3436; font-family:monospace; padding:12px; border-radius:8px; font-size:0.88rem; margin-top:5px; min-width:150px; border:1px solid #ddd;">
-                        0 번째 반복
-                    </div>
-                </label>
-                <label style="cursor:pointer;"><input type="radio" name="bc-out1" value="b">
-                    <div style="background:#f1f2f6; color:#2d3436; font-family:monospace; padding:12px; border-radius:8px; font-size:0.88rem; margin-top:5px; min-width:150px; border:1px solid #ddd;">
-                        0 번째 반복<br>0 번째 반복<br>0 번째 반복<br>… (무한)
-                    </div>
-                </label>
-                <label style="cursor:pointer;"><input type="radio" name="bc-out1" value="c">
-                    <div style="background:#f1f2f6; color:#2d3436; font-family:monospace; padding:12px; border-radius:8px; font-size:0.88rem; margin-top:5px; min-width:150px; border:1px solid #ddd;">
-                        0 번째 반복<br>1 번째 반복<br>2 번째 반복<br>… (무한)
-                    </div>
-                </label>
-            </div>
-            <button class="run-btn" onclick="checkBCOut1()">정답 확인</button>
+            <button class="run-btn" onclick="checkBCOut1()" style="margin-top:12px;">정답 확인</button>
             <div class="drill-feedback" id="fb-bc-out1"></div>
         </div>
 
-        <!-- 문제 2: sum 계산 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 2</span>
             <div class="challenge-title">sum 값 계산하기</div>
-            <p>아래 프로그램에서 사용자가 입력 예와 같이 숫자를 입력할 때, 출력되는 <code>sum</code>의 값을 써보세요.</p>
-            <div class="code-wrapper">
-<pre>
+            <p>사용자가 아래 입력 예와 같이 숫자를 입력할 때 출력되는 sum의 값을 써보세요.</p>
+            <div class="code-wrapper"><pre>
 sum = <span class="nm">0</span>
 <span class="kw">while True</span>:
     n = <span class="fn">int</span>(<span class="fn">input</span>( ))
     <span class="kw">if</span> n % <span class="nm">4</span> == <span class="nm">0</span>: <span class="kw">continue</span>
     <span class="kw">elif</span> n % <span class="nm">3</span> == <span class="nm">0</span>: <span class="kw">break</span>
-    <span class="kw">else</span>:
-        sum += n
-<span class="fn">print</span>(sum)
-</pre>
-            </div>
-            <div class="io-example"><strong>입력 예:</strong> 2, 8, 5, 4, 10, 12, 6 (순서대로)</div>
-            <p>sum의 값은? <input type="number" id="sum-ans" style="padding:8px; border:2px solid var(--primary); border-radius:6px; width:100px; font-size:1rem; text-align:center;" placeholder="?"></p>
+    <span class="kw">else</span>: sum += n
+<span class="fn">print</span>(sum)</pre></div>
+            <div class="io-example">입력 순서: 2, 8, 5, 4, 10, 12, 6</div>
+            <p style="margin-top:12px;">sum의 값은? <input type="number" id="sum-ans" style="padding:8px; border:2px solid var(--primary); border-radius:6px; width:100px; font-size:1rem; text-align:center; outline:none;" placeholder="?"></p>
             <button class="run-btn" onclick="checkSumAns()">정답 확인</button>
             <div class="drill-feedback" id="fb-sum-ans"></div>
         </div>
 
-        <!-- 문제 3: 0~100 빈칸 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 3</span>
             <div class="challenge-title">0부터 100까지 출력 — 빈칸 채우기</div>
-            <p>0부터 100까지 숫자를 출력하는 프로그램입니다. 빈칸 A, B, C에 들어갈 알맞은 말을 써보세요.</p>
-            <div class="code-wrapper">
-<pre>
+            <p>빈칸 A, B, C에 들어갈 알맞은 코드를 써보세요.</p>
+            <div class="code-wrapper"><pre>
 i = <span class="nm">0</span>
-<span class="kw">while</span> <span style="background:#fff3cd; padding:0 4px; border-radius:3px; color:#2d3436;">A</span>:
+<span class="kw">while</span> <span style="background:#fff3cd; color:#92400e; padding:0 5px; border-radius:3px;">A</span>:
     <span class="fn">print</span>(i)
-    <span style="background:#fff3cd; padding:0 4px; border-radius:3px; color:#2d3436;">B</span>
+    <span style="background:#fff3cd; color:#92400e; padding:0 5px; border-radius:3px;">B</span>
     <span class="kw">if</span> i > <span class="nm">100</span>:
-        <span style="background:#fff3cd; padding:0 4px; border-radius:3px; color:#2d3436;">C</span>
-</pre>
-            </div>
-            <div style="display:flex; gap:15px; flex-wrap:wrap; margin-top:10px;">
+        <span style="background:#fff3cd; color:#92400e; padding:0 5px; border-radius:3px;">C</span></pre></div>
+            <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:12px;">
                 <div>A: <input type="text" id="bc-a" class="blank-input" style="width:100px;" placeholder="조건?"></div>
                 <div>B: <input type="text" id="bc-b" class="blank-input" style="width:100px;" placeholder="코드?"></div>
                 <div>C: <input type="text" id="bc-c" class="blank-input" style="width:100px;" placeholder="키워드?"></div>
             </div>
-            <button class="run-btn" onclick="checkBC3()">정답 확인</button>
+            <button class="run-btn" onclick="checkBC3()" style="margin-top:12px;">정답 확인</button>
             <div class="drill-feedback" id="fb-bc3"></div>
         </div>
 
-        <!-- 문제 4: 홀수만 출력 -->
         <div class="challenge-box">
             <span class="challenge-badge">문제 4</span>
             <div class="challenge-title">0부터 100까지 홀수만 출력 — 빈칸 채우기</div>
-            <p>출력화면 <code>1 3 5 … 95 97 99</code>을 참고하여 빈칸 A, B, C, D를 완성하세요.</p>
-            <div class="code-wrapper">
-<pre>
+            <p>출력 예 <code>1 3 5 … 97 99</code>를 참고하여 빈칸 A, B, C, D를 완성하세요.</p>
+            <div class="code-wrapper"><pre>
 i = <span class="nm">0</span>
-<span class="kw">while</span> <span style="background:#fff3cd; padding:0 4px; border-radius:3px; color:#2d3436;">A</span>:
+<span class="kw">while</span> <span style="background:#fff3cd; color:#92400e; padding:0 5px; border-radius:3px;">A</span>:
     i += <span class="nm">1</span>
-    <span class="kw">if</span> <span style="background:#fff3cd; padding:0 4px; border-radius:3px; color:#2d3436;">B</span>:
-        <span style="background:#fff3cd; padding:0 4px; border-radius:3px; color:#2d3436;">C</span>
-    <span class="fn">print</span>(i, <span style="background:#fff3cd; padding:0 4px; border-radius:3px; color:#2d3436;">D</span>)
-</pre>
+    <span class="kw">if</span> <span style="background:#fff3cd; color:#92400e; padding:0 5px; border-radius:3px;">B</span>:
+        <span style="background:#fff3cd; color:#92400e; padding:0 5px; border-radius:3px;">C</span>
+    <span class="fn">print</span>(i, <span style="background:#fff3cd; color:#92400e; padding:0 5px; border-radius:3px;">D</span>)</pre></div>
+            <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:12px;">
+                <div>A: <input type="text" id="odd-a" class="blank-input" style="width:110px;" placeholder="조건?"></div>
+                <div>B: <input type="text" id="odd-b" class="blank-input" style="width:110px;" placeholder="조건?"></div>
+                <div>C: <input type="text" id="odd-c" class="blank-input" style="width:110px;" placeholder="키워드?"></div>
+                <div>D: <input type="text" id="odd-d" class="blank-input" style="width:130px;" placeholder="end=?"></div>
             </div>
-            <div style="display:flex; gap:15px; flex-wrap:wrap; margin-top:10px;">
-                <div>A: <input type="text" id="odd-a" class="blank-input" style="width:120px;" placeholder="조건?"></div>
-                <div>B: <input type="text" id="odd-b" class="blank-input" style="width:120px;" placeholder="조건?"></div>
-                <div>C: <input type="text" id="odd-c" class="blank-input" style="width:120px;" placeholder="키워드?"></div>
-                <div>D: <input type="text" id="odd-d" class="blank-input" style="width:150px;" placeholder="end=?"></div>
-            </div>
-            <button class="run-btn" onclick="checkOdd()">정답 확인</button>
+            <button class="run-btn" onclick="checkOdd()" style="margin-top:12px;">정답 확인</button>
             <div class="drill-feedback" id="fb-odd"></div>
         </div>
 
-        <!-- 코딩 챌린지 -->
         <hr style="border:none; border-top:2px solid #e1e4e8; margin:30px 0;">
-        <h2 style="color:var(--secondary); border-left-color:var(--primary); font-size:1.3rem;">코딩 챌린지</h2>
+        <h2 style="color:var(--secondary); border-left-color:var(--accent); font-size:1.4rem;">🚀 코딩 챌린지</h2>
 
         <div class="challenge-box">
-            <span class="challenge-badge">Mission 1</span>
+            <span class="story-badge">📖 상황 문제</span>
+            <span class="challenge-badge" style="margin-left:6px;">Mission 1</span>
             <div class="challenge-title">NASA 로켓 발사 카운트다운</div>
             <p>시작 숫자를 입력받아 1까지 출력하고 마지막에 "발사!"를 출력하세요.</p>
-            <div class="io-example"><strong>입력 예:</strong> 5&nbsp;&nbsp;<strong>출력 예:</strong> 5 4 3 2 1<br>발사!</div>
-            <details><summary>💡 힌트 확인하기</summary>
-                <div class="answer-content"><code>while n >= 1:</code> 로 반복하고 <code>n -= 1</code></div>
-            </details>
-            <textarea id="ta-m1" class="code-editor" style="min-height:180px;">n = int(input("시작 숫자를 입력하세요: "))
+            <div class="io-example">입력: 5  →  5 4 3 2 1
+발사!</div>
+            <textarea id="ta-m1" class="code-editor">n = int(input("시작 숫자를 입력하세요: "))
 while n >= 1:
     # 여기를 완성하세요!
     n -= 1
 print("발사!")</textarea>
-            <button class="run-btn" onclick="runCode('ta-m1', 'out-m1')">실행하기</button>
+            <button class="run-btn" onclick="runCode('ta-m1','out-m1')">실행하기</button>
             <div id="out-m1" class="output-area"></div>
         </div>
 
         <div class="challenge-box">
-            <span class="challenge-badge">Mission 2</span>
+            <span class="story-badge">📖 상황 문제</span>
+            <span class="challenge-badge" style="margin-left:6px;">Mission 2</span>
             <div class="challenge-title">수도 맞추기 메뉴</div>
             <p>1.한국 2.미국 메뉴를 만들고 번호에 맞는 수도를 출력하세요. 0을 입력하면 종료합니다.</p>
-            <div class="io-example">1.한국  2.미국  0.종료<br>번호 입력 >> 1 → 서울<br>번호 입력 >> 2 → 워싱턴 D.C.<br>번호 입력 >> 0 → 종료합니다.</div>
-            <textarea id="ta-m3" class="code-editor" style="min-height:310px;">while True:
+            <div class="io-example">1.한국  2.미국  0.종료
+번호 입력 >> 1 → 서울
+번호 입력 >> 2 → 워싱턴 D.C.
+번호 입력 >> 0 → 종료합니다.</div>
+            <textarea id="ta-m3" class="code-editor">while True:
     print("1.한국  2.미국  0.종료")
     num = int(input("번호 입력 >> "))
     if num == 0:
@@ -1235,27 +945,29 @@ print("발사!")</textarea>
         pass
     else:
         print("없는 번호입니다.")</textarea>
-            <button class="run-btn" onclick="runCode('ta-m3', 'out-m3')">실행하기</button>
+            <button class="run-btn" onclick="runCode('ta-m3','out-m3')">실행하기</button>
             <div id="out-m3" class="output-area"></div>
         </div>
 
         <div class="challenge-box">
             <span class="challenge-badge">Mission 3</span>
-            <div class="challenge-title">양수/음수 판별</div>
+            <div class="challenge-title">양수/음수 판별기</div>
             <p>0을 입력할 때까지 숫자의 양수/음수를 계속 판별하세요.</p>
-            <div class="io-example">숫자 입력 (0=종료) >> 5 → 양수입니다.<br>숫자 입력 (0=종료) >> -3 → 음수입니다.<br>숫자 입력 (0=종료) >> 0 → 종료합니다.</div>
-            <textarea id="ta-m5" class="code-editor" style="min-height:270px;">while True:
+            <div class="io-example">숫자 입력 (0=종료) >> 5  → 양수입니다.
+숫자 입력 (0=종료) >> -3 → 음수입니다.
+숫자 입력 (0=종료) >> 0  → 종료합니다.</div>
+            <textarea id="ta-m5" class="code-editor">while True:
     n = int(input("숫자 입력 (0=종료) >> "))
     if n == 0:
         print("종료합니다.")
         break
     elif n > 0:
-        # 양수 메시지 출력!
+        # 양수 메시지!
         pass
     else:
-        # 음수 메시지 출력!
+        # 음수 메시지!
         pass</textarea>
-            <button class="run-btn" onclick="runCode('ta-m5', 'out-m5')">실행하기</button>
+            <button class="run-btn" onclick="runCode('ta-m5','out-m5')">실행하기</button>
             <div id="out-m5" class="output-area"></div>
         </div>
 
@@ -1263,16 +975,18 @@ print("발사!")</textarea>
             <span class="challenge-badge">Mission 4</span>
             <div class="challenge-title">제곱수 출력</div>
             <p>N을 입력받아 1부터 N까지의 제곱수를 출력하세요.</p>
-            <div class="io-example"><strong>입력 예:</strong> 4<br><strong>출력 예:</strong><br>1의 제곱: 1<br>2의 제곱: 4<br>3의 제곱: 9<br>4의 제곱: 16</div>
-            <details><summary>💡 힌트 확인하기</summary>
-                <div class="answer-content"><code>i ** 2</code> 또는 <code>i * i</code>로 제곱을 구합니다.</div>
-            </details>
-            <textarea id="ta-m6" class="code-editor" style="min-height:180px;">N = int(input("N을 입력하세요: "))
+            <div class="io-example">입력: 4
+출력:
+1의 제곱: 1
+2의 제곱: 4
+3의 제곱: 9
+4의 제곱: 16</div>
+            <textarea id="ta-m6" class="code-editor">N = int(input("N을 입력하세요: "))
 i = 1
 while i <= N:
     # 제곱수 출력!
     i += 1</textarea>
-            <button class="run-btn" onclick="runCode('ta-m6', 'out-m6')">실행하기</button>
+            <button class="run-btn" onclick="runCode('ta-m6','out-m6')">실행하기</button>
             <div id="out-m6" class="output-area"></div>
         </div>
     </section>
@@ -1286,12 +1000,9 @@ while i <= N:
 </div>
 
 <script>
-    // ──────────────────────────────────────────
-    // Pyodide 실행 엔진
-    // ──────────────────────────────────────────
     let pyodide;
     async function initPyodide() {
-        pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/" });
+        pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/" });
     }
     initPyodide();
 
@@ -1318,71 +1029,54 @@ sys.stdout = StringIO()
         }
     }
 
-    // ──────────────────────────────────────────
-    // 빈칸 색상 피드백
-    // ──────────────────────────────────────────
-    function paintInput(id, isCorrect) {
+    function paintInput(id, ok) {
         const el = document.getElementById(id);
         if (!el) return;
-        if (isCorrect) { el.style.backgroundColor = '#d4efdf'; el.style.borderColor = '#00b894'; }
-        else { el.style.backgroundColor = '#fde8e8'; el.style.borderColor = '#d63031'; }
+        el.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
+        el.style.borderColor = ok ? '#00b894' : '#d63031';
     }
 
-    // ──────────────────────────────────────────
-    // 드릴 채점 함수
-    // ──────────────────────────────────────────
-    function checkQ1() {
-        const b1 = document.getElementById('b1').value.trim() === '1';
-        const b2 = document.getElementById('b2').value.trim() === '<';
-        const b3 = document.getElementById('b3').value.trim() === '+=';
-        const fb = document.getElementById('fb-q1');
-        const ok = b1 && b2 && b3;
-        fb.className = 'drill-feedback show';
-        fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        fb.innerHTML = ok ? "✅ 정답입니다!" : "❌ 빈칸을 다시 확인하세요. (힌트: 1, &lt;, +=)";
-    }
-
-    function checkQ2() {
+    function checkSentinelQ() {
         const s1 = document.querySelector('input[name="s1"]:checked')?.value === '0';
         const s3 = document.querySelector('input[name="s3"]:checked')?.value === '2';
         if (s1) document.getElementById('sr1').innerHTML = '<span style="color:#00b894;">✅ 정답! -1은 점수 범위 밖이라 보초값으로 적합합니다.</span>';
-        else if(document.querySelector('input[name="s1"]:checked')) document.getElementById('sr1').innerHTML = '<span style="color:#d63031;">❌ 보초값은 실제 데이터 범위 밖의 값이어야 해요.</span>';
+        else if (document.querySelector('input[name="s1"]:checked')) document.getElementById('sr1').innerHTML = '<span style="color:#d63031;">❌ 보초값은 실제 데이터 범위 밖의 값이어야 해요.</span>';
         if (s3) document.getElementById('sr3').innerHTML = '<span style="color:#00b894;">✅ 정답! 4는 주사위(1~6) 범위 안의 값이라 보초값으로 쓰면 안 됩니다.</span>';
-        else if(document.querySelector('input[name="s3"]:checked')) document.getElementById('sr3').innerHTML = '<span style="color:#d63031;">❌ 주사위 범위(1~6) 안의 값인지 확인해보세요.</span>';
-        const fb = document.getElementById('fb-q2');
+        else if (document.querySelector('input[name="s3"]:checked')) document.getElementById('sr3').innerHTML = '<span style="color:#d63031;">❌ 주사위 범위(1~6) 안의 값인지 확인해보세요.</span>';
+        const fb = document.getElementById('fb-sentinel-q');
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = s1 && s3 ? '#d4efdf' : '#fde8e8';
         fb.innerHTML = s1 && s3 ? "✅ 모두 맞혔습니다!" : "❌ 오답이 있습니다. 각 상황을 다시 확인하세요.";
     }
 
-    function checkQ3() {
+    function checkBC() {
         const bc1 = document.querySelector('input[name="bc1"]:checked')?.value === 'break';
         const bc2 = document.querySelector('input[name="bc2"]:checked')?.value === 'continue';
         if (bc1) document.getElementById('bcr1').innerHTML = '<span style="color:#00b894;">✅ 정답!</span>';
-        else if(document.querySelector('input[name="bc1"]:checked')) document.getElementById('bcr1').innerHTML = '<span style="color:#d63031;">❌ 완전히 끝낼 때는 break입니다.</span>';
+        else if (document.querySelector('input[name="bc1"]:checked')) document.getElementById('bcr1').innerHTML = '<span style="color:#d63031;">❌ 완전히 끝낼 때는 break입니다.</span>';
         if (bc2) document.getElementById('bcr2').innerHTML = '<span style="color:#00b894;">✅ 정답!</span>';
-        else if(document.querySelector('input[name="bc2"]:checked')) document.getElementById('bcr2').innerHTML = '<span style="color:#d63031;">❌ 건너뛸 때는 continue입니다.</span>';
-        const fb = document.getElementById('fb-q3');
+        else if (document.querySelector('input[name="bc2"]:checked')) document.getElementById('bcr2').innerHTML = '<span style="color:#d63031;">❌ 건너뛸 때는 continue입니다.</span>';
+        const fb = document.getElementById('fb-bc');
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = bc1 && bc2 ? '#d4efdf' : '#fde8e8';
         fb.innerHTML = bc1 && bc2 ? "✅ 정확한 구분입니다!" : "❌ 상황에 맞는 키워드를 다시 생각해보세요.";
     }
 
-    function checkQ4() {
-        const ok = document.querySelector('input[name="bug"]:checked')?.value === 'c';
-        const fb = document.getElementById('fb-q4');
+    function checkBug4() {
+        const ok = document.querySelector('input[name="bug4"]:checked')?.value === 'c';
+        const fb = document.getElementById('fb-bug4');
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        fb.innerHTML = ok ? "✅ 정답! while True는 break가 없으면 영원히 멈추지 않습니다." : "❌ 다시 생각해보세요. while True를 끝낼 수 있는 코드가 있는지 확인하세요.";
+        fb.innerHTML = ok ? "✅ 정답! while True는 break가 없으면 영원히 멈추지 않습니다." : "❌ while True를 끝낼 수 있는 코드가 있는지 확인해보세요.";
     }
 
     function checkWePredict() {
         const val = document.getElementById('we-predict').value.trim().replace(/\s+/g, ' ');
-        const ok = ['3 2 1 끝', '3 2 1끝'].some(c => val === c);
+        const ok = ['3 2 1 끝', '3 2 1끝'].includes(val);
         const fb = document.getElementById('fb-we-predict');
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        fb.innerHTML = ok ? "✅ 정답! n이 3→2→1로 줄며 출력되고, else 블록에서 '끝'이 출력됩니다." : "❌ 다시 예측해보세요. (힌트: n=3, 2, 1 순서로 출력되고, 조건이 False가 되면 else가 실행됩니다)";
+        fb.innerHTML = ok ? "✅ 정답! n이 3→2→1로 줄며 출력되고, else 블록에서 '끝'이 출력됩니다." : "❌ 다시 예측해보세요. (힌트: n=3, 2, 1 순서로 출력 후 else 실행)";
     }
 
     function checkQuiz1Q2() {
@@ -1392,26 +1086,16 @@ sys.stdout = StringIO()
         const outputOk = outputEl && outputEl.textContent.includes('5!') && outputEl.textContent.includes('1!');
         const fb = document.getElementById('fb-quiz1-q2');
         fb.className = 'drill-feedback show';
-
-        if (!selected) {
-            fb.style.backgroundColor = '#fde8e8';
-            fb.innerHTML = "❌ 에러 이유를 먼저 선택하고 채점해보세요.";
-        } else if (!radioOk) {
-            fb.style.backgroundColor = '#fde8e8';
-            fb.innerHTML = "❌ 에러 이유가 틀렸습니다. 코드를 다시 살펴보세요.";
-        } else if (!outputOk) {
-            fb.style.backgroundColor = '#fff3cd';
-            fb.innerHTML = "이유는 맞았습니다! 이제 코드를 수정하고 실행하기 버튼을 눌러보세요.";
-        } else {
-            fb.style.backgroundColor = '#d4efdf';
-            fb.innerHTML = "✅ 정답! <code>count + \"!\"</code>에서 정수(int)와 문자열(str)을 +로 합칠 수 없습니다. <code>str(count) + \"!\"</code> 또는 <code>f\"{count}!\"</code>로 수정하세요.";
-        }
+        if (!selected) { fb.style.backgroundColor = '#fde8e8'; fb.innerHTML = "❌ 에러 이유를 먼저 선택하세요."; }
+        else if (!radioOk) { fb.style.backgroundColor = '#fde8e8'; fb.innerHTML = "❌ 에러 이유가 틀렸습니다. 코드를 다시 살펴보세요."; }
+        else if (!outputOk) { fb.style.backgroundColor = '#fff8e1'; fb.innerHTML = "이유는 맞았습니다! 코드를 수정하고 실행해보세요."; }
+        else { fb.style.backgroundColor = '#d4efdf'; fb.innerHTML = "✅ 정답! 정수(int)와 문자열(str)을 +로 합칠 수 없습니다. <code>str(count) + \"!\"</code> 또는 <code>f\"{count}!\"</code>로 수정하세요."; }
     }
 
     function checkSentinel() {
-        const notSentinel = ['-13', '5', '-7', '0', '-12', '14'];
-        const checked = Array.from(document.querySelectorAll('input[name="sentinel"]:checked')).map(el => el.value);
-        const ok = notSentinel.every(v => checked.includes(v)) && checked.every(v => notSentinel.includes(v));
+        const correct = ['-13', '5', '-7', '0', '-12', '14'];
+        const checked = Array.from(document.querySelectorAll('input[name="sentinel"]:checked')).map(el => el.value).sort();
+        const ok = JSON.stringify(checked.sort()) === JSON.stringify(correct.sort());
         const fb = document.getElementById('fb-sentinel');
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
@@ -1425,7 +1109,7 @@ sys.stdout = StringIO()
         const fb = document.getElementById('fb-infinite');
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        fb.innerHTML = ok ? "✅ 정확합니다!" : "❌ 정답: b, c, d<br>a)는 a+=1이 있어서 곧 종료됩니다.";
+        fb.innerHTML = ok ? "✅ 정확합니다!" : "❌ 정답: b, c, d<br>a)는 a+=1이 있어서 곧 조건이 False가 됩니다.";
     }
 
     function checkBCOut1() {
@@ -1433,7 +1117,7 @@ sys.stdout = StringIO()
         const fb = document.getElementById('fb-bc-out1');
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        fb.innerHTML = ok ? "✅ 정답! i=0이고 i가 변경되지 않으므로 '0 번째 반복'이 무한 반복됩니다. #break는 주석 처리되어 실행되지 않습니다." : "❌ i가 변하지 않고 break도 주석 처리되어 있다는 점에 주목하세요!";
+        fb.innerHTML = ok ? "✅ 정답! i=0이고 i가 변하지 않으므로 '0 번째 반복'이 무한 반복됩니다. #break는 주석 처리되어 실행되지 않습니다." : "❌ i가 변하지 않고 break도 주석 처리되어 있다는 점에 주목하세요!";
     }
 
     function checkSumAns() {
@@ -1442,7 +1126,7 @@ sys.stdout = StringIO()
         const fb = document.getElementById('fb-sum-ans');
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        fb.innerHTML = ok ? "✅ 정답은 17! 8과 4는 4의 배수라 continue(건너뜀), 12는 3의 배수라 break(종료)!" : "❌ 다시 계산해보세요.<br>2→sum에 추가, 8→continue, 5→추가, 4→continue, 10→추가, 12→break → 2+5+10=<strong>17</strong>";
+        fb.innerHTML = ok ? "✅ 정답은 17! 8과 4는 4의 배수라 continue, 12는 3의 배수라 break!" : "❌ 다시 계산해보세요.<br>2→추가, 8→continue, 5→추가, 4→continue, 10→추가, 12→break → 2+5+10=<strong>17</strong>";
     }
 
     function checkBC3() {
@@ -1475,14 +1159,11 @@ sys.stdout = StringIO()
         fb.innerHTML = aOk && bOk && cOk && dOk ? "✅ 완벽합니다!" : "❌ 정답: A = i &lt; 100, B = i % 2 == 0, C = continue, D = end=' '";
     }
 
-    // ──────────────────────────────────────────
-    // 퀴즈 데이터
-    // ──────────────────────────────────────────
     const quizSet1 = [
-        { q: "While 문의 핵심 동작 원리는?", options: ["조건이 거짓일 때 실행", "조건이 참(True)인 동안 반복", "무조건 1번 실행", "횟수를 정해놓고 실행"], a: 1 },
-        { q: "While 문 다음에 반드시 붙여야 하는 기호는?", options: [";", ".", ":", ","], a: 2 },
-        { q: "다음 루프는 몇 번 실행될까요?<code class='quiz-code'>score = -1\nwhile score != -1:\n    print('A')</code>", options: ["0번", "1번", "무한", "에러"], a: 0 },
-        { q: "시험 점수(0~100) 입력 시 종료 신호로 부적합한 것은?", options: ["-1", "999", "80 (실제 점수)", "'quit'"], a: 2 },
+        { q: "while문의 핵심 동작 원리는?", options: ["조건이 거짓일 때 실행", "조건이 참(True)인 동안 반복", "무조건 1번 실행", "횟수를 정해놓고 실행"], a: 1 },
+        { q: "while문 다음에 반드시 붙여야 하는 기호는?", options: [";", ".", ":", ","], a: 2 },
+        { q: "다음 코드는 몇 번 실행될까요?<code class='quiz-code'>score = -1\nwhile score != -1:\n    print('A')</code>", options: ["0번", "1번", "무한", "에러"], a: 0 },
+        { q: "시험 점수(0~100) 입력 시 보초값으로 부적합한 것은?", options: ["-1", "999", "80 (실제 점수)", "'quit'"], a: 2 },
     ];
 
     const quizSet2 = [
@@ -1496,17 +1177,17 @@ sys.stdout = StringIO()
         { q: "다음 코드의 실행 결과는?<code class='quiz-code'>i = 0\nwhile i < 3:\n    print(i)\n    i += 1</code>", options: ["0 1 2", "1 2 3", "0 1 2 3", "무한"], a: 0 },
         { q: "다음 코드의 결과는?<code class='quiz-code'>i = 0\nwhile i < 5:\n    i += 1\n    if i == 3: break\n    print(i)</code>", options: ["1 2 3 4 5", "1 2", "1 2 3", "1 2 4 5"], a: 1 },
         { q: "다음 코드의 결과는?<code class='quiz-code'>i = 0\nwhile i < 5:\n    i += 1\n    if i == 3: continue\n    print(i)</code>", options: ["1 2 4 5", "1 2 3 4 5", "1 2", "3"], a: 0 },
-        { q: "For보다 While이 더 적합한 상황은?", options: ["100번 반복", "리스트 순회", "사용자가 종료할 때까지", "range() 사용"], a: 2 },
+        { q: "for보다 while이 더 적합한 상황은?", options: ["100번 반복", "리스트 순회", "사용자가 종료할 때까지", "range() 사용"], a: 2 },
     ];
 
     function renderQuiz(areaId, questions, prefix) {
         document.getElementById(areaId).innerHTML = questions.map((q, idx) => `
-            <div class="quiz-item" id="${prefix}Box${idx}">
+            <div class="quiz-item">
                 <div class="quiz-question">Q${idx+1}. ${q.q}</div>
                 <div class="quiz-options">
                     ${q.options.map((opt, oIdx) => `<label><input type="radio" name="${prefix}q${idx}" value="${oIdx}"> ${opt}</label>`).join('')}
                 </div>
-                <div class="feedback" id="${prefix}fb${idx}" style="font-weight:bold; margin-top:8px; font-size:0.9rem;"></div>
+                <div id="${prefix}fb${idx}" style="font-weight:bold; margin-top:8px; font-size:0.9rem;"></div>
             </div>`).join('');
     }
 
@@ -1517,69 +1198,61 @@ sys.stdout = StringIO()
             const sel = document.querySelector(`input[name="${prefix}q${idx}"]:checked`);
             const fb = document.getElementById(`${prefix}fb${idx}`);
             if (sel && parseInt(sel.value) === q.a) {
-                count++;
-                fb.innerText = "✅ 정답!";
-                fb.style.color = "#00b894";
+                count++; fb.innerText = "✅ 정답!"; fb.style.color = "#00b894";
             } else {
-                fb.innerText = `❌ 오답 (정답: ${q.options[q.a]})`;
-                fb.style.color = "#d63031";
+                fb.innerText = `❌ 오답 (정답: ${q.options[q.a]})`; fb.style.color = "#d63031";
             }
         });
         const res = document.getElementById(resultId);
         res.style.display = 'block';
-        res.innerHTML = `${count}/${questions.length} 정답`;
+        const pct = Math.round(count / questions.length * 100);
+        let msg = pct === 100 ? "🎉 완벽합니다!" : pct >= 70 ? "👍 훌륭해요!" : "💪 다시 복습해봐요!";
+        res.innerHTML = `${count}/${questions.length} 정답 (${pct}점) — ${msg}`;
+        res.style.color = pct >= 70 ? '#6c63ff' : '#d63031';
     }
 
-    // ──────────────────────────────────────────
-    // 코드 에디터 탭 처리
-    // ──────────────────────────────────────────
-    document.querySelectorAll('.code-editor').forEach(editor => {
-        editor.addEventListener('keydown', function(e) {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                let s = this.selectionStart;
-                this.value = this.value.substring(0, s) + "    " + this.value.substring(this.selectionEnd);
-                this.selectionStart = this.selectionEnd = s + 4;
-            }
-        });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab' && e.target.classList.contains('code-editor')) {
+            e.preventDefault();
+            let s = e.target.selectionStart;
+            e.target.value = e.target.value.substring(0, s) + "    " + e.target.value.substring(e.target.selectionEnd);
+            e.target.selectionStart = e.target.selectionEnd = s + 4;
+        }
+    });
+
+    function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.max(220, el.scrollHeight) + 'px';
+    }
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('code-editor')) autoResize(e.target);
+    });
+    window.addEventListener('load', function() {
+        document.querySelectorAll('.code-editor').forEach(el => autoResize(el));
     });
 
     renderQuiz("quiz-area-1", quizSet1, "q1");
     renderQuiz("quiz-area-2", quizSet2, "q2");
     renderQuiz("quiz-area-3", quizSet3, "q3");
 
-    // ──────────────────────────────────────────
-    // 네비게이션
-    // ──────────────────────────────────────────
     function toggleNav() {
-        const nav = document.querySelector('nav');
-        const btn = document.getElementById('nav-toggle');
-        nav.classList.toggle('collapsed');
-        btn.classList.toggle('collapsed-btn');
+        document.querySelector('nav').classList.toggle('collapsed');
+        document.getElementById('nav-toggle').classList.toggle('collapsed-btn');
         document.body.classList.toggle('nav-collapsed');
     }
 
     function goToSection(id) {
-        if (id === 'top') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        if (id === 'top') window.scrollTo({ top: 0, behavior: 'smooth' });
+        else { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     }
 
     const navMap = [
-        { navId: 'nav-top',    secId: null },
-        { navId: 'nav-sec1',   secId: 'sec1' },
-        { navId: 'nav-sec2',   secId: 'sec2' },
-        { navId: 'nav-check1', secId: 'check1' },
-        { navId: 'nav-sec3',   secId: 'sec3' },
-        { navId: 'nav-sec4',   secId: 'sec4' },
-        { navId: 'nav-check2', secId: 'check2' },
-        { navId: 'nav-sec5',   secId: 'sec5' },
+        { navId: 'nav-top', secId: null }, { navId: 'nav-sec1', secId: 'sec1' },
+        { navId: 'nav-sec2', secId: 'sec2' }, { navId: 'nav-check1', secId: 'check1' },
+        { navId: 'nav-sec3', secId: 'sec3' }, { navId: 'nav-sec4', secId: 'sec4' },
+        { navId: 'nav-check2', secId: 'check2' }, { navId: 'nav-sec5', secId: 'sec5' },
         { navId: 'nav-check3', secId: 'check3' },
     ];
-
     window.addEventListener('scroll', () => {
         const scrollY = window.scrollY + 80;
         let current = 'nav-top';
@@ -1588,9 +1261,7 @@ sys.stdout = StringIO()
             const el = document.getElementById(secId);
             if (el && el.offsetTop <= scrollY) current = navId;
         });
-        navMap.forEach(({ navId }) => {
-            document.getElementById(navId)?.classList.remove('active');
-        });
+        navMap.forEach(({ navId }) => document.getElementById(navId)?.classList.remove('active'));
         document.getElementById(current)?.classList.add('active');
     });
 </script>

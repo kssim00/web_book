@@ -8,178 +8,127 @@
     <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
     <style>
         :root {
-            --primary: #6c5ce7;
-            --primary-light: #f0edff;
-            --secondary: #2d3436;
-            --bg-color: #f8f9fa;
+            --primary: #6c63ff;
+            --primary-light: #ede9ff;
+            --secondary: #1a1a2e;
+            --accent: #00d4aa;
+            --bg-color: #f4f5fb;
             --card-bg: #ffffff;
-            --code-bg: #2d3436;
-            --text-main: #2d3436;
-            --text-muted: #636e72;
-            --code-text: #f1f2f6;
-            --code-kw: #ff7675;
-            --code-fn: #74b9ff;
-            --code-st: #ffeaa7;
-            --code-nm: #55efc4;
-            --code-cm: #b2bec3;
+            --code-bg: #16213e;
+            --text-main: #1a1a2e;
+            --text-muted: #6b7280;
+            --code-text: #e2e8f0;
+            --code-kw: #f472b6;
+            --code-fn: #60a5fa;
+            --code-st: #fbbf24;
+            --code-nm: #34d399;
+            --code-cm: #9ca3af;
         }
         * { box-sizing: border-box; }
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0; padding: 0;
-            font-size: 1rem; line-height: 1.6;
-        }
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; font-size: 1rem; line-height: 1.6; }
         .container { max-width: 1100px; margin: 0 auto; padding: 33px 22px; }
         header { text-align: center; margin-bottom: 40px; }
-        .brand-badge {
-            background: var(--secondary); color: #fff; padding: 4px 15px;
-            border-radius: 50px; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;
-        }
+        .brand-badge { background: var(--secondary); color: #fff; padding: 4px 15px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px; }
         h1 { font-size: 2.2rem; font-weight: 900; color: var(--secondary); margin: 15px 0 5px 0; letter-spacing: -1px; }
         .intro { font-size: 1.1rem; color: var(--text-muted); font-weight: 500; }
-        section {
-            background: var(--card-bg); border-radius: 16px; padding: 30px;
-            margin-bottom: 40px; border: 1px solid #e1e4e8;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        h2 {
-            font-size: 1.6rem; color: var(--primary); margin-bottom: 25px;
-            font-weight: 800; border-left: 6px solid var(--secondary);
-            padding-left: 15px; line-height: 1.2;
-        }
+        section { background: var(--card-bg); border-radius: 16px; padding: 30px; margin-bottom: 40px; border: 1px solid #e1e4e8; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        h2 { font-size: 1.6rem; color: var(--primary); margin-bottom: 25px; font-weight: 800; border-left: 6px solid var(--secondary); padding-left: 15px; line-height: 1.2; }
+        h3 { font-size: 1.05rem; font-weight: 800; color: var(--secondary); margin: 20px 0 10px; }
         p { margin-bottom: 15px; font-size: 1rem; word-break: keep-all; }
-        .code-wrapper {
-            background-color: var(--code-bg); border-radius: 12px;
-            padding: 20px; margin: 20px 0;
-            border-left: 6px solid var(--primary); overflow-x: auto;
-        }
-        pre {
-            margin: 0; font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.95rem; font-weight: 500; color: var(--code-text);
-            line-height: 1.6; white-space: pre;
-        }
+        code { background: #ede9ff; color: #6c63ff; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.92em; }
+        .code-wrapper { background-color: var(--code-bg); border-radius: 12px; padding: 20px; margin: 16px 0; border-left: 6px solid var(--primary); overflow-x: auto; }
+        pre { margin: 0; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; font-weight: 500; color: var(--code-text); line-height: 1.7; white-space: pre; }
         .kw { color: var(--code-kw); }
         .fn { color: var(--code-fn); }
         .st { color: var(--code-st); }
         .nm { color: var(--code-nm); }
-        .cm { color: var(--code-cm); font-weight: 400; font-size: 0.9rem; font-style: italic; }
-        .output {
-            background: #f1f2f6; border-radius: 8px; padding: 15px;
-            font-family: 'Consolas', monospace; font-size: 0.9rem; color: #2d3436;
-            border: 1px dashed #b2bec3; margin-top: 15px;
-        }
-        .output::before { content: "💻 실행 결과:"; display: block; font-weight: bold; margin-bottom: 5px; color: var(--primary); }
-        .drill-together {
-            background-color: #f3f0ff; border: 1px solid #c9bfff;
-            border-left: 5px solid var(--primary); border-radius: 12px;
-            padding: 20px; margin-top: 25px;
-        }
-        .drill-solo {
-            background-color: #eef4fb; border: 1px solid #b3d0ed;
-            border-left: 5px solid #5b9bd5; border-radius: 12px;
-            padding: 20px; margin-top: 25px;
-        }
+        .cm { color: var(--code-cm); font-weight: 400; font-size: 0.88rem; font-style: italic; }
+        .output { background: #f1f2f6; border-radius: 8px; padding: 14px 16px; font-family: 'Consolas', monospace; font-size: 0.9rem; color: #2d3436; border: 1px dashed #b2bec3; margin-top: 12px; white-space: pre-wrap; }
+        .output::before { content: "💻 실행 결과:"; display: block; font-weight: bold; margin-bottom: 5px; color: var(--primary); font-size: 0.85rem; }
+
+        /* Code + Result pair */
+        .code-result-pair { display: flex; gap: 14px; align-items: stretch; margin: 14px 0; flex-wrap: wrap; }
+        .code-result-pair .code-wrapper { flex: 1; min-width: 240px; margin: 0; }
+        .arrow-col { display: flex; align-items: center; font-size: 1.4rem; color: var(--primary); flex-shrink: 0; }
+        .result-box { flex: 0 0 auto; min-width: 110px; background: #0f172a; border-radius: 12px; padding: 16px 20px; font-family: 'Consolas', monospace; font-size: 1rem; color: var(--accent); font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid #2e3a52; white-space: pre; line-height: 1.6; }
+
+        /* Tip / Warn Box */
+        .tip-box { background: linear-gradient(135deg, #e0f7f4, #d4edfa); border-left: 6px solid var(--accent); border-radius: 0 12px 12px 0; padding: 18px 20px; margin: 20px 0; color: #065f46; }
+        .tip-title { font-weight: 800; font-size: 1rem; margin-bottom: 6px; }
+        .warn-box { background: #fff8e1; border-left: 6px solid #f59e0b; border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 16px 0; font-size: 0.93rem; color: #78350f; }
+
+        /* Drill Boxes */
+        .drill-together { background-color: #f0eeff; border: 1px solid #c4b5fd; border-left: 5px solid var(--primary); border-radius: 12px; padding: 20px; margin-top: 25px; }
+        .drill-solo { background-color: #e6fdf8; border: 1px solid #99e9d8; border-left: 5px solid var(--accent); border-radius: 12px; padding: 20px; margin-top: 25px; }
         .drill-together h3, .drill-solo h3 { margin-top: 0; font-weight: 800; font-size: 1rem; color: var(--secondary); }
         details { margin-top: 15px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; }
         summary { font-weight: bold; font-size: 1rem; color: var(--secondary); list-style: none; display: flex; align-items: center; gap: 8px; }
-        .answer-content { margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; color: #636e72; font-size: 0.95rem; }
-        .code-editor {
-            height: 280px; width: 100%; font-size: 0.95rem; line-height: 1.5;
-            border: 1px solid #ddd; border-radius: 8px; margin: 10px 0; padding: 12px;
-            font-family: 'Consolas', 'Monaco', monospace; white-space: pre;
-            resize: vertical; outline: none;
-        }
-        .run-btn {
-            background: var(--secondary); color: white; border: none;
-            padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-size: 0.95rem; font-weight: bold; transition: 0.3s;
-        }
+        .answer-content { margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; color: #6b7280; font-size: 0.95rem; }
+
+        /* Code Editor */
+        .code-editor { min-height: 220px; height: auto; width: 100%; font-size: 0.95rem; line-height: 1.7; border: 2px solid #2e3a52; border-radius: 8px; margin: 10px 0; padding: 14px 16px; font-family: 'Consolas', 'Monaco', monospace; white-space: pre; resize: vertical; outline: none; background-color: #16213e; color: #e2e8f0; caret-color: #6c63ff; overflow-y: hidden; display: block; }
+        .code-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108,99,255,0.15); overflow-y: auto; }
+        .run-btn { background: var(--secondary); color: white; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: bold; transition: 0.3s; font-family: 'Pretendard', sans-serif; }
         .run-btn:hover { background: var(--primary); }
-        .output-area {
-            background: #f1f2f6; padding: 12px; border-radius: 8px;
-            font-family: 'Consolas', monospace; margin-top: 10px;
-            white-space: pre-wrap; font-size: 0.9rem; min-height: 40px; border: 1px solid #eee;
-        }
-        .blank-input {
-            font-size: 0.95rem; padding: 3px 8px; border: 2px solid var(--primary);
-            border-radius: 6px; width: 120px; text-align: center;
-            font-family: 'Consolas', monospace; font-weight: 700; outline: none;
-            margin: 0 5px; background-color: #fff; transition: background-color 0.3s;
-        }
+        .output-area { background: #f1f2f6; padding: 12px; border-radius: 8px; font-family: 'Consolas', monospace; margin-top: 10px; white-space: pre-wrap; font-size: 0.9rem; min-height: 40px; border: 1px solid #eee; }
+
+        /* Blank Input */
+        .blank-input { font-size: 0.95rem; padding: 3px 8px; border: 2px solid var(--primary); border-radius: 6px; width: 120px; text-align: center; font-family: 'Consolas', monospace; font-weight: 700; outline: none; margin: 0 5px; background-color: #fff; transition: background-color 0.3s; vertical-align: middle; }
         .drill-feedback { margin-top: 15px; font-weight: bold; font-size: 0.95rem; padding: 12px; border-radius: 8px; display: none; }
         .drill-feedback.show { display: block; }
-        .challenge-box { background: #fdfefe; border: 2px solid #2d3436; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
-        .challenge-badge { background: #2d3436; color: white; padding: 3px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; display: inline-block; margin-bottom: 10px; }
-        .challenge-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; color: #2d3436; }
-        .io-example { background: #f1f2f6; padding: 12px; border-radius: 6px; font-family: 'Consolas', monospace; margin: 10px 0; font-size: 0.9rem; }
-        .term-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.95rem; background: #fff; border: 1px solid #dfe6e9; }
-        .term-table th { background: var(--primary-light); padding: 12px; color: var(--secondary); border: 1px solid #b2bec3; font-weight: 700; }
-        .term-table td { padding: 12px; border: 1px solid #dfe6e9; text-align: center; }
-        .comparison-container { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
-        .comp-box { flex: 1; background: #fff; border: 2px solid #eee; padding: 20px; border-radius: 12px; min-width: 260px; }
-        .comp-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
-        .scope-container { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
-        .scope-box { flex: 1; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.05); min-width: 200px; }
-        .scope-local { background: #fff3e0; border: 2px solid #ffe082; }
-        .scope-global { background: #e0f7fa; border: 2px solid #80deea; }
-        .scope-title { font-weight: 900; font-size: 1rem; margin-bottom: 8px; display: block; }
-        .scope-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
-        .quiz-item { background: white; padding: 20px; border-radius: 12px; border: 1px solid #dfe6e9; margin-bottom: 20px; }
-        .quiz-question { font-weight: bold; margin-bottom: 15px; font-size: 1.05rem; }
-        .quiz-options label { display: block; padding: 10px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; border-radius: 6px; margin-bottom: 3px; }
-        .quiz-options label:hover { background: #f1f2f6; }
-        .btn-check { background: var(--secondary); color: white; border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 12px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s; }
-        .btn-check:hover { background: var(--primary); }
-        .quiz-code { display: block; background-color: #f1f2f6; padding: 12px; border-radius: 8px; font-family: 'Consolas', monospace; color: #2d3436; margin: 8px 0; border-left: 4px solid var(--primary); font-size: 0.9rem; white-space: pre-wrap; line-height: 1.5; font-weight: 600; }
-        /* 흐름 추적 테이블 */
+
+        /* Challenge Box */
+        .challenge-box { background: #fdfefe; border: 2px solid var(--secondary); border-radius: 12px; padding: 22px; margin-bottom: 25px; }
+        .challenge-badge { background: var(--secondary); color: white; padding: 3px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; display: inline-block; margin-bottom: 10px; }
+        .challenge-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; color: var(--secondary); }
+        .io-example { background: #f1f2f6; padding: 12px; border-radius: 6px; font-family: 'Consolas', monospace; margin: 10px 0; font-size: 0.9rem; white-space: pre; line-height: 1.7; }
+
+        /* Compare table */
+        .compare-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.93rem; }
+        .compare-table th { background: var(--secondary); color: white; padding: 11px 14px; text-align: left; }
+        .compare-table th:first-child { border-radius: 8px 0 0 0; }
+        .compare-table th:last-child { border-radius: 0 8px 0 0; }
+        .compare-table td { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; }
+        .compare-table tr:hover td { background: #f8f7ff; }
+
+        /* Trace table */
         .trace-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9rem; font-family: 'Consolas', monospace; }
         .trace-table th { background: #f1f2f6; padding: 8px 12px; border: 1px solid #ddd; font-weight: 700; }
         .trace-table td { padding: 8px 12px; border: 1px solid #ddd; text-align: center; }
-        /* Immutable/Mutable 박스 */
-        .mut-container { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
-        .mut-box { flex: 1; padding: 20px; border-radius: 12px; min-width: 240px; }
-        .mut-immutable { background: #e8f5e9; border: 2px solid #a5d6a7; }
-        .mut-mutable   { background: #fce4ec; border: 2px solid #f48fb1; }
+
+        /* Quiz */
+        .quiz-item { background: white; padding: 20px; border-radius: 12px; border: 1px solid #dfe6e9; margin-bottom: 20px; }
+        .quiz-question { font-weight: bold; margin-bottom: 15px; font-size: 1.05rem; }
+        .quiz-code { display: block; background: var(--code-bg); padding: 12px 14px; border-radius: 8px; font-family: 'Consolas', monospace; color: var(--code-text); margin: 10px 0; font-size: 0.9rem; white-space: pre; line-height: 1.6; }
+        .quiz-options label { display: block; padding: 10px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; border-radius: 6px; margin-bottom: 3px; }
+        .quiz-options label:hover { background: #f0eeff; }
+        .btn-check { background: var(--secondary); color: white; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 12px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s; font-family: 'Pretendard', sans-serif; }
+        .btn-check:hover { background: var(--primary); }
+
         footer { text-align: center; padding: 40px 0; color: var(--text-muted); border-top: 1px solid #dcdde1; margin-top: 50px; font-size: 0.9rem; }
-        /* 사이드 네비 */
-        nav {
-            width: 264px; height: 100vh; background: white;
-            border-right: 1px solid #e1e8ed; position: fixed;
-            top: 0; left: 0; padding: 33px 16px; box-sizing: border-box;
-            overflow-y: auto; overflow-x: hidden; z-index: 100;
-            transition: width 0.3s ease, padding 0.3s ease;
-        }
+
+        /* Side Nav */
+        nav { width: 264px; height: 100vh; background: white; border-right: 1px solid #e1e8ed; position: fixed; top: 0; left: 0; padding: 33px 16px; box-sizing: border-box; overflow-y: auto; overflow-x: hidden; z-index: 100; transition: width 0.3s ease, padding 0.3s ease; }
         nav.collapsed { width: 0; padding: 0; }
         nav.collapsed * { opacity: 0; pointer-events: none; }
-        nav h2 { font-size: 1rem; color: var(--primary); margin: 0 0 20px 0; font-weight: 800; letter-spacing: -0.5px; border: none; border-bottom: 2px solid var(--primary-light); padding: 0 0 12px 0; white-space: nowrap; }
+        nav h2 { font-size: 1rem; color: var(--primary); margin: 0 0 20px 0; font-weight: 800; border: none; border-bottom: 2px solid var(--primary-light); padding: 0 0 12px 0; white-space: nowrap; }
         nav ul { list-style: none; padding: 0; margin: 0; }
         nav li { padding: 10px 14px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; transition: 0.2s; color: var(--text-muted); font-size: 0.88rem; font-weight: 600; line-height: 1.4; white-space: nowrap; }
         nav li:hover { background: var(--primary-light); color: var(--primary); }
         nav li.active { background: var(--primary); color: white; }
-        nav li.nav-check { padding-left: 10px; color: #5b9bd5; font-size: 0.82rem; }
-        nav li.nav-check::before { content: "✔"; display: inline-block; margin-right: 7px; font-size: 0.75rem; color: #5b9bd5; }
-        nav li.nav-check:hover { background: #eef4fb; color: #3a78b5; }
-        nav li.nav-check:hover::before { color: #3a78b5; }
-        nav li.nav-check.active { background: #5b9bd5; color: white; }
+        nav li.nav-check { padding-left: 10px; color: var(--accent); font-size: 0.82rem; }
+        nav li.nav-check::before { content: "✔"; display: inline-block; margin-right: 7px; font-size: 0.75rem; color: var(--accent); }
+        nav li.nav-check:hover { background: #e6fdf8; color: #059669; }
+        nav li.nav-check.active { background: var(--accent); color: white; }
         nav li.nav-check.active::before { color: white; }
-        #nav-toggle {
-            position: fixed; top: 50%; left: 264px; transform: translateY(-50%);
-            width: 20px; height: 56px; background: var(--primary); border: none;
-            border-radius: 0 8px 8px 0; cursor: pointer; z-index: 200;
-            display: flex; align-items: center; justify-content: center;
-            transition: left 0.3s ease, background 0.2s;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1); padding: 0;
-        }
-        #nav-toggle:hover { background: #4a3ab5; }
+        #nav-toggle { position: fixed; top: 50%; left: 264px; transform: translateY(-50%); width: 20px; height: 56px; background: var(--primary); border: none; border-radius: 0 8px 8px 0; cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; transition: left 0.3s ease, background 0.2s; box-shadow: 2px 0 8px rgba(0,0,0,0.1); padding: 0; }
+        #nav-toggle:hover { background: #4f46e5; }
         #nav-toggle svg { transition: transform 0.3s ease; }
         #nav-toggle.collapsed-btn { left: 0; }
         #nav-toggle.collapsed-btn svg { transform: rotate(180deg); }
         html { font-size: 110%; }
         body { padding-left: 264px; transition: padding-left 0.3s ease; }
         body.nav-collapsed { padding-left: 0; }
-        .container { max-width: 1100px; margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -190,27 +139,18 @@
     </svg>
 </button>
 
-<script>
-    document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('code-editor')) {
-            e.target.style.height = 'auto';
-            e.target.style.height = (e.target.scrollHeight) + 'px';
-        }
-    });
-</script>
-
 <nav>
     <h2>함수 완전 정복</h2>
     <ul>
-        <li onclick="goToSection('top')"    id="nav-top"    class="active">개요</li>
-        <li onclick="goToSection('sec1')"   id="nav-sec1">1. 함수의 기본 구조</li>
-        <li onclick="goToSection('sec2')"   id="nav-sec2">2. 매개변수와 인수</li>
+        <li onclick="goToSection('top')" id="nav-top" class="active">개요</li>
+        <li onclick="goToSection('sec1')" id="nav-sec1">1. 함수가 필요한 이유</li>
+        <li onclick="goToSection('sec2')" id="nav-sec2">2. 함수의 구조</li>
+        <li onclick="goToSection('sec3')" id="nav-sec3">3. 매개변수</li>
         <li onclick="goToSection('check1')" id="nav-check1" class="nav-check">Check 1</li>
-        <li onclick="goToSection('sec3')"   id="nav-sec3">3. Return vs Print</li>
-        <li onclick="goToSection('sec4')"   id="nav-sec4">4. 변수의 범위</li>
-        <li onclick="goToSection('sec5')"   id="nav-sec5">5. Immutable vs Mutable</li>
+        <li onclick="goToSection('sec4')" id="nav-sec4">4. return 값 반환</li>
+        <li onclick="goToSection('sec5')" id="nav-sec5">5. 변수의 범위</li>
         <li onclick="goToSection('check2')" id="nav-check2" class="nav-check">Check 2</li>
-        <li onclick="goToSection('sec6')"   id="nav-sec6">6. 고급 기능</li>
+        <li onclick="goToSection('sec6')" id="nav-sec6">6. 고급 기능</li>
         <li onclick="goToSection('check3')" id="nav-check3" class="nav-check">Check 3 (챌린지)</li>
     </ul>
 </nav>
@@ -222,257 +162,455 @@
         <p class="intro">반복되는 코드를 하나로 묶어 이름을 붙이면, 언제든 꺼내 쓸 수 있습니다.</p>
     </header>
 
-    <!-- 인트로 요약 카드 -->
+    <!-- 개념 요약 카드 -->
     <div style="display:flex; gap:16px; margin-bottom:40px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:220px; background:white; border-radius:16px; padding:22px 24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-top:5px solid var(--primary);">
-            <p style="font-weight:900; font-size:1.05rem; margin:0 0 8px 0; color:var(--secondary);">함수란?</p>
-            <p style="font-size:0.95rem; color:#636e72; margin:0; line-height:1.7; word-break:keep-all;">
-                어떤 일을 수행하는 <strong>코드의 묶음</strong>입니다.<br>
-                반복해서 사용할 코드를 함수로 만들면 <strong>한 번만 작성하고 여러 번 재사용</strong>할 수 있습니다.
-            </p>
+        <div style="flex:1; min-width:220px; background:white; border-radius:16px; padding:22px 24px; box-shadow:0 4px 12px rgba(108,99,255,0.08); border-top:5px solid var(--primary);">
+            <p style="font-weight:900; font-size:1.1rem; margin:0 0 8px 0; color:var(--secondary);">함수란?</p>
+            <p style="font-size:0.95rem; color:var(--text-muted); margin:0; line-height:1.7; word-break:keep-all;"><strong>반복해서 사용할 코드의 묶음</strong>입니다.<br>한 번만 만들어두면 이름만 불러서 어디서든 재사용할 수 있습니다.</p>
         </div>
-        <div style="flex:1; min-width:220px; background:white; border-radius:16px; padding:22px 24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-top:5px solid var(--secondary);">
-            <p style="font-weight:900; font-size:1.05rem; margin:0 0 8px 0; color:var(--secondary);">함수의 동작 방식</p>
-            <div style="display:flex; align-items:center; justify-content:center; gap:10px; font-size:0.95rem; font-family:'Consolas',monospace; background:#f8f9fa; border-radius:10px; padding:14px; margin-top:4px;">
-                <span style="background:#e0f2fe; border-radius:6px; padding:4px 10px; font-weight:700;">INPUT</span>
-                <span style="color:#636e72;">→</span>
-                <span style="background:var(--primary-light); border-radius:6px; padding:4px 10px; font-weight:700; color:var(--primary);">함수 처리</span>
-                <span style="color:#636e72;">→</span>
-                <span style="background:#e8f5e9; border-radius:6px; padding:4px 10px; font-weight:700;">OUTPUT</span>
+        <div style="flex:1; min-width:220px; background:white; border-radius:16px; padding:22px 24px; box-shadow:0 4px 12px rgba(108,99,255,0.08); border-top:5px solid var(--secondary);">
+            <p style="font-weight:900; font-size:1.1rem; margin:0 0 8px 0; color:var(--secondary);">함수의 기본 구조</p>
+            <p style="font-size:0.95rem; color:var(--text-muted); margin:0 0 10px 0; line-height:1.7;"><strong>def</strong>로 정의하고, 함수 이름으로 호출합니다.</p>
+            <div style="background:var(--code-bg); padding:10px 14px; border-radius:8px; font-family:'Consolas',monospace; font-size:0.9rem; color:var(--code-text); line-height:1.8;">
+                <span style="color:var(--code-kw);">def</span> <span style="color:var(--code-fn);">함수이름</span>(매개변수):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--code-text);">실행할 코드</span>
             </div>
-            <p style="font-size:0.88rem; color:#636e72; margin:8px 0 0 0; text-align:center;">예) 과일+설탕 → 믹서 → 과일주스</p>
         </div>
     </div>
 
-    <!-- 인트로 다이어그램 -->
-    <div style="background:white; border-radius:16px; padding:28px 32px; margin-bottom:40px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border:1px solid #e1e4e8;">
-
-        <!-- 함수 구조 해부도 -->
-        <p style="font-weight:900; font-size:1.1rem; margin:0 0 22px 0; color:var(--secondary); text-align:center;">📐 함수 구조 해부도</p>
-        <div style="font-family:'Consolas','Monaco',monospace; font-size:1rem; background:#2d3436; border-radius:14px; padding:24px 28px; position:relative; max-width:560px; margin:0 auto;">
-            <div style="line-height:2.1;">
-                <span style="background:#ff7675; color:#2d3436; border-radius:5px; padding:2px 7px; font-weight:800;">def</span>
-                <span style="background:#74b9ff; color:#2d3436; border-radius:5px; padding:2px 7px; font-weight:800; margin-left:6px;">add</span><span style="color:#ffeaa7;">(</span><span style="background:#55efc4; color:#2d3436; border-radius:5px; padding:2px 7px; font-weight:800;">a, b</span><span style="color:#ffeaa7;">)</span><span style="color:#f1f2f6;">:</span>
-            </div>
-            <div style="line-height:2.1; padding-left:32px;">
-                <span style="color:#b2bec3; font-size:0.85rem;">&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#f1f2f6;">result </span><span style="color:#fd79a8;">=</span><span style="color:#55efc4;"> a </span><span style="color:#fd79a8;">+</span><span style="color:#55efc4;"> b</span>
-            </div>
-            <div style="line-height:2.1; padding-left:32px;">
-                <span style="background:#a29bfe; color:#2d3436; border-radius:5px; padding:2px 7px; font-weight:800; margin-right:4px;">return</span><span style="color:#f1f2f6;"> result</span>
-            </div>
-        </div>
-
-        <!-- 범례 -->
-        <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:20px;">
-            <span style="display:flex; align-items:center; gap:6px; font-size:0.9rem;">
-                <span style="background:#ff7675; color:#2d3436; border-radius:5px; padding:2px 10px; font-weight:800; font-family:'Consolas',monospace;">def</span>
-                <span style="color:#636e72;">함수를 만들겠다는 키워드</span>
-            </span>
-            <span style="display:flex; align-items:center; gap:6px; font-size:0.9rem;">
-                <span style="background:#74b9ff; color:#2d3436; border-radius:5px; padding:2px 10px; font-weight:800; font-family:'Consolas',monospace;">함수 이름</span>
-                <span style="color:#636e72;">호출할 때 사용할 이름</span>
-            </span>
-            <span style="display:flex; align-items:center; gap:6px; font-size:0.9rem;">
-                <span style="background:#55efc4; color:#2d3436; border-radius:5px; padding:2px 10px; font-weight:800; font-family:'Consolas',monospace;">매개변수</span>
-                <span style="color:#636e72;">함수에 전달할 값의 자리</span>
-            </span>
-            <span style="display:flex; align-items:center; gap:6px; font-size:0.9rem;">
-                <span style="background:#a29bfe; color:#2d3436; border-radius:5px; padding:2px 10px; font-weight:800; font-family:'Consolas',monospace;">return</span>
-                <span style="color:#636e72;">결과를 밖으로 돌려줌</span>
-            </span>
-        </div>
-
-        <hr style="border:none; border-top:1px solid #f1f2f6; margin:28px 0;">
-
-        <!-- 함수 없을 때 vs 있을 때 -->
-        <p style="font-weight:900; font-size:1.1rem; margin:0 0 18px 0; color:var(--secondary); text-align:center;">⚖️ 함수 없을 때 vs 있을 때</p>
-        <div style="display:flex; gap:16px; flex-wrap:wrap;">
-            <!-- 함수 없을 때 -->
-            <div style="flex:1; min-width:240px;">
-                <div style="background:#ffeaa7; border-radius:8px; padding:6px 14px; font-weight:800; font-size:0.85rem; color:#6c4f00; margin-bottom:10px; text-align:center;">😰 함수 없을 때 — 코드가 반복됨</div>
-                <div style="background:#2d3436; border-radius:10px; padding:16px; font-family:'Consolas',monospace; font-size:0.85rem; line-height:1.8; color:#f1f2f6;">
-                    <span style="color:#b2bec3;"># 학생 1 점수 처리</span><br>
-                    <span style="color:#f1f2f6;">score1 = 85</span><br>
-                    <span style="color:#74b9ff;">print</span>(<span style="color:#ffeaa7;">"점수:"</span>, score1)<br>
-                    <span style="color:#74b9ff;">print</span>(<span style="color:#ffeaa7;">"등급:"</span>, <span style="color:#ffeaa7;">"B"</span>)<br>
-                    <br>
-                    <span style="color:#b2bec3;"># 학생 2 점수 처리</span><br>
-                    <span style="color:#f1f2f6;">score2 = 92</span><br>
-                    <span style="color:#74b9ff;">print</span>(<span style="color:#ffeaa7;">"점수:"</span>, score2)<br>
-                    <span style="color:#74b9ff;">print</span>(<span style="color:#ffeaa7;">"등급:"</span>, <span style="color:#ffeaa7;">"A"</span>)<br>
-                    <br>
-                    <span style="color:#b2bec3;"># 학생 3도 똑같이 반복...</span>
-                </div>
-            </div>
-            <!-- 화살표 -->
-            <div style="display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:var(--primary); font-weight:900; min-width:30px;">→</div>
-            <!-- 함수 있을 때 -->
-            <div style="flex:1; min-width:240px;">
-                <div style="background:#d4f8e8; border-radius:8px; padding:6px 14px; font-weight:800; font-size:0.85rem; color:#1a5c35; margin-bottom:10px; text-align:center;">😊 함수 있을 때 — 한 번만 정의!</div>
-                <div style="background:#2d3436; border-radius:10px; padding:16px; font-family:'Consolas',monospace; font-size:0.85rem; line-height:1.8; color:#f1f2f6;">
-                    <span style="color:#ff7675;">def</span> <span style="color:#74b9ff;">show_score</span>(score, grade):<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#74b9ff;">print</span>(<span style="color:#ffeaa7;">"점수:"</span>, score)<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#74b9ff;">print</span>(<span style="color:#ffeaa7;">"등급:"</span>, grade)<br>
-                    <br>
-                    <span style="color:#b2bec3;"># 호출만 하면 끝!</span><br>
-                    <span style="color:#74b9ff;">show_score</span>(85, <span style="color:#ffeaa7;">"B"</span>)<br>
-                    <span style="color:#74b9ff;">show_score</span>(92, <span style="color:#ffeaa7;">"A"</span>)<br>
-                    <span style="color:#74b9ff;">show_score</span>(78, <span style="color:#ffeaa7;">"C"</span>)
-                </div>
-            </div>
-        </div>
-        <p style="text-align:center; color:#636e72; font-size:0.9rem; margin:16px 0 0 0; word-break:keep-all;">
-            함수를 쓰면 같은 코드를 반복할 필요가 없습니다. <strong>수정할 때도 함수 하나만 고치면 전부 반영</strong>됩니다.
-        </p>
-    </div>
-
-    <!-- ═══ 1. 함수의 기본 구조 ═══ -->
+    <!-- ══ 1. 함수가 필요한 이유 ══ -->
     <section id="sec1">
-        <h2>1. 함수의 기본 구조</h2>
-        <p><code>def</code> 키워드로 함수를 정의합니다. <strong>def</strong>는 'define(정의하다)'의 약자입니다.<br>
-        함수는 <strong>호출되기 전에 먼저 정의</strong>되어 있어야 합니다.</p>
+        <h2>1. 함수가 필요한 이유</h2>
+        <p>아래 코드는 n이 소수인지 판별합니다. n의 약수 개수가 2개이면 소수, 아니면 합성수입니다.</p>
 
-        <div class="code-wrapper">
-<pre>
-<span class="cm"># ① 함수 정의 (만들기)</span>
-<span class="kw">def</span> <span class="fn">greeting</span>():
-    <span class="fn">print</span>(<span class="st">'Happy day!!'</span>)
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+n = <span class="nm">30</span>
+cnt = <span class="nm">0</span>
 
-<span class="cm"># ② 함수 호출 (사용하기)</span>
-<span class="fn">greeting</span>()   <span class="cm"># 첫 번째 사용</span>
-<span class="fn">greeting</span>()   <span class="cm"># 두 번째 사용 — 코드를 다시 쓸 필요 없음!</span>
-</pre>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, n+<span class="nm">1</span>):
+    <span class="kw">if</span> n%i == <span class="nm">0</span>:
+        cnt += <span class="nm">1</span>
+
+<span class="kw">if</span> cnt == <span class="nm">2</span>:
+    <span class="fn">print</span>(<span class="nm">1</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="nm">0</span>)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box">0</div>
         </div>
-        <div class="output">Happy day!!<br>Happy day!!</div>
+
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;">이 코드는 n=30이 소수가 아님을 알려줍니다(약수가 2개가 아님). 그런데 <strong>이 동작이 프로그램 곳곳에서 2000번 필요하다면?</strong> 같은 코드를 2000개 복사해서 붙여야 할까요?</p>
+        </div>
+
+        <p style="margin-top:20px;">또 다른 문제도 있습니다. 더 효율적인 소수 판별 알고리즘이 생각났다면, 2000군데를 일일이 찾아서 수정해야 합니다. 아래는 더 나은 알고리즘 버전입니다.</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+n = <span class="nm">30</span>
+cnt = <span class="nm">0</span>
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">2</span>, <span class="fn">int</span>(n**<span class="nm">0.5</span>)+<span class="nm">1</span>):
+    <span class="kw">if</span> n%i == <span class="nm">0</span>:
+        cnt += <span class="nm">1</span>
+
+<span class="kw">if</span> cnt == <span class="nm">0</span>:
+    <span class="fn">print</span>(<span class="nm">1</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="nm">0</span>)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box">0</div>
+        </div>
+
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><strong>이럴 때 함수가 필요합니다!</strong><br>
+            함수는 특정 코드 덩어리를 한 곳에 정의해두고, 이름만 불러서 사용하는 방법입니다.<br>
+            예를 들어 <code>isPrime(30)</code> 이라고만 쓰면 소수 판별 결과를 알려준다면 얼마나 편할까요?</p>
+        </div>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+<span class="kw">def</span> <span class="fn">isPrime</span>(n):
+    cnt = <span class="nm">0</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">2</span>, <span class="fn">int</span>(n**<span class="nm">0.5</span>)+<span class="nm">1</span>):
+        <span class="kw">if</span> n%i == <span class="nm">0</span>:
+            cnt += <span class="nm">1</span>
+    <span class="kw">if</span> cnt == <span class="nm">0</span>:
+        <span class="fn">print</span>(<span class="nm">1</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="nm">0</span>)
+
+<span class="fn">isPrime</span>(<span class="nm">30</span>)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box">0</div>
+        </div>
+
+        <p style="margin-top:16px;">함수를 사용하는 것을 <strong>함수를 '호출한다'</strong>라고도 표현합니다. 한 번 만들어두면 필요한 곳에서 호출만 해서 사용하면 되기 때문에 매우 편리합니다. 알고리즘을 바꿔야 할 때도 <strong>함수 안 코드 한 곳만 수정하면</strong> 전체에 반영됩니다.</p>
+
+        <table class="compare-table" style="margin-top:20px;">
+            <tr><th>방식</th><th>코드 반복 사용 시</th><th>알고리즘 수정 시</th></tr>
+            <tr><td><strong>함수 없음</strong></td><td>같은 코드를 2000번 복사</td><td>2000군데 일일이 수정</td></tr>
+            <tr><td><strong>함수 있음</strong></td><td>함수 이름만 2000번 호출</td><td>함수 내부 코드 1번만 수정</td></tr>
+        </table>
+
+        <div class="drill-together">
+            <h3>✏️ Example — isPrime 함수 직접 실행해보기</h3>
+            <p>아래 함수를 실행하고, 다양한 숫자로 소수인지 확인해보세요.</p>
+            <textarea id="editor-prime" class="code-editor">def isPrime(n):
+    cnt = 0
+    for i in range(2, int(n**0.5)+1):
+        if n%i == 0:
+            cnt += 1
+    if cnt == 0:
+        print(1)
+    else:
+        print(0)
+
+isPrime(30)
+isPrime(7)
+isPrime(13)</textarea>
+            <button class="run-btn" onclick="runCode('editor-prime','output-prime')">실행하기</button>
+            <div id="output-prime" class="output-area"></div>
+        </div>
+
+        <div class="drill-solo">
+            <h3>🎯 Mission — 약수의 개수 출력 함수</h3>
+            <p>n을 매개변수로 받아서 <strong>약수의 개수를 출력하는</strong> 함수 <code>yaksoo(n)</code>을 만들어보세요.</p>
+            <div class="io-example">yaksoo(30) → 8
+yaksoo(7)  → 2</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">
+                    cnt = 0 으로 시작하고, range(1, n+1)로 반복하며 n%i == 0 인 경우 cnt += 1 합니다.<br>
+                    마지막에 print(cnt)로 출력하세요.
+                </div>
+            </details>
+            <textarea id="editor-yaksoo" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-yaksoo','output-yaksoo')">실행하기</button>
+            <div id="output-yaksoo" class="output-area"></div>
+        </div>
+    </section>
+
+    <!-- ══ 2. 함수의 구조 ══ -->
+    <section id="sec2">
+        <h2>2. 함수의 구조</h2>
+        <p>앞의 예제는 <strong>함수를 만드는 부분</strong>과 <strong>사용하는 부분</strong>으로 구성되어 있습니다.</p>
+
+        <!-- 만들기 vs 사용하기 시각화 -->
+        <div style="background:var(--code-bg); border-radius:14px; padding:24px 28px; margin:16px 0; font-family:'Consolas','Monaco',monospace; font-size:0.97rem; line-height:2.0;">
+            <div style="display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:240px;">
+                    <div style="background:#34d399; color:#1a1a2e; border-radius:6px; padding:3px 12px; font-size:0.78rem; font-weight:800; display:inline-block; margin-bottom:10px;">① 함수 만들기 (정의)</div>
+                    <div style="line-height:2.1;">
+                        <span style="color:#f472b6;">def</span> <span style="color:#60a5fa;">isPrime</span>(<span style="color:#34d399;">n</span>):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#e2e8f0;">cnt = 0</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#e2e8f0;">...</span>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; font-size:2rem; color:#6c63ff; padding-top:28px;">→</div>
+                <div style="flex:1; min-width:180px;">
+                    <div style="background:#a29bfe; color:white; border-radius:6px; padding:3px 12px; font-size:0.78rem; font-weight:800; display:inline-block; margin-bottom:10px;">② 함수 사용하기 (호출)</div>
+                    <div style="line-height:2.1;">
+                        <span style="color:#60a5fa;">isPrime</span>(<span style="color:#fbbf24;">30</span>)<br>
+                        <span style="color:#60a5fa;">isPrime</span>(<span style="color:#fbbf24;">7</span>)<br>
+                        <span style="color:#60a5fa;">isPrime</span>(<span style="color:#fbbf24;">13</span>)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top:24px;">함수를 만드는 부분을 살펴봅시다. 함수는 아래와 같이 시작합니다.</p>
+
+        <!-- SVG 함수 구조 해부도 -->
+        <div style="overflow-x:auto; margin:20px 0;">
+        <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:700px; display:block; margin:0 auto; font-family:'Consolas','Monaco',monospace;">
+            <!-- 배경 -->
+            <rect width="700" height="260" rx="16" fill="#0f172a"/>
+
+            <!-- 코드 텍스트: def -->
+            <text x="80" y="90" font-size="36" font-weight="800" fill="#f472b6">def</text>
+            <!-- 코드 텍스트: isPrime -->
+            <text x="168" y="90" font-size="36" font-weight="800" fill="#60a5fa">isPrime</text>
+            <!-- 코드 텍스트: ( -->
+            <text x="378" y="90" font-size="36" fill="#fbbf24">(</text>
+            <!-- 코드 텍스트: n -->
+            <text x="398" y="90" font-size="36" font-weight="800" fill="#34d399">n</text>
+            <!-- 코드 텍스트: ) -->
+            <text x="421" y="90" font-size="36" fill="#fbbf24">)</text>
+            <!-- 코드 텍스트: : -->
+            <text x="445" y="90" font-size="36" fill="#e2e8f0">:</text>
+
+            <!-- def 화살표 및 라벨 -->
+            <line x1="98" y1="98" x2="98" y2="148" stroke="#f472b6" stroke-width="2.5" stroke-dasharray="4,3"/>
+            <polygon points="98,155 93,145 103,145" fill="#f472b6"/>
+            <rect x="20" y="158" width="158" height="52" rx="8" fill="#f472b6" fill-opacity="0.15" stroke="#f472b6" stroke-width="1.5"/>
+            <text x="99" y="178" font-size="13" fill="#f472b6" font-weight="800" text-anchor="middle" font-family="Pretendard, sans-serif">함수 만들기의</text>
+            <text x="99" y="197" font-size="13" fill="#f472b6" font-weight="800" text-anchor="middle" font-family="Pretendard, sans-serif">시작을 의미</text>
+
+            <!-- isPrime 화살표 및 라벨 -->
+            <line x1="262" y1="98" x2="262" y2="148" stroke="#60a5fa" stroke-width="2.5" stroke-dasharray="4,3"/>
+            <polygon points="262,155 257,145 267,145" fill="#60a5fa"/>
+            <rect x="196" y="158" width="132" height="52" rx="8" fill="#60a5fa" fill-opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+            <text x="262" y="178" font-size="13" fill="#60a5fa" font-weight="800" text-anchor="middle" font-family="Pretendard, sans-serif">함수의 이름</text>
+            <text x="262" y="197" font-size="12" fill="#60a5fa" text-anchor="middle" font-family="Pretendard, sans-serif">(호출 시 사용)</text>
+
+            <!-- n 화살표 및 라벨 -->
+            <line x1="410" y1="98" x2="410" y2="148" stroke="#34d399" stroke-width="2.5" stroke-dasharray="4,3"/>
+            <polygon points="410,155 405,145 415,145" fill="#34d399"/>
+            <rect x="338" y="158" width="144" height="52" rx="8" fill="#34d399" fill-opacity="0.15" stroke="#34d399" stroke-width="1.5"/>
+            <text x="410" y="178" font-size="13" fill="#34d399" font-weight="800" text-anchor="middle" font-family="Pretendard, sans-serif">매개변수</text>
+            <text x="410" y="197" font-size="12" fill="#34d399" text-anchor="middle" font-family="Pretendard, sans-serif">(함수에 넣어주는 수)</text>
+
+            <!-- : 화살표 및 라벨 -->
+            <line x1="452" y1="98" x2="570" y2="148" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
+            <polygon points="570,155 562,146 572,144" fill="#9ca3af"/>
+            <rect x="505" y="158" width="172" height="52" rx="8" fill="#9ca3af" fill-opacity="0.12" stroke="#9ca3af" stroke-width="1.5"/>
+            <text x="591" y="178" font-size="13" fill="#9ca3af" font-weight="700" text-anchor="middle" font-family="Pretendard, sans-serif">콜론(:) 필수!</text>
+            <text x="591" y="197" font-size="12" fill="#9ca3af" text-anchor="middle" font-family="Pretendard, sans-serif">빠지면 에러 발생</text>
+        </svg>
+        </div>
+
+        <!-- 함수 전체 구조 SVG -->
+        <p style="margin-top:8px;">아래에 구체적인 함수의 내용을 코드로 짜면 됩니다. if나 for문처럼 <strong>들여쓰기(Tab)</strong>를 넣어줍니다.</p>
+
+        <div style="overflow-x:auto; margin:16px 0;">
+        <svg viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:680px; display:block; margin:0 auto; font-family:'Consolas','Monaco',monospace;">
+            <rect width="680" height="240" rx="14" fill="#0f172a"/>
+
+            <!-- 정의 영역 브라켓 -->
+            <rect x="14" y="18" width="8" height="132" rx="4" fill="#34d399" opacity="0.8"/>
+            <text x="30" y="34" font-size="12" fill="#34d399" font-weight="800" font-family="Pretendard, sans-serif">함수 정의 영역</text>
+
+            <!-- 코드 줄 1: def -->
+            <text x="30" y="58" font-size="20" font-weight="800" fill="#f472b6">def</text>
+            <text x="74" y="58" font-size="20" font-weight="800" fill="#60a5fa">isPrime</text>
+            <text x="188" y="58" font-size="20" fill="#fbbf24">(</text>
+            <text x="200" y="58" font-size="20" font-weight="800" fill="#34d399">n</text>
+            <text x="214" y="58" font-size="20" fill="#fbbf24">)</text>
+            <text x="228" y="58" font-size="20" fill="#e2e8f0">:</text>
+
+            <!-- 코드 줄 2: cnt = 0 -->
+            <text x="62" y="90" font-size="18" fill="#e2e8f0">cnt = </text>
+            <text x="122" y="90" font-size="18" fill="#34d399">0</text>
+            <!-- 인덴트 강조 -->
+            <rect x="30" y="76" width="28" height="22" rx="3" fill="#6c63ff" fill-opacity="0.25"/>
+            <text x="44" y="91" font-size="11" fill="#a29bfe" text-anchor="middle" font-family="Pretendard,sans-serif">Tab</text>
+
+            <!-- 코드 줄 3: for ... -->
+            <text x="62" y="118" font-size="18" fill="#f472b6">for </text>
+            <text x="96" y="118" font-size="18" fill="#e2e8f0">i </text>
+            <text x="112" y="118" font-size="18" fill="#f472b6">in </text>
+            <text x="140" y="118" font-size="18" fill="#60a5fa">range</text>
+            <text x="198" y="118" font-size="18" fill="#e2e8f0">(2, n+1): ...</text>
+            <rect x="30" y="104" width="28" height="22" rx="3" fill="#6c63ff" fill-opacity="0.25"/>
+            <text x="44" y="119" font-size="11" fill="#a29bfe" text-anchor="middle" font-family="Pretendard,sans-serif">Tab</text>
+
+            <!-- 코드 줄 4: return -->
+            <text x="62" y="146" font-size="18" fill="#f472b6">return </text>
+            <text x="130" y="146" font-size="18" fill="#e2e8f0">cnt</text>
+            <rect x="30" y="132" width="28" height="22" rx="3" fill="#6c63ff" fill-opacity="0.25"/>
+            <text x="44" y="147" font-size="11" fill="#a29bfe" text-anchor="middle" font-family="Pretendard,sans-serif">Tab</text>
+
+            <!-- 구분선 -->
+            <line x1="14" y1="168" x2="660" y2="168" stroke="#2e3a52" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+            <!-- 호출 영역 브라켓 -->
+            <rect x="14" y="178" width="8" height="46" rx="4" fill="#a29bfe" opacity="0.8"/>
+            <text x="30" y="193" font-size="12" fill="#a29bfe" font-weight="800" font-family="Pretendard, sans-serif">함수 호출 영역</text>
+
+            <!-- 코드 줄 5: isPrime(30) -->
+            <text x="30" y="218" font-size="20" font-weight="800" fill="#60a5fa">isPrime</text>
+            <text x="146" y="218" font-size="20" fill="#fbbf24">(</text>
+            <text x="158" y="218" font-size="20" fill="#34d399">30</text>
+            <text x="183" y="218" font-size="20" fill="#fbbf24">)</text>
+
+            <!-- 호출 화살표 설명 -->
+            <line x1="250" y1="218" x2="390" y2="195" stroke="#a29bfe" stroke-width="1.8" stroke-dasharray="4,3"/>
+            <text x="395" y="193" font-size="13" fill="#a29bfe" font-weight="700" font-family="Pretendard,sans-serif">n에 30이 전달됨</text>
+            <text x="395" y="212" font-size="12" fill="#9ca3af" font-family="Pretendard,sans-serif">→ 함수 내부가 실행됨</text>
+        </svg>
+        </div>
+
+        <div class="warn-box">
+            ⚠️ <strong>앞으로 '매개변수'라는 단어가 자주 등장합니다.</strong> 낯선 단어이지만, <strong>'함수에 넣어주는 수'</strong>라는 의미를 꼭 기억하세요.<br>
+            ⚠️ 함수 내용은 if나 for문처럼 반드시 <strong>들여쓰기(Tab)</strong>로 시작해야 합니다. 들여쓰기가 없으면 에러!
+        </div>
 
         <p style="margin-top:20px;">함수 안에 아직 내용을 채우지 않을 때는 <code>pass</code>를 씁니다. 빈 함수를 임시로 만들 때 사용합니다.</p>
-        <div class="code-wrapper">
-<pre>
+        <div class="code-wrapper"><pre>
 <span class="cm"># 더미 함수 — 형태만 만들어두고 나중에 채울 예정</span>
 <span class="kw">def</span> <span class="fn">my_func</span>():
     <span class="kw">pass</span>
 
-<span class="fn">my_func</span>()  <span class="cm"># 에러 없이 실행됨 (아무것도 출력 안 됨)</span>
-</pre>
-        </div>
+<span class="fn">my_func</span>()  <span class="cm"># 에러 없이 실행됨 (아무것도 출력 안 됨)</span></pre></div>
 
         <div class="drill-together">
-            <h3>Example — 함수 정의 &amp; 호출 연습</h3>
-            <p>"Hello, Python!"을 출력하는 <code>say_hello()</code> 함수를 만들고 3번 호출해봅시다.</p>
-            <textarea id="editor1" class="code-editor" style="height:260px;" placeholder="def say_hello():
-    "></textarea>
+            <h3>✏️ Example — greeting 함수 만들기</h3>
+            <p>"Happy day!!"를 출력하는 함수를 만들고 3번 호출해봅시다. 한 번 정의하면 여러 번 재사용할 수 있습니다.</p>
+            <textarea id="editor1" class="code-editor">def greeting():
+    print('Happy day!!')
+
+greeting()
+greeting()
+greeting()</textarea>
             <button class="run-btn" onclick="runCode('editor1','output1')">실행하기</button>
             <div id="output1" class="output-area"></div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — 자기소개 함수 만들기</h3>
+        <div class="drill-solo">
+            <h3>🎯 Mission — 자기소개 함수 만들기</h3>
             <p>이름과 좋아하는 것을 출력하는 <code>introduce()</code> 함수를 스스로 만들어보세요.</p>
-            <div class="io-example" style="background:#f1f2f6; border-left:none; margin-bottom:12px;">
-                출력 예:<br>안녕하세요, 저는 OOO입니다.<br>저는 코딩을 좋아합니다.
-            </div>
-            <details>
-                <summary>💡 힌트 확인하기</summary>
+            <div class="io-example">출력 예:
+안녕하세요, 저는 OOO입니다.
+저는 코딩을 좋아합니다.</div>
+            <details><summary>💡 힌트</summary>
                 <div class="answer-content">def 함수이름(): 으로 정의하고, 들여쓰기(Tab) 후 print()를 작성하세요.</div>
             </details>
-            <textarea id="editor2" class="code-editor" placeholder="# 코드를 입력하세요"></textarea>
+            <textarea id="editor2" class="code-editor"># 코드를 입력하세요</textarea>
             <button class="run-btn" onclick="runCode('editor2','output2')">실행하기</button>
             <div id="output2" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ 2. 매개변수와 인수 ═══ -->
-    <section id="sec2">
-        <h2>2. 매개변수(Parameter)와 인수(Argument)</h2>
-        <p>함수에 <strong>값(재료)을 전달</strong>할 수 있습니다. 함수를 정의할 때 괄호 안에 적는 변수가 <strong>매개변수</strong>, 호출할 때 실제로 넣는 값이 <strong>인수</strong>입니다.</p>
+    <!-- ══ 3. 매개변수 ══ -->
+    <section id="sec3">
+        <h2>3. 매개변수(Parameter)와 인수(Argument)</h2>
+        <p>아래 두 코드를 비교해보세요. 어떤 차이가 있나요?</p>
 
-        <div class="code-wrapper">
-<pre>
-<span class="cm"># 매개변수(name)가 하나 있는 함수</span>
-<span class="kw">def</span> <span class="fn">print_hello</span>(name):
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin: 16px 0;">
+            <div style="flex:1; min-width:260px;">
+                <p style="margin:0 0 8px 0; font-size:0.9rem; color:var(--text-muted); font-weight:700;">매개변수 없음 — 항상 같은 이름만 출력</p>
+                <div class="code-result-pair" style="flex-direction:column; gap:8px;">
+                    <div class="code-wrapper" style="margin:0;"><pre>
+<span class="kw">def</span> <span class="fn">say_hello</span>():
+    <span class="fn">print</span>(<span class="st">'Hello! James'</span>)
+
+<span class="fn">say_hello</span>()
+<span class="fn">say_hello</span>()</pre></div>
+                    <div class="output">Hello! James
+Hello! James</div>
+                </div>
+            </div>
+            <div style="flex:1; min-width:260px;">
+                <p style="margin:0 0 8px 0; font-size:0.9rem; color:var(--text-muted); font-weight:700;">매개변수 있음 — 다른 이름을 전달할 수 있음</p>
+                <div class="code-result-pair" style="flex-direction:column; gap:8px;">
+                    <div class="code-wrapper" style="margin:0;"><pre>
+<span class="kw">def</span> <span class="fn">say_hello</span>(name):
     <span class="fn">print</span>(<span class="st">'Hello!'</span>, name)
 
-<span class="fn">print_hello</span>(<span class="st">'James'</span>)
-<span class="fn">print_hello</span>(<span class="st">'mike'</span>)
-</pre>
-        </div>
-        <div class="output">Hello! James<br>Hello! mike</div>
-
-        <table class="term-table" style="margin-top:20px;">
-            <thead>
-                <tr><th width="22%">구분</th><th>설명</th><th>예시</th></tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>매개변수<br>(Parameter)</strong></td>
-                    <td>함수를 <strong>정의할 때</strong> 괄호 안에 쓰는 변수<br>함수 호출 전까지는 비어있음</td>
-                    <td><code>def print_hello(name):</code></td>
-                </tr>
-                <tr>
-                    <td><strong>인수<br>(Argument)</strong></td>
-                    <td>함수를 <strong>호출할 때</strong> 실제로 전달하는 값</td>
-                    <td><code>print_hello('James')</code></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <p style="margin-top:20px;">매개변수가 <strong>2개 이상</strong>일 때는 쉼표로 구분합니다. return을 사용하면 결과값을 밖으로 꺼낼 수 있습니다.</p>
-        <div class="code-wrapper">
-<pre>
-<span class="kw">def</span> <span class="fn">f_sum</span>(a, b):
-    <span class="kw">return</span> (a + b)
-
-<span class="kw">def</span> <span class="fn">f_sub</span>(a, b):
-    <span class="kw">return</span> (a - b)
-
-<span class="kw">def</span> <span class="fn">f_mul</span>(a, b):
-    <span class="kw">return</span> (a * b)
-
-<span class="kw">def</span> <span class="fn">f_div</span>(a, b):
-    <span class="kw">return</span> a / b
-
-<span class="fn">print</span>(<span class="fn">f_sum</span>(<span class="nm">100</span>, <span class="nm">50</span>))   <span class="cm"># 150</span>
-<span class="fn">print</span>(<span class="fn">f_sub</span>(<span class="nm">100</span>, <span class="nm">50</span>))   <span class="cm"># 50</span>
-<span class="fn">print</span>(<span class="fn">f_mul</span>(<span class="nm">100</span>, <span class="nm">50</span>))   <span class="cm"># 5000</span>
-<span class="fn">print</span>(<span class="fn">f_div</span>(<span class="nm">100</span>, <span class="nm">50</span>))   <span class="cm"># 2.0</span>
-</pre>
-        </div>
-        <div class="output">150<br>50<br>5000<br>2.0</div>
-
-        <div class="drill-together" style="margin-top:25px;">
-            <h3>Example — 직사각형 정보 출력 함수</h3>
-            <p>가로(width)와 세로(height)를 매개변수로 받아 <strong>넓이</strong>와 <strong>둘레</strong>를 계산·출력하는 <code>print_rect()</code> 함수를 작성하고, 다양한 크기로 호출해봅시다.</p>
-            <div class="io-example" style="margin-bottom:12px;">
-                print_rect(5, 3) →<br>
-                가로: 5 / 세로: 3<br>
-                넓이: 15<br>
-                둘레: 16<br>
-                ---
+<span class="fn">say_hello</span>(<span class="st">'James'</span>)
+<span class="fn">say_hello</span>(<span class="st">'mike'</span>)</pre></div>
+                    <div class="output">Hello! James
+Hello! mike</div>
+                </div>
             </div>
-            <textarea id="editor3" class="code-editor" style="height:300px;" placeholder="def print_rect(width, height):
-    "></textarea>
+        </div>
+
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><strong>매개변수</strong>: 함수를 정의할 때 괄호 안에 쓰는 변수. 함수가 호출될 때 값을 받아옵니다.<br>
+            <strong>인수</strong>: 함수를 호출할 때 실제로 전달하는 값입니다.<br>
+            → <code>def say_hello(name):</code> 에서 <code>name</code>이 매개변수, <code>say_hello('James')</code> 에서 <code>'James'</code>가 인수입니다.</p>
+        </div>
+
+        <p style="margin-top:20px;">매개변수가 <strong>두 개 이상</strong>일 때는 쉼표로 구분합니다.</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+<span class="kw">def</span> <span class="fn">yaksoo</span>(n):
+    cnt = <span class="nm">0</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, n+<span class="nm">1</span>):
+        <span class="kw">if</span> n%i == <span class="nm">0</span>:
+            cnt += <span class="nm">1</span>
+    <span class="fn">print</span>(cnt)
+
+x = <span class="fn">int</span>(<span class="fn">input</span>())
+<span class="fn">yaksoo</span>(x)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.85rem; min-width:80px;">30
+8</div>
+        </div>
+
+        <div class="code-result-pair" style="margin-top:16px;">
+            <div class="code-wrapper"><pre>
+<span class="kw">def</span> <span class="fn">hap</span>(a, b):
+    sum = <span class="nm">0</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(a, b+<span class="nm">1</span>):
+        sum += i
+    <span class="fn">print</span>(sum)
+
+x, y = <span class="fn">map</span>(<span class="fn">int</span>, <span class="fn">input</span>().<span class="fn">split</span>())
+<span class="fn">hap</span>(x, y)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.85rem; min-width:80px;">5 7
+18</div>
+        </div>
+
+        <div class="drill-together">
+            <h3>✏️ Example — 직사각형 정보 출력 함수</h3>
+            <p>가로(width)와 세로(height)를 매개변수로 받아 넓이와 둘레를 출력하는 <code>print_rect()</code> 함수를 작성하고, 다양한 크기로 호출해봅시다.</p>
+            <div class="io-example">print_rect(5, 3) →
+가로: 5 / 세로: 3
+넓이: 15
+둘레: 16</div>
+            <textarea id="editor3" class="code-editor">def print_rect(width, height):
+    </textarea>
             <button class="run-btn" onclick="runCode('editor3','output3')">실행하기</button>
             <div id="output3" class="output-area"></div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — 나만의 정보 출력 함수 만들기</h3>
-            <p>이름(name)과 점수(score)를 매개변수로 받아서 아래 형식으로 출력하는 <code>print_score()</code> 함수를 만들어보세요.</p>
-            <div class="io-example" style="background:#f1f2f6; border-left:none; margin-bottom:12px;">
-                print_score("김민준", 95) →<br>
-                이름: 김민준<br>
-                점수: 95 점<br>
-                ---
-            </div>
-            <textarea id="editor4" class="code-editor" style="height:300px;"># print_score(name, score) 함수를 만들어보세요
+        <div class="drill-solo">
+            <h3>🎯 Mission — 홀수/짝수 판별 함수</h3>
+            <p>정수 n을 매개변수로 받아서 홀수라면 "odd", 짝수라면 "even"을 출력하는 함수 <code>oddeven(n)</code>을 만들어보세요.</p>
+            <div class="io-example">oddeven(4) → even
+oddeven(5) → odd
+oddeven(6) → even</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">n % 2 == 0 이면 짝수(even), 아니면 홀수(odd)입니다.</div>
+            </details>
+            <textarea id="editor-oddeven" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-oddeven','output-oddeven')">실행하기</button>
+            <div id="output-oddeven" class="output-area"></div>
+        </div>
 
-</textarea>
-            <button class="run-btn" onclick="runCode('editor4','output4')">실행하기</button>
-            <div id="output4" class="output-area"></div>
+        <!-- 추가 연습 문제들 (교재 캡처 기반) -->
+        <div class="drill-solo" style="margin-top:16px;">
+            <h3>🎯 Mission — 구구단 출력 함수</h3>
+            <p>정수 n을 매개변수로 받아서 구구단 n단을 출력하는 함수 <code>gugudan(n)</code>을 만들어보세요.</p>
+            <div class="io-example">gugudan(8) →
+8 * 2 = 16
+8 * 3 = 24
+...
+8 * 9 = 72</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">for i in range(2, 10): 로 반복하며 print(f"{n} * {i} = {n*i}") 를 출력하세요.</div>
+            </details>
+            <textarea id="editor-gugudan" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-gugudan','output-gugudan')">실행하기</button>
+            <div id="output-gugudan" class="output-area"></div>
+        </div>
+
+        <div class="drill-solo" style="margin-top:16px;">
+            <h3>🎯 Mission — n×n 상자 출력 함수</h3>
+            <p>정수 n을 매개변수로 받아서 가로 세로 크기가 n인 상자(*)를 출력하는 함수 <code>box(n)</code>을 만들어보세요.</p>
+            <div class="io-example">box(5) →
+*****
+*   *
+*   *
+*   *
+*****</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">첫 줄과 마지막 줄은 '*' * n 을 출력하고, 중간 줄은 '*' + ' ' * (n-2) + '*' 를 출력하세요.</div>
+            </details>
+            <textarea id="editor-box" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-box','output-box')">실행하기</button>
+            <div id="output-box" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ CHECK 1 ═══ -->
+    <!-- ══ CHECK 1 ══ -->
     <section id="check1" style="background:#fafafa; border:2px solid #e1e4e8;">
         <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 1 — 함수 기본 구조 &amp; 매개변수</h2>
 
@@ -486,14 +624,14 @@
             <span class="challenge-badge">문제 1</span>
             <p>"Happy day!!"를 출력하는 함수를 만드는 코드입니다. 빈칸을 채워보세요.</p>
             <div class="code-wrapper" style="background-color:#fff; border:1px solid #ddd; padding:24px;">
-                <div style="font-family:'Consolas',monospace; font-size:1.05rem; line-height:2.4;">
+                <div style="font-family:'Consolas',monospace; font-size:1.05rem; line-height:2.4; color:#1a1a2e;">
                     <input type="text" class="blank-input" id="c1-a" placeholder="A" style="width:60px;"> greeting():<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" class="blank-input" id="c1-b" placeholder="B" style="width:210px;"><br><br>
-                    <input type="text" class="blank-input" id="c1-c" placeholder="C" style="width:120px;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" class="blank-input" id="c1-b" placeholder="B" style="width:220px;"><br><br>
+                    <input type="text" class="blank-input" id="c1-c" placeholder="C" style="width:130px;">
                 </div>
             </div>
-            <details><summary>💡 힌트 확인하기</summary>
-                <div class="answer-content">A: 함수 정의 키워드(def) / B: 'Happy day!!' 출력 / C: 함수 호출</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">A: 함수 정의 키워드 / B: 'Happy day!!' 출력 / C: 함수 호출</div>
             </details>
             <button class="run-btn" onclick="checkC1Q1()">정답 확인</button>
             <div class="drill-feedback" id="fb-c1-q1"></div>
@@ -503,311 +641,508 @@
             <span class="challenge-badge">문제 2</span>
             <div class="challenge-title">n까지의 합 구하기 함수</div>
             <p>숫자 <code>n</code>을 입력받아 1부터 n까지의 합을 출력하는 <code>sum_to_n(n)</code>을 만들어보세요.</p>
-            <div class="io-example">
-                sum_to_n(10) → 55<br>sum_to_n(100) → 5050<br>sum_to_n(1000) → 500500
-            </div>
-            <details><summary>💡 힌트 확인하기</summary>
-                <div class="answer-content">합계 변수 sum1 = 0 을 먼저 만들고, for i in range(1, n+1): sum1 += i 로 반복합니다.</div>
+            <div class="io-example">sum_to_n(10) → 55
+sum_to_n(100) → 5050</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">합계 변수 total = 0 을 먼저 만들고, for i in range(1, n+1): total += i 로 반복합니다.</div>
             </details>
-            <textarea id="c1-editor2" class="code-editor" placeholder="def sum_to_n(n):
-    "></textarea>
+            <textarea id="c1-editor2" class="code-editor">def sum_to_n(n):
+    </textarea>
             <button class="run-btn" onclick="runCode('c1-editor2','c1-output2')">실행하기</button>
             <div id="c1-output2" class="output-area"></div>
         </div>
 
         <div class="challenge-box">
             <span class="challenge-badge">문제 3</span>
-            <div class="challenge-title">n부터 m까지 합 구하기 함수</div>
-            <p>시작 숫자 <code>n</code>과 끝 숫자 <code>m</code>을 받아 n부터 m까지 합을 반환하는 <code>sum_n_to_m(n, m)</code>을 만들어보세요.</p>
-            <div class="io-example">
-                sum_n_to_m(1, 5) → 15<br>sum_n_to_m(10, 15) → 75
-            </div>
-            <textarea id="c1-editor3" class="code-editor" placeholder="def sum_n_to_m(n, m):
-    "></textarea>
+            <div class="challenge-title">3개의 수 중 최댓값 출력 함수</div>
+            <p>3개의 수 a, b, c를 매개변수로 받아서 셋 중 가장 큰 값을 출력하는 함수 <code>max_num(a, b, c)</code>를 만들어보세요.</p>
+            <div class="io-example">max_num(1, 2, 3)   → 3
+max_num(-1, 2, 13) → 13
+max_num(5, 7, 7)   → 7</div>
+            <textarea id="c1-editor3" class="code-editor">def max_num(a, b, c):
+    </textarea>
             <button class="run-btn" onclick="runCode('c1-editor3','c1-output3')">실행하기</button>
             <div id="c1-output3" class="output-area"></div>
         </div>
 
         <div class="challenge-box">
             <span class="challenge-badge">문제 4</span>
-            <div class="challenge-title">구구단 출력 함수</div>
-            <p>단 번호(n)을 입력받아 n단 구구단을 출력하는 <code>gugu(n)</code>을 만들어보세요.</p>
-            <div class="io-example">gugu(3) → 3 x 1 = 3 / 3 x 2 = 6 / ... / 3 x 9 = 27</div>
-            <textarea id="c1-editor4" class="code-editor" placeholder="def gugu(n):
-    "></textarea>
+            <div class="challenge-title">모음 개수 출력 함수</div>
+            <p>영어 소문자로 이루어진 문자열 s를 매개변수로 받아서 모음(a, e, i, o, u)의 개수를 출력하는 함수 <code>vowel(s)</code>을 만들어보세요.</p>
+            <div class="io-example">vowel("apple")  → 2
+vowel("banana") → 3
+vowel("kiwi")   → 2</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">for c in s: 로 각 문자를 순회하며 c in 'aeiou' 조건으로 카운트하세요.</div>
+            </details>
+            <textarea id="c1-editor4" class="code-editor">def vowel(s):
+    </textarea>
             <button class="run-btn" onclick="runCode('c1-editor4','c1-output4')">실행하기</button>
             <div id="c1-output4" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ 3. Return vs Print ═══ -->
-    <section id="sec3">
-        <h2>3. 리턴(Return) vs 프린트(Print)</h2>
-        <p>가장 많이 헷갈리는 개념입니다. <strong>return은 결과값을 함수 밖으로 '내보내는' 것</strong>이고, <strong>print는 화면에 '보여주기만' 하는 것</strong>입니다.</p>
+    <!-- ══ 4. return 값 반환 ══ -->
+    <section id="sec4">
+        <h2>4. 함수 결과값 반환하기 (return)</h2>
 
-        <div class="comparison-container">
-            <div class="comp-box" style="border-top:4px solid var(--primary);">
-                <div class="comp-title" style="color:var(--primary);">↩️ return</div>
-                <p style="font-size:0.95rem;">값을 계산해서 <strong>밖으로 돌려줍니다.</strong><br>변수에 저장할 수 <strong>있습니다.</strong></p>
-                <div class="code-wrapper" style="padding:12px; margin:8px 0;">
-<pre>
-<span class="kw">def</span> <span class="fn">plus</span>(a, b):
-    <span class="kw">return</span> a + b
+        <!-- ★ Return vs Print 시각적 비교 카드 -->
+        <p>가장 많이 헷갈리는 개념입니다. <strong>return</strong>은 결과값을 함수 밖으로 '내보내는' 것이고, <strong>print</strong>는 화면에 '보여주기만' 하는 것입니다.</p>
 
-x = <span class="fn">plus</span>(<span class="nm">1</span>, <span class="nm">2</span>)
-<span class="fn">print</span>(x)  <span class="cm"># 3</span>
-</pre>
+        <div style="display:flex; gap:16px; margin:20px 0; flex-wrap:wrap;">
+            <!-- return 카드 -->
+            <div style="flex:1; min-width:260px; border-radius:14px; overflow:hidden; border:2.5px solid #60a5fa; box-shadow:0 4px 20px rgba(96,165,250,0.18);">
+                <div style="background:#1e3a5f; padding:14px 20px; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.5rem;">📦</span>
+                    <span style="color:#60a5fa; font-weight:900; font-size:1.15rem; font-family:'Consolas',monospace;">return</span>
+                    <span style="color:#9ca3af; font-size:0.85rem; margin-left:4px;">결과를 돌려줌</span>
+                </div>
+                <div style="background:#0f172a; padding:16px 18px;">
+                    <pre style="font-size:0.88rem; line-height:1.8; margin:0;"><span class="kw">def</span> <span class="fn">add</span>(a, b):
+    <span class="kw">return</span> a + b   <span class="cm"># 값을 돌려줌</span>
+
+result = <span class="fn">add</span>(<span class="nm">3</span>, <span class="nm">5</span>)
+<span class="fn">print</span>(result)       <span class="cm"># 8</span>
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="nm">1</span>,<span class="nm">2</span>) + <span class="nm">10</span>) <span class="cm"># 13 (계산 가능!)</span></pre>
+                </div>
+                <div style="background:#1e3a5f; padding:12px 18px;">
+                    <div style="color:#34d399; font-size:0.88rem; font-weight:700; margin-bottom:6px;">✅ 할 수 있는 것</div>
+                    <div style="color:#cbd5e1; font-size:0.85rem; line-height:1.8;">
+                        • 변수에 저장 가능<br>
+                        • 다른 계산에 활용 가능<br>
+                        • 함수끼리 비교 가능<br>
+                        • if / for 조건에 바로 사용
+                    </div>
                 </div>
             </div>
-            <div class="comp-box" style="border-top:4px solid #d63031;">
-                <div class="comp-title" style="color:#d63031;">📺 print</div>
-                <p style="font-size:0.95rem;">화면에 <strong>보여주기만 합니다.</strong><br>변수에 저장하면 <strong>None</strong>이 됩니다.</p>
-                <div class="code-wrapper" style="padding:12px; margin:8px 0;">
-<pre>
-<span class="kw">def</span> <span class="fn">show</span>(a, b):
-    <span class="fn">print</span>(a + b)
 
-x = <span class="fn">show</span>(<span class="nm">1</span>, <span class="nm">2</span>)
-<span class="fn">print</span>(x)  <span class="cm"># None</span>
-</pre>
+            <!-- print 카드 -->
+            <div style="flex:1; min-width:260px; border-radius:14px; overflow:hidden; border:2.5px solid #f472b6; box-shadow:0 4px 20px rgba(244,114,182,0.18);">
+                <div style="background:#3b1f2e; padding:14px 20px; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.5rem;">🖨️</span>
+                    <span style="color:#f472b6; font-weight:900; font-size:1.15rem; font-family:'Consolas',monospace;">print</span>
+                    <span style="color:#9ca3af; font-size:0.85rem; margin-left:4px;">화면에 출력만 함</span>
+                </div>
+                <div style="background:#0f172a; padding:16px 18px;">
+                    <pre style="font-size:0.88rem; line-height:1.8; margin:0;"><span class="kw">def</span> <span class="fn">add</span>(a, b):
+    <span class="fn">print</span>(a + b)   <span class="cm"># 화면에만 보여줌</span>
+
+result = <span class="fn">add</span>(<span class="nm">3</span>, <span class="nm">5</span>)
+<span class="fn">print</span>(result)       <span class="cm"># None ← 값이 없음!</span>
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="nm">1</span>,<span class="nm">2</span>) + <span class="nm">10</span>) <span class="cm"># ❌ 에러 발생!</span></pre>
+                </div>
+                <div style="background:#3b1f2e; padding:12px 18px;">
+                    <div style="color:#f87171; font-size:0.88rem; font-weight:700; margin-bottom:6px;">❌ 할 수 없는 것</div>
+                    <div style="color:#cbd5e1; font-size:0.85rem; line-height:1.8;">
+                        • 변수에 저장하면 None<br>
+                        • 계산에 활용 불가<br>
+                        • 함수 결과끼리 비교 불가<br>
+                        • 화면 출력 외에는 쓸모 없음
+                    </div>
                 </div>
             </div>
         </div>
 
+
+
+        <p>아래 코드를 보세요. 20과 30 중 어떤 수의 약수가 더 많은지 비교하려고 합니다.</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+<span class="kw">def</span> <span class="fn">yaksoo</span>(n):
+    cnt = <span class="nm">0</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, n+<span class="nm">1</span>):
+        <span class="kw">if</span> n%i == <span class="nm">0</span>:
+            cnt += <span class="nm">1</span>
+    <span class="kw">return</span> cnt  <span class="cm"># 호출 위치로 cnt값 보내기</span>
+
+<span class="kw">if</span> <span class="fn">yaksoo</span>(<span class="nm">20</span>) > <span class="fn">yaksoo</span>(<span class="nm">30</span>):
+    <span class="fn">print</span>(<span class="st">"20의 약수가 더 많습니다."</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"30의 약수가 더 많습니다."</span>)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.82rem; min-width:140px;">30의 약수가
+더 많습니다.</div>
+        </div>
+
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><code>return</code>이 있기 때문에 <code>yaksoo(20) > yaksoo(30)</code>처럼 함수 결과끼리 바로 비교할 수 있습니다.<br>
+            만약 print만 썼다면 <code>yaksoo(20)</code>은 None이 되어 비교 자체가 불가능합니다.</p>
+        </div>
+
         <p style="margin-top:20px;"><code>return</code>을 만나면 함수는 <strong>즉시 종료</strong>됩니다. return 아래 코드는 실행되지 않습니다.</p>
-        <div class="code-wrapper">
-<pre>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
 <span class="kw">def</span> <span class="fn">f</span>():
     <span class="kw">return</span> <span class="st">"A"</span>   <span class="cm"># 여기서 즉시 종료!</span>
     <span class="kw">return</span> <span class="st">"B"</span>   <span class="cm"># 절대 실행 안 됨</span>
 
-<span class="fn">print</span>(<span class="fn">f</span>())    <span class="cm"># A</span>
-</pre>
+<span class="fn">print</span>(<span class="fn">f</span>())</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box">A</div>
         </div>
-        <div class="output">A</div>
 
-        <div class="drill-together" style="margin-top:25px;">
-            <h3>Example — return 값 활용하기</h3>
-            <p>원의 넓이를 계산해 <strong>return</strong>하는 함수를 만들어봅시다. return을 쓰면 결과를 변수에 저장하고 추가 계산에도 활용할 수 있습니다.</p>
-            <div class="io-example" style="margin-bottom:12px;">
-                circle_area(5) → 78.5<br>
-                area = circle_area(5)<br>
-                print(area)           → 78.5<br>
-                print(area * 2)       → 157.0  ← return이라서 가능!<br>
-                print(circle_area(3) + circle_area(4)) → 78.5
-            </div>
-            <textarea id="editor5" class="code-editor" style="height:300px;" placeholder="def circle_area(r):
-    "></textarea>
+        <p style="margin-top:20px;">또한 <code>return</code>은 반복문의 <code>break</code>처럼 <strong>함수를 즉시 종료</strong>시키는 역할도 합니다.</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+<span class="kw">def</span> <span class="fn">password</span>(code):
+    <span class="kw">while True</span>:
+        ans = <span class="fn">input</span>(<span class="st">"암호를 입력하시오: "</span>)
+        <span class="kw">if</span> ans != code:
+            <span class="fn">print</span>(<span class="st">"틀린 암호입니다."</span>)
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">"암호 해제"</span>)
+            <span class="kw">return</span>  <span class="cm"># 함수 종료</span>
+
+<span class="fn">password</span>(<span class="st">"12341234"</span>)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.8rem; min-width:160px;">틀린 암호입니다.
+틀린 암호입니다.
+암호 해제</div>
+        </div>
+
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><code>return</code> 뒤에 반환할 값을 쓰지 않고 <strong>return만 단독으로</strong> 써도 됩니다.<br>
+            값을 반환하지 않더라도 <code>return</code>은 실행되기 때문에 함수가 그 위치에서 즉시 종료됩니다.</p>
+        </div>
+
+        <div class="drill-together">
+            <h3>✏️ Example — return 값 활용하기</h3>
+            <p>세 개의 매개변수를 받아 제일 큰 값을 반환하는 함수를 만들고 호출해봅시다.</p>
+            <textarea id="editor5" class="code-editor">def maximum(a, b, c):
+    if a >= b and a >= c:
+        return a
+    if b >= c and b >= a:
+        return b
+    if c >= a and c >= b:
+        return c
+
+x, y, z = map(int, input("세 수 입력(예: 15 -1 28): ").split())
+print(maximum(x, y, z))</textarea>
             <button class="run-btn" onclick="runCode('editor5','output5')">실행하기</button>
             <div id="output5" class="output-area"></div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — 제곱 반환 함수</h3>
-            <p>숫자를 입력받아 제곱한 값을 <strong>return</strong>하는 함수 <code>square(n)</code>을 만들고, 결과를 변수에 저장해서 활용해보세요.</p>
-            <div class="io-example" style="background:#f1f2f6; border-left:none; margin-bottom:12px;">
-                result = square(5) → result에 25가 저장됨<br>print(result + 1) → 26
-            </div>
-            <details>
-                <summary>💡 힌트 확인하기</summary>
-                <div class="answer-content">return n * n 또는 return n ** 2 를 사용하세요.</div>
+        <div class="drill-solo">
+            <h3>🎯 Mission — 홀짝 판별 후 return</h3>
+            <p>정수 하나를 받아서 홀수라면 1, 짝수라면 0을 <strong>return</strong>하는 함수 <code>oddeven(n)</code>을 만들어보세요.</p>
+            <div class="io-example">r = oddeven(2)
+print(r)       → 0</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">n % 2 == 1 이면 return 1, 그렇지 않으면 return 0 입니다.</div>
             </details>
-            <textarea id="editor6" class="code-editor" placeholder="# 코드를 입력하세요"></textarea>
+            <textarea id="editor6" class="code-editor"># 코드를 입력하세요</textarea>
             <button class="run-btn" onclick="runCode('editor6','output6')">실행하기</button>
             <div id="output6" class="output-area"></div>
         </div>
-    </section>
 
-    <!-- ═══ 4. 변수의 범위 ═══ -->
-    <section id="sec4">
-        <h2>4. 변수의 범위 (Scope)</h2>
-        <p>
-            <strong>지역 변수(Local)</strong>: 함수 내부에서 선언한 변수. 함수 안에서만 유효합니다.<br>
-            <strong>전역 변수(Global)</strong>: 함수 밖에서 선언한 변수. 모든 영역에서 유효합니다.
-        </p>
+        <div class="drill-solo" style="margin-top:16px;">
+            <h3>🎯 Mission — 소수 판별 True/False 반환</h3>
+            <p>정수 하나를 받아서 소수라면 <code>True</code>, 소수가 아니라면 <code>False</code>를 return하는 함수 <code>isPrime(n)</code>을 만들어보세요.</p>
+            <div class="io-example">print(isPrime(3))  → True
+print(isPrime(4))  → False
 
-        <div class="scope-container">
-            <div class="scope-box scope-local">
-                <span class="scope-icon">🏠</span>
-                <span class="scope-title">지역 변수 (함수 안)</span>
-                <p style="font-size:0.9rem; margin:0;">함수 안에서만 살아있습니다.<br>함수가 끝나면 사라집니다.</p>
-            </div>
-            <div class="scope-box scope-global">
-                <span class="scope-icon">🏙️</span>
-                <span class="scope-title">전역 변수 (함수 밖)</span>
-                <p style="font-size:0.9rem; margin:0;">함수 안팎 어디서든 접근할 수 있습니다.</p>
-            </div>
+for i in range(1, 10):
+    if isPrime(i):
+        print(i, end=' ')  → 2 3 5 7</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">cnt == 0 이면 return True, 아니면 return False 입니다. (약수를 2부터 √n까지만 확인)</div>
+            </details>
+            <textarea id="editor-isprime" class="code-editor"># 코드를 입력하세요</textarea>
+            <button class="run-btn" onclick="runCode('editor-isprime','output-isprime')">실행하기</button>
+            <div id="output-isprime" class="output-area"></div>
         </div>
 
-        <div class="code-wrapper" style="margin-top:20px;">
-<pre>
+        <div class="drill-solo" style="margin-top:16px;">
+            <h3>🎯 Mission — while 합산 후 return</h3>
+            <p>아래 함수는 매개변수가 없습니다. 키보드 입력으로 수를 하나씩 계속 입력받다가 -1이 입력되면 그 때까지 입력된 수의 총합을 return합니다. break 없이 만들어보세요.</p>
+            <div class="io-example">r = whilesum()
+print(r)
+# 입력: 1, 2, 3, -1 → 출력: 6</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">
+                    sum = 0<br>
+                    while True:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;n = int(input("수를 입력하세요: "))<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if n == -1:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return sum  ← -1 입력 시 함수 종료!<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;sum += n
+                </div>
+            </details>
+            <textarea id="editor-whilesum" class="code-editor">def whilesum():
+    sum = 0
+    # 코드를 완성하세요
+
+r = whilesum()
+print(r)</textarea>
+            <button class="run-btn" onclick="runCode('editor-whilesum','output-whilesum')">실행하기</button>
+            <div id="output-whilesum" class="output-area"></div>
+        </div>
+    </section>
+
+    <!-- ══ 5. 변수의 범위 ══ -->
+    <section id="sec5">
+        <h2>5. 변수의 범위 (Scope) — 전역 vs 지역</h2>
+        <p>아래 코드를 실행해보세요. 함수 안에서 num을 바꿔도 밖의 num이 바뀌지 않습니다. 왜 그럴까요?</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
 num = <span class="nm">10</span>            <span class="cm"># 전역 변수</span>
 
 <span class="kw">def</span> <span class="fn">my_func</span>():
-    num = <span class="nm">20</span>        <span class="cm"># 지역 변수 (전역 num과 다른 변수!)</span>
-    <span class="fn">print</span>(<span class="st">f'my_func: {num}'</span>)
+    num = <span class="nm">20</span>        <span class="cm"># 지역 변수 (전역 num과 별개!)</span>
+    <span class="fn">print</span>(f<span class="st">'my_func: {num}'</span>)
 
-<span class="fn">print</span>(<span class="st">'before func:'</span>, num)
+<span class="fn">print</span>(<span class="st">'before:'</span>, num)
 <span class="fn">my_func</span>()
-<span class="fn">print</span>(<span class="st">'after func:'</span>, num)   <span class="cm"># 전역 num은 그대로 10</span>
-</pre>
+<span class="fn">print</span>(<span class="st">'after:'</span>, num)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.85rem; min-width:140px;">before: 10
+my_func: 20
+after: 10</div>
         </div>
-        <div class="output">before func: 10<br>my_func: 20<br>after func: 10</div>
 
-        <p style="margin-top:20px;">함수 안에서 전역 변수를 <strong>수정</strong>하려면 <code>global 변수명</code>으로 먼저 선언해야 합니다.</p>
-        <div class="code-wrapper">
-<pre>
+        <!-- 전역/지역 변수 SVG 시각화 — 스토리 3단계 -->
+
+        <!-- STEP 1 -->
+        <div style="margin:24px 0 8px 0; display:flex; align-items:center; gap:10px;">
+            <div style="background:var(--primary); color:white; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.95rem; flex-shrink:0;">1</div>
+            <p style="margin:0; font-weight:800; font-size:1rem;">함수 실행 <span style="color:var(--text-muted); font-weight:500; font-size:0.9rem;">— num = 10 이 있는 상태에서 my_func()를 호출했을 때</span></p>
+        </div>
+
+        <div style="overflow-x:auto;">
+        <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:700px; display:block; margin:0 auto; font-family:'Pretendard',sans-serif;">
+            <rect width="700" height="220" rx="14" fill="#0f172a"/>
+
+            <!-- ── 왼쪽: 전역 공간 ── -->
+            <text x="30" y="28" font-size="13" fill="#60a5fa" font-weight="800">📦 함수 밖 (전역 공간)</text>
+
+            <!-- 전역 num 박스: x=30, y=38, w=160, h=80 -->
+            <rect x="30" y="40" width="160" height="80" rx="10" fill="#1e3a5f" stroke="#60a5fa" stroke-width="2.5"/>
+            <text x="110" y="66"  text-anchor="middle" font-size="12" fill="#9ca3af">변수 이름</text>
+            <text x="110" y="90"  text-anchor="middle" font-size="22" fill="#60a5fa" font-weight="900" font-family="'Consolas',monospace">num</text>
+            <text x="110" y="110" text-anchor="middle" font-size="14" fill="#34d399" font-weight="700" font-family="'Consolas',monospace">값: 10</text>
+
+            <!-- 전역 num 유지 표시 -->
+            <text x="110" y="148" text-anchor="middle" font-size="12" fill="#60a5fa" font-weight="700">밖의 num은?</text>
+            <rect x="30" y="156" width="160" height="30" rx="6" fill="#0d2240"/>
+            <text x="110" y="176" text-anchor="middle" font-size="13" fill="#34d399" font-weight="700" font-family="'Consolas',monospace">여전히 10 ✅</text>
+
+            <!-- 호출 화살표: 전역→함수 -->
+            <defs>
+                <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#a29bfe"/>
+                </marker>
+            </defs>
+            <line x1="196" y1="80" x2="250" y2="80" stroke="#a29bfe" stroke-width="2.5" marker-end="url(#a1)"/>
+            <text x="223" y="70" text-anchor="middle" font-size="11" fill="#a29bfe" font-weight="700">호출!</text>
+            <text x="223" y="95" text-anchor="middle" font-size="10" fill="#9ca3af">my_func()</text>
+
+            <!-- ── 오른쪽: 함수 내부 박스 ── x=258, w=428, h=180 -->
+            <rect x="258" y="18" width="428" height="188" rx="12" fill="#1a1a2e" stroke="#f472b6" stroke-width="2.5"/>
+            <text x="278" y="40" font-size="13" fill="#f472b6" font-weight="800">🔒 함수 안 (지역 공간)</text>
+            <text x="560" y="40" font-size="11" fill="#9ca3af" text-anchor="middle">def my_func():</text>
+
+            <!-- 지역 num 박스: x=278, y=52, w=160, h=80 -->
+            <rect x="278" y="50" width="160" height="80" rx="10" fill="#3b1f2e" stroke="#f472b6" stroke-width="2"/>
+            <text x="358" y="76"  text-anchor="middle" font-size="12" fill="#9ca3af">변수 이름</text>
+            <text x="358" y="100" text-anchor="middle" font-size="22" fill="#f472b6" font-weight="900" font-family="'Consolas',monospace">num</text>
+            <text x="358" y="120" text-anchor="middle" font-size="14" fill="#f472b6" font-weight="700" font-family="'Consolas',monospace">값: 20</text>
+
+            <!-- 별개 강조: x=462~680 영역에 배치 -->
+            <text x="530" y="72"  font-size="30" text-anchor="middle">🚧</text>
+            <text x="530" y="100" font-size="14" fill="#fbbf24" font-weight="900" text-anchor="middle">이름만 같을 뿐</text>
+            <text x="530" y="120" font-size="13" fill="#9ca3af" text-anchor="middle">완전히 다른 변수!</text>
+            <text x="530" y="138" font-size="12" fill="#9ca3af" text-anchor="middle">서로 연결 안 됨</text>
+
+            <!-- 함수 내부 하단 설명 -->
+            <rect x="278" y="148" width="390" height="44" rx="8" fill="#1e0a0a"/>
+            <text x="473" y="168" text-anchor="middle" font-size="12" fill="#9ca3af">함수가 끝나면 지역변수 num = 20은</text>
+            <text x="473" y="184" text-anchor="middle" font-size="13" fill="#f87171" font-weight="700">💀 사라집니다. 전역 num = 10은 그대로!</text>
+        </svg>
+        </div>
+
+        <!-- STEP 2 -->
+        <div style="margin:24px 0 8px 0; display:flex; align-items:center; gap:10px;">
+            <div style="background:var(--primary); color:white; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.95rem; flex-shrink:0;">2</div>
+            <p style="margin:0; font-weight:800; font-size:1rem;">함수 종료 <span style="color:var(--text-muted); font-weight:500; font-size:0.9rem;">— my_func()가 끝나면 지역 변수는 어떻게 될까요?</span></p>
+        </div>
+
+        <div style="overflow-x:auto;">
+        <svg viewBox="0 0 660 140" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:660px; display:block; margin:0 auto; font-family:'Pretendard',sans-serif;">
+            <rect width="660" height="140" rx="14" fill="#0f172a"/>
+
+            <!-- 전역 num 살아있음 -->
+            <rect x="24" y="24" width="180" height="92" rx="10" fill="#1e3a5f" stroke="#34d399" stroke-width="2.5"/>
+            <text x="114" y="48" text-anchor="middle" font-size="13" fill="#34d399" font-weight="800">📦 밖의 num</text>
+            <text x="114" y="76" text-anchor="middle" font-size="26" fill="#34d399" font-weight="900" font-family="'Consolas',monospace">10</text>
+            <text x="114" y="106" text-anchor="middle" font-size="12" fill="#34d399">변함없이 살아있음 ✅</text>
+
+            <!-- 화살표 -->
+            <defs>
+                <marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#f87171"/>
+                </marker>
+            </defs>
+
+            <!-- 함수 내부 - 흐릿하게 (사라짐) -->
+            <rect x="288" y="24" width="348" height="92" rx="12" fill="#1a1a2e" stroke="#f472b6" stroke-width="2" opacity="0.35"/>
+            <text x="462" y="52" text-anchor="middle" font-size="13" fill="#f472b6" font-weight="800" opacity="0.4">🔒 함수 안의 num = 20</text>
+            <text x="462" y="80" text-anchor="middle" font-size="30" opacity="0.3">💨</text>
+            <text x="462" y="108" text-anchor="middle" font-size="13" fill="#f87171" font-weight="800" opacity="0.6">함수가 끝나면 사라짐!</text>
+
+            <!-- 사라짐 큰 텍스트 오버레이 -->
+            <text x="462" y="72" text-anchor="middle" font-size="38" fill="#f87171" font-weight="900" opacity="0.55">✕</text>
+
+            <!-- 설명 -->
+            <line x1="215" y1="70" x2="282" y2="70" stroke="#f87171" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="248" y="62" text-anchor="middle" font-size="11" fill="#f87171" font-weight="700">지역 변수</text>
+            <text x="248" y="82" text-anchor="middle" font-size="10" fill="#f87171">소멸 →</text>
+        </svg>
+        </div>
+
+        <!-- STEP 3 — global 키워드 -->
+        <div style="margin:24px 0 8px 0; display:flex; align-items:center; gap:10px;">
+            <div style="background:var(--accent); color:#1a1a2e; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.95rem; flex-shrink:0;">3</div>
+            <p style="margin:0; font-weight:800; font-size:1rem;"><code>global</code> 키워드 <span style="color:var(--text-muted); font-weight:500; font-size:0.9rem;">— 함수 안에서 밖의 변수를 바꾸고 싶다면?</span></p>
+        </div>
+
+        <div style="overflow-x:auto;">
+        <svg viewBox="0 0 660 170" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:660px; display:block; margin:0 auto; font-family:'Pretendard',sans-serif;">
+            <rect width="660" height="170" rx="14" fill="#0f172a"/>
+
+            <!-- 전역 num 박스 (before) -->
+            <rect x="24" y="24" width="150" height="72" rx="10" fill="#1e3a5f" stroke="#60a5fa" stroke-width="2"/>
+            <text x="99" y="46" text-anchor="middle" font-size="11" fill="#9ca3af">함수 호출 전</text>
+            <text x="99" y="68" text-anchor="middle" font-size="20" fill="#60a5fa" font-weight="900" font-family="'Consolas',monospace">num = 10</text>
+            <text x="99" y="88" text-anchor="middle" font-size="11" fill="#9ca3af">전역 변수</text>
+
+            <!-- 화살표 오른쪽 -->
+            <defs>
+                <marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#00d4aa"/>
+                </marker>
+            </defs>
+            <line x1="182" y1="60" x2="220" y2="60" stroke="#00d4aa" stroke-width="2.5" marker-end="url(#a3)"/>
+
+            <!-- global 박스 (함수 안) -->
+            <rect x="228" y="14" width="222" height="140" rx="12" fill="#1a1a2e" stroke="#00d4aa" stroke-width="2.5"/>
+            <text x="339" y="36" text-anchor="middle" font-size="12" fill="#00d4aa" font-weight="800">def my_func():</text>
+            <!-- global 키워드 강조 -->
+            <rect x="248" y="44" width="182" height="32" rx="8" fill="#064e3b"/>
+            <text x="339" y="65" text-anchor="middle" font-size="15" fill="#34d399" font-weight="900" font-family="'Consolas',monospace">global num</text>
+            <text x="339" y="96" text-anchor="middle" font-size="14" fill="#e2e8f0" font-family="'Consolas',monospace">num = 20</text>
+            <text x="339" y="118" text-anchor="middle" font-size="11" fill="#9ca3af">"밖의 num을 바꿀게요!"</text>
+            <text x="339" y="134" text-anchor="middle" font-size="11" fill="#9ca3af">선언 후에야 수정 가능</text>
+
+            <!-- 화살표 오른쪽 -->
+            <line x1="458" y1="60" x2="496" y2="60" stroke="#00d4aa" stroke-width="2.5" marker-end="url(#a3)"/>
+
+            <!-- 전역 num 박스 (after) -->
+            <rect x="504" y="24" width="132" height="72" rx="10" fill="#064e3b" stroke="#34d399" stroke-width="2.5"/>
+            <text x="570" y="46" text-anchor="middle" font-size="11" fill="#9ca3af">함수 호출 후</text>
+            <text x="570" y="68" text-anchor="middle" font-size="20" fill="#34d399" font-weight="900" font-family="'Consolas',monospace">num = 20</text>
+            <text x="570" y="88" text-anchor="middle" font-size="11" fill="#34d399">바뀌었다! ✅</text>
+
+            <!-- 하단 경고 -->
+            <rect x="24" y="112" width="192" height="42" rx="8" fill="#1c1c00"/>
+            <text x="120" y="128" text-anchor="middle" font-size="11" fill="#fbbf24" font-weight="700">⚠️ global 없이 num = 20 쓰면?</text>
+            <text x="120" y="146" text-anchor="middle" font-size="11" fill="#9ca3af">새 지역변수 생성 → 밖은 안 바뀜</text>
+        </svg>
+        </div>
+
+        <!-- 한줄 요약 카드 -->
+        <div style="display:flex; gap:12px; margin:20px 0; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px; background:#1e3a5f; border-radius:10px; padding:14px 18px; border-left:5px solid #60a5fa; display:flex; align-items:center; gap:12px;">
+                <span style="font-size:1.8rem;">🌍</span>
+                <div>
+                    <p style="color:#60a5fa; font-weight:900; font-size:0.95rem; margin:0 0 4px;">전역 변수</p>
+                    <p style="color:#cbd5e1; font-size:0.85rem; margin:0; line-height:1.6;">함수 <strong>밖</strong>에서 만든 변수<br>어디서든 읽을 수 있음</p>
+                </div>
+            </div>
+            <div style="flex:1; min-width:200px; background:#3b1f2e; border-radius:10px; padding:14px 18px; border-left:5px solid #f472b6; display:flex; align-items:center; gap:12px;">
+                <span style="font-size:1.8rem;">🔒</span>
+                <div>
+                    <p style="color:#f472b6; font-weight:900; font-size:0.95rem; margin:0 0 4px;">지역 변수</p>
+                    <p style="color:#cbd5e1; font-size:0.85rem; margin:0; line-height:1.6;">함수 <strong>안</strong>에서 만든 변수<br>함수가 끝나면 사라짐</p>
+                </div>
+            </div>
+            <div style="flex:1; min-width:200px; background:#064e3b; border-radius:10px; padding:14px 18px; border-left:5px solid #34d399; display:flex; align-items:center; gap:12px;">
+                <span style="font-size:1.8rem;">🔑</span>
+                <div>
+                    <p style="color:#34d399; font-weight:900; font-size:0.95rem; margin:0 0 4px;">global 키워드</p>
+                    <p style="color:#cbd5e1; font-size:0.85rem; margin:0; line-height:1.6;">함수 안에서 전역 변수를<br><strong>수정</strong>하고 싶을 때만 사용</p>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top:4px;">함수 안에서 전역 변수를 <strong>수정</strong>하려면 <code>global 변수명</code>으로 먼저 선언해야 합니다.</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
 num = <span class="nm">10</span>
-num2 = <span class="nm">100</span>
 
 <span class="kw">def</span> <span class="fn">my_func</span>():
-    <span class="kw">global</span> num    <span class="cm"># 전역 변수 num을 수정하겠다고 선언</span>
+    <span class="kw">global</span> num    <span class="cm"># 전역 변수 num을 수정하겠다 선언</span>
     num = <span class="nm">20</span>
-    <span class="fn">print</span>(<span class="st">'my_func:'</span>, num, num2)  <span class="cm"># num2는 수정 없이 참조만 가능</span>
 
-<span class="fn">print</span>(<span class="st">'before func:'</span>, num, num2)
+<span class="fn">print</span>(<span class="st">'before:'</span>, num)
 <span class="fn">my_func</span>()
-<span class="fn">print</span>(<span class="st">'after func:'</span>, num, num2)
-</pre>
+<span class="fn">print</span>(<span class="st">'after:'</span>, num)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.85rem; min-width:130px;">before: 10
+after: 20</div>
         </div>
-        <div class="output">before func: 10 100<br>my_func: 20 100<br>after func: 20 100</div>
 
-        <div class="drill-together" style="margin-top:25px;">
-            <h3>Example — 전역 변수로 총점 누적하기</h3>
-            <p>전역 변수 <code>total</code>에 점수를 계속 누적하는 <code>add_score(n)</code> 함수를 만들어봅시다. <code>global</code> 없이는 함수 안에서 total을 수정할 수 없습니다.</p>
-            <div class="io-example" style="margin-bottom:12px;">
-                add_score(30) → 현재 총점: 30<br>
-                add_score(25) → 현재 총점: 55<br>
-                add_score(40) → 현재 총점: 95<br>
-                print(total)  → 95
-            </div>
-            <textarea id="editor7" class="code-editor" style="height:300px;" placeholder="total = 0
+        <div class="warn-box">
+            ⚠️ <strong>global은 꼭 필요할 때만!</strong> 전역 변수를 함수 안에서 마구 수정하면 어디서 값이 바뀌었는지 추적하기 어려워집니다.<br>
+            💡 <strong>권장 방법</strong>: 함수 안에서 계산한 뒤 <code>return</code>으로 값을 돌려주고, 밖에서 변수에 저장하는 방식이 더 안전합니다.
+        </div>
+
+        <div class="drill-together">
+            <h3>✏️ Example — 전역 변수로 총점 누적하기</h3>
+            <p>전역 변수 <code>total</code>에 점수를 계속 누적하는 <code>add_score(n)</code> 함수를 만들어봅시다.</p>
+            <div class="io-example">add_score(30) → 현재 총점: 30
+add_score(25) → 현재 총점: 55
+add_score(40) → 현재 총점: 95
+print(total)  → 95</div>
+            <textarea id="editor7" class="code-editor">total = 0
 
 def add_score(n):
-    "></textarea>
+    global total
+    total += n
+    print("현재 총점:", total)
+
+add_score(30)
+add_score(25)
+add_score(40)
+print(total)</textarea>
             <button class="run-btn" onclick="runCode('editor7','output7')">실행하기</button>
             <div id="output7" class="output-area"></div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — 점수 누적 함수</h3>
-            <p>전역 변수 <code>score = 0</code>을 선언하고, <code>add_score(n)</code>을 호출할 때마다 score에 n을 더하는 코드를 작성하세요.</p>
-            <div class="io-example" style="background:#f1f2f6; border-left:none; margin-bottom:12px;">
-                add_score(10)<br>add_score(20)<br>print(score) → 30
-            </div>
-            <textarea id="editor8" class="code-editor" placeholder="score = 0
-
-def add_score(n):
-    "></textarea>
+        <div class="drill-solo">
+            <h3>🎯 Mission — 두 문자열 중 긴 것 출력 함수</h3>
+            <p>문자열 s1과 s2를 매개변수로 받아서 둘 중 더 긴 문자열을 출력하는 함수 <code>longer(s1, s2)</code>를 만들어보세요. 길이가 같으면 둘 중 아무거나 출력합니다.</p>
+            <div class="io-example">longer("apple", "kiwi")   → apple
+longer("python", "java")  → python
+longer("조세호", "유재석")  → 조세호</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">len(s1) >= len(s2) 이면 print(s1), 아니면 print(s2) 입니다.</div>
+            </details>
+            <textarea id="editor8" class="code-editor"># 코드를 입력하세요</textarea>
             <button class="run-btn" onclick="runCode('editor8','output8')">실행하기</button>
             <div id="output8" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ 5. Immutable vs Mutable ═══ -->
-    <section id="sec5">
-        <h2>5. Immutable(불변) vs Mutable(가변) 매개변수</h2>
-        <p>함수에 값을 넘길 때, 변수의 <strong>종류에 따라 원본이 바뀌기도 하고 바뀌지 않기도</strong> 합니다.</p>
-
-        <div class="mut-container">
-            <div class="mut-box mut-immutable">
-                <p style="font-weight:900; font-size:1rem; margin:0 0 8px 0;">🔒 Immutable (불변)</p>
-                <p style="font-size:0.92rem; margin:0 0 6px 0;">정수, 실수, 문자열</p>
-                <p style="font-size:0.92rem; margin:0;">함수 안에서 변경해도<br><strong>원본에 영향 없음</strong></p>
-            </div>
-            <div class="mut-box mut-mutable">
-                <p style="font-weight:900; font-size:1rem; margin:0 0 8px 0;">⚠️ Mutable (가변)</p>
-                <p style="font-size:0.92rem; margin:0 0 6px 0;">리스트, 딕셔너리, 집합</p>
-                <p style="font-size:0.92rem; margin:0;">함수 안에서 변경하면<br><strong>원본도 변경됨!</strong></p>
-            </div>
-        </div>
-
-        <p style="margin-top:22px;"><strong>① Immutable 예시</strong> — 정수를 넘기면 원본은 그대로</p>
-        <div class="code-wrapper">
-<pre>
-<span class="kw">def</span> <span class="fn">var_test</span>(a):
-    a = a + <span class="nm">1</span>      <span class="cm"># 함수 안에서 a를 바꿔도</span>
-
-a = <span class="nm">10</span>
-<span class="fn">var_test</span>(a)
-<span class="fn">print</span>(a)           <span class="cm"># 10 — 원본은 그대로!</span>
-</pre>
-        </div>
-        <div class="output">10</div>
-
-        <p style="margin-top:20px;"><strong>② Mutable 예시</strong> — 리스트를 넘기면 원본도 변경됨!</p>
-        <div class="code-wrapper">
-<pre>
-<span class="kw">def</span> <span class="fn">my_func</span>(lst2):
-    lst2.append(<span class="nm">50</span>)   <span class="cm"># 리스트에 값 추가</span>
-    <span class="fn">print</span>(<span class="st">'my_func:'</span>, lst2)
-
-lst1 = [<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>]
-<span class="fn">print</span>(<span class="st">'before:'</span>, lst1)
-<span class="fn">my_func</span>(lst1)
-<span class="fn">print</span>(<span class="st">'after:'</span>, lst1)    <span class="cm"># 원본도 50이 추가됨!</span>
-</pre>
-        </div>
-        <div class="output">before: [10, 20, 30, 40]<br>my_func: [10, 20, 30, 40, 50]<br>after: [10, 20, 30, 40, 50]</div>
-
-        <p style="margin-top:20px;"><strong>원본을 보호하려면?</strong> → <code>.copy()</code>를 사용해 복사본을 넘깁니다.</p>
-        <div class="code-wrapper">
-<pre>
-<span class="kw">def</span> <span class="fn">my_func</span>(lst2):
-    lst2.append(<span class="nm">50</span>)
-    <span class="fn">print</span>(<span class="st">'my_func:'</span>, lst2)
-
-lst1 = [<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>]
-<span class="fn">print</span>(<span class="st">'before:'</span>, lst1)
-<span class="fn">my_func</span>(lst1.<span class="fn">copy</span>())   <span class="cm"># 복사본을 넘김!</span>
-<span class="fn">print</span>(<span class="st">'after:'</span>, lst1)   <span class="cm"># 원본은 그대로</span>
-</pre>
-        </div>
-        <div class="output">before: [10, 20, 30, 40]<br>my_func: [10, 20, 30, 40, 50]<br>after: [10, 20, 30, 40]</div>
-
-        <p style="margin-top:20px; background:#fff3cd; border-left:4px solid #ffc107; padding:12px; border-radius:8px; font-size:0.95rem;">
-            💡 <strong>= 와 .copy()의 차이</strong><br>
-            <code>b = a</code> → a와 b가 <strong>같은 리스트</strong>를 가리킴 (한 쪽을 수정하면 둘 다 바뀜)<br>
-            <code>b = a.copy()</code> → <strong>별도의 복사본</strong> 생성 (서로 독립적)
-        </p>
-
-        <div class="drill-together" style="margin-top:25px;">
-            <h3>Example — 장바구니에 물건 추가하기</h3>
-            <p>리스트(장바구니)를 함수에 넘겨 물건을 추가해봅시다. <code>.append()</code>는 원본을 바꾸기 때문에 함수 밖 리스트도 변경됩니다. <code>.copy()</code>로 원본을 지킬 수 있는지도 확인해보세요.</p>
-            <div class="io-example" style="margin-bottom:12px;">
-                before: ['사과', '바나나']<br>
-                after:  ['사과', '바나나', '딸기']  ← 원본 변경됨!<br>
-                ---<br>
-                copy 후: ['사과', '바나나']         ← 원본 유지
-            </div>
-            <textarea id="editor9" class="code-editor" style="height:300px;" placeholder="def add_item(cart, item):
-    "></textarea>
-            <button class="run-btn" onclick="runCode('editor9','output9')">실행하기</button>
-            <div id="output9" class="output-area"></div>
-        </div>
-
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — 리스트 원본 보호하기</h3>
-            <p>아래 코드에서 <code>add_item()</code> 호출 후에도 <code>original</code> 리스트가 바뀌지 않도록 수정해보세요.</p>
-            <div class="io-example" style="background:#f1f2f6; border-left:none; margin-bottom:12px;">
-                after: ['사과', '바나나', '딸기'] ← 원본 유지
-            </div>
-            <textarea id="editor10" class="code-editor">def add_item(lst):
-    lst.append('딸기')
-    print('함수 안:', lst)
-
-original = ['사과', '바나나']
-add_item(original)          # 여기를 수정하세요
-print('after:', original)
-</textarea>
-            <button class="run-btn" onclick="runCode('editor10','output10')">실행하기</button>
-            <div id="output10" class="output-area"></div>
-        </div>
-    </section>
-
-    <!-- ═══ CHECK 2 ═══ -->
+    <!-- ══ CHECK 2 ══ -->
     <section id="check2" style="background:#fafafa; border:2px solid #e1e4e8;">
-        <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 2 — Return, 변수의 범위, Mutable</h2>
+        <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 2 — return, 변수의 범위</h2>
 
         <div id="quiz-area-2"></div>
         <button class="btn-check" onclick="gradeQuiz('quiz-area-2', quizSet2, 'result-area-2')">채점하기</button>
@@ -819,8 +1154,7 @@ print('after:', original)
             <span class="challenge-badge">문제 1 — 함수 흐름 추적 (기본)</span>
             <p>아래 코드의 실행 결과를 예측해보세요. 각 변수에 어떤 값이 들어가는지 순서대로 따라가보세요.</p>
             <div class="code-wrapper" style="background:#fff; border:1px solid #ddd; padding:18px;">
-<pre style="color:#2d3436;">
-def func1(p1):
+<pre style="color:#1a1a2e;">def func1(p1):
     return p1 * 2
 
 def func2(p1):
@@ -839,11 +1173,10 @@ a = func1(10)
 b = func2(a)
 c = func1(b)
 d = func4(c)
-print(a, b, c, d)
-</pre>
+print(a, b, c, d)</pre>
             </div>
             <table class="trace-table">
-                <tr><th>변수</th><th>계산 과정</th><th>값 (예측)</th></tr>
+                <tr><th>변수</th><th>계산 과정</th><th>예측값</th></tr>
                 <tr><td>a</td><td>func1(10) = 10 × 2</td><td><input type="text" class="blank-input" id="tr1-a" style="width:70px;"></td></tr>
                 <tr><td>b</td><td>func2(a) = a + 5</td><td><input type="text" class="blank-input" id="tr1-b" style="width:70px;"></td></tr>
                 <tr><td>c</td><td>func1(b) = b × 2</td><td><input type="text" class="blank-input" id="tr1-c" style="width:70px;"></td></tr>
@@ -854,72 +1187,32 @@ print(a, b, c, d)
         </div>
 
         <div class="challenge-box">
-            <span class="challenge-badge">문제 2 — 함수 흐름 추적 (심화)</span>
-            <p>좀 더 복잡한 연쇄 호출입니다. 천천히 따라가봅시다.</p>
-            <div class="code-wrapper" style="background:#fff; border:1px solid #ddd; padding:18px;">
-<pre style="color:#2d3436;">
-def func1(p1):
-    return func2(p1) * 2
-
-def func2(p1):
-    p1 += 5
-    p1 = func3(p1) + 10
-    return p1
-
-def func3(p1):
-    return func4(p1 - 1)
-
-def func4(p1):
-    return p1 * 10
-
-a = func1(10)
-print(a)
-</pre>
-            </div>
-            <p style="margin-bottom:8px;">결과가 <strong>얼마</strong>인지 예측하고 확인해보세요.</p>
-            <input type="text" class="blank-input" id="tr2-ans" placeholder="결과값" style="width:100px;">
-            <button class="run-btn" style="margin-left:8px;" onclick="checkTrace2()">정답 확인</button>
-            <div class="drill-feedback" id="fb-trace2"></div>
-            <details style="margin-top:12px;"><summary>💡 풀이 과정 보기</summary>
-                <div class="answer-content" style="font-family:'Consolas',monospace; font-size:0.9rem; line-height:1.9;">
-                    func1(10) 호출<br>
-                    → func2(10) 호출<br>
-                    &nbsp;&nbsp;p1 = 10+5 = 15<br>
-                    &nbsp;&nbsp;→ func3(15) 호출<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;→ func4(15-1) = func4(14) = 14×10 = 140<br>
-                    &nbsp;&nbsp;p1 = 140 + 10 = 150<br>
-                    &nbsp;&nbsp;func2 반환: 150<br>
-                    func1 반환: 150 × 2 = <strong>300</strong>
-                </div>
+            <span class="challenge-badge">문제 2</span>
+            <div class="challenge-title">최대공약수 구하기 함수</div>
+            <p>정수 두 개를 받아서 두 수의 최대공약수를 return하는 함수 <code>gcd(a, b)</code>를 만들어보세요.</p>
+            <div class="io-example">print(gcd(10, 20)) → 10
+print(gcd(6, 9))   → 3
+print(gcd(13, 17)) → 1</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">for i in range(1, min(a,b)+1): 로 순회하며 a%i == 0 and b%i == 0 이면 result = i 로 갱신합니다. 마지막에 return result.</div>
             </details>
-            <textarea id="c2-trace2-run" class="code-editor" style="height:140px; margin-top:12px;">def func1(p1):
-    return func2(p1) * 2
-
-def func2(p1):
-    p1 += 5
-    p1 = func3(p1) + 10
-    return p1
-
-def func3(p1):
-    return func4(p1 - 1)
-
-def func4(p1):
-    return p1 * 10
-
-a = func1(10)
-print(a)
-</textarea>
-            <button class="run-btn" onclick="runCode('c2-trace2-run','c2-trace2-out')">실행 확인</button>
-            <div id="c2-trace2-out" class="output-area"></div>
+            <textarea id="c2-editor2" class="code-editor">def gcd(a, b):
+    </textarea>
+            <button class="run-btn" onclick="runCode('c2-editor2','c2-output2')">실행하기</button>
+            <div id="c2-output2" class="output-area"></div>
         </div>
 
         <div class="challenge-box">
             <span class="challenge-badge">문제 3</span>
-            <div class="challenge-title">숫자 판별 함수</div>
-            <p>숫자를 입력받아 양수면 "양수", 음수면 "음수", 0이면 "영"을 반환하는 <code>check_num(n)</code>을 만들어보세요.</p>
-            <div class="io-example">print(check_num(5)) → 양수 / print(check_num(-3)) → 음수</div>
-            <textarea id="c2-editor3" class="code-editor" placeholder="def check_num(n):
-    "></textarea>
+            <div class="challenge-title">두 리스트 공통 원소 출력 함수</div>
+            <p>두 개의 리스트 L1과 L2를 매개변수로 받아서 두 리스트에 공통으로 포함된 원소들을 출력하는 함수 <code>common(L1, L2)</code>을 만들어보세요.</p>
+            <div class="io-example">common([1, 2, 3], [2, 3, 4])        → 2 3
+common(['a', 'b', 'c'], ['a', 'e', 'i']) → a</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">for x in L1: 로 순회하며 x in L2 이면 print(x, end=' ') 합니다.</div>
+            </details>
+            <textarea id="c2-editor3" class="code-editor">def common(L1, L2):
+    </textarea>
             <button class="run-btn" onclick="runCode('c2-editor3','c2-output3')">실행하기</button>
             <div id="c2-output3" class="output-area"></div>
         </div>
@@ -928,8 +1221,9 @@ print(a)
             <span class="challenge-badge">문제 4</span>
             <div class="challenge-title">랭킹 구하기</div>
             <p>점수 리스트에서 각 점수의 순위를 구합니다. <strong>자신보다 높은 점수의 수 + 1 = 순위</strong>입니다.</p>
-            <div class="io-example">score = [78, 88, 90, 76, 79, 88, 95, 96, 85, 68]<br>출력: [8, 6, 3, 9, 7, 6, 2, 1, 5, 10]</div>
-            <details><summary>💡 힌트 확인하기</summary>
+            <div class="io-example">score = [78, 88, 90, 76, 79, 88, 95, 96, 85, 68]
+출력: [8, 6, 3, 9, 7, 6, 2, 1, 5, 10]</div>
+            <details><summary>💡 힌트</summary>
                 <div class="answer-content">ranking = [1] * len(score) 로 초기화 후, 이중 for문으로 각 점수보다 높은 점수가 있으면 ranking[i] += 1 합니다.</div>
             </details>
             <textarea id="c2-editor4" class="code-editor">score = [78, 88, 90, 76, 79, 88, 95, 96, 85, 68]
@@ -942,14 +1236,15 @@ ranking = [1] * len(score)
         </div>
     </section>
 
-    <!-- ═══ 6. 고급 기능 ═══ -->
+    <!-- ══ 6. 고급 기능 ══ -->
     <section id="sec6">
         <h2>6. 알아두면 좋은 고급 기능</h2>
 
-        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:10px;">① 기본값 매개변수 (Default Argument)</h3>
-        <p>함수 선언 시 기본값을 지정하면 해당 인수를 생략할 수 있습니다. <strong>기본값은 반드시 맨 뒤에 적어야 합니다.</strong></p>
-        <div class="code-wrapper">
-<pre>
+        <h3>① 기본값 매개변수 (Default Argument)</h3>
+        <p>아래 코드를 보세요. woman 인수를 생략했는데도 동작합니다. 왜 그럴까요?</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
 <span class="kw">def</span> <span class="fn">say_myself</span>(name, old, woman=<span class="kw">True</span>):
     <span class="fn">print</span>(f<span class="st">"나의 이름은 {name}입니다."</span>)
     <span class="fn">print</span>(f<span class="st">"나는 {old}살입니다."</span>)
@@ -959,76 +1254,92 @@ ranking = [1] * len(score)
         <span class="fn">print</span>(<span class="st">"남자입니다."</span>)
 
 <span class="fn">say_myself</span>(<span class="st">"홍길동"</span>, <span class="nm">27</span>, <span class="kw">False</span>)
-<span class="fn">say_myself</span>(<span class="st">"홍길순"</span>, <span class="nm">23</span>)    <span class="cm"># woman 생략 → 기본값 True</span>
-</pre>
+<span class="fn">say_myself</span>(<span class="st">"홍길순"</span>, <span class="nm">23</span>)  <span class="cm"># woman 생략</span></pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box" style="font-size:0.78rem; min-width:160px;">나의 이름은 홍길동입니다.
+나는 27살입니다.
+남자입니다.
+나의 이름은 홍길순입니다.
+나는 23살입니다.
+여자입니다.</div>
         </div>
 
-        <h3 style="font-size:1.1rem; font-weight:800; margin:25px 0 10px 0;">② 키워드 인수 (Keyword Argument)</h3>
-        <p>인수 이름을 지정해서 넣으면 순서가 바뀌어도 됩니다.</p>
-        <div class="code-wrapper">
-<pre>
-<span class="kw">def</span> <span class="fn">add</span>(a, b):
-    <span class="kw">return</span> a + b
-
-result = <span class="fn">add</span>(b=<span class="nm">7</span>, a=<span class="nm">3</span>)   <span class="cm"># 순서 바꿔도 OK</span>
-<span class="fn">print</span>(result)              <span class="cm"># 10</span>
-</pre>
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><code>woman=True</code>처럼 <strong>기본값을 미리 지정</strong>해두면, 호출할 때 해당 인수를 생략할 수 있습니다.<br>
+            기본값 매개변수는 반드시 <strong>맨 뒤에 위치</strong>해야 합니다.</p>
         </div>
 
-        <h3 style="font-size:1.1rem; font-weight:800; margin:25px 0 10px 0;">③ 가변 인수 (*args)</h3>
-        <p>입력값 개수가 몇 개인지 모를 때 <code>*args</code>를 사용합니다. args는 <strong>튜플(tuple)</strong> 형태로 받습니다.</p>
-        <div class="code-wrapper">
-<pre>
-<span class="kw">def</span> <span class="fn">add_many</span>(*args):   <span class="cm"># 입력값 개수가 가변적</span>
+        <h3 style="margin-top:25px;">② 가변 인수 (*args)</h3>
+        <p>아래 코드를 보세요. 인수를 몇 개 넣어도 모두 합산됩니다.</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
+<span class="kw">def</span> <span class="fn">add_many</span>(*args):
     result = <span class="nm">0</span>
     <span class="kw">for</span> i <span class="kw">in</span> args:
         result = result + i
     <span class="kw">return</span> result
 
-<span class="fn">print</span>(<span class="fn">add_many</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>))                  <span class="cm"># 10</span>
-<span class="fn">print</span>(<span class="fn">add_many</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>, <span class="nm">9</span>, <span class="nm">10</span>))  <span class="cm"># 55</span>
-</pre>
+<span class="fn">print</span>(<span class="fn">add_many</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>))
+<span class="fn">print</span>(<span class="fn">add_many</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>, <span class="nm">9</span>, <span class="nm">10</span>))</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box">10
+55</div>
         </div>
 
-        <h3 style="font-size:1.1rem; font-weight:800; margin:25px 0 10px 0;">④ 다중 반환</h3>
-        <p><code>return a, b</code>처럼 여러 값을 한 번에 반환할 수 있습니다. <strong>튜플</strong>로 묶여서 나옵니다.</p>
-        <div class="code-wrapper">
-<pre>
+        <div class="tip-box">
+            <p class="tip-title">💡 알 수 있는 것</p>
+            <p style="margin:0;"><code>*args</code>를 사용하면 입력값 개수가 정해지지 않을 때도 모든 값을 받을 수 있습니다.<br>
+            args는 <strong>튜플(tuple)</strong> 형태로 전달됩니다.</p>
+        </div>
+
+        <h3 style="margin-top:25px;">③ 다중 반환</h3>
+        <p><code>return a, b</code>처럼 여러 값을 한 번에 반환할 수 있습니다. 튜플로 묶여서 나옵니다.</p>
+
+        <div class="code-result-pair">
+            <div class="code-wrapper"><pre>
 <span class="kw">def</span> <span class="fn">min_max</span>(lst):
     <span class="kw">return</span> <span class="fn">min</span>(lst), <span class="fn">max</span>(lst)
 
 low, high = <span class="fn">min_max</span>([<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">7</span>, <span class="nm">2</span>])
-<span class="fn">print</span>(low, high)   <span class="cm"># 1 7</span>
-</pre>
+<span class="fn">print</span>(low, high)</pre></div>
+            <div class="arrow-col">→</div>
+            <div class="result-box">1 7</div>
         </div>
 
-        <div class="drill-together" style="margin-top:25px;">
-            <h3>Example — 기본값 매개변수로 공부 기록 만들기</h3>
-            <p>과목, 공부 시간, 완료 여부를 출력하는 <code>study_record()</code> 함수를 만들어봅시다. 시간과 완료 여부에 기본값을 설정해서, 자주 쓰는 값은 생략할 수 있게 해봅니다.</p>
-            <div class="io-example" style="margin-bottom:12px;">
-                study_record("수학", 60, True)  →  과목: 수학 / 60분 / 완료: ✓<br>
-                study_record("영어", 45)         →  과목: 영어 / 45분 / 완료: ✗<br>
-                study_record("과학")             →  과목: 과학 / 30분 / 완료: ✗  ← 기본값 적용
-            </div>
-            <textarea id="editor11" class="code-editor" style="height:300px;" placeholder="def study_record(subject, time=30, done=False):
-    "></textarea>
+        <div class="drill-together">
+            <h3>✏️ Example — 문자열 n번 반복 함수</h3>
+            <p>문자열 s와 정수 n을 매개변수로 받아서 문자열을 n번 반복해서 출력하는 함수 <code>repeat(s, n)</code>을 만들어봅시다.</p>
+            <div class="io-example">repeat("jam", 3)    → jamjamjam
+repeat("python", 1) → python
+repeat("hello", 0)  → (출력 없음)</div>
+            <textarea id="editor11" class="code-editor">def repeat(s, n):
+    print(s * n)
+
+repeat("jam", 3)
+repeat("python", 1)
+repeat("hello", 0)</textarea>
             <button class="run-btn" onclick="runCode('editor11','output11')">실행하기</button>
             <div id="output11" class="output-area"></div>
         </div>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>Mission — *args로 최댓값 찾기</h3>
+        <div class="drill-solo">
+            <h3>🎯 Mission — *args로 최댓값 찾기</h3>
             <p>가변 인수(*args)를 활용해 입력받은 숫자들 중 가장 큰 값을 반환하는 <code>my_max(*args)</code>를 만들어보세요. (내장함수 max 사용 금지)</p>
-            <div class="io-example" style="background:#f1f2f6; border-left:none; margin-bottom:12px;">print(my_max(3, 1, 7, 2, 9)) → 9</div>
-            <textarea id="editor12" class="code-editor" placeholder="def my_max(*args):
-    "></textarea>
+            <div class="io-example">print(my_max(3, 1, 7, 2, 9)) → 9</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">result = args[0] 으로 첫 값을 기준으로 잡고, for i in args: 로 순회하며 i > result 이면 result = i 로 갱신합니다.</div>
+            </details>
+            <textarea id="editor12" class="code-editor">def my_max(*args):
+    </textarea>
             <button class="run-btn" onclick="runCode('editor12','output12')">실행하기</button>
             <div id="output12" class="output-area"></div>
         </div>
     </section>
 
-    <!-- ═══ CHECK 3 — 실전 챌린지 ═══ -->
-    <section id="check3" style="background:#f0edff; border:2px solid var(--primary);">
+    <!-- ══ CHECK 3 — 실전 챌린지 ══ -->
+    <section id="check3" style="background:#f0eeff; border:2px solid var(--primary);">
         <h2 style="border-left:none; text-align:center; color:var(--primary);">🏆 Check 3 — 실전 코딩 챌린지</h2>
         <p style="text-align:center; margin-bottom:30px;">함수의 A to Z를 완벽하게 점검하세요.</p>
 
@@ -1042,9 +1353,10 @@ low, high = <span class="fn">min_max</span>([<span class="nm">3</span>, <span cl
             <span class="challenge-badge">Mission 1</span>
             <div class="challenge-title">절대값 구하기 함수</div>
             <p>숫자를 입력받아 양수면 그대로, 음수면 양수로 바꿔서 반환하는 <code>my_abs(n)</code>을 만드세요. (내장함수 abs 사용 금지)</p>
-            <div class="io-example">print(my_abs(-5)) → 5 / print(my_abs(10)) → 10</div>
+            <div class="io-example">print(my_abs(-5)) → 5
+print(my_abs(10)) → 10</div>
             <details><summary>💡 정답 코드 확인하기</summary>
-                <div class="code-wrapper" style="margin-top:10px; border-left:4px solid #2d3436;">
+                <div class="code-wrapper" style="margin-top:10px;">
 <pre>
 <span class="kw">def</span> <span class="fn">my_abs</span>(n):
     <span class="kw">if</span> n &lt; <span class="nm">0</span>:
@@ -1054,27 +1366,24 @@ low, high = <span class="fn">min_max</span>([<span class="nm">3</span>, <span cl
 </pre>
                 </div>
             </details>
-            <textarea id="m1-editor" class="code-editor" placeholder="def my_abs(n):
-    "></textarea>
+            <textarea id="m1-editor" class="code-editor">def my_abs(n):
+    </textarea>
             <button class="run-btn" onclick="runCode('m1-editor','m1-output')">실행하기</button>
             <div id="m1-output" class="output-area"></div>
         </div>
 
         <div class="challenge-box">
             <span class="challenge-badge">Mission 2</span>
-            <div class="challenge-title">짝수 판별기 (True/False 반환)</div>
-            <p>숫자를 입력받아 짝수면 <code>True</code>, 홀수면 <code>False</code>를 반환하는 <code>is_even(n)</code>을 만드세요.</p>
-            <div class="io-example">print(is_even(4)) → True / print(is_even(7)) → False</div>
-            <details><summary>💡 정답 코드 확인하기</summary>
-                <div class="code-wrapper" style="margin-top:10px; border-left:4px solid #2d3436;">
-<pre>
-<span class="kw">def</span> <span class="fn">is_even</span>(n):
-    <span class="kw">return</span> n % <span class="nm">2</span> == <span class="nm">0</span>
-</pre>
-                </div>
+            <div class="challenge-title">회문 판별 함수</div>
+            <p>문자열 s를 매개변수로 받아서 회문이면 '회문입니다.', 아니면 '회문이 아닙니다.'를 출력하는 함수 <code>is_palindrome(s)</code>을 만들어보세요.</p>
+            <div class="io-example">is_palindrome('racecar') → 회문입니다.
+is_palindrome('race')   → 회문이 아닙니다.
+is_palindrome('car')    → 회문이 아닙니다.</div>
+            <details><summary>💡 힌트</summary>
+                <div class="answer-content">s == s[::-1] 이면 회문입니다. ([::-1]은 문자열을 뒤집는 슬라이싱입니다)</div>
             </details>
-            <textarea id="m2-editor" class="code-editor" placeholder="def is_even(n):
-    "></textarea>
+            <textarea id="m2-editor" class="code-editor">def is_palindrome(s):
+    </textarea>
             <button class="run-btn" onclick="runCode('m2-editor','m2-output')">실행하기</button>
             <div id="m2-output" class="output-area"></div>
         </div>
@@ -1083,9 +1392,10 @@ low, high = <span class="fn">min_max</span>([<span class="nm">3</span>, <span cl
             <span class="challenge-badge">Mission 3</span>
             <div class="challenge-title">계산기 함수 (사칙연산)</div>
             <p>숫자 두 개와 연산자(+, -, *, /)를 입력받아 결과를 반환하는 <code>calc(a, b, op)</code> 함수를 만드세요.</p>
-            <div class="io-example">print(calc(10, 20, '+')) → 30 / print(calc(10, 2, '/')) → 5.0</div>
+            <div class="io-example">print(calc(10, 20, '+')) → 30
+print(calc(10, 2, '/'))  → 5.0</div>
             <details><summary>💡 정답 코드 확인하기</summary>
-                <div class="code-wrapper" style="margin-top:10px; border-left:4px solid #2d3436;">
+                <div class="code-wrapper" style="margin-top:10px;">
 <pre>
 <span class="kw">def</span> <span class="fn">calc</span>(a, b, op):
     <span class="kw">if</span>   op == <span class="st">'+'</span>: <span class="kw">return</span> a + b
@@ -1095,8 +1405,8 @@ low, high = <span class="fn">min_max</span>([<span class="nm">3</span>, <span cl
 </pre>
                 </div>
             </details>
-            <textarea id="m3-editor" class="code-editor" placeholder="def calc(a, b, op):
-    "></textarea>
+            <textarea id="m3-editor" class="code-editor">def calc(a, b, op):
+    </textarea>
             <button class="run-btn" onclick="runCode('m3-editor','m3-output')">실행하기</button>
             <div id="m3-output" class="output-area"></div>
         </div>
@@ -1105,63 +1415,35 @@ low, high = <span class="fn">min_max</span>([<span class="nm">3</span>, <span cl
             <span class="challenge-badge">Mission 4</span>
             <div class="challenge-title">리스트 평균 구하기 함수</div>
             <p>숫자 리스트를 인수로 받아 평균값을 반환하는 <code>get_avg(num_list)</code> 함수를 작성하세요.</p>
-            <div class="io-example">scores = [80, 90, 100] / print(get_avg(scores)) → 90.0</div>
-            <textarea id="m4-editor" class="code-editor" placeholder="def get_avg(num_list):
-    "></textarea>
+            <div class="io-example">scores = [80, 90, 100]
+print(get_avg(scores)) → 90.0</div>
+            <textarea id="m4-editor" class="code-editor">def get_avg(num_list):
+    </textarea>
             <button class="run-btn" onclick="runCode('m4-editor','m4-output')">실행하기</button>
             <div id="m4-output" class="output-area"></div>
         </div>
 
         <div class="challenge-box">
-            <span class="challenge-badge">Mission 5</span>
-            <div class="challenge-title">별 찍기 함수</div>
-            <p>줄 수(n)를 입력받아 n줄짜리 별 삼각형을 출력하는 <code>print_stars(n)</code>을 만드세요.</p>
-            <div class="io-example">print_stars(3) → * / ** / ***</div>
-            <details><summary>💡 정답 코드 확인하기</summary>
-                <div class="code-wrapper" style="margin-top:10px; border-left:4px solid #2d3436;">
-<pre>
-<span class="kw">def</span> <span class="fn">print_stars</span>(n):
-    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, n + <span class="nm">1</span>):
-        <span class="fn">print</span>(<span class="st">"*"</span> * i)
-</pre>
-                </div>
-            </details>
-            <textarea id="m5-editor" class="code-editor" placeholder="def print_stars(n):
-    "></textarea>
-            <button class="run-btn" onclick="runCode('m5-editor','m5-output')">실행하기</button>
-            <div id="m5-output" class="output-area"></div>
-        </div>
-
-        <div class="challenge-box">
-            <span class="challenge-badge">Mission 6 (종합)</span>
+            <span class="challenge-badge">Mission 5 (종합)</span>
             <div class="challenge-title">메뉴 선택 계산기 프로그램</div>
-            <p>메뉴를 출력하고 선택에 따라 함수를 실행하는 계산기를 만들어보세요.<br>while 반복문과 함수를 함께 활용합니다.</p>
-            <div class="io-example">
-                실행하면 아래처럼 출력:<br>
-                1. 더하기<br>
-                2. 빼기<br>
-                3. 곱하기<br>
-                4. 나누기<br>
-                5. 종료<br>
-                원하는 메뉴를 선택하세요: 1<br>
-                계산할 숫자 2개 입력 (ex: 3 5): 3 5<br>
-                연산결과: 3 + 5 = 8<br>
-                (다시 메뉴를 보여줌 → 5 입력 시 종료)
-            </div>
+            <p>메뉴를 출력하고 선택에 따라 함수를 실행하는 계산기를 만들어보세요. while 반복문과 함수를 함께 활용합니다.</p>
+            <div class="io-example">1. 더하기 / 2. 빼기 / 3. 곱하기 / 4. 나누기 / 5. 종료
+원하는 메뉴를 선택하세요: 1
+계산할 숫자 2개 입력 (ex: 3 5): 3 5
+연산결과: 3 + 5 = 8</div>
             <details><summary>💡 정답 코드 확인하기</summary>
-                <div class="code-wrapper" style="margin-top:10px; border-left:4px solid #2d3436;">
+                <div class="code-wrapper" style="margin-top:10px;">
 <pre>
 <span class="kw">def</span> <span class="fn">add</span>(a, b):    <span class="kw">return</span> a + b
 <span class="kw">def</span> <span class="fn">sub</span>(a, b):    <span class="kw">return</span> a - b
 <span class="kw">def</span> <span class="fn">mul</span>(a, b):    <span class="kw">return</span> a * b
 <span class="kw">def</span> <span class="fn">div</span>(a, b):    <span class="kw">return</span> a / b
 
-<span class="kw">while</span> <span class="kw">True</span>:
+<span class="kw">while True</span>:
     <span class="fn">print</span>(<span class="st">"1. 더하기\n2. 빼기\n3. 곱하기\n4. 나누기\n5. 종료"</span>)
     choice = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"원하는 메뉴를 선택하세요: "</span>))
-    <span class="kw">if</span> choice == <span class="nm">5</span>:
-        <span class="kw">break</span>
-    nums = <span class="fn">input</span>(<span class="st">"계산할 숫자 2개 입력 (ex: 3 5): "</span>).split()
+    <span class="kw">if</span> choice == <span class="nm">5</span>: <span class="kw">break</span>
+    nums = <span class="fn">input</span>(<span class="st">"계산할 숫자 2개 입력: "</span>).<span class="fn">split</span>()
     a, b = <span class="fn">int</span>(nums[<span class="nm">0</span>]), <span class="fn">int</span>(nums[<span class="nm">1</span>])
     ops = {<span class="nm">1</span>:(add,<span class="st">'+'</span>), <span class="nm">2</span>:(sub,<span class="st">'-'</span>), <span class="nm">3</span>:(mul,<span class="st">'*'</span>), <span class="nm">4</span>:(div,<span class="st">'/'</span>)}
     fn, op = ops[choice]
@@ -1169,9 +1451,9 @@ low, high = <span class="fn">min_max</span>([<span class="nm">3</span>, <span cl
 </pre>
                 </div>
             </details>
-            <textarea id="m6-editor" class="code-editor" placeholder="# 사칙연산 함수 4개를 먼저 만들고
+            <textarea id="m6-editor" class="code-editor"># 사칙연산 함수 4개를 먼저 만들고
 # while True: 로 메뉴를 반복 출력하세요
-"></textarea>
+</textarea>
             <button class="run-btn" onclick="runCode('m6-editor','m6-output')">실행하기</button>
             <div id="m6-output" class="output-area"></div>
         </div>
@@ -1219,14 +1501,14 @@ sys.stdout = StringIO()
         const el = document.getElementById(id);
         if (!el) return;
         el.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        el.style.borderColor     = ok ? '#00b894' : '#d63031';
+        el.style.borderColor = ok ? '#00b894' : '#d63031';
     }
 
     function showFb(id, ok, msg) {
         const fb = document.getElementById(id);
         fb.className = 'drill-feedback show';
         fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        fb.innerHTML = ok ? '✅ ' + msg : '❌ ' + msg;
+        fb.innerHTML = (ok ? '✅ ' : '❌ ') + msg;
     }
 
     function checkC1Q1() {
@@ -1251,59 +1533,40 @@ sys.stdout = StringIO()
             ca&&cb&&cc&&cd ? '정답! a=20, b=25, c=50, d=110' : '오답이 있습니다. 풀이: a=10×2=20 / b=20+5=25 / c=25×2=50 / d: func2(50)=55 → func3(55)=func1(55)=110');
     }
 
-    function checkTrace2() {
-        const v = document.getElementById('tr2-ans').value.trim();
-        paintInput('tr2-ans', v==='300');
-        showFb('fb-trace2', v==='300', v==='300' ? '정답! 300입니다.' : `오답입니다. 정답은 300입니다. 풀이를 확인해보세요.`);
-    }
-
-    // ─── 퀴즈 데이터 ───
     const quizSet1 = [
-        { q: "파이썬에서 함수를 정의할 때 사용하는 키워드는?",
-          options: ["function", "def", "func", "define"], a: 1 },
-        { q: "함수 정의 끝에 반드시 붙여야 하는 기호는?",
-          options: ["; (세미콜론)", ": (콜론)", ". (마침표)", ", (쉼표)"], a: 1 },
-        { q: "함수를 실행하는 것을 무엇이라고 하나요?",
-          options: ["함수 정의", "함수 선언", "함수 호출", "함수 생성"], a: 2 },
-        { q: "함수 안에 아무 내용도 쓰지 않을 때 사용하는 키워드는?",
-          options: ["null", "none", "empty", "pass"], a: 3 },
+        { q: "파이썬에서 함수를 정의할 때 사용하는 키워드는?", options: ["function", "def", "func", "define"], a: 1 },
+        { q: "함수 정의 끝에 반드시 붙여야 하는 기호는?", options: ["; (세미콜론)", ": (콜론)", ". (마침표)", ", (쉼표)"], a: 1 },
+        { q: "함수를 실행하는 것을 무엇이라고 하나요?", options: ["함수 정의", "함수 선언", "함수 호출", "함수 생성"], a: 2 },
+        { q: "함수 안에 아무 내용도 쓰지 않을 때 사용하는 키워드는?", options: ["null", "none", "empty", "pass"], a: 3 },
     ];
     const quizSet2 = [
-        { q: "함수의 결과값을 함수 밖으로 내보내는 키워드는?",
-          options: ["print", "return", "output", "send"], a: 1 },
-        { q: "함수 안에서 선언된 변수로, 함수 밖에서는 쓸 수 없는 변수는?",
-          options: ["전역 변수", "공용 변수", "지역 변수", "클래스 변수"], a: 2 },
-        { q: `다음 코드의 출력값은?<div class="quiz-code">def f():
+        { q: "함수의 결과값을 함수 밖으로 내보내는 키워드는?", options: ["print", "return", "output", "send"], a: 1 },
+        { q: "함수 안에서 선언된 변수로, 함수 밖에서는 쓸 수 없는 변수는?", options: ["전역 변수", "공용 변수", "지역 변수", "클래스 변수"], a: 2 },
+        { q: `다음 코드의 출력값은?<code class='quiz-code'>def f():
     return "A"
     return "B"
-print(f())</div>`,
-          options: ["A", "B", "AB", "에러"], a: 0 },
-        { q: "리스트를 매개변수로 넘기면 함수 안에서 수정했을 때 원본은?",
-          options: ["그대로 유지된다", "원본도 바뀐다", "에러가 난다", "복사본이 생긴다"], a: 1 },
+print(f())</code>`, options: ["A", "B", "AB", "에러"], a: 0 },
+        { q: "return만 단독으로 쓰면 어떻게 되나요?", options: ["None을 반환한다", "함수가 즉시 종료된다", "에러가 발생한다", "아무 일도 없다"], a: 1 },
     ];
     const quizSet3 = [
-        { q: "입력값 개수가 정해지지 않을 때 사용하는 매개변수 표기법은?",
-          options: ["&args", "*args", "#args", "@args"], a: 1 },
-        { q: "기본값 매개변수(Default Argument)를 작성할 때 주의할 점은?",
-          options: ["맨 앞에 와야 한다", "맨 뒤에 와야 한다", "아무 위치나 된다", "한 개만 쓸 수 있다"], a: 1 },
-        { q: `다음 코드의 출력값은?<div class="quiz-code">a = 10
+        { q: "입력값 개수가 정해지지 않을 때 사용하는 매개변수 표기법은?", options: ["&args", "*args", "#args", "@args"], a: 1 },
+        { q: "기본값 매개변수(Default Argument)를 작성할 때 주의할 점은?", options: ["맨 앞에 와야 한다", "맨 뒤에 와야 한다", "아무 위치나 된다", "한 개만 쓸 수 있다"], a: 1 },
+        { q: `다음 코드의 출력값은?<code class='quiz-code'>a = 10
 def func():
     a = 20
 func()
-print(a)</div>`,
-          options: ["10", "20", "30", "에러"], a: 0 },
-        { q: "return a, b 형태로 반환하면 어떤 타입으로 묶이나요?",
-          options: ["리스트", "튜플", "딕셔너리", "세트"], a: 1 },
+print(a)</code>`, options: ["10", "20", "30", "에러"], a: 0 },
+        { q: "return a, b 형태로 반환하면 어떤 타입으로 묶이나요?", options: ["리스트", "튜플", "딕셔너리", "세트"], a: 1 },
     ];
 
     function renderQuiz(areaId, questions, prefix) {
         document.getElementById(areaId).innerHTML = questions.map((q, idx) => `
-            <div class="quiz-item" id="${prefix}Box${idx}">
+            <div class="quiz-item">
                 <div class="quiz-question">Q${idx+1}. ${q.q}</div>
                 <div class="quiz-options">
                     ${q.options.map((opt, oIdx) => `<label><input type="radio" name="${prefix}q${idx}" value="${oIdx}"> ${opt}</label>`).join('')}
                 </div>
-                <div class="feedback" id="${prefix}fb${idx}" style="font-weight:bold; margin-top:8px; font-size:0.9rem;"></div>
+                <div id="${prefix}fb${idx}" style="font-weight:bold; margin-top:8px; font-size:0.9rem;"></div>
             </div>`).join('');
     }
 
@@ -1312,7 +1575,7 @@ print(a)</div>`,
         let count = 0;
         questions.forEach((q, idx) => {
             const sel = document.querySelector(`input[name="${prefix}q${idx}"]:checked`);
-            const fb  = document.getElementById(`${prefix}fb${idx}`);
+            const fb = document.getElementById(`${prefix}fb${idx}`);
             if (sel && parseInt(sel.value) === q.a) {
                 count++; fb.innerText = "✅ 정답!"; fb.style.color = "#00b894";
             } else {
@@ -1321,18 +1584,30 @@ print(a)</div>`,
         });
         const res = document.getElementById(resultId);
         res.style.display = 'block';
-        res.innerHTML = `${count}/${questions.length} 정답`;
+        const pct = Math.round(count / questions.length * 100);
+        let msg = pct === 100 ? "🎉 완벽합니다!" : pct >= 70 ? "👍 훌륭해요!" : "💪 다시 복습해봐요!";
+        res.innerHTML = `${count}/${questions.length} 정답 (${pct}점) — ${msg}`;
+        res.style.color = pct >= 70 ? '#6c63ff' : '#d63031';
     }
 
-    document.querySelectorAll('.code-editor').forEach(editor => {
-        editor.addEventListener('keydown', function(e) {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                let s = this.selectionStart;
-                this.value = this.value.substring(0, s) + "    " + this.value.substring(this.selectionEnd);
-                this.selectionStart = this.selectionEnd = s + 4;
-            }
-        });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab' && e.target.classList.contains('code-editor')) {
+            e.preventDefault();
+            let s = e.target.selectionStart;
+            e.target.value = e.target.value.substring(0, s) + "    " + e.target.value.substring(e.target.selectionEnd);
+            e.target.selectionStart = e.target.selectionEnd = s + 4;
+        }
+    });
+
+    function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.max(220, el.scrollHeight) + 'px';
+    }
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('code-editor')) autoResize(e.target);
+    });
+    window.addEventListener('load', function() {
+        document.querySelectorAll('.code-editor').forEach(el => autoResize(el));
     });
 
     renderQuiz("quiz-area-1", quizSet1, "q1");
@@ -1340,10 +1615,8 @@ print(a)</div>`,
     renderQuiz("quiz-area-3", quizSet3, "q3");
 
     function toggleNav() {
-        const nav = document.querySelector('nav');
-        const btn = document.getElementById('nav-toggle');
-        nav.classList.toggle('collapsed');
-        btn.classList.toggle('collapsed-btn');
+        document.querySelector('nav').classList.toggle('collapsed');
+        document.getElementById('nav-toggle').classList.toggle('collapsed-btn');
         document.body.classList.toggle('nav-collapsed');
     }
 
@@ -1353,18 +1626,12 @@ print(a)</div>`,
     }
 
     const navMap = [
-        { navId:'nav-top',    secId:null },
-        { navId:'nav-sec1',   secId:'sec1' },
-        { navId:'nav-sec2',   secId:'sec2' },
-        { navId:'nav-check1', secId:'check1' },
-        { navId:'nav-sec3',   secId:'sec3' },
-        { navId:'nav-sec4',   secId:'sec4' },
-        { navId:'nav-sec5',   secId:'sec5' },
-        { navId:'nav-check2', secId:'check2' },
-        { navId:'nav-sec6',   secId:'sec6' },
-        { navId:'nav-check3', secId:'check3' },
+        { navId: 'nav-top', secId: null }, { navId: 'nav-sec1', secId: 'sec1' },
+        { navId: 'nav-sec2', secId: 'sec2' }, { navId: 'nav-sec3', secId: 'sec3' },
+        { navId: 'nav-check1', secId: 'check1' }, { navId: 'nav-sec4', secId: 'sec4' },
+        { navId: 'nav-sec5', secId: 'sec5' }, { navId: 'nav-check2', secId: 'check2' },
+        { navId: 'nav-sec6', secId: 'sec6' }, { navId: 'nav-check3', secId: 'check3' },
     ];
-
     window.addEventListener('scroll', () => {
         const scrollY = window.scrollY + 80;
         let current = 'nav-top';
