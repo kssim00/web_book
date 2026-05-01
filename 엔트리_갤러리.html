@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>엔트리 미션 갤러리</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scrollbar-width:none;-ms-overflow-style:none;}
+html::-webkit-scrollbar{display:none;width:0;height:0;}
+
+/* ── 라이트 모드 기본값 ── */
+:root {
+  --bg:#FFFFFF; --bg2:#F8F9FA; --bg3:#F1F3F5;
+  --card:#FFFFFF; --card2:#F8FAFF; --card-hover:#F0F7FF;
+  --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
+  --teal:#0078FF; --teal2:#0060CC; --teal-l:#60AEFF;
+  --text:#0F1317; --text2:#52606D; --text3:#9AA5B4;
+  --shadow-sm:0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.08);
+}
+
+body{
+  font-family:'Plus Jakarta Sans','Noto Sans KR',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── EMBEDDED 다크 모드 (iframe 안에서 실행 시) ── */
+body.embedded {
+  --bg:#0f1923; --bg2:#162030; --bg3:#1c2a3e;
+  --card:#1a2840; --card2:#1f3250; --card-hover:#1f3250;
+  --border:rgba(255,255,255,0.08); --border2:rgba(44,201,160,0.28);
+  --teal:#2CC9A0; --teal2:#1aa880; --teal-l:#a7f3d0;
+  --text:#e8fdf5; --text2:#7ecfb0; --text3:#3d7a62;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md:0 6px 24px rgba(0,0,0,0.4);
+}
+body.embedded { scrollbar-width:none; -ms-overflow-style:none; }
+body.embedded::-webkit-scrollbar { display:none; }
+body.embedded .gallery-main { padding-top:10px; }
+body.embedded .filter-row { margin-bottom:14px; }
+body.embedded .filter-btn { padding:6px 14px; font-size:13px; background:var(--card); color:var(--text2); border-color:var(--border); }
+body.embedded .filter-btn:hover { background:var(--card2); color:var(--text); border-color:var(--border2); }
+body.embedded .filter-btn.active { background:rgba(44,201,160,0.10); border-color:var(--teal); color:var(--teal); box-shadow:0 0 0 3px rgba(44,201,160,0.10); }
+body.embedded .mission-card { background:var(--card); border-color:var(--border); box-shadow:0 2px 10px rgba(0,0,0,0.3); }
+body.embedded .mission-card:hover { border-color:rgba(44,201,160,0.35); box-shadow:0 12px 32px rgba(0,0,0,0.4); }
+body.embedded .mission-card.completed { border-color:rgba(44,201,160,0.55); box-shadow:0 0 0 2px rgba(44,201,160,0.12); }
+body.embedded .card-body { background:var(--card); }
+body.embedded .chapter-line { background:var(--border); }
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:200;
+  background:rgba(240,253,248,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:56px;
+}
+body.embedded .topbar { display:none; }
+.topbar-logo{
+  font-family:'Nunito','Noto Sans KR',sans-serif;
+  font-size:16px;font-weight:800;
+  background:linear-gradient(90deg,var(--teal),#22d3a0);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.xp-badge{
+  background:rgba(12,175,126,0.10);border:1px solid rgba(12,175,126,0.25);
+  border-radius:20px;padding:4px 12px;
+  font-family:'Nunito','Noto Sans KR',sans-serif;font-size:13px;font-weight:700;
+  color:var(--teal);
+}
+.user-chip{display:flex;align-items:center;gap:8px;}
+.user-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),#22d3a0);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Nunito','Noto Sans KR',sans-serif;font-size:14px;color:#fff;font-weight:700;
+}
+.user-name{font-family:'Nunito','Noto Sans KR',sans-serif;font-size:14px;color:var(--text2);}
+
+/* ── 배경 ── */
+.bg-blob{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 10%,rgba(44,201,160,0.09) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 50% at 90% 85%,rgba(34,211,159,0.06) 0%,transparent 65%);}
+body.embedded .bg-blob{display:none;}
+
+/* ── 갤러리 메인 ── */
+.gallery-main{
+  max-width:1000px;margin:0 auto;padding:28px 16px 80px;
+  position:relative;z-index:10;
+}
+body.embedded .gallery-main{max-width:none;padding:20px 28px 60px;}
+body.embedded .mission-grid { grid-template-columns:repeat(4,1fr) !important; gap:18px !important; }
+body.embedded .card-thumb { aspect-ratio:16/9 !important; font-size:80px !important; }
+body.embedded .mission-card { border-radius:14px !important; }
+
+/* ── 필터 ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+.filter-btn{
+  padding:8px 18px;
+  background:var(--card);border:1.5px solid var(--border);border-radius:50px;
+  font-family:'Nunito','Noto Sans KR',sans-serif;font-size:15px;color:var(--text2);
+  cursor:pointer;transition:all 0.2s;user-select:none;
+}
+.filter-btn:hover{border-color:var(--border2);color:var(--text);}
+.filter-btn.active{
+  background:rgba(44,201,160,0.08);border-color:var(--teal);color:var(--teal);
+  box-shadow:0 0 0 3px rgba(44,201,160,0.10);
+}
+
+/* ── 챕터 구분 ── */
+.chapter-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;margin-top:8px;}
+.chapter-line{flex:1;height:1px;background:var(--border);}
+.chapter-title{
+  font-family:'Nunito','Noto Sans KR',sans-serif;
+  font-size:12px;font-weight:800;color:var(--text2);
+  letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;
+}
+
+/* ── 미션 그리드 ── */
+.mission-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:32px;}
+@media(max-width:900px){.mission-grid{grid-template-columns:repeat(3,1fr);gap:14px;}}
+@media(max-width:580px){.mission-grid{grid-template-columns:repeat(2,1fr);gap:10px;}}
+
+/* ── 미션 카드 ── */
+.mission-card{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:14px;overflow:hidden;cursor:pointer;
+  transition:transform 0.22s,border-color 0.22s,box-shadow 0.22s;
+  position:relative;
+  box-shadow:var(--shadow-sm);
+}
+.mission-card:hover{transform:translateY(-6px);border-color:var(--border2);box-shadow:var(--shadow-md);}
+.mission-card.completed{border-color:rgba(44,201,160,0.65);box-shadow:0 0 0 2px rgba(44,201,160,0.14);}
+
+/* 썸네일 */
+.card-thumb{
+  width:100%;aspect-ratio:16/9;
+  display:flex;align-items:center;justify-content:center;
+  font-size:80px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(44,201,160,0.08),rgba(12,175,126,0.14));
+}
+.mission-card.completed .card-thumb{background:linear-gradient(135deg,rgba(44,201,160,0.15),rgba(12,175,126,0.22));}
+.card-done-badge{
+  position:absolute;top:10px;right:10px;
+  width:28px;height:28px;background:var(--teal);border-radius:50%;
+  display:none;align-items:center;justify-content:center;
+  font-size:14px;z-index:2;box-shadow:0 2px 8px rgba(44,201,160,0.4);
+}
+.mission-card.completed .card-done-badge{display:flex;}
+.card-num-overlay{
+  position:absolute;left:12px;bottom:10px;
+  font-family:'Nunito','Noto Sans KR',sans-serif;
+  font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;
+  color:rgba(44,201,160,0.6);
+}
+.mission-card.completed .card-num-overlay{color:var(--teal);}
+
+/* 카드 바디 */
+.card-body{padding:14px 16px 16px;background:var(--card);}
+.card-lv{
+  font-family:'Nunito','Noto Sans KR',sans-serif;
+  font-size:10px;font-weight:800;color:var(--teal);
+  letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;opacity:0.85;
+}
+.card-title{
+  font-family:'Nunito','Noto Sans KR',sans-serif;
+  font-size:14px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:6px;
+}
+.mission-card.completed .card-title{color:var(--teal);}
+.card-desc{font-size:11px;color:var(--text2);line-height:1.5;}
+
+/* ── 완료 팝업 모달 ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+}
+.modal-overlay.visible{display:flex;}
+.modal-box{
+  background:var(--card);border:1.5px solid var(--border2);
+  box-shadow:0 24px 60px rgba(0,0,0,0.2);
+  border-radius:28px;padding:32px 28px;max-width:340px;width:90%;
+  text-align:center;
+  animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(0.88);}to{opacity:1;transform:scale(1);}}
+.modal-icon{font-size:56px;margin-bottom:10px;}
+.modal-title{font-family:'Nunito','Noto Sans KR',sans-serif;font-size:20px;color:var(--text);margin-bottom:6px;}
+.modal-msg{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px;}
+.modal-xp{
+  background:rgba(44,201,160,0.10);border:1px solid rgba(44,201,160,0.25);
+  border-radius:12px;padding:8px 18px;
+  font-family:'Nunito','Noto Sans KR',sans-serif;font-size:15px;color:var(--teal);
+  margin-bottom:18px;display:inline-block;
+}
+.modal-btns{display:flex;gap:10px;justify-content:center;}
+.modal-btn{
+  background:linear-gradient(135deg,var(--teal2),#22d3a0);color:#fff;
+  border:none;border-radius:14px;
+  font-family:'Nunito','Noto Sans KR',sans-serif;font-size:15px;
+  padding:11px 28px;cursor:pointer;
+  transition:transform 0.15s,box-shadow 0.15s;
+  box-shadow:0 4px 16px rgba(44,201,160,0.3);
+}
+.modal-btn:hover{transform:translateY(-2px);}
+.modal-btn-undo{
+  background:transparent;color:var(--text2);
+  border:1.5px solid var(--border2);border-radius:14px;
+  font-family:'Nunito','Noto Sans KR',sans-serif;font-size:14px;
+  padding:11px 20px;cursor:pointer;transition:all 0.15s;
+}
+.modal-btn-undo:hover{background:var(--card2);color:var(--text);}
+
+/* ── 전체 완료 배너 ── */
+.all-done-banner{
+  display:none;
+  margin-top:28px;
+  background:linear-gradient(135deg,rgba(44,201,160,0.12),rgba(12,175,126,0.18));
+  border:1.5px solid rgba(44,201,160,0.4);
+  border-radius:20px;padding:22px 24px;text-align:center;
+}
+.all-done-banner.show{display:block;}
+.all-done-title{font-family:'Nunito','Noto Sans KR',sans-serif;font-size:20px;font-weight:700;color:var(--teal);margin-bottom:8px;}
+.all-done-sub{font-size:14px;color:var(--text2);line-height:1.6;}
+
+/* ── 애니메이션 ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(0.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+/* ══════════════════════════════════════
+   🎨 PROGRAMMERS STYLE OVERRIDE
+   ══════════════════════════════════════ */
+
+body { background:#FAFAFA !important; color:#0F1317 !important; }
+
+/* 배경 블롭 */
+.bg-blob { display:none !important; }
+
+/* 탑바 */
+.topbar { background:#FFFFFF !important; border-bottom:1px solid rgba(0,0,0,0.09) !important; box-shadow:0 1px 4px rgba(0,0,0,0.05) !important; backdrop-filter:none !important; }
+.topbar-logo { background:linear-gradient(90deg,#0078FF,#0060CC) !important; -webkit-background-clip:text !important; -webkit-text-fill-color:transparent !important; background-clip:text !important; font-size:15px !important; }
+.xp-badge { background:rgba(245,158,11,0.08) !important; border-color:rgba(245,158,11,0.22) !important; color:#92400E !important; }
+.user-avatar { background:linear-gradient(135deg,#0060CC,#0078FF) !important; }
+.user-name { color:#52606D !important; }
+
+/* 필터 탭 — 프로그래머스 스타일 */
+.filter-btn {
+  background:#FFFFFF !important;
+  border:1.5px solid rgba(0,0,0,0.09) !important;
+  color:#52606D !important;
+  font-weight:600 !important;
+  font-size:14px !important;
+}
+.filter-btn:hover { border-color:rgba(0,120,255,0.25) !important; color:#0078FF !important; background:#F0F7FF !important; }
+.filter-btn.active {
+  background:#0078FF !important;
+  border-color:#0078FF !important;
+  color:#FFFFFF !important;
+  box-shadow:0 2px 10px rgba(0,120,255,0.22) !important;
+}
+
+/* 챕터 헤더 */
+.chapter-line { background:rgba(0,0,0,0.07) !important; }
+.chapter-title { color:#52606D !important; }
+
+/* 미션 카드 — 프로그래머스 챌린지 카드 스타일 */
+.mission-card {
+  background:#FFFFFF !important;
+  border:1px solid rgba(0,0,0,0.09) !important;
+  border-radius:14px !important;
+  box-shadow:0 1px 4px rgba(0,0,0,0.05) !important;
+  transition:all 0.2s !important;
+}
+.mission-card:hover {
+  transform:translateY(-4px) !important;
+  border-color:rgba(0,120,255,0.25) !important;
+  box-shadow:0 8px 28px rgba(0,0,0,0.1) !important;
+}
+.mission-card.completed {
+  border-color:rgba(34,197,94,0.4) !important;
+  box-shadow:0 1px 4px rgba(34,197,94,0.08) !important;
+}
+.mission-card.completed:hover {
+  border-color:rgba(34,197,94,0.55) !important;
+  box-shadow:0 8px 24px rgba(34,197,94,0.12) !important;
+}
+
+/* 카드 썸네일 */
+.card-thumb {
+  background:linear-gradient(135deg,#F0F7FF,#EBF5FF) !important;
+}
+.mission-card.completed .card-thumb {
+  background:linear-gradient(135deg,#F0FDF4,#DCFCE7) !important;
+}
+.card-num-overlay { color:rgba(0,120,255,0.5) !important; }
+.mission-card.completed .card-num-overlay { color:#0078FF !important; }
+.card-done-badge { background:#22C55E !important; box-shadow:0 2px 6px rgba(34,197,94,0.3) !important; }
+
+/* 카드 바디 */
+.card-body {
+  background:#FFFFFF !important;
+  border-top:1px solid rgba(0,0,0,0.06) !important;
+  padding:12px 14px 14px !important;
+}
+.card-lv { color:#0078FF !important; }
+.card-title { color:#0F1317 !important; font-size:16px !important; }
+.mission-card.completed .card-title { color:#16A34A !important; }
+.card-desc { color:#52606D !important; }
+
+/* 모달 */
+.modal-box {
+  background:#FFFFFF !important;
+  border:1px solid rgba(0,0,0,0.08) !important;
+  box-shadow:0 20px 60px rgba(0,0,0,0.12) !important;
+  border-radius:20px !important;
+}
+.modal-title { color:#0F1317 !important; }
+.modal-msg { color:#52606D !important; }
+.modal-xp {
+  background:rgba(245,158,11,0.08) !important;
+  border-color:rgba(245,158,11,0.22) !important;
+  color:#92400E !important;
+}
+.modal-btn {
+  background:linear-gradient(135deg,#0060CC,#0078FF) !important;
+  box-shadow:0 4px 14px rgba(0,120,255,0.22) !important;
+}
+.modal-btn:hover { box-shadow:0 6px 20px rgba(0,120,255,0.3) !important; }
+.modal-btn-undo {
+  background:transparent !important;
+  border-color:rgba(0,0,0,0.1) !important;
+  color:#52606D !important;
+}
+.modal-btn-undo:hover { background:#F1F3F5 !important; color:#0F1317 !important; }
+
+/* 전체 완료 배너 */
+.all-done-banner {
+  background:linear-gradient(135deg,rgba(0,120,255,0.06),rgba(0,120,255,0.1)) !important;
+  border-color:rgba(0,120,255,0.2) !important;
+}
+.all-done-title { color:#0078FF !important; }
+.all-done-sub { color:#52606D !important; }
+
+/* embedded 모드 오버라이드 (iframe 내 사용 시) */
+body.embedded .filter-btn { background:#FFFFFF !important; border-color:rgba(0,0,0,0.09) !important; color:#52606D !important; }
+body.embedded .filter-btn:hover { background:#F0F7FF !important; border-color:rgba(0,120,255,0.2) !important; color:#0078FF !important; }
+body.embedded .filter-btn.active { background:#0078FF !important; border-color:#0078FF !important; color:#fff !important; box-shadow:0 2px 10px rgba(0,120,255,0.2) !important; }
+body.embedded .mission-card { background:#FFFFFF !important; border-color:rgba(0,0,0,0.09) !important; box-shadow:0 1px 4px rgba(0,0,0,0.05) !important; }
+body.embedded .mission-card:hover { border-color:rgba(0,120,255,0.25) !important; box-shadow:0 8px 24px rgba(0,0,0,0.1) !important; }
+body.embedded .mission-card.completed { border-color:rgba(34,197,94,0.4) !important; }
+body.embedded .card-body { background:#FFFFFF !important; }
+body.embedded .chapter-line { background:rgba(0,0,0,0.07) !important; }
+body.embedded .card-lv { color:#0078FF !important; }
+body.embedded .card-title { color:#0F1317 !important; }
+body.embedded .mission-card.completed .card-title { color:#16A34A !important; }
+body.embedded .card-desc { color:#52606D !important; }
+</style>
+</head>
+<body>
+<div class="bg-blob"></div>
+
+<!-- TOPBAR (독립 실행 시만 표시) -->
+<div class="topbar">
+  <div class="topbar-logo">🧩 엔트리 미션 갤러리</div>
+  <div class="topbar-right">
+    <div class="xp-badge" id="topXP">⭐ 0 XP</div>
+    <div class="user-chip">
+      <div class="user-avatar" id="topAvatar">?</div>
+      <div class="user-name" id="topName"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 갤러리 메인 -->
+<div class="gallery-main">
+
+  <!-- 필터 버튼 -->
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all',this)">🌍 전체</button>
+    <button class="filter-btn" onclick="setFilter('todo',this)">⏳ 미완료</button>
+    <button class="filter-btn" onclick="setFilter('done',this)">✅ 완료</button>
+    <button class="filter-btn" onclick="setFilter('ch1',this)">🌱 COS 3급</button>
+    <button class="filter-btn" onclick="setFilter('ch2',this)">⚡ COS 2급</button>
+    <button class="filter-btn" onclick="setFilter('ch3',this)">🔥 COS 1급</button>
+  </div>
+
+  <!-- 미션 그리드 (JS가 채움) -->
+  <div id="missionGrid"></div>
+
+  <!-- 전체 완료 배너 -->
+  <div class="all-done-banner" id="allDoneBanner">
+    <div class="all-done-title">🎉 모든 미션 완료!</div>
+    <div class="all-done-sub">엔트리 COS 3·2·1급 전 과정을 완주했어요!<br>선생님께 완료를 알려드리세요 😊</div>
+  </div>
+
+</div>
+
+<!-- 완료 팝업 모달 -->
+<div class="modal-overlay" id="missionModal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">🎉</div>
+    <div class="modal-title" id="modalTitle">미션 완료!</div>
+    <div class="modal-msg" id="modalMsg"></div>
+    <div class="modal-xp" id="modalXp"></div>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal()">계속하기 🚀</button>
+      <button class="modal-btn-undo" id="undoBtn" onclick="undoComplete()">취소</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  미션 데이터
+// ══════════════════════════════════════════
+const MISSIONS = [
+  // ── COS 3급 ──
+  { id:0, ch:'ch1', lv:'COS 3급', icon:'▶️', title:'엔트리 시작하기',     desc:'화면 구성과 오브젝트 추가, 시작 블록 사용법',         xp:10 },
+  { id:1, ch:'ch1', lv:'COS 3급', icon:'🔄', title:'순서대로 실행',       desc:'블록을 차례대로 연결하여 순서 구조 이해하기',           xp:10 },
+  { id:2, ch:'ch1', lv:'COS 3급', icon:'🚀', title:'이동과 방향',         desc:'이동하기, 방향 바꾸기, 좌표 이동 블록 활용',            xp:10 },
+  { id:3, ch:'ch1', lv:'COS 3급', icon:'🔁', title:'반복 구조',           desc:'계속 반복, 횟수 반복 블록으로 반복 이해하기',           xp:10 },
+  { id:4, ch:'ch1', lv:'COS 3급', icon:'❓', title:'조건 구조 (if)',      desc:'만약~이라면 블록으로 조건에 따라 다르게 실행',          xp:10 },
+  { id:5, ch:'ch1', lv:'COS 3급', icon:'🔀', title:'조건 구조 (if-else)', desc:'아니면 블록 추가로 두 가지 경우 처리하기',             xp:10 },
+  { id:6, ch:'ch1', lv:'COS 3급', icon:'🎵', title:'소리와 모양',         desc:'소리 재생, 모양 바꾸기, 말하기 블록 활용',             xp:10 },
+  { id:7, ch:'ch1', lv:'COS 3급', icon:'⌨️', title:'입력과 판단',         desc:'키보드 입력 감지, 마우스 클릭 이벤트 처리',            xp:10 },
+  { id:8, ch:'ch1', lv:'COS 3급', icon:'💬', title:'신호 보내기',         desc:'신호 보내기/받기로 오브젝트 간 통신하기',              xp:10 },
+  { id:9, ch:'ch1', lv:'COS 3급', icon:'🏆', title:'3급 미니 프로젝트',   desc:'배운 블록을 모두 활용한 간단한 애니메이션 만들기',      xp:15 },
+  // ── COS 2급 ──
+  { id:10, ch:'ch2', lv:'COS 2급', icon:'📦', title:'변수 이해하기',      desc:'변수 만들기, 값 저장, 화면에 변수 표시하기',           xp:15 },
+  { id:11, ch:'ch2', lv:'COS 2급', icon:'🔢', title:'변수 계산',          desc:'변수로 점수판 만들기, 더하기·빼기 연산 활용',          xp:15 },
+  { id:12, ch:'ch2', lv:'COS 2급', icon:'📋', title:'리스트 기초',        desc:'리스트 만들기, 항목 추가·삭제·확인하기',               xp:15 },
+  { id:13, ch:'ch2', lv:'COS 2급', icon:'🔍', title:'리스트 순회',        desc:'리스트 항목 수만큼 반복하며 하나씩 처리하기',           xp:15 },
+  { id:14, ch:'ch2', lv:'COS 2급', icon:'⚙️', title:'함수(블록 만들기)',   desc:'자주 쓰는 코드를 함수로 묶어 재사용하기',             xp:15 },
+  { id:15, ch:'ch2', lv:'COS 2급', icon:'🎯', title:'닿음 판단',          desc:'오브젝트끼리 닿았을 때 조건 처리하기',                xp:15 },
+  { id:16, ch:'ch2', lv:'COS 2급', icon:'🌀', title:'복잡한 반복',        desc:'반복 탈출, 조건 반복, 중첩 반복문 구성하기',           xp:15 },
+  { id:17, ch:'ch2', lv:'COS 2급', icon:'🎨', title:'그림판 만들기',      desc:'마우스를 따라 그림 그리는 인터랙티브 작품',            xp:15 },
+  { id:18, ch:'ch2', lv:'COS 2급', icon:'🕹️', title:'점프 게임',          desc:'중력, 점프, 장애물 충돌 기초 게임 구현',              xp:15 },
+  { id:19, ch:'ch2', lv:'COS 2급', icon:'🏆', title:'2급 미니 프로젝트',  desc:'변수·리스트·함수를 모두 쓴 미니 게임 완성',           xp:20 },
+  // ── COS 1급 ──
+  { id:20, ch:'ch3', lv:'COS 1급', icon:'🔄', title:'알고리즘 설계',      desc:'문제를 작게 나누고 순서도로 로직 설계하기',            xp:20 },
+  { id:21, ch:'ch3', lv:'COS 1급', icon:'🔑', title:'매개변수 함수',      desc:'함수에 값을 전달하는 매개변수 블록 활용하기',           xp:20 },
+  { id:22, ch:'ch3', lv:'COS 1급', icon:'📊', title:'정렬 알고리즘',      desc:'버블 정렬을 엔트리로 시각화하며 구현하기',             xp:20 },
+  { id:23, ch:'ch3', lv:'COS 1급', icon:'🔎', title:'탐색 알고리즘',      desc:'순차 탐색으로 리스트에서 원하는 값 찾기',              xp:20 },
+  { id:24, ch:'ch3', lv:'COS 1급', icon:'🎮', title:'2D 슈팅 게임',       desc:'총알 발사, 적 생성, 점수 계산 게임 완성',             xp:20 },
+  { id:25, ch:'ch3', lv:'COS 1급', icon:'🤖', title:'AI 블록 활용',       desc:'음성 인식·번역 AI 블록으로 스마트 작품 만들기',        xp:20 },
+  { id:26, ch:'ch3', lv:'COS 1급', icon:'📡', title:'데이터 활용',        desc:'공공 데이터를 불러와 그래프·통계 작품 만들기',          xp:20 },
+  { id:27, ch:'ch3', lv:'COS 1급', icon:'🧩', title:'퍼즐 게임',          desc:'숫자 맞추기·미로 탈출 등 논리 퍼즐 게임 구현',         xp:20 },
+  { id:28, ch:'ch3', lv:'COS 1급', icon:'🌐', title:'시뮬레이션',         desc:'물리 법칙(중력·탄성)을 코드로 표현하는 시뮬레이션',    xp:20 },
+  { id:29, ch:'ch3', lv:'COS 1급', icon:'🥇', title:'최종 프로젝트',      desc:'모든 개념을 집대성한 나만의 엔트리 작품 완성!',         xp:30 },
+];
+
+const CHAPTERS = [
+  { key:'ch1', label:'🌱 COS 3급 — 기초', missions: MISSIONS.filter(m=>m.ch==='ch1') },
+  { key:'ch2', label:'⚡ COS 2급 — 중급', missions: MISSIONS.filter(m=>m.ch==='ch2') },
+  { key:'ch3', label:'🔥 COS 1급 — 고급', missions: MISSIONS.filter(m=>m.ch==='ch3') },
+];
+
+// ══════════════════════════════════════════
+//  상태
+// ══════════════════════════════════════════
+let userName = '학생';
+let completedMissions = {};   // { id: true }
+let totalXP = 0;
+let currentFilter = 'all';
+let pendingModal = null;       // { id, undo }
+
+// ══════════════════════════════════════════
+//  스토리지
+// ══════════════════════════════════════════
+function storeKey()  { return 'entry_done_' + userName; }
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(storeKey());
+    completedMissions = raw ? JSON.parse(raw) : {};
+  } catch(e) { completedMissions = {}; }
+  recalcXP();
+}
+
+function saveToStorage() {
+  try { localStorage.setItem(storeKey(), JSON.stringify(completedMissions)); } catch(e) {}
+}
+
+function recalcXP() {
+  totalXP = 0;
+  MISSIONS.forEach(m => { if (completedMissions[m.id]) totalXP += m.xp; });
+}
+
+// ══════════════════════════════════════════
+//  UI 업데이트
+// ══════════════════════════════════════════
+function updateTopbar() {
+  const doneCount = Object.keys(completedMissions).length;
+  document.getElementById('topXP').textContent = '⭐ ' + totalXP + ' XP';
+  document.getElementById('topName').textContent = userName;
+  const av = document.getElementById('topAvatar');
+  if (av) av.textContent = userName.charAt(0) || '?';
+
+  document.getElementById('allDoneBanner').classList.toggle('show', doneCount === MISSIONS.length);
+
+  // 부모 창(version_C_3)으로 XP 전달
+  try {
+    window.parent.postMessage({ type:'entry-xp', xp:totalXP, done:doneCount, total:MISSIONS.length }, '*');
+  } catch(e) {}
+  sendHeight();
+}
+
+function sendHeight() {
+  try {
+    const h = document.body.scrollHeight;
+    window.parent.postMessage({ type:'entry-height', height:h }, '*');
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════
+//  갤러리 렌더
+// ══════════════════════════════════════════
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGallery();
+  sendHeight();
+}
+
+function renderGallery() {
+  const grid = document.getElementById('missionGrid');
+  grid.innerHTML = '';
+
+  CHAPTERS.forEach(ch => {
+    const filtered = ch.missions.filter(m => {
+      if (currentFilter === 'done')  return  completedMissions[m.id];
+      if (currentFilter === 'todo')  return !completedMissions[m.id];
+      if (currentFilter === 'ch1')   return m.ch === 'ch1';
+      if (currentFilter === 'ch2')   return m.ch === 'ch2';
+      if (currentFilter === 'ch3')   return m.ch === 'ch3';
+      return true;
+    });
+    if (!filtered.length) return;
+
+    // 챕터 헤더
+    const hdr = document.createElement('div');
+    hdr.className = 'chapter-header';
+    hdr.innerHTML = `<div class="chapter-line"></div><div class="chapter-title">${ch.label}</div><div class="chapter-line"></div>`;
+    grid.appendChild(hdr);
+
+    // 카드 그리드
+    const g = document.createElement('div');
+    g.className = 'mission-grid';
+    filtered.forEach((m, idx) => {
+      const done = !!completedMissions[m.id];
+      const card = document.createElement('div');
+      card.className = 'mission-card' + (done ? ' completed' : '');
+      card.style.animationDelay = (idx * 0.04) + 's';
+      card.style.animation = 'cardIn 0.35s ease both';
+      card.innerHTML = `
+        <div class="card-thumb">
+          <span style="font-size:48px;">${m.icon}</span>
+          <div class="card-num-overlay">Mission ${String(m.id+1).padStart(2,'0')}</div>
+          <div class="card-done-badge">✓</div>
+        </div>
+        <div class="card-body">
+          <div class="card-lv">${m.lv}</div>
+          <div class="card-title">${m.title}</div>
+          <div class="card-desc">${m.desc}</div>
+        </div>`;
+      card.onclick = () => onCardClick(m);
+      g.appendChild(card);
+    });
+    grid.appendChild(g);
+  });
+}
+
+// ══════════════════════════════════════════
+//  카드 클릭 → 모달
+// ══════════════════════════════════════════
+function onCardClick(m) {
+  const done = !!completedMissions[m.id];
+
+  if (done) {
+    // 이미 완료 → 취소 확인 모달 유지
+    pendingModal = { m, undo: true };
+    document.getElementById('modalIcon').textContent = '↩️';
+    document.getElementById('modalTitle').textContent = '완료 취소';
+    document.getElementById('modalMsg').textContent = `「${m.title}」의 완료를 취소할까요?`;
+    document.getElementById('modalXp').textContent = '';
+    document.getElementById('undoBtn').style.display = 'none';
+    document.getElementById('missionModal').classList.add('visible');
+  } else {
+    // 신규 완료 → 폭죽 + XP 토스트만
+    pendingModal = null;
+    completedMissions[m.id] = true;
+    recalcXP();
+    saveToStorage();
+    renderGallery();
+    updateTopbar();
+    launchConfetti(m.xp);
+  }
+}
+
+function closeModal() {
+  if (pendingModal && pendingModal.undo) {
+    // 완료 취소
+    delete completedMissions[pendingModal.m.id];
+    recalcXP();
+    saveToStorage();
+    renderGallery();
+    updateTopbar();
+  }
+  document.getElementById('missionModal').classList.remove('visible');
+  pendingModal = null;
+}
+
+function undoComplete() {
+  // 방금 완료한 것을 취소
+  if (pendingModal && !pendingModal.undo) {
+    delete completedMissions[pendingModal.m.id];
+    recalcXP();
+    saveToStorage();
+    renderGallery();
+    updateTopbar();
+  }
+  document.getElementById('missionModal').classList.remove('visible');
+  pendingModal = null;
+}
+
+// 모달 바깥 클릭 닫기
+document.getElementById('missionModal').addEventListener('click', function(e){
+  if (e.target === this) closeModal();
+});
+
+// ══════════════════════════════════════════
+//  CONFETTI + XP TOAST
+// ══════════════════════════════════════════
+function launchConfetti(xp){
+  if(!document.getElementById('confettiStyle')){
+    const s=document.createElement('style'); s.id='confettiStyle';
+    s.textContent=`@keyframes xpPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.4);}25%{opacity:1;transform:translate(-50%,-50%) scale(1.18);}55%{opacity:1;transform:translate(-50%,-75%) scale(1);}100%{opacity:0;transform:translate(-50%,-200%) scale(0.85);}}`;
+    document.head.appendChild(s);
+  }
+  const canvas=document.createElement('canvas');
+  canvas.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;pointer-events:none;';
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx=canvas.getContext('2d');
+  const colors=['#FF6B6B','#FFD43B','#51CF66','#339AF0','#CC5DE8','#FF922B','#F06595','#74C0FC','#A9E34B'];
+  const cx=canvas.width/2, cy=canvas.height*0.52;
+  const particles=Array.from({length:120},()=>{
+    const angle=Math.random()*Math.PI*2, speed=Math.random()*11+4;
+    return{x:cx,y:cy,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-5,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      w:Math.random()*11+4,h:Math.random()*6+3,
+      rot:Math.random()*360,drot:(Math.random()-0.5)*12};
+  });
+  let t=0; const dur=110;
+  (function frame(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.32; p.vx*=0.98; p.rot+=p.drot;
+      const alpha=Math.max(0,1-t/dur);
+      ctx.save(); ctx.globalAlpha=alpha; ctx.fillStyle=p.color;
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    t++; if(t<dur) requestAnimationFrame(frame); else canvas.remove();
+  })();
+  const toast=document.createElement('div');
+  toast.style.cssText=`position:fixed;top:50%;left:50%;background:linear-gradient(135deg,#FFD43B,#FF922B);color:#3d1500;font-family:'Nunito','Noto Sans KR',sans-serif;font-size:26px;font-weight:800;padding:14px 32px;border-radius:50px;z-index:10000;pointer-events:none;box-shadow:0 8px 28px rgba(255,160,0,0.45);white-space:nowrap;animation:xpPop 1.9s cubic-bezier(0.34,1.56,0.64,1) forwards;`;
+  toast.textContent=`+${xp} XP ✨`;
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),2000);
+}
+
+// ══════════════════════════════════════════
+//  앱 초기화
+// ══════════════════════════════════════════
+function initApp() {
+  const params = new URLSearchParams(window.location.search);
+  const paramName = params.get('name');
+  userName = paramName ? decodeURIComponent(paramName) : '학생';
+
+  document.getElementById('topName').textContent = userName;
+  const av = document.getElementById('topAvatar');
+  if (av) av.textContent = userName.charAt(0) || '?';
+
+  // iframe 안에서 실행 중이면 embedded 모드 적용
+  if (window !== window.top) {
+    document.body.classList.add('embedded');
+    document.body.style.background = 'transparent';
+    // 스크롤바 완전 제거
+    const noScroll = document.createElement('style');
+    noScroll.textContent =
+      'html,body{scrollbar-width:none!important;-ms-overflow-style:none!important;}' +
+      'html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;}';
+    document.head.appendChild(noScroll);
+  }
+
+  loadFromStorage();
+  renderGallery();
+  updateTopbar();
+  setTimeout(sendHeight, 100);
+}
+
+// 높이 변경 감지
+window.addEventListener('resize', sendHeight);
+
+initApp();
+</script>
+</body>
+</html>
