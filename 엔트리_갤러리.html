@@ -1509,7 +1509,7 @@ function getYoutubeId(url){
 }
 function getYoutubeThumbnail(url){
   const id=getYoutubeId(url);
-  return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:null;
+  return id?`https://img.youtube.com/vi/${id}/mqdefault.jpg`:null;
 }
 function getMissionData(id){
   const base=MISSIONS.find(m=>m.id===id)||{};
