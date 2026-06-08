@@ -1471,7 +1471,7 @@ function saveEntryLinks(){ try{localStorage.setItem('eg_admin_links',JSON.string
 function loadCustomMissions(){ try{const raw=localStorage.getItem('eg_admin_missions');if(raw)customMissions=JSON.parse(raw);}catch(e){} }
 
 // ── 구글 시트: 유튜브 링크 로드 ──
-const GSHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?output=csv';
+const GSHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?gid=0&single=true&output=csv';
 function loadFromGoogleSheets(){
   return fetch(GSHEET_CSV_URL + '&t=' + Date.now())
     .then(r => r.text())
