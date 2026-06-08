@@ -1471,15 +1471,18 @@ function loadFromGoogleSheets(){
   return fetch(GSHEET_CSV_URL + '&t=' + Date.now())
     .then(r => r.text())
     .then(csv => {
-      const lines = csv.trim().split('\n');
+      const lines = csv.trim().split(/\r?\n/);
       for(let i = 1; i < lines.length; i++){
-        const commaIdx = lines[i].indexOf(',');
+        const line = lines[i].trim();
+        if(!line) continue;
+        const commaIdx = line.indexOf(',');
         if(commaIdx < 0) continue;
-        const id = parseInt(lines[i].substring(0, commaIdx));
-        const url = lines[i].substring(commaIdx + 1).trim().replace(/^"|"$/g, '');
+        const id = parseInt(line.substring(0, commaIdx));
+        const url = line.substring(commaIdx + 1).trim().replace(/^"|"$/g, '').trim();
         if(id && url) entryLinks[id] = url;
+        console.log('링크 로드:', id, url);
       }
-      console.log('✅ 구글 시트 링크 로드 완료');
+      console.log('✅ 구글 시트 링크 로드 완료', entryLinks);
     })
     .catch(e => console.log('ℹ️ 구글 시트 로드 실패:', e));
 }
