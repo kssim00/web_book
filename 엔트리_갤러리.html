@@ -1148,8 +1148,11 @@ function renderGallery(){
       card.className='mission-card'+(isDone?' completed':'')+(isLocked?' locked':'');
       card.style.animationDelay=(idx*0.04)+'s'; card.dataset.missionId=m.id;
       const diffDots=[1,2,3].map(d=>`<div class="diff-dot" style="background:${d<=m.diff?getDiffColor(m.diff):'var(--border2)'}"></div>`).join('');
+      const _ytThumb=getYoutubeThumbnail(entryLinks[m.id]);
       const thumbContent=missionVideos[m.id]
         ?`<video src="${missionVideos[m.id]}" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;"></video>`
+        :_ytThumb
+        ?`<img src="${_ytThumb}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none;"><div style="width:44px;height:44px;background:rgba(255,0,0,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:18px;margin-left:4px;">▶</span></div></div>`
         :missionImages[m.id]
         ?`<img src="${missionImages[m.id]}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;">`
         :`<span style="animation:${m.previewAnim} 1.8s ease-in-out infinite;display:inline-block">${m.emoji}</span>`;
@@ -1187,8 +1190,11 @@ function openMission(id){
   let memoVal=''; try{memoVal=localStorage.getItem(`entry_memo_${userName}_${id}`)||'';}catch(e){}
   const completeBtnText=isDone?'✅ 완료! 잘했어요! 🏆':`🏆 미션 완료! (+${m.xp} XP)`;
   const completeBtnClass=isDone?'complete-mission-btn done-btn':'complete-mission-btn';
+  const _ytId=getYoutubeId(entryLinks[id]);
   const previewContent=missionVideos[id]
     ?`<video src="${missionVideos[id]}" autoplay muted loop playsinline controls style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;border-radius:16px;"></video>`
+    :_ytId
+    ?`<iframe src="https://www.youtube.com/embed/${_ytId}?autoplay=0&rel=0" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;inset:0;width:100%;height:100%;border-radius:16px;z-index:1;"></iframe>`
     :missionImages[id]
     ?`<img src="${missionImages[id]}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;">`
     :`<span style="font-size:100px;animation:${m.previewAnim} 1.8s ease-in-out infinite;display:inline-block">${m.emoji}</span>`;
@@ -1459,6 +1465,25 @@ function loadEntryLinks(){ try{const raw=localStorage.getItem('eg_admin_links');
 function saveEntryLinks(){ try{localStorage.setItem('eg_admin_links',JSON.stringify(entryLinks));}catch(e){} }
 function loadCustomMissions(){ try{const raw=localStorage.getItem('eg_admin_missions');if(raw)customMissions=JSON.parse(raw);}catch(e){} }
 
+// ── 구글 시트: 유튜브 링크 로드 ──
+const GSHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?output=csv';
+function loadFromGoogleSheets(){
+  return fetch(GSHEET_CSV_URL + '&t=' + Date.now())
+    .then(r => r.text())
+    .then(csv => {
+      const lines = csv.trim().split('\n');
+      for(let i = 1; i < lines.length; i++){
+        const commaIdx = lines[i].indexOf(',');
+        if(commaIdx < 0) continue;
+        const id = parseInt(lines[i].substring(0, commaIdx));
+        const url = lines[i].substring(commaIdx + 1).trim().replace(/^"|"$/g, '');
+        if(id && url) entryLinks[id] = url;
+      }
+      console.log('✅ 구글 시트 링크 로드 완료');
+    })
+    .catch(e => console.log('ℹ️ 구글 시트 로드 실패:', e));
+}
+
 // ── GitHub Pages: entry_data.json 로드 ──
 function loadFromJSON(){
   return fetch('./entry_data.json?t='+Date.now())
@@ -1474,6 +1499,15 @@ function loadFromJSON(){
     .catch(()=>{ console.log('ℹ️ entry_data.json 없음 — localStorage 사용'); return false; });
 }
 function saveCustomMissions(){ try{localStorage.setItem('eg_admin_missions',JSON.stringify(customMissions));}catch(e){} }
+function getYoutubeId(url){
+  if(!url) return null;
+  const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([^?&\n#]+)/);
+  return m?m[1]:null;
+}
+function getYoutubeThumbnail(url){
+  const id=getYoutubeId(url);
+  return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:null;
+}
 function getMissionData(id){
   const base=MISSIONS.find(m=>m.id===id)||{};
   const custom=customMissions[id]||{};
@@ -1617,6 +1651,7 @@ function renderAdminList(){
           <button class="admin-upload-btn" onclick="triggerVideoUpload(${m.id})" style="background:rgba(14,165,233,0.1);border-color:rgba(14,165,233,0.3);">🎬 영상 업로드</button>
           <button class="admin-del-btn ${hasVid?'':'hidden'}" id="adminVidDelBtn${m.id}" onclick="deleteVideo(${m.id})" title="영상삭제">✕영상</button>
           <button class="admin-memo-toggle ${hasMemo?'open':''}" id="memoToggleBtn_${m.id}" onclick="toggleInlineMemo(${m.id})">📝 메모 편집</button>
+          <button class="admin-memo-toggle ${entryLinks[m.id]?'open':''}" id="linkToggleBtn_${m.id}" onclick="toggleInlineLink(${m.id})" style="background:rgba(14,165,233,0.10);border-color:rgba(14,165,233,0.30);color:var(--teal);">🔗 유튜브 링크${entryLinks[m.id]?' ✓':''}</button>
         </div></div>
       <div class="admin-inline-memo ${hasMemo?'open':''}" id="inlineMemo_${m.id}">
         <div class="admin-inline-memo-label">📌 Quest ${m.id} — ${m.title} 미션 안내 메모</div>
@@ -1625,6 +1660,14 @@ function renderAdminList(){
           <span class="admin-inline-status" id="inlineSt_${m.id}"></span>
           <button class="admin-inline-clear-btn" onclick="clearInlineMemo(${m.id})">🗑️ 초기화</button>
           <button class="admin-inline-save-btn" onclick="saveInlineMemo(${m.id})">💾 저장하기</button>
+        </div></div>
+      <div class="admin-inline-memo ${entryLinks[m.id]?'open':''}" id="inlineLink_${m.id}" style="border-top-color:rgba(14,165,233,0.2);background:rgba(14,165,233,0.03);">
+        <div class="admin-inline-memo-label" style="color:var(--teal);">🔗 Quest ${m.id} — 유튜브 링크</div>
+        <input type="url" class="admin-inline-textarea" id="inlineLinkInput_${m.id}" style="min-height:auto;padding:10px 14px;border-color:rgba(14,165,233,0.25);" placeholder="https://youtu.be/... 또는 https://www.youtube.com/watch?v=..." value="${escapeHtml(entryLinks[m.id]||'')}">
+        <div class="admin-inline-row">
+          <span class="admin-inline-status" id="inlineLinkSt_${m.id}" style="color:var(--teal);"></span>
+          <button class="admin-inline-clear-btn" onclick="clearInlineLink(${m.id})">🗑️ 초기화</button>
+          <button class="admin-inline-save-btn" style="background:linear-gradient(135deg,var(--teal),var(--blue));" onclick="saveInlineLink(${m.id})">💾 저장하기</button>
         </div></div>`;
       container.appendChild(row);
     });
@@ -1857,6 +1900,26 @@ function importImages(event){
   };
   reader.readAsText(file);
 }
+function toggleInlineLink(id){
+  const box=document.getElementById('inlineLink_'+id); const btn=document.getElementById('linkToggleBtn_'+id); if(!box) return;
+  const isOpen=box.classList.contains('open');
+  box.classList.toggle('open',!isOpen); if(btn) btn.classList.toggle('open',!isOpen);
+}
+function saveInlineLink(id){
+  const val=(document.getElementById('inlineLinkInput_'+id)||{}).value||'';
+  if(val.trim()) entryLinks[id]=val.trim(); else delete entryLinks[id];
+  saveEntryLinks();
+  const btn=document.getElementById('linkToggleBtn_'+id);
+  if(btn) btn.textContent='🔗 유튜브 링크'+(entryLinks[id]?' ✓':'');
+  const st=document.getElementById('inlineLinkSt_'+id); if(st){st.textContent='저장됨 ✓';setTimeout(()=>st.textContent='',2000);}
+  showToast(`🔗 Quest ${id} 링크 저장!`);
+}
+function clearInlineLink(id){
+  delete entryLinks[id]; saveEntryLinks();
+  const inp=document.getElementById('inlineLinkInput_'+id); if(inp) inp.value='';
+  const btn=document.getElementById('linkToggleBtn_'+id); if(btn) btn.textContent='🔗 유튜브 링크';
+  showToast(`🗑️ Quest ${id} 링크 삭제됨`);
+}
 function toggleInlineMemo(id){
   const box=document.getElementById('inlineMemo_'+id); const btn=document.getElementById('memoToggleBtn_'+id); if(!box) return;
   const isOpen=box.classList.toggle('open'); btn.classList.toggle('open',isOpen);
@@ -1937,6 +2000,8 @@ function initApp(){
   loadMissionImages(); loadCustomMemos(); loadEntryLinks(); loadCustomMissions();
   loadAllVideos().then(()=>{
     return loadFromJSON();
+  }).then(()=>{
+    return loadFromGoogleSheets();
   }).then(()=>{
     loadFromStorage();
     updateTopbar();
