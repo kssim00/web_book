@@ -1215,8 +1215,13 @@ function openMission(id){
       </div>
       <div class="admin-detail-memo-panel${hasMemo?' open':''}" id="detailMemoPanel_${id}">
         <div class="admin-detail-memo-label">📌 미션 안내 내용 편집</div>
-        <div class="admin-detail-memo-hint">💡 여기에 입력한 내용이 학생 화면의 "미션 안내"에 표시됩니다. 빈 칸으로 저장하면 기본 단계가 표시됩니다.</div>
-        <textarea class="admin-detail-textarea" id="detailMemoTA_${id}" placeholder="미션 안내 내용을 입력하세요...">${hasMemo?escapeHtml(customMemos[id]):''}</textarea>
+        <div class="admin-detail-memo-hint">💡 아래 형식으로 입력하면 자동으로 단계 카드로 표시돼요. 빈 칸으로 저장하면 기본 단계가 표시됩니다.<br><br>
+<b>입력 형식:</b><br>
+1단계 제목<br>
+설명 내용<br><br>
+2단계 제목<br>
+설명 내용</div>
+        <textarea class="admin-detail-textarea" id="detailMemoTA_${id}" placeholder="예시:&#10;1단계 말하기 블록&#10;&quot;~라고 말하기&quot; 블록을 가져와요.&#10;&#10;2단계 대사 3개&#10;3가지 다른 대사를 차례로 연결해요.">${hasMemo?escapeHtml(customMemos[id]):''}</textarea>
         <div class="admin-detail-memo-row">
           <span class="admin-detail-memo-status" id="detailMemoSt_${id}"></span>
           <button class="admin-detail-clear-btn" onclick="clearDetailMemo(${id})">🗑️ 초기화</button>
@@ -1658,7 +1663,7 @@ function renderAdminList(){
         </div></div>
       <div class="admin-inline-memo ${hasMemo?'open':''}" id="inlineMemo_${m.id}">
         <div class="admin-inline-memo-label">📌 Quest ${m.id} — ${m.title} 미션 안내 메모</div>
-        <textarea class="admin-inline-textarea" id="inlineTA_${m.id}" placeholder="한 줄에 하나씩 입력하면 번호 카드로 표시돼요! (엔터로 구분)">${hasMemo?escapeHtml(customMemos[m.id]):''}</textarea>
+        <textarea class="admin-inline-textarea" id="inlineTA_${m.id}" placeholder="예시:&#10;1단계 말하기 블록&#10;&quot;~라고 말하기&quot; 블록을 가져와요.&#10;&#10;2단계 대사 3개&#10;3가지 다른 대사를 차례로 연결해요.&#10;&#10;※ &quot;n단계 제목&quot; 형식으로 입력하면 단계 카드로 자동 변환됩니다.">${hasMemo?escapeHtml(customMemos[m.id]):''}</textarea>
         <div class="admin-inline-row">
           <span class="admin-inline-status" id="inlineSt_${m.id}"></span>
           <button class="admin-inline-clear-btn" onclick="clearInlineMemo(${m.id})">🗑️ 초기화</button>
