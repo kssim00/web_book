@@ -1060,6 +1060,12 @@ function updateTopbar(){
   document.getElementById('topName').textContent=userName;
   document.getElementById('topAvatar').textContent=userName.charAt(0).toUpperCase();
   document.getElementById('topXP').textContent='⭐ '+totalXP+' XP';
+  if(window!==window.top){
+    try{
+      const doneCount=Object.keys(completedMissions).length;
+      window.parent.postMessage({type:'scratch-xp',xp:totalXP,name:userName,done:doneCount,total:MISSIONS.length},'*');
+    }catch(e){}
+  }
 }
 
 // ══════════════════════════════════════════
@@ -1832,14 +1838,6 @@ function initApp(){
     if (stars) stars.style.display = 'none';
     const topbar = document.querySelector('#app > .topbar');
     if (topbar) topbar.style.display = 'none';
-    const _origUpdateTopbar = updateTopbar;
-    window.updateTopbar = function() {
-      _origUpdateTopbar();
-      try {
-        const doneCount = Object.keys(completedMissions).length;
-        window.parent.postMessage({ type: 'scratch-xp', xp: totalXP, name: userName, done: doneCount, total: MISSIONS.length }, '*');
-      } catch(e) {}
-    };
   }
   loadMissionImages(); loadCustomMemos(); loadEntryLinks();
   loadAllVideos().then(()=>{
