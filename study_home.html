@@ -3160,6 +3160,33 @@ function selectStep(n) {
   appEl.classList.add('panel-active');
   document.getElementById('entryXpBadge').style.display = (n === 2) ? 'flex' : 'none';
   document.getElementById('scratchXpBadge').style.display = (n === 3) ? 'flex' : 'none';
+
+  // 갤러리 진입 시 localStorage에서 즉시 XP 표시
+  const _sName = getStore('studentName', '학생');
+  if (n === 2) {
+    try {
+      const _raw = localStorage.getItem('eg_' + _sName);
+      if (_raw) {
+        const _d = JSON.parse(_raw);
+        const _xp = _d.totalXP || 0;
+        const _done = Object.keys(_d.completedMissions || {}).length;
+        document.getElementById('entryXpBadge').innerHTML =
+          '⭐ ' + _xp + ' XP &nbsp;<span style="opacity:0.6;font-weight:600;font-size:12px;">' + _done + '/30</span>';
+      }
+    } catch(e) {}
+  }
+  if (n === 3) {
+    try {
+      const _raw = localStorage.getItem('sg_' + _sName);
+      if (_raw) {
+        const _d = JSON.parse(_raw);
+        const _xp = _d.totalXP || 0;
+        const _done = Object.keys(_d.completedMissions || {}).length;
+        document.getElementById('scratchXpBadge').innerHTML =
+          '⭐ ' + _xp + ' XP &nbsp;<span style="opacity:0.6;font-weight:600;font-size:12px;">' + _done + '/30</span>';
+      }
+    } catch(e) {}
+  }
   if (n === 2) {
     const frame = document.getElementById('entryGalleryFrame');
     if (frame && !frame.getAttribute('src')) {
@@ -3245,18 +3272,23 @@ window.addEventListener('message', function(e) {
 
   // 스크래치 XP 업데이트
   if (e.data.type === 'scratch-xp') {
+    const xp = e.data.xp || 0;
+    const done = e.data.done !== undefined ? e.data.done : null;
+    const total = e.data.total || 30;
+    const xpText = done !== null
+      ? '⭐ ' + xp + ' XP &nbsp;<span style="opacity:0.6;font-weight:600;font-size:12px;">' + done + '/' + total + '</span>'
+      : '⭐ ' + xp + ' XP';
     const badge = document.getElementById('p3XpBadge');
     if (badge) {
-      const xp = e.data.xp || 0;
-      const done = e.data.done !== undefined ? e.data.done : null;
-      const total = e.data.total || 30;
-      if (done !== null) {
-        badge.innerHTML = '⭐ ' + xp + ' XP &nbsp;<span style="opacity:0.6;font-weight:600;font-size:12px;">' + done + '/' + total + '</span>';
-      } else {
-        badge.textContent = '⭐ ' + xp + ' XP';
-      }
+      badge.innerHTML = xpText;
       badge.style.transform = 'scale(1.08)';
       setTimeout(() => { badge.style.transform = 'scale(1)'; }, 300);
+    }
+    const topBadge = document.getElementById('scratchXpBadge');
+    if (topBadge) {
+      topBadge.innerHTML = xpText;
+      topBadge.style.transform = 'scale(1.08)';
+      setTimeout(() => { topBadge.style.transform = 'scale(1)'; }, 300);
     }
   }
   // 스크래치 iframe 높이 자동 조절 (전체 페이지 스크롤)
