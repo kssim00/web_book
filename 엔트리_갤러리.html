@@ -977,7 +977,7 @@ body { background:#FAFAFA !important; }
 <div class="toast" id="toast"></div>
 <div class="confetti-wrap" id="confettiWrap"></div>
 <script>
-const APPS_SCRIPT_URL = '';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysmom1Jpu8fKsxevtK4p8odhysL5D_1tYfkDImPJEFRr3EoL8VtJEwSERO4wC7mhCE/exec';
 const ADMIN_PW = 'admin';
 const ADMIN_PASSWORD=ADMIN_PW||'admin';
 let isAdminMode=false;
@@ -1313,7 +1313,7 @@ function toggleHint(){ document.getElementById('hintPopup').classList.toggle('vi
 function rateStar(id,n){ starRatings[id]=n; document.querySelectorAll('.star-icon').forEach((el,i)=>el.classList.toggle('lit',i<n)); saveAll(); }
 function completeMission(id){
   if(completedMissions[id]) return;
-  const m=MISSIONS.find(x=>x.id===id); completedMissions[id]=true; totalXP+=m.xp; updateTopbar(); saveAll();
+  const m=MISSIONS.find(x=>x.id===id); completedMissions[id]=true; totalXP+=m.xp; updateTopbar(); saveAll(); saveToCloud();
   const btn=document.getElementById('completeMissionBtn');
   btn.textContent='✅ 완료! 잘했어요! 🏆'; btn.classList.add('done-btn'); btn.onclick=null;
   // 버튼의 실제 위치를 기준으로 폭죽 발사 (iframe 내부에서도 정확한 위치)
@@ -1476,8 +1476,43 @@ function loadEntryLinks(){ try{const raw=localStorage.getItem('eg_admin_links');
 function saveEntryLinks(){ try{localStorage.setItem('eg_admin_links',JSON.stringify(entryLinks));}catch(e){} }
 function loadCustomMissions(){ try{const raw=localStorage.getItem('eg_admin_missions');if(raw)customMissions=JSON.parse(raw);}catch(e){} }
 
+// ── 앱스 스크립트: 학생 진도 저장 URL ──
+
 // ── 구글 시트: 유튜브 링크 로드 ──
 const GSHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?gid=0&single=true&output=csv';
+// ── 클라우드 진도 불러오기 ──
+async function loadFromCloud(){
+  if(!APPS_SCRIPT_URL || !userName || userName==='학생') return;
+  try{
+    const res = await fetch(APPS_SCRIPT_URL+'?action=read&name='+encodeURIComponent(userName));
+    const data = await res.json();
+    if(data.found){
+      // 클라우드 미션 파싱
+      let cloudMissions={};
+      try{ cloudMissions=JSON.parse(data.entryMissions||'{}'); }catch(e){}
+      // 로컬+클라우드 미션 합치기 (둘 다 완료한 것 유지)
+      const merged=Object.assign({},completedMissions,cloudMissions);
+      completedMissions=merged;
+      // XP 재계산
+      totalXP=0;
+      Object.keys(completedMissions).forEach(id=>{
+        const m=MISSIONS.find(x=>String(x.id)===String(id));
+        if(m) totalXP+=m.xp;
+      });
+      saveAll();
+    }
+  }catch(e){ console.log('클라우드 로드 실패:',e); }
+}
+
+// ── 클라우드 진도 저장 ──
+async function saveToCloud(){
+  if(!APPS_SCRIPT_URL || !userName || userName==='학생') return;
+  try{
+    const missions=encodeURIComponent(JSON.stringify(completedMissions));
+    await fetch(APPS_SCRIPT_URL+'?action=save&type=entry&name='+encodeURIComponent(userName)+'&xp='+totalXP+'&missions='+missions);
+  }catch(e){}
+}
+
 function loadFromGoogleSheets(){
   return fetch(GSHEET_CSV_URL + '&t=' + Date.now())
     .then(r => r.text())
@@ -2029,8 +2064,9 @@ function initApp(){
     return loadFromJSON();
   }).then(()=>{
     return loadFromGoogleSheets();
-  }).then(()=>{
+  }).then(async ()=>{
     loadFromStorage();
+    await loadFromCloud();
     updateTopbar();
     openGallery();
     setTimeout(sendHeight, 100);
