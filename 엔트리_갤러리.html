@@ -1502,6 +1502,8 @@ async function loadFromCloud(){
         if(m) totalXP+=m.xp;
       });
       saveAll();
+      // 구형 JSON 형식이면 새 형식으로 시트 업데이트
+      if((data.entryMissions||'').startsWith('{')) saveToCloud();
     }
   }catch(e){ console.log('클라우드 로드 실패:',e); }
 }
