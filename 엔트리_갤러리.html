@@ -1489,7 +1489,11 @@ async function loadFromCloud(){
     if(data.found){
       // 클라우드 미션 파싱
       let cloudMissions={};
-      try{ cloudMissions=JSON.parse(data.entryMissions||'{}'); }catch(e){}
+      try{
+        const raw=data.entryMissions||'';
+        if(raw.startsWith('{')){ cloudMissions=JSON.parse(raw); }
+        else{ raw.split(',').filter(x=>x).forEach(id=>{ cloudMissions[id]=true; }); }
+      }catch(e){}
       // 로컬+클라우드 미션 합치기 (둘 다 완료한 것 유지)
       const merged=Object.assign({},completedMissions,cloudMissions);
       completedMissions=merged;
@@ -1508,15 +1512,12 @@ async function loadFromCloud(){
 async function saveToCloud(){
   if(!APPS_SCRIPT_URL || !userName || userName==='학생') return;
   try{
-    const missions=encodeURIComponent(JSON.stringify(completedMissions));
-    const url=APPS_SCRIPT_URL+'?action=save&type=entry&name='+encodeURIComponent(userName)+'&xp='+totalXP+'&missions='+missions;
-    const res=await fetch(url);
-    const data=await res.json();
-    if(data.ok) showToast('☁️ 진도 저장 완료');
-    else showToast('⚠️ 저장 오류: '+JSON.stringify(data));
+    const missions=Object.keys(completedMissions).map(Number).sort((a,b)=>a-b).join(',');
+    const url=APPS_SCRIPT_URL+'?action=save&type=entry&name='+encodeURIComponent(userName)+'&xp='+totalXP+'&missions='+encodeURIComponent(missions);
+    await fetch(url);
+    showToast('☁️ 진도 저장 완료');
   }catch(e){
     showToast('⚠️ 클라우드 저장 실패');
-    console.error('saveToCloud 오류:',e);
   }
 }
 
