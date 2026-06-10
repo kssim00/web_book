@@ -1407,8 +1407,15 @@ async function saveToCloud(){
   if(!APPS_SCRIPT_URL || !userName || userName==='학생') return;
   try{
     const missions=encodeURIComponent(JSON.stringify(completedMissions));
-    await fetch(APPS_SCRIPT_URL+'?action=save&type=scratch&name='+encodeURIComponent(userName)+'&xp='+totalXP+'&missions='+missions);
-  }catch(e){}
+    const url=APPS_SCRIPT_URL+'?action=save&type=scratch&name='+encodeURIComponent(userName)+'&xp='+totalXP+'&missions='+missions;
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.ok) showToast('☁️ 진도 저장 완료');
+    else showToast('⚠️ 저장 오류: '+JSON.stringify(data));
+  }catch(e){
+    showToast('⚠️ 클라우드 저장 실패');
+    console.error('saveToCloud 오류:',e);
+  }
 }
 
 function loadFromGoogleSheets(){
