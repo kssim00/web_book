@@ -1385,8 +1385,10 @@ const GSHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASb
 async function loadFromCloud(){
   if(!APPS_SCRIPT_URL || !userName || userName==='학생') return;
   try{
-    const res = await fetch(APPS_SCRIPT_URL+'?action=read&name='+encodeURIComponent(userName));
-    const data = await res.json();
+    const res = await fetch(APPS_SCRIPT_URL+'?action=read&name='+encodeURIComponent(userName)+'&t='+Date.now());
+    const text = await res.text();
+    let data;
+    try{ data=JSON.parse(text); }catch(e){ console.log('응답 파싱 실패:',text); return; }
     if(data.found){
       let cloudMissions={};
       try{
@@ -1394,7 +1396,6 @@ async function loadFromCloud(){
         if(raw.startsWith('{')){ cloudMissions=JSON.parse(raw); }
         else{ raw.split(',').filter(x=>x).forEach(id=>{ cloudMissions[id]=true; }); }
       }catch(e){}
-      // 클라우드 데이터 우선 (선생님이 시트 수정 시 반영)
       completedMissions=cloudMissions;
       totalXP=0;
       Object.keys(completedMissions).forEach(id=>{
