@@ -1494,9 +1494,8 @@ async function loadFromCloud(){
         if(raw.startsWith('{')){ cloudMissions=JSON.parse(raw); }
         else{ raw.split(',').filter(x=>x).forEach(id=>{ cloudMissions[id]=true; }); }
       }catch(e){}
-      // 로컬+클라우드 미션 합치기 (둘 다 완료한 것 유지)
-      const merged=Object.assign({},completedMissions,cloudMissions);
-      completedMissions=merged;
+      // 클라우드 데이터 우선 (선생님이 시트 수정 시 반영)
+      completedMissions=cloudMissions;
       // XP 재계산
       totalXP=0;
       Object.keys(completedMissions).forEach(id=>{
