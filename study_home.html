@@ -2932,23 +2932,25 @@ body::before { display: none !important; }
     <div id="placeholder">
       <div class="home-grid">
         <!-- 왼쪽: 학생 프로필 + 전체 진도 -->
-        <div class="home-profile-card">
-          <div class="home-avatar-row">
-            <div class="home-avatar-big" id="homeAvatar">?</div>
-            <div class="home-avatar-info">
-              <div class="home-student-name" id="homeStudentName">학생</div>
-              <span class="home-student-badge">코딩 마스터 수강생</span>
+        <div class="home-profile-card" style="flex-direction:column; gap:20px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
+            <div class="home-avatar-row">
+              <div class="home-avatar-big" id="homeAvatar">?</div>
+              <div class="home-avatar-info">
+                <div class="home-student-name" id="homeStudentName">학생</div>
+                <span class="home-student-badge">코딩 마스터 수강생</span>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="home-progress-label">현재 과목 진도</div>
+              <div class="home-progress-numbers">
+                <div class="home-progress-pct" id="totalProgressPct">0%</div>
+                <div class="home-progress-sub" id="currentSubjectLabel">엔트리</div>
+              </div>
             </div>
           </div>
-          <div>
-            <div class="home-progress-label">전체 학습 진도</div>
-            <div class="home-progress-numbers">
-              <div class="home-progress-pct" id="totalProgressPct">0%</div>
-              <div class="home-progress-sub">전체 과정</div>
-            </div>
-            <div class="home-prog-bar-wrap">
-              <div class="home-prog-bar-fill" id="totalProgressBar" style="width:0%"></div>
-            </div>
+          <div class="home-prog-bar-wrap" style="width:100%;">
+            <div class="home-prog-bar-fill" id="totalProgressBar" style="width:0%"></div>
           </div>
         </div>
         <!-- 오른쪽: 과목 선택 -->
@@ -3088,25 +3090,35 @@ function setStore(key, val) {
 function calcProgress() {
   const name = getStore('studentName', '학생');
 
-  // 엔트리 미션 완료 수 (localStorage)
+  // 엔트리 미션 완료 수
   let entryDone = 0;
   try {
     const raw = localStorage.getItem('eg_' + name);
     if (raw) entryDone = Object.keys(JSON.parse(raw).completedMissions || {}).length;
   } catch(e) {}
 
-  // 스크래치 미션 완료 수 (localStorage)
+  // 스크래치 미션 완료 수
   let scratchDone = 0;
   try {
     const raw = localStorage.getItem('sg_' + name);
     if (raw) scratchDone = Object.keys(JSON.parse(raw).completedMissions || {}).length;
   } catch(e) {}
 
-  // 전체 진도: 엔트리 30 + 스크래치 30 = 총 60 미션 기준
-  const totalDone = entryDone + scratchDone;
-  const pct = Math.round(totalDone / 60 * 100);
+  // 현재 과목: 스크래치 미션이 있으면 스크래치, 없으면 엔트리
+  // (엔트리 → 스크래치 순서로 진행하므로)
+  const lastStep = getStore('lastStep', 0);
+  let currentDone, currentTotal, currentLabel;
+  if (lastStep === 3 || (scratchDone > 0 && lastStep !== 2)) {
+    currentDone = scratchDone; currentTotal = 30; currentLabel = '스크래치';
+  } else {
+    currentDone = entryDone; currentTotal = 30; currentLabel = '엔트리';
+  }
+
+  const pct = Math.round(currentDone / currentTotal * 100);
   document.getElementById('totalProgressBar').style.width = pct + '%';
   document.getElementById('totalProgressPct').textContent = pct + '%';
+  const lbl = document.getElementById('currentSubjectLabel');
+  if (lbl) lbl.textContent = currentLabel;
 
   // 과목별 미니 진도 바
   const bars = [
