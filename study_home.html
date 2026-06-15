@@ -2182,6 +2182,115 @@ body::before { display: none !important; }
 
 /* 캔버스 파티클 — 밝게 */
 #bgCanvas { opacity: 0.08 !important; }
+
+/* ── 관리자 모드 ── */
+.admin-mode-badge {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #D97706;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 20px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+body.admin-mode .admin-mode-badge { display: flex; }
+
+.add-subject-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 2px dashed rgba(0,0,0,0.15);
+  border-radius: 24px;
+  padding: 36px 32px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #9AA5B4;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  min-height: 180px;
+  flex-direction: column;
+}
+.add-subject-btn:hover { border-color: #0078FF; color: #0078FF; background: rgba(0,120,255,0.03); }
+body.admin-mode .add-subject-btn { display: flex; }
+
+.cn-card-admin-bar {
+  display: none;
+  gap: 6px;
+  margin-top: 12px;
+}
+body.admin-mode .cn-card-admin-bar { display: flex; }
+.cn-admin-btn {
+  font-size: 11px; font-weight: 700;
+  padding: 4px 12px; border-radius: 20px; border: none; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; transition: all 0.15s;
+}
+.cn-edit-btn { background: rgba(0,120,255,0.1); color: #0078FF; }
+.cn-edit-btn:hover { background: #0078FF; color: #fff; }
+.cn-del-btn { background: rgba(239,68,68,0.1); color: #EF4444; }
+.cn-del-btn:hover { background: #EF4444; color: #fff; }
+
+/* 관리자 로그인 / 과목 추가 모달 공통 */
+.sh-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.sh-modal-overlay.open { display: flex; }
+.sh-modal-box {
+  background: #fff; border-radius: 24px; padding: 32px 28px 28px;
+  width: 100%; max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from{transform:scale(0.93);opacity:0;} to{transform:scale(1);opacity:1;} }
+.sh-modal-title { font-size: 18px; font-weight: 700; color: #0F1317; margin-bottom: 6px; }
+.sh-modal-sub { font-size: 13px; color: #52606D; margin-bottom: 20px; }
+.sh-field { margin-bottom: 14px; }
+.sh-field label { display: block; font-size: 12px; font-weight: 700; color: #52606D; margin-bottom: 6px; letter-spacing: 0.04em; }
+.sh-field input, .sh-field textarea, .sh-field select {
+  width: 100%; background: #F8F9FA; border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px; color: #0F1317; font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px; padding: 10px 14px; outline: none; box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.sh-field input:focus, .sh-field textarea:focus, .sh-field select:focus { border-color: #0078FF; }
+.sh-field textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+.sh-colors { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.sh-color-btn {
+  width: 28px; height: 28px; border-radius: 50%; border: 3px solid transparent;
+  cursor: pointer; transition: transform 0.15s;
+}
+.sh-color-btn.selected { border-color: #0F1317; transform: scale(1.15); }
+.sh-modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+.sh-cancel-btn {
+  flex: 1; padding: 12px; background: #F1F3F5; border: none;
+  border-radius: 12px; color: #52606D; font-size: 14px; font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+}
+.sh-confirm-btn {
+  flex: 2; padding: 12px; background: #0078FF; border: none;
+  border-radius: 12px; color: #fff; font-size: 14px; font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: opacity 0.15s;
+}
+.sh-confirm-btn:hover { opacity: 0.88; }
+.sh-pw-input {
+  width: 100%; background: #F8F9FA; border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px; color: #0F1317; font-family: 'Noto Sans KR', sans-serif;
+  font-size: 22px; letter-spacing: 0.3em; text-align: center;
+  padding: 12px 16px; outline: none; box-sizing: border-box;
+  transition: border-color 0.2s; margin-bottom: 16px;
+}
+.sh-pw-input:focus { border-color: #0078FF; }
+.sh-pw-input.shake { animation: shake 0.4s ease; border-color: #EF4444; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} }
 </style>
 </head>
 <body>
@@ -2217,6 +2326,7 @@ body::before { display: none !important; }
       <button class="home-nav-btn" onclick="goHome()">← 홈으로</button>
       <span class="topbar-xp" id="entryXpBadge" style="display:none;">⭐ 0 XP</span>
       <span class="topbar-xp" id="scratchXpBadge" style="display:none;">⭐ 0 XP</span>
+      <span class="admin-mode-badge" onclick="exitAdminMode()" title="클릭하면 관리자 모드 종료">🔧 관리자</span>
       <div class="topbar-user">
         <div class="user-avatar" id="avatarInitial">?</div>
         <span class="user-name-label" id="topbarName">이름</span>
@@ -3000,6 +3110,15 @@ body::before { display: none !important; }
               <div class="cn-desc">최상급 자격증 완벽 대비!<br>선생님이 열심히 준비 중입니다.</div>
             </div>
 
+            <!-- 커스텀 과목 카드 (관리자가 추가한 것) -->
+            <div id="customSubjectsContainer"></div>
+
+            <!-- 과목 추가 버튼 (관리자 모드에서만 표시) -->
+            <button class="add-subject-btn" onclick="openAddSubjectModal()">
+              <span style="font-size:32px; opacity:0.4;">+</span>
+              <span>과목 추가하기</span>
+            </button>
+
           </div>
         </div>
       </div>
@@ -3010,6 +3129,66 @@ body::before { display: none !important; }
 </div><!-- /app -->
 
 
+
+<!-- ── 관리자 로그인 모달 ── -->
+<div class="sh-modal-overlay" id="adminLoginModal">
+  <div class="sh-modal-box" style="max-width:340px; text-align:center;">
+    <div style="font-size:44px; margin-bottom:12px;">🔐</div>
+    <div class="sh-modal-title">관리자 모드</div>
+    <div class="sh-modal-sub">비밀번호를 입력하세요</div>
+    <input type="password" class="sh-pw-input" id="adminPwInput" placeholder="••••••" maxlength="20"
+      onkeydown="if(event.key==='Enter')confirmAdminPw(); if(event.key==='Escape')closeAdminLogin();" />
+    <div class="sh-modal-btns">
+      <button class="sh-cancel-btn" onclick="closeAdminLogin()">취소</button>
+      <button class="sh-confirm-btn" onclick="confirmAdminPw()">🔓 입장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 과목 추가/편집 모달 ── -->
+<div class="sh-modal-overlay" id="subjectModal">
+  <div class="sh-modal-box">
+    <div class="sh-modal-title" id="subjectModalTitle">과목 추가하기</div>
+    <div class="sh-modal-sub">아래 내용을 입력하면 홈 화면에 카드가 생성돼요.</div>
+    <input type="hidden" id="editSubjectId" value="" />
+    <div class="sh-field">
+      <label>과목명</label>
+      <input type="text" id="subjectName" placeholder="예) 앱 인벤터" maxlength="20" />
+    </div>
+    <div class="sh-field">
+      <label>설명 (2줄 권장)</label>
+      <textarea id="subjectDesc" placeholder="예) 스마트폰 앱을 직접 만들어봐요!&#10;나만의 앱을 완성해보세요."></textarea>
+    </div>
+    <div class="sh-field">
+      <label>STEP 번호 (선택)</label>
+      <input type="text" id="subjectStep" placeholder="예) STEP 06" maxlength="10" />
+    </div>
+    <div class="sh-field">
+      <label>상태</label>
+      <select id="subjectStatus">
+        <option value="ready">학습 가능</option>
+        <option value="soon">준비 중</option>
+      </select>
+    </div>
+    <div class="sh-field">
+      <label>색상</label>
+      <div class="sh-colors" id="colorPicker">
+        <button class="sh-color-btn selected" data-color="#0078FF" style="background:#0078FF;" onclick="pickColor(this)"></button>
+        <button class="sh-color-btn" data-color="#00B89C" style="background:#00B89C;" onclick="pickColor(this)"></button>
+        <button class="sh-color-btn" data-color="#22C55E" style="background:#22C55E;" onclick="pickColor(this)"></button>
+        <button class="sh-color-btn" data-color="#6B47ED" style="background:#6B47ED;" onclick="pickColor(this)"></button>
+        <button class="sh-color-btn" data-color="#F59E0B" style="background:#F59E0B;" onclick="pickColor(this)"></button>
+        <button class="sh-color-btn" data-color="#EF4444" style="background:#EF4444;" onclick="pickColor(this)"></button>
+        <button class="sh-color-btn" data-color="#EC4899" style="background:#EC4899;" onclick="pickColor(this)"></button>
+        <button class="sh-color-btn" data-color="#64748B" style="background:#64748B;" onclick="pickColor(this)"></button>
+      </div>
+    </div>
+    <div class="sh-modal-btns">
+      <button class="sh-cancel-btn" onclick="closeSubjectModal()">취소</button>
+      <button class="sh-confirm-btn" onclick="saveSubject()">저장하기</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── 수업 완료 확인 모달 ── -->
 <div class="modal-overlay" id="completeModal">
@@ -3154,6 +3333,8 @@ function startApp() {
   document.getElementById('app').style.display = 'block';
   loadAllState();
   calcProgress();
+  loadCustomSubjects();
+  renderCustomSubjects();
   // 백그라운드에서 갤러리 iframe 미리 로드 (클릭 전에 준비)
   setTimeout(function() {
     const entryFrame = document.getElementById('entryGalleryFrame');
@@ -3188,6 +3369,153 @@ function resetApp() {
 document.getElementById('nameInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') startApp();
 });
+
+// ── 관리자 모드 ──
+const ADMIN_PW = 'admin';
+let isAdminMode = false;
+
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+    e.preventDefault();
+    if (!isAdminMode) openAdminLogin();
+    else exitAdminMode();
+  }
+});
+
+function openAdminLogin() {
+  document.getElementById('adminLoginModal').classList.add('open');
+  setTimeout(() => document.getElementById('adminPwInput').focus(), 100);
+}
+function closeAdminLogin() {
+  document.getElementById('adminLoginModal').classList.remove('open');
+  document.getElementById('adminPwInput').value = '';
+}
+function confirmAdminPw() {
+  const pw = document.getElementById('adminPwInput').value;
+  if (pw === ADMIN_PW) {
+    isAdminMode = true;
+    document.body.classList.add('admin-mode');
+    closeAdminLogin();
+  } else {
+    const input = document.getElementById('adminPwInput');
+    input.classList.add('shake');
+    setTimeout(() => input.classList.remove('shake'), 400);
+    input.value = '';
+  }
+}
+function exitAdminMode() {
+  isAdminMode = false;
+  document.body.classList.remove('admin-mode');
+}
+
+// ── 커스텀 과목 ──
+let selectedColor = '#0078FF';
+let customSubjects = [];
+
+function loadCustomSubjects() {
+  try {
+    const raw = localStorage.getItem('sh_custom_subjects');
+    if (raw) customSubjects = JSON.parse(raw);
+  } catch(e) {}
+}
+function saveCustomSubjects() {
+  try { localStorage.setItem('sh_custom_subjects', JSON.stringify(customSubjects)); } catch(e) {}
+}
+
+function renderCustomSubjects() {
+  const container = document.getElementById('customSubjectsContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  customSubjects.forEach(function(s) {
+    const isReady = s.status === 'ready';
+    const card = document.createElement('div');
+    card.className = 'cn-card' + (isReady ? '' : ' cn-soon');
+    card.style.cssText = '--cn-color:' + s.color;
+    if (isReady) card.onclick = function() { alert('이 과목은 아직 패널이 연결되지 않았습니다.'); };
+    card.innerHTML =
+      '<span class="cn-badge ' + (isReady ? 'ready' : 'soon') + '">' + (isReady ? '학습 가능' : '준비 중') + '</span>' +
+      (s.step ? '<div class="cn-step" style="color:' + s.color + '">' + s.step + '</div>' : '') +
+      '<div class="cn-title">' + s.name + '</div>' +
+      '<div class="cn-desc">' + (s.desc || '').replace(/\n/g, '<br>') + '</div>' +
+      (isReady ? '<div class="cn-footer" style="color:' + s.color + '">학습 시작하기 →</div>' : '') +
+      '<div class="cn-card-admin-bar">' +
+        '<button class="cn-admin-btn cn-edit-btn" onclick="event.stopPropagation();openEditSubjectModal(' + s.id + ')">✏️ 편집</button>' +
+        '<button class="cn-admin-btn cn-del-btn" onclick="event.stopPropagation();deleteSubject(' + s.id + ')">🗑 삭제</button>' +
+      '</div>';
+    container.appendChild(card);
+  });
+}
+
+function openAddSubjectModal() {
+  document.getElementById('editSubjectId').value = '';
+  document.getElementById('subjectModalTitle').textContent = '과목 추가하기';
+  document.getElementById('subjectName').value = '';
+  document.getElementById('subjectDesc').value = '';
+  document.getElementById('subjectStep').value = '';
+  document.getElementById('subjectStatus').value = 'ready';
+  selectedColor = '#0078FF';
+  document.querySelectorAll('.sh-color-btn').forEach(function(b) {
+    b.classList.toggle('selected', b.dataset.color === selectedColor);
+  });
+  document.getElementById('subjectModal').classList.add('open');
+  setTimeout(() => document.getElementById('subjectName').focus(), 100);
+}
+
+function openEditSubjectModal(id) {
+  const s = customSubjects.find(function(x) { return x.id === id; });
+  if (!s) return;
+  document.getElementById('editSubjectId').value = id;
+  document.getElementById('subjectModalTitle').textContent = '과목 편집하기';
+  document.getElementById('subjectName').value = s.name;
+  document.getElementById('subjectDesc').value = s.desc || '';
+  document.getElementById('subjectStep').value = s.step || '';
+  document.getElementById('subjectStatus').value = s.status || 'ready';
+  selectedColor = s.color || '#0078FF';
+  document.querySelectorAll('.sh-color-btn').forEach(function(b) {
+    b.classList.toggle('selected', b.dataset.color === selectedColor);
+  });
+  document.getElementById('subjectModal').classList.add('open');
+}
+
+function closeSubjectModal() {
+  document.getElementById('subjectModal').classList.remove('open');
+}
+
+function pickColor(btn) {
+  selectedColor = btn.dataset.color;
+  document.querySelectorAll('.sh-color-btn').forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+
+function saveSubject() {
+  const name = document.getElementById('subjectName').value.trim();
+  if (!name) { document.getElementById('subjectName').focus(); return; }
+  const editId = document.getElementById('editSubjectId').value;
+  const subject = {
+    id: editId ? parseInt(editId) : Date.now(),
+    name: name,
+    desc: document.getElementById('subjectDesc').value.trim(),
+    step: document.getElementById('subjectStep').value.trim(),
+    status: document.getElementById('subjectStatus').value,
+    color: selectedColor
+  };
+  if (editId) {
+    const idx = customSubjects.findIndex(function(x) { return x.id === parseInt(editId); });
+    if (idx >= 0) customSubjects[idx] = subject;
+  } else {
+    customSubjects.push(subject);
+  }
+  saveCustomSubjects();
+  renderCustomSubjects();
+  closeSubjectModal();
+}
+
+function deleteSubject(id) {
+  if (!confirm('이 과목을 삭제할까요?')) return;
+  customSubjects = customSubjects.filter(function(x) { return x.id !== id; });
+  saveCustomSubjects();
+  renderCustomSubjects();
+}
 
 // 항상 로그인 화면부터 시작 (자동 로그인 없음)
 
