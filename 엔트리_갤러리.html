@@ -1502,8 +1502,9 @@ async function loadFromCloud(){
         if(m) totalXP+=m.xp;
       });
       saveAll();
-      // 구형 JSON 형식이면 새 형식으로 시트 업데이트
-      if((data.entryMissions||'').startsWith('{')) saveToCloud();
+      // 구형 JSON 형식이거나, XP가 시트 값과 다를 때 시트 동기화
+      // (시트에서 직접 미션을 삭제한 경우 XP 컬럼도 자동 갱신)
+      if((data.entryMissions||'').startsWith('{') || totalXP !== (data.entryXP || 0)) saveToCloud();
     }
   }catch(e){ console.log('클라우드 로드 실패:',e); }
 }
