@@ -422,21 +422,22 @@ body{font-family:'Plus Jakarta Sans','Noto Sans KR',sans-serif;background:var(--
 .admin-mission-row{background:var(--card);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s;box-shadow:var(--shadow-sm);}
 .admin-mission-row:hover{border-color:var(--border2);box-shadow:0 4px 18px rgba(0,0,0,0.25);}
 .admin-mission-row.has-img{border-color:rgba(107,203,119,0.55);}
-.admin-row-top{display:flex;align-items:center;gap:16px;padding:16px 18px;}
-.admin-thumb-wrap{width:80px;height:60px;flex-shrink:0;border-radius:12px;overflow:hidden;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;}
+.admin-row-top{display:flex;flex-direction:column;gap:12px;padding:16px 18px;}
+.admin-row-main{display:flex;align-items:center;gap:14px;}
+.admin-thumb-wrap{width:72px;height:54px;flex-shrink:0;border-radius:10px;overflow:hidden;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;position:relative;}
 .admin-thumb-wrap img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
 .admin-mission-info{flex:1;min-width:0;}
 .admin-mission-num{font-size:12px;color:var(--text3);font-family:'Nunito','Noto Sans KR',sans-serif;margin-bottom:2px;}
 .admin-mission-name{font-family:'Nunito','Noto Sans KR',sans-serif;font-size:17px;color:var(--text);margin-bottom:3px;}
 .admin-img-status.ok{color:var(--green);font-size:13px;}
 .admin-img-status.empty{color:var(--text3);font-size:13px;}
-.admin-row-btns{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.admin-upload-btn{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:50px;font-family:'Nunito','Noto Sans KR',sans-serif;font-size:14px;cursor:pointer;transition:all 0.2s;white-space:nowrap;background:rgba(79,110,247,0.08);border:1.5px solid rgba(79,110,247,0.3);color:var(--blue);}
+.admin-row-btns{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.admin-upload-btn{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:50px;font-family:'Nunito','Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;white-space:nowrap;background:rgba(79,110,247,0.08);border:1.5px solid rgba(79,110,247,0.3);color:var(--blue);}
 .admin-upload-btn:hover{background:rgba(79,110,247,0.16);}
 .admin-del-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,87,87,0.1);border:1.5px solid rgba(255,87,87,0.35);color:var(--red);font-size:16px;cursor:pointer;transition:all 0.2s;flex-shrink:0;}
 .admin-del-btn:hover{background:rgba(255,87,87,0.25);}
 .admin-del-btn.hidden{visibility:hidden;pointer-events:none;}
-.admin-memo-toggle{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:50px;font-family:'Nunito','Noto Sans KR',sans-serif;font-size:14px;cursor:pointer;transition:all 0.2s;white-space:nowrap;background:rgba(74,158,255,0.1);border:1.5px solid rgba(74,158,255,0.35);color:var(--blue);}
+.admin-memo-toggle{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:50px;font-family:'Nunito','Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;white-space:nowrap;background:rgba(74,158,255,0.1);border:1.5px solid rgba(74,158,255,0.35);color:var(--blue);}
 .admin-memo-toggle:hover{background:rgba(74,158,255,0.22);}
 .admin-memo-toggle.open{background:rgba(74,158,255,0.2);border-color:var(--blue);}
 .admin-inline-memo{display:none;border-top:1.5px solid rgba(79,110,247,0.15);padding:20px 20px;background:rgba(79,110,247,0.03);}
@@ -1697,10 +1698,15 @@ function renderAdminList(){
       row.className='admin-mission-row'+((hasImg||hasVid)?' has-img':''); row.id='adminRow'+m.id;
       if(hasMemo) row.style.borderColor='rgba(74,158,255,0.45)';
       row.innerHTML=`<div class="admin-row-top">
-        <div class="admin-thumb-wrap" id="adminThumb${m.id}">${hasVid?`<video src="${missionVideos[m.id]}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></video>`:hasImg?`<img src="${missionImages[m.id]}" alt="">`:` <span style="font-size:28px">${m.emoji}</span>`}</div>
-        <div class="admin-mission-info"><div class="admin-mission-num">QUEST ${m.id}</div><div class="admin-mission-name">${m.title}</div>
-          <div class="admin-img-status ${hasImg?'ok':'empty'}" id="adminImgSt${m.id}">${hasImg?'✅ 이미지 등록됨':'📷 이미지 없음'}</div>
-          <div class="admin-img-status ${hasVid?'ok':'empty'}" id="adminVidSt${m.id}">${hasVid?'✅ 영상 등록됨':'🎬 영상 없음'}</div></div>
+        <div class="admin-row-main">
+          <div class="admin-thumb-wrap" id="adminThumb${m.id}">${hasVid?`<video src="${missionVideos[m.id]}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></video>`:hasImg?`<img src="${missionImages[m.id]}" alt="">`:` <span style="font-size:26px">${m.emoji}</span>`}</div>
+          <div class="admin-mission-info"><div class="admin-mission-num">QUEST ${m.id}</div><div class="admin-mission-name">${m.title}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;">
+              <div class="admin-img-status ${hasImg?'ok':'empty'}" id="adminImgSt${m.id}">${hasImg?'✅ 이미지':'📷 없음'}</div>
+              <div class="admin-img-status ${hasVid?'ok':'empty'}" id="adminVidSt${m.id}">${hasVid?'✅ 영상':'🎬 없음'}</div>
+            </div>
+          </div>
+        </div>
         <div class="admin-row-btns">
           <button class="admin-upload-btn" onclick="openMissionEdit(${m.id})" style="background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.3);color:var(--purple);">✏️ 미션 편집</button>
           <button class="admin-upload-btn" onclick="triggerUpload(${m.id})">📷 이미지 업로드</button>
