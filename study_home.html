@@ -3085,17 +3085,40 @@ function setStore(key, val) {
 }
 
 // ── 전체 진도 계산
-const TOTAL_LESSONS = 15; // 5패널 × 3레슨씩
 function calcProgress() {
-  const keys = ['p1','p2','p3','p4','p5'];
-  const done = keys.filter(p => getStore('done-' + p, false)).length;
-  const pct = Math.round(done / 5 * 100);
+  const name = getStore('studentName', '학생');
+
+  // 엔트리 미션 완료 수 (localStorage)
+  let entryDone = 0;
+  try {
+    const raw = localStorage.getItem('eg_' + name);
+    if (raw) entryDone = Object.keys(JSON.parse(raw).completedMissions || {}).length;
+  } catch(e) {}
+
+  // 스크래치 미션 완료 수 (localStorage)
+  let scratchDone = 0;
+  try {
+    const raw = localStorage.getItem('sg_' + name);
+    if (raw) scratchDone = Object.keys(JSON.parse(raw).completedMissions || {}).length;
+  } catch(e) {}
+
+  // 전체 진도: 엔트리 30 + 스크래치 30 = 총 60 미션 기준
+  const totalDone = entryDone + scratchDone;
+  const pct = Math.round(totalDone / 60 * 100);
   document.getElementById('totalProgressBar').style.width = pct + '%';
   document.getElementById('totalProgressPct').textContent = pct + '%';
-  // 과목별 미니 진도 바 업데이트
-  keys.forEach((p, i) => {
-    const bar = document.getElementById('hbar' + (i+1));
-    if (bar) bar.style.width = (getStore('done-' + p, false) ? '100' : '0') + '%';
+
+  // 과목별 미니 진도 바
+  const bars = [
+    { id: 'hbar1', pct: getStore('done-p1', false) ? 100 : 0 },
+    { id: 'hbar2', pct: Math.round(entryDone / 30 * 100) },
+    { id: 'hbar3', pct: Math.round(scratchDone / 30 * 100) },
+    { id: 'hbar4', pct: getStore('done-p4', false) ? 100 : 0 },
+    { id: 'hbar5', pct: getStore('done-p5', false) ? 100 : 0 },
+  ];
+  bars.forEach(({ id, pct }) => {
+    const bar = document.getElementById(id);
+    if (bar) bar.style.width = pct + '%';
   });
 }
 
@@ -3272,6 +3295,7 @@ window.addEventListener('message', function(e) {
       topBadge.style.transform = 'scale(1.08)';
       setTimeout(() => { topBadge.style.transform = 'scale(1)'; }, 300);
     }
+    calcProgress();
   }
   // 엔트리 iframe 높이 자동 조절
   if (e.data.type === 'entry-height') {
@@ -3295,6 +3319,7 @@ window.addEventListener('message', function(e) {
       badge.style.transform = 'scale(1.08)';
       setTimeout(() => { badge.style.transform = 'scale(1)'; }, 300);
     }
+    calcProgress();
     const topBadge = document.getElementById('scratchXpBadge');
     if (topBadge) {
       topBadge.innerHTML = xpText;
