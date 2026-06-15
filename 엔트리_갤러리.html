@@ -2068,12 +2068,17 @@ function initApp(){
     if (topbar) topbar.style.display = 'none';
   }
   loadMissionImages(); loadCustomMemos(); loadEntryLinks(); loadCustomMissions();
-  loadAllVideos().then(()=>{
-    return loadFromJSON();
-  }).then(()=>{
-    return loadFromGoogleSheets();
-  }).then(async ()=>{
-    loadFromStorage();
+  // 로컬 데이터로 즉시 화면 표시
+  loadFromStorage();
+  updateTopbar();
+  openGallery();
+  setTimeout(sendHeight, 100);
+  // 네트워크 데이터는 백그라운드에서 병렬로 로드 후 조용히 업데이트
+  Promise.all([
+    loadAllVideos(),
+    loadFromJSON(),
+    loadFromGoogleSheets()
+  ]).then(async ()=>{
     await loadFromCloud();
     updateTopbar();
     openGallery();
