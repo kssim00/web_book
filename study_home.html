@@ -2932,25 +2932,23 @@ body::before { display: none !important; }
     <div id="placeholder">
       <div class="home-grid">
         <!-- 왼쪽: 학생 프로필 + 전체 진도 -->
-        <div class="home-profile-card" style="flex-direction:column; gap:20px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
-            <div class="home-avatar-row">
-              <div class="home-avatar-big" id="homeAvatar">?</div>
-              <div class="home-avatar-info">
-                <div class="home-student-name" id="homeStudentName">학생</div>
-                <span class="home-student-badge">코딩 마스터 수강생</span>
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div class="home-progress-label">현재 과목 진도</div>
-              <div class="home-progress-numbers">
-                <div class="home-progress-pct" id="totalProgressPct">0%</div>
-                <div class="home-progress-sub" id="currentSubjectLabel">엔트리</div>
-              </div>
+        <div class="home-profile-card">
+          <div class="home-avatar-row">
+            <div class="home-avatar-big" id="homeAvatar">?</div>
+            <div class="home-avatar-info">
+              <div class="home-student-name" id="homeStudentName">학생</div>
+              <span class="home-student-badge">코딩 마스터 수강생</span>
             </div>
           </div>
-          <div class="home-prog-bar-wrap" style="width:100%;">
-            <div class="home-prog-bar-fill" id="totalProgressBar" style="width:0%"></div>
+          <div style="flex:1;">
+            <div class="home-progress-label">현재 과목 진도</div>
+            <div class="home-progress-numbers">
+              <div class="home-progress-pct" id="totalProgressPct">0%</div>
+              <div class="home-progress-sub" id="currentSubjectLabel">엔트리</div>
+            </div>
+            <div class="home-prog-bar-wrap">
+              <div class="home-prog-bar-fill" id="totalProgressBar" style="width:0%"></div>
+            </div>
           </div>
         </div>
         <!-- 오른쪽: 과목 선택 -->
