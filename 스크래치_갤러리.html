@@ -1403,6 +1403,8 @@ async function loadFromCloud(){
         if(m) totalXP+=m.xp;
       });
       saveAll();
+      // 시트 XP가 재계산 값과 다르면 시트 동기화 (await로 완료 보장)
+      if(totalXP !== Number(data.scratchXP || 0)) await saveToCloud();
     }
   }catch(e){ console.log('클라우드 로드 실패:',e); }
 }
@@ -1882,14 +1884,19 @@ function initApp(){
     if (topbar) topbar.style.display = 'none';
   }
   loadMissionImages(); loadCustomMemos(); loadEntryLinks();
-  loadAllVideos().then(()=>{
-    return loadFromGoogleSheets();
-  }).then(async ()=>{
-    loadFromStorage();
+  // 로컬 데이터로 즉시 화면 표시
+  loadFromStorage();
+  updateTopbar();
+  openGallery();
+  setTimeout(sendHeight, 100);
+  // 네트워크 데이터는 백그라운드에서 병렬로 로드 후 조용히 업데이트
+  Promise.all([
+    loadAllVideos(),
+    loadFromGoogleSheets()
+  ]).then(async ()=>{
     await loadFromCloud();
     updateTopbar();
     openGallery();
-    // 초기 높이 전송 (렌더링 완료 후)
     setTimeout(sendHeight, 100);
   });
   const pwInput = document.getElementById('adminPwInput');
