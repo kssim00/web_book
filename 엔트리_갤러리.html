@@ -983,7 +983,7 @@ body { background:#FAFAFA !important; }
 <div class="toast" id="toast"></div>
 <div class="confetti-wrap" id="confettiWrap"></div>
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysmom1Jpu8fKsxevtK4p8odhysL5D_1tYfkDImPJEFRr3EoL8VtJEwSERO4wC7mhCE/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCtz-bB3qE5RnW1hqtLrLrXFD6feDBfZqWTlHc56a_Z6hiMDvmm9mRdqfRY33m-px7/exec';
 const ADMIN_PW = 'admin';
 const ADMIN_PASSWORD=ADMIN_PW||'admin';
 let isAdminMode=false;
@@ -1475,11 +1475,11 @@ function deleteVideoAndRefresh(id){
   });
 }
 function loadMissionImages(){ try{const raw=localStorage.getItem('eg_admin_images');if(raw)missionImages=JSON.parse(raw);}catch(e){} }
-function saveMissionImages(){ try{localStorage.setItem('eg_admin_images',JSON.stringify(missionImages));}catch(e){showToast('⚠️ 저장 공간 부족!');} }
+function saveMissionImages(){ try{localStorage.setItem('eg_admin_images',JSON.stringify(missionImages));}catch(e){showToast('⚠️ 저장 공간 부족!');} saveAllAdminToCloud(); }
 function loadCustomMemos(){ try{const raw=localStorage.getItem('eg_admin_memos');if(raw)customMemos=JSON.parse(raw);}catch(e){} }
-function saveCustomMemosToStorage(){ try{localStorage.setItem('eg_admin_memos',JSON.stringify(customMemos));}catch(e){} }
+function saveCustomMemosToStorage(){ try{localStorage.setItem('eg_admin_memos',JSON.stringify(customMemos));}catch(e){} saveAllAdminToCloud(); }
 function loadEntryLinks(){ try{const raw=localStorage.getItem('eg_admin_links');if(raw)entryLinks=JSON.parse(raw);}catch(e){} }
-function saveEntryLinks(){ try{localStorage.setItem('eg_admin_links',JSON.stringify(entryLinks));}catch(e){} }
+function saveEntryLinks(){ try{localStorage.setItem('eg_admin_links',JSON.stringify(entryLinks));}catch(e){} saveAllAdminToCloud(); }
 function loadCustomMissions(){ try{const raw=localStorage.getItem('eg_admin_missions');if(raw)customMissions=JSON.parse(raw);}catch(e){} }
 
 // ── 앱스 스크립트: 학생 진도 저장 URL ──
@@ -1561,7 +1561,44 @@ function loadFromJSON(){
     })
     .catch(()=>{ console.log('ℹ️ entry_data.json 없음 — localStorage 사용'); return false; });
 }
-function saveCustomMissions(){ try{localStorage.setItem('eg_admin_missions',JSON.stringify(customMissions));}catch(e){} }
+function saveCustomMissions(){ try{localStorage.setItem('eg_admin_missions',JSON.stringify(customMissions));}catch(e){} saveAllAdminToCloud(); }
+async function loadAdminFromCloud(){
+  if(!APPS_SCRIPT_URL) return;
+  try{
+    const res = await fetch(APPS_SCRIPT_URL+'?action=readAdmin&type=entry&t='+Date.now());
+    const data = await res.json();
+    if(!data.found) return;
+    let changed = false;
+    if(data.images && data.images!=='{}') try{ missionImages=JSON.parse(data.images); changed=true; }catch(e){}
+    if(data.memos  && data.memos !=='{}') try{ customMemos  =JSON.parse(data.memos);  changed=true; }catch(e){}
+    if(data.links  && data.links !=='{}') try{ entryLinks   =JSON.parse(data.links);   changed=true; }catch(e){}
+    if(data.missions && data.missions!=='{}') try{ customMissions=JSON.parse(data.missions); changed=true; }catch(e){}
+    if(changed){
+      try{ localStorage.setItem('eg_admin_images',   data.images);   }catch(e){}
+      try{ localStorage.setItem('eg_admin_memos',    data.memos);    }catch(e){}
+      try{ localStorage.setItem('eg_admin_links',    data.links);    }catch(e){}
+      try{ localStorage.setItem('eg_admin_missions', data.missions); }catch(e){}
+    }
+  }catch(e){ console.log('관리자 데이터 로드 실패:', e); }
+}
+async function saveAllAdminToCloud(){
+  if(!APPS_SCRIPT_URL) return;
+  try{
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        action:   'saveAdmin',
+        type:     'entry',
+        images:   JSON.stringify(missionImages),
+        memos:    JSON.stringify(customMemos),
+        links:    JSON.stringify(entryLinks),
+        missions: JSON.stringify(customMissions)
+      })
+    });
+  }catch(e){ console.log('관리자 데이터 저장 실패:', e); }
+}
 function getYoutubeId(url){
   if(!url) return null;
   const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([^?&\n#]+)/);
@@ -2137,6 +2174,7 @@ function initApp(){
     loadFromJSON(),
     loadFromGoogleSheets()
   ]).then(async ()=>{
+    await loadAdminFromCloud();
     await loadFromCloud();
     updateTopbar();
     openGallery();
