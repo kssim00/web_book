@@ -642,7 +642,6 @@ body.embedded .gallery-entry-btn:hover { background:linear-gradient(135deg,rgba(
 body.embedded .radio-card { background:var(--card); border-color:var(--border); }
 body.embedded .radio-card:hover { background:var(--card2); border-color:rgba(44,201,160,0.3); }
 /* 플로팅 어드민 버튼 - embedded에서 더 잘 보이게 */
-body.embedded #floatingAdminBtn { background:rgba(26,40,64,0.9); border-color:rgba(167,139,250,0.25); color:rgba(167,139,250,0.6); bottom:auto !important; top:8px !important; right:8px !important; }
 
 /* ══════════════════════════════════════
    🎨 PROGRAMMERS STYLE OVERRIDE
@@ -935,16 +934,6 @@ body { background:#FAFAFA !important; }
 
 </div><!-- /app -->
 
-<!-- 플로팅 관리자 버튼 (항상 표시) -->
-<button id="floatingAdminBtn" onclick="openAdminLogin()" title="관리자 모드"
-  style="position:fixed;bottom:20px;right:20px;z-index:7000;
-    width:40px;height:40px;border-radius:50%;
-    background:rgba(20,30,50,0.85);backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,0.12);
-    color:rgba(255,255,255,0.45);font-size:17px;
-    cursor:pointer;display:flex;align-items:center;justify-content:center;
-    transition:all 0.2s;box-shadow:0 2px 12px rgba(0,0,0,0.3);">⚙️</button>
-
 <!-- 관리자 비밀번호 오버레이 -->
 <div class="admin-pw-overlay" id="adminPwOverlay">
   <div class="admin-pw-box">
@@ -1159,7 +1148,7 @@ function renderGallery(){
       const thumbContent=missionVideos[m.id]
         ?`<video src="${missionVideos[m.id]}" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;"></video>`
         :_ytThumb
-        ?`<img src="${_ytThumb}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transform:scale(1.2);z-index:1;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none;"><div style="width:44px;height:44px;background:rgba(255,0,0,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:18px;margin-left:4px;">▶</span></div></div>`
+        ?`<img src="${_ytThumb}" alt="" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','mqdefault');" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:1;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none;"><div style="width:44px;height:44px;background:rgba(255,0,0,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:18px;margin-left:4px;">▶</span></div></div>`
         :missionImages[m.id]
         ?`<img src="${missionImages[m.id]}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;">`
         :`<span style="animation:${m.previewAnim} 1.8s ease-in-out infinite;display:inline-block">${m.emoji}</span>`;
@@ -1564,7 +1553,7 @@ function getYoutubeId(url){
 }
 function getYoutubeThumbnail(url){
   const id=getYoutubeId(url);
-  return id?`https://img.youtube.com/vi/${id}/mqdefault.jpg`:null;
+  return id?`https://img.youtube.com/vi/${id}/maxresdefault.jpg`:null;
 }
 function getMissionData(id){
   const base=MISSIONS.find(m=>m.id===id)||{};
@@ -1628,12 +1617,11 @@ function goAdminGallery(){
 }
 function logoutAdmin(){
   isAdminMode=false;
+  sessionStorage.removeItem('학습홈_admin');
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
-  const fab=document.getElementById('floatingAdminBtn');
   if(badge) badge.style.display='none';
   if(btn){ btn.style.color=''; btn.title='관리자'; }
-  if(fab){ fab.style.color='rgba(255,255,255,0.45)'; fab.style.borderColor='rgba(255,255,255,0.12)'; fab.title='관리자 모드'; }
   document.getElementById('adminView').classList.remove('active');
   openGallery();
   showToast('🔓 관리자 모드 종료');
@@ -1662,17 +1650,23 @@ function confirmAdminPw(){
 
 function openAdmin(){
   isAdminMode=true;
+  sessionStorage.setItem('학습홈_admin','1');
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
-  const fab=document.getElementById('floatingAdminBtn');
   if(badge) badge.style.display='inline-flex';
   if(btn){ btn.style.color='#DC2626'; btn.title='관리자 메뉴'; }
-  if(fab){ fab.style.color='#DC2626'; fab.style.borderColor='rgba(220,38,38,0.4)'; fab.title='관리자 모드 ON'; }
   const dv=document.getElementById('dashView'); if(dv) dv.classList.remove('active');
   const gv=document.getElementById('galleryView'); if(gv) gv.classList.remove('active');
   const dtv=document.getElementById('detailView'); if(dtv) dtv.classList.remove('active');
   document.getElementById('adminView').classList.add('active');
   renderAdminList(); window.scrollTo({top:0,behavior:'instant'});
+}
+function restoreAdminUI(){
+  isAdminMode=true;
+  const badge=document.getElementById('adminBadge');
+  const btn=document.getElementById('adminTriggerBtn');
+  if(badge) badge.style.display='inline-flex';
+  if(btn){ btn.style.color='#DC2626'; btn.title='관리자 메뉴'; }
 }
 function closeAdmin(){
   isAdminMode=false;
@@ -2103,6 +2097,8 @@ function initApp(){
     if (topbar) topbar.style.display = 'none';
   }
   loadMissionImages(); loadCustomMemos(); loadEntryLinks(); loadCustomMissions();
+  // 관리자 세션 복원 (다른 페이지에서 로그인한 경우)
+  if(sessionStorage.getItem('학습홈_admin')==='1') restoreAdminUI();
   // 로컬 데이터로 즉시 화면 표시
   loadFromStorage();
   updateTopbar();
@@ -2232,10 +2228,4 @@ if(document.readyState==='loading'){
       <div style="font-size:12px;color:var(--text3);margin-top:6px;">MP4, WebM, MOV 등 · 여러 파일 동시 선택 가능</div>
     </div>
     <input type="file" id="bulkVideoFileInput" accept="video/*" multiple style="display:none" onchange="processBulkVideoFiles(this.files);this.value=''">
-    <div id="bulkVideoLog" style="max-height:200px;overflow-y:auto;margin-top:14px;font-size:13px;line-height:1.8;background:var(--bg2);border-radius:10px;padding:10px 14px;display:none;"></div>
-    <style>#bulkVideoLog:not(:empty){display:block!important;} .drag-over{background:rgba(74,158,255,0.12)!important;border-color:var(--blue)!important;}</style>
-  </div>
-</div>
-
-</body>
-</html>
+    <div id="bulkVideoLog" style="max-height:200px;overflow-y:auto;margin-top:14px;font-size:13px;line-height:1.8;background:var(--bg2);border-radius:10px;padding:10px 14px;display:none;"></d
