@@ -949,15 +949,6 @@ body { background:#FAFAFA !important; }
   <button onclick="logoutAdmin()" style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.35)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">🔓 종료</button>
 </div>
 
-<!-- 플로팅 관리자 버튼 (embedded 모드 전용) -->
-<button id="floatingAdminBtn" onclick="openAdminLogin()" title="관리자 모드"
-  style="display:none;position:fixed;bottom:16px;right:16px;z-index:7000;
-    width:36px;height:36px;border-radius:50%;
-    background:rgba(20,30,50,0.85);backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,0.12);
-    color:rgba(255,255,255,0.45);font-size:15px;
-    cursor:pointer;align-items:center;justify-content:center;
-    transition:all 0.2s;box-shadow:0 2px 12px rgba(0,0,0,0.3);">⚙️</button>
 
 <!-- 관리자 비밀번호 오버레이 -->
 <div class="admin-pw-overlay" id="adminPwOverlay">
@@ -1676,15 +1667,11 @@ function confirmAdminPw(){
 
 function showAdminBar(){
   const bar=document.getElementById('adminBar');
-  const fab=document.getElementById('floatingAdminBtn');
   if(bar && document.body.classList.contains('embedded')){ bar.style.display='flex'; document.body.style.paddingTop='40px'; }
-  if(fab) fab.style.display='none';
 }
 function hideAdminBar(){
   const bar=document.getElementById('adminBar');
-  const fab=document.getElementById('floatingAdminBtn');
   if(bar){ bar.style.display='none'; document.body.style.paddingTop=''; }
-  if(fab && document.body.classList.contains('embedded')) fab.style.display='flex';
 }
 function openAdmin(){
   isAdminMode=true;
@@ -2135,9 +2122,6 @@ function initApp(){
     if (stars) stars.style.display = 'none';
     const topbar = document.querySelector('#app > .topbar');
     if (topbar) topbar.style.display = 'none';
-    // embedded 모드: topbar가 숨겨지므로 플로팅 버튼으로 관리자 진입
-    const fab = document.getElementById('floatingAdminBtn');
-    if (fab) fab.style.display = 'flex';
   }
   loadMissionImages(); loadCustomMemos(); loadEntryLinks(); loadCustomMissions();
   // 관리자 세션 복원 (다른 페이지에서 로그인한 경우)
