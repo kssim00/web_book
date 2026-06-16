@@ -3395,6 +3395,7 @@ function confirmAdminPw() {
   if (pw === ADMIN_PW) {
     isAdminMode = true;
     document.body.classList.add('admin-mode');
+    localStorage.setItem('학습홈_admin', '1');
     closeAdminLogin();
   } else {
     const input = document.getElementById('adminPwInput');
@@ -3406,6 +3407,7 @@ function confirmAdminPw() {
 function exitAdminMode() {
   isAdminMode = false;
   document.body.classList.remove('admin-mode');
+  localStorage.removeItem('학습홈_admin');
 }
 
 // ── 커스텀 과목 ──
