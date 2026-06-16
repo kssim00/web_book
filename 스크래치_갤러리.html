@@ -929,6 +929,21 @@ body { background:#FAFAFA !important; }
 
 </div><!-- /app -->
 
+<!-- 관리자 바 (embedded + 관리자 모드 전용, 상단 고정) -->
+<div id="adminBar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:6500;
+  height:40px;background:linear-gradient(90deg,rgba(185,28,28,0.95),rgba(220,38,38,0.90));
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 2px 12px rgba(220,38,38,0.3);
+  align-items:center;justify-content:center;gap:6px;padding:0 12px;">
+  <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);letter-spacing:0.06em;margin-right:4px;">🔐 관리자</span>
+  <div style="width:1px;height:16px;background:rgba(255,255,255,0.25);margin:0 4px;"></div>
+  <button onclick="openAdmin()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:8px;color:#fff;font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">🗂️ 관리자 패널</button>
+  <button onclick="goAdminGallery()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:8px;color:#fff;font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">✏️ 갤러리 편집</button>
+  <div style="width:1px;height:16px;background:rgba(255,255,255,0.25);margin:0 4px;"></div>
+  <button onclick="logoutAdmin()" style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.35)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">🔓 종료</button>
+</div>
+
 <!-- 플로팅 관리자 버튼 (embedded 모드 전용) -->
 <button id="floatingAdminBtn" onclick="openAdminLogin()" title="관리자 모드"
   style="display:none;position:fixed;bottom:16px;right:16px;z-index:7000;
@@ -1611,10 +1626,9 @@ function logoutAdmin(){
   localStorage.removeItem('학습홈_admin');
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
-  const fab=document.getElementById('floatingAdminBtn');
   if(badge) badge.style.display='none';
   if(btn){ btn.style.color=''; btn.title='관리자'; }
-  if(fab){ fab.style.color='rgba(255,255,255,0.45)'; fab.style.borderColor='rgba(255,255,255,0.12)'; fab.title='관리자 모드'; }
+  hideAdminBar();
   document.getElementById('adminView').classList.remove('active');
   openGallery();
   showToast('🔓 관리자 모드 종료');
@@ -1640,15 +1654,26 @@ function confirmAdminPw(){
 }
 
 
+function showAdminBar(){
+  const bar=document.getElementById('adminBar');
+  const fab=document.getElementById('floatingAdminBtn');
+  if(bar && document.body.classList.contains('embedded')){ bar.style.display='flex'; document.body.style.paddingTop='40px'; }
+  if(fab) fab.style.display='none';
+}
+function hideAdminBar(){
+  const bar=document.getElementById('adminBar');
+  const fab=document.getElementById('floatingAdminBtn');
+  if(bar){ bar.style.display='none'; document.body.style.paddingTop=''; }
+  if(fab && document.body.classList.contains('embedded')) fab.style.display='flex';
+}
 function openAdmin(){
   isAdminMode=true;
   localStorage.setItem('학습홈_admin','1');
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
-  const fab=document.getElementById('floatingAdminBtn');
   if(badge) badge.style.display='inline-flex';
   if(btn){ btn.style.color='#DC2626'; btn.title='관리자 메뉴'; }
-  if(fab){ fab.style.color='#DC2626'; fab.style.borderColor='rgba(220,38,38,0.4)'; fab.title='관리자 모드 ON'; }
+  showAdminBar();
   document.getElementById('dashView').classList.remove('active');
   document.getElementById('galleryView').classList.remove('active');
   document.getElementById('detailView').classList.remove('active');
@@ -1659,10 +1684,9 @@ function restoreAdminUI(){
   isAdminMode=true;
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
-  const fab=document.getElementById('floatingAdminBtn');
   if(badge) badge.style.display='inline-flex';
   if(btn){ btn.style.color='#DC2626'; btn.title='관리자 메뉴'; }
-  if(fab){ fab.style.color='#DC2626'; fab.style.borderColor='rgba(220,38,38,0.4)'; fab.title='관리자 모드 ON'; }
+  showAdminBar();
 }
 function closeAdmin(){
   isAdminMode=false;
@@ -2133,7 +2157,7 @@ function initApp(){
   window.addEventListener('storage', function(e){
     if(e.key==='학습홈_admin'){
       if(e.newValue==='1' && !isAdminMode) restoreAdminUI();
-      else if(!e.newValue && isAdminMode) { isAdminMode=false; const b=document.getElementById('adminBadge'); const btn=document.getElementById('adminTriggerBtn'); const fab=document.getElementById('floatingAdminBtn'); if(b) b.style.display='none'; if(btn){btn.style.color='';btn.title='관리자';} if(fab){fab.style.color='rgba(255,255,255,0.45)';fab.style.borderColor='rgba(255,255,255,0.12)';} }
+      else if(!e.newValue && isAdminMode) { isAdminMode=false; const b=document.getElementById('adminBadge'); const btn=document.getElementById('adminTriggerBtn'); if(b) b.style.display='none'; if(btn){btn.style.color='';btn.title='관리자';} hideAdminBar(); }
     }
   });
 }
