@@ -1561,19 +1561,15 @@ async function loadAdminFromCloud(){
 async function saveAllAdminToCloud(){
   if(!APPS_SCRIPT_URL) return;
   try{
-    fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        action:   'saveAdmin',
-        type:     'scratch',
-        images:   JSON.stringify(missionImages),
-        memos:    JSON.stringify(customMemos),
-        links:    JSON.stringify(entryLinks),
-        missions: JSON.stringify(customMissions)
-      })
-    });
+    const url = APPS_SCRIPT_URL
+      + '?action=saveAdmin'
+      + '&type=scratch'
+      + '&images='   + encodeURIComponent(JSON.stringify(missionImages))
+      + '&memos='    + encodeURIComponent(JSON.stringify(customMemos))
+      + '&links='    + encodeURIComponent(JSON.stringify(entryLinks))
+      + '&missions=' + encodeURIComponent(JSON.stringify(customMissions))
+      + '&t=' + Date.now();
+    fetch(url);
   }catch(e){ console.log('관리자 데이터 저장 실패:', e); }
 }
 function getMissionData(id){
@@ -1692,6 +1688,7 @@ function hideAdminBar(){
 function openAdmin(){
   isAdminMode=true;
   localStorage.setItem('학습홈_admin','1');
+  saveAllAdminToCloud();
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
   if(badge) badge.style.display='inline-flex';
@@ -1705,6 +1702,7 @@ function openAdmin(){
 }
 function restoreAdminUI(){
   isAdminMode=true;
+  setTimeout(saveAllAdminToCloud, 2000);
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
   if(badge) badge.style.display='inline-flex';
