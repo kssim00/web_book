@@ -2296,36 +2296,7 @@ body.admin-mode .cn-card-admin-bar { display: flex; }
 .gallery-file-field { display: none; }
 .gallery-file-field.visible { display: block; }
 
-/* ── 동적 과목 패널 ── */
-.custom-panel-hero {
-  position: relative; overflow: hidden;
-  padding: 36px 40px; display: flex; align-items: center; gap: 28px;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.custom-panel-hero::before {
-  content:''; position:absolute; inset:0;
-  background: radial-gradient(ellipse at 70% 50%, var(--hero-color-glow,rgba(255,255,255,0.12)) 0%, transparent 65%);
-  pointer-events:none;
-}
-.custom-panel-hero-icon {
-  width: 64px; height: 64px; border-radius: 20px;
-  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 30px; flex-shrink: 0;
-  box-shadow: 0 0 28px var(--hero-color-shadow,rgba(255,255,255,0.2));
-}
-.custom-panel-hero-content { flex: 1; }
-.custom-panel-hero-step {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--hero-color-accent,rgba(255,255,255,0.7)); margin-bottom: 6px;
-}
-.custom-panel-hero-title {
-  font-family: 'Gmarket Sans','Noto Sans KR',sans-serif;
-  font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 8px;
-  text-shadow: 0 0 22px var(--hero-color-shadow,rgba(255,255,255,0.3));
-}
-.custom-panel-hero-desc { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.7; }
+/* ── 동적 과목 패널 (panel-hero 재사용, 색상만 JS로 주입) ── */
 
 /* ── 챕터 패널 레이아웃 ── */
 .chapter-panel-body { padding: 32px 36px 48px; }
@@ -3660,37 +3631,78 @@ function _hexToRgb(hex) {
 function buildCustomPanel(s, panelId) {
   const type = s.type || 'chapter';
   const c = _hexToRgb(s.color);
-  const dark1 = 'rgb(' + Math.round(c.r*0.12) + ',' + Math.round(c.g*0.12) + ',' + Math.round(c.b*0.12) + ')';
-  const dark2 = 'rgb(' + Math.round(c.r*0.2) + ',' + Math.round(c.g*0.2) + ',' + Math.round(c.b*0.2) + ')';
-  const glow  = 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.18)';
-  const shadow= 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.35)';
-  const accent= 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.85)';
+  const rv = c.r + ',' + c.g + ',' + c.b;
+
+  // 동적 색상 스타일 — panel-hero 기존 클래스 구조 그대로 재사용
+  const styleTag = document.createElement('style');
+  styleTag.id = 'style_' + panelId;
+  styleTag.textContent =
+    '#' + panelId + ' .panel-hero {' +
+      'background:linear-gradient(135deg,' +
+        'rgb(' + Math.round(c.r*.12) + ',' + Math.round(c.g*.12) + ',' + Math.round(c.b*.12) + ') 0%,' +
+        'rgb(' + Math.round(c.r*.22) + ',' + Math.round(c.g*.22) + ',' + Math.round(c.b*.22) + ') 45%,' +
+        'rgb(' + Math.round(c.r*.10) + ',' + Math.round(c.g*.10) + ',' + Math.round(c.b*.10) + ') 100%);' +
+      'border-top:1px solid rgba(' + rv + ',.3);' +
+      'border-bottom:1px solid rgba(' + rv + ',.3);' +
+    '}' +
+    '#' + panelId + ' .panel-hero::after {' +
+      'background:radial-gradient(circle,rgba(' + rv + ',.2) 0%,transparent 65%);' +
+    '}' +
+    '#' + panelId + ' .panel-hero-orb-l {' +
+      'background:radial-gradient(circle,rgba(' + rv + ',.12) 0%,transparent 65%);' +
+    '}' +
+    '#' + panelId + ' .panel-hero-icon {' +
+      'background:linear-gradient(135deg,' +
+        'rgb(' + Math.round(c.r*.4) + ',' + Math.round(c.g*.4) + ',' + Math.round(c.b*.4) + '),' +
+        s.color + ');' +
+      'box-shadow:0 0 28px rgba(' + rv + ',.5);' +
+      'font-size:27px;' +
+    '}' +
+    '#' + panelId + ' .panel-hero-lv { color:rgba(' + rv + ',.85); }' +
+    '#' + panelId + ' .panel-hero-title { text-shadow:0 0 22px rgba(' + rv + ',.4); }' +
+    '#' + panelId + ' .panel-hero-tag {' +
+      'background:rgba(' + rv + ',.15);' +
+      'border-color:rgba(' + rv + ',.35);' +
+      'color:rgba(255,255,255,.9);' +
+    '}';
+  // 기존 스타일 태그 교체
+  const old = document.getElementById('style_' + panelId);
+  if (old) old.remove();
+  document.head.appendChild(styleTag);
 
   const defaultIcon = type === 'gallery' ? '🖼️' : '📚';
   const icon = s.icon || defaultIcon;
+  const typeLabel = type === 'gallery' ? '갤러리형' : '챕터형';
 
   const panel = document.createElement('div');
   panel.id = panelId;
   panel.className = 'content-panel';
 
-  // ── 영웅 헤더
+  // ── 기존 panel-hero 구조와 동일한 HTML
   const heroHtml =
-    '<div class="custom-panel-hero" style="' +
-      'background:linear-gradient(135deg,' + dark1 + ' 0%,' + dark2 + ' 45%,' + dark1 + ' 100%);' +
-      '--hero-color-glow:' + glow + ';' +
-      '--hero-color-shadow:' + shadow + ';' +
-      '--hero-color-accent:' + accent + ';' +
-    '">' +
-      '<div class="custom-panel-hero-icon" style="box-shadow:0 0 28px ' + shadow + ';">' + icon + '</div>' +
-      '<div class="custom-panel-hero-content">' +
-        (s.step ? '<div class="custom-panel-hero-step">' + s.step + '</div>' : '') +
-        '<div class="custom-panel-hero-title">' + s.name + '</div>' +
-        (s.desc ? '<div class="custom-panel-hero-desc">' + s.desc.replace(/\n/g,'<br>') + '</div>' : '') +
+    '<div class="panel-hero">' +
+      '<span class="panel-hero-orb-l"></span>' +
+      '<div class="panel-hero-inner">' +
+        '<div class="panel-hero-left">' +
+          '<div class="panel-hero-row">' +
+            '<div class="panel-hero-icon">' + icon + '</div>' +
+            '<div>' +
+              (s.step
+                ? '<div class="panel-hero-lv">' + s.step + '</div>'
+                : '<div class="panel-hero-lv">' + typeLabel + '</div>') +
+              '<div class="panel-hero-title">' + s.name + '</div>' +
+            '</div>' +
+          '</div>' +
+          (s.desc ? '<div class="panel-hero-desc">' + s.desc.replace(/\n/g,'<br>') + '</div>' : '') +
+          '<div class="panel-hero-tags">' +
+            '<span class="panel-hero-tag">' + typeLabel + '</span>' +
+            (s.step ? '<span class="panel-hero-tag">' + s.step + '</span>' : '') +
+          '</div>' +
+        '</div>' +
       '</div>' +
     '</div>';
 
   if (type === 'gallery') {
-    // 갤러리형: iframe
     const file = s.galleryFile || '';
     const studentName = getStore('studentName', '학생');
     const iframeSrc = file ? (file + '?name=' + encodeURIComponent(studentName)) : '';
@@ -3706,7 +3718,6 @@ function buildCustomPanel(s, panelId) {
         ) +
       '</div>';
   } else {
-    // 챕터형: 챕터 카드 그리드
     panel.innerHTML = heroHtml +
       '<div class="chapter-panel-body" id="chapterBody_' + s.id + '">' +
         '<div class="chapter-panel-header">' +
@@ -3715,7 +3726,6 @@ function buildCustomPanel(s, panelId) {
         '</div>' +
         '<div class="chapter-grid" id="chapterGrid_' + s.id + '"></div>' +
       '</div>';
-    // 챕터 목록 렌더링
     refreshChapterGrid(s);
   }
 
