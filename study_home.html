@@ -3604,7 +3604,7 @@ function openCustomPanel(subjectId) {
 
   if (!panel) {
     panel = buildCustomPanel(s, panelId);
-    document.getElementById('app').appendChild(panel);
+    document.querySelector('#app .main').appendChild(panel);
   } else {
     // 챕터형이면 목록 새로고침
     if ((s.type || 'chapter') === 'chapter') refreshChapterGrid(s);
