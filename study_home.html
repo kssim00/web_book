@@ -3466,17 +3466,6 @@ function startApp() {
   loadAllState();
   calcProgress();
   loadCustomSubjects();
-  // 백그라운드에서 갤러리 iframe 미리 로드 (클릭 전에 준비)
-  setTimeout(function() {
-    const entryFrame = document.getElementById('entryGalleryFrame');
-    if (entryFrame && !entryFrame.getAttribute('src')) {
-      entryFrame.src = '엔트리_갤러리.html?name=' + encodeURIComponent(name);
-    }
-    const scratchFrame = document.getElementById('scratchGalleryFrame');
-    if (scratchFrame && !scratchFrame.getAttribute('src')) {
-      scratchFrame.src = '스크래치_갤러리.html?name=' + encodeURIComponent(name);
-    }
-  }, 500);
 }
 
 function applyName(name) {
@@ -4002,33 +3991,18 @@ function selectStep(n) {
   }
   if (n === 2) {
     const frame = document.getElementById('entryGalleryFrame');
-    if (frame && !frame.getAttribute('src')) {
+    if (frame) {
       const name = getStore('studentName', '학생');
-      frame.src = '엔트리_갤러리.html?name=' + encodeURIComponent(name);
-      frame.onload = function() {
-        setTimeout(function() {
-          try {
-            const h = frame.contentDocument.body.scrollHeight;
-            if (h) frame.style.height = h + 'px';
-          } catch(e) {}
-        }, 200);
-      };
+      const newSrc = '엔트리_갤러리.html?name=' + encodeURIComponent(name);
+      frame.src = newSrc;
     }
   }
   if (n === 3) {
     const frame = document.getElementById('scratchGalleryFrame');
-    if (frame && !frame.getAttribute('src')) {
+    if (frame) {
       const name = getStore('studentName', '학생');
-      frame.src = '스크래치_갤러리.html?name=' + encodeURIComponent(name);
-      // iframe 로드 완료 후 높이 재조정 요청
-      frame.onload = function() {
-        setTimeout(function() {
-          try {
-            const h = frame.contentDocument.body.scrollHeight;
-            if (h) frame.style.height = h + 'px';
-          } catch(e) {}
-        }, 200);
-      };
+      const newSrc = '스크래치_갤러리.html?name=' + encodeURIComponent(name);
+      frame.src = newSrc;
     }
   }
   window.scrollTo({ top: 0, behavior: 'instant' });
