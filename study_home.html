@@ -3448,8 +3448,8 @@ function startApp() {
   const name = document.getElementById('nameInput').value.trim();
   if (!name) { document.getElementById('nameInput').focus(); return; }
   // 이전 학생과 다른 이름이면 단계 초기화
-  const prevName = getStore('studentName', null);
-  if (prevName !== name) {
+  const prevName = localStorage.getItem('__currentStudent__') || null;
+  if (prevName !== null && prevName !== name) {
     setStore('lastStep', 0);
     hideAllPanels();
     // 이름이 바뀌면 갤러리 iframe 초기화 (새 이름으로 다시 로드)
@@ -3960,6 +3960,8 @@ function selectStep(n) {
 
   const appEl = document.getElementById('app');
   appEl.classList.add('panel-active');
+  const navBtn = document.querySelector('.home-nav-btn');
+  if (navBtn) navBtn.style.display = 'flex';
   document.getElementById('entryXpBadge').style.display = (n === 2) ? 'flex' : 'none';
   document.getElementById('scratchXpBadge').style.display = (n === 3) ? 'flex' : 'none';
 
@@ -4020,6 +4022,8 @@ function hideAllPanels() {
   document.getElementById('placeholder').style.display = 'block';
   document.getElementById('app').classList.remove('panel-active');
   document.getElementById('app').classList.remove('gallery-mode');
+  const navBtn = document.querySelector('.home-nav-btn');
+  if (navBtn) navBtn.style.display = '';
   document.getElementById('entryXpBadge').style.display = 'none';
   document.getElementById('scratchXpBadge').style.display = 'none';
 }
