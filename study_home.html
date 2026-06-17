@@ -892,7 +892,7 @@ body {
 }
 .cn-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 28px;
 }
 .cn-card {
@@ -956,6 +956,9 @@ body {
 .home-nav-btn:hover { background:rgba(74,158,255,0.2); }
 #app.panel-active .home-nav-btn { display:flex; }
 
+@media(max-width:900px) {
+  .cn-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media(max-width:600px) {
   .home-grid { flex-direction: column; }
   .home-profile-card { flex-direction: column; align-items: flex-start; gap: 16px; }
