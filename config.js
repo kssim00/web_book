@@ -4,5 +4,10 @@
 //  세 파일 모두 이 파일의 URL을 공유합니다.
 // =====================================================
 
+// ↓↓ 아래 두 줄만 본인 것으로 바꾸세요 ↓↓
+
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkshNiO9_8gCVPww6FitphHoOtEWEtcjEIW3zFKh5YJ3-SsA44JxaFO_728uJ8-OeF/exec';
+//  예시) const APPS_SCRIPT_URL = '본인_앱스스크립트_URL';
+
 const GITHUB_BASE     = 'https://kssim00.github.io/web_book/';
+//  예시) const GITHUB_BASE     = 'https://본인아이디.github.io/레포이름/';
