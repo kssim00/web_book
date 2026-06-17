@@ -3951,7 +3951,14 @@ function deleteChapter(subjectId, chapterId) {
   if (s) refreshChapterGrid(s);
 }
 
-// 항상 로그인 화면부터 시작 (자동 로그인 없음)
+// 저장된 이름이 있으면 자동 로그인
+(function() {
+  const saved = localStorage.getItem('__currentStudent__');
+  if (saved) {
+    document.getElementById('nameInput').value = saved;
+    startApp();
+  }
+})();
 
 // ── PANEL SELECT
 let currentStep = 0;
