@@ -5,3 +5,4 @@
 // =====================================================
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkshNiO9_8gCVPww6FitphHoOtEWEtcjEIW3zFKh5YJ3-SsA44JxaFO_728uJ8-OeF/exec';
+const GITHUB_BASE     = 'https://kssim00.github.io/web_book/';
