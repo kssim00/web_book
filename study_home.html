@@ -3334,7 +3334,6 @@ function startApp() {
   loadAllState();
   calcProgress();
   loadCustomSubjects();
-  renderCustomSubjects();
   // 백그라운드에서 갤러리 iframe 미리 로드 (클릭 전에 준비)
   setTimeout(function() {
     const entryFrame = document.getElementById('entryGalleryFrame');
@@ -3414,14 +3413,32 @@ function exitAdminMode() {
 let selectedColor = '#0078FF';
 let customSubjects = [];
 
-function loadCustomSubjects() {
+async function loadCustomSubjects() {
+  // 1. 로컬 캐시로 즉시 렌더 (빠른 초기 화면)
   try {
     const raw = localStorage.getItem('sh_custom_subjects');
-    if (raw) customSubjects = JSON.parse(raw);
+    if (raw) { customSubjects = JSON.parse(raw); renderCustomSubjects(); }
+  } catch(e) {}
+
+  // 2. 서버에서 최신 데이터 가져와 덮어쓰기
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === '여기에_Apps_Script_URL_붙여넣기') return;
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=readSubjects');
+    const data = await res.json();
+    const serverSubjects = JSON.parse(data.subjects || '[]');
+    customSubjects = serverSubjects;
+    localStorage.setItem('sh_custom_subjects', JSON.stringify(serverSubjects));
+    renderCustomSubjects();
   } catch(e) {}
 }
 function saveCustomSubjects() {
-  try { localStorage.setItem('sh_custom_subjects', JSON.stringify(customSubjects)); } catch(e) {}
+  const json = JSON.stringify(customSubjects);
+  // 로컬 저장 (즉각 반영)
+  try { localStorage.setItem('sh_custom_subjects', json); } catch(e) {}
+  // 서버 저장 (백그라운드 — await 없이 fire-and-forget)
+  if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== '여기에_Apps_Script_URL_붙여넣기') {
+    fetch(APPS_SCRIPT_URL + '?action=saveSubjects&subjects=' + encodeURIComponent(json)).catch(function(){});
+  }
 }
 
 function renderCustomSubjects() {
