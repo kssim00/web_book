@@ -3458,6 +3458,8 @@ function startApp() {
     if (frame) frame.removeAttribute('src');
     const entryFrame = document.getElementById('entryGalleryFrame');
     if (entryFrame) entryFrame.removeAttribute('src');
+    _entryGalleryName = null;
+    _scratchGalleryName = null;
   }
   localStorage.setItem('__currentStudent__', name);
   setStore('studentName', name);
@@ -3610,6 +3612,8 @@ function openCustomPanel(subjectId) {
 
   const appEl = document.getElementById('app');
   appEl.classList.add('panel-active');
+  const navBtn = document.querySelector('.home-nav-btn');
+  if (navBtn) navBtn.style.display = 'flex';
   document.getElementById('entryXpBadge').style.display = 'none';
   document.getElementById('scratchXpBadge').style.display = 'none';
   window.scrollTo({ top: 0, behavior: 'instant' });
@@ -3952,6 +3956,9 @@ function deleteChapter(subjectId, chapterId) {
 
 // ── PANEL SELECT
 let currentStep = 0;
+// 갤러리 로드 상태 추적 (frame.src는 한국어가 URL인코딩되어 indexOf 검사가 항상 실패함)
+let _entryGalleryName = null;
+let _scratchGalleryName = null;
 function selectStep(n) {
   hideAllPanels();
   document.getElementById('panel'+n).classList.add('visible');
@@ -3996,11 +4003,10 @@ function selectStep(n) {
     const frame = document.getElementById('entryGalleryFrame');
     if (frame) {
       const name = getStore('studentName', '학생');
-      const newSrc = '엔트리_갤러리.html?name=' + encodeURIComponent(name);
-      // 이미 같은 학생 갤러리가 로드돼 있으면 재로드 방지 (재로드시 깜빡임/공백 발생)
-      if (!frame.src || frame.src.indexOf('엔트리_갤러리.html') === -1 ||
-          frame.src.indexOf('name=' + encodeURIComponent(name)) === -1) {
-        frame.src = newSrc;
+      // frame.src는 한국어가 URL인코딩되므로 indexOf 검사 불가 → JS 변수로 추적
+      if (_entryGalleryName !== name) {
+        frame.src = '엔트리_갤러리.html?name=' + encodeURIComponent(name);
+        _entryGalleryName = name;
       }
     }
   }
@@ -4008,10 +4014,9 @@ function selectStep(n) {
     const frame = document.getElementById('scratchGalleryFrame');
     if (frame) {
       const name = getStore('studentName', '학생');
-      const newSrc = '스크래치_갤러리.html?name=' + encodeURIComponent(name);
-      if (!frame.src || frame.src.indexOf('스크래치_갤러리.html') === -1 ||
-          frame.src.indexOf('name=' + encodeURIComponent(name)) === -1) {
-        frame.src = newSrc;
+      if (_scratchGalleryName !== name) {
+        frame.src = '스크래치_갤러리.html?name=' + encodeURIComponent(name);
+        _scratchGalleryName = name;
       }
     }
   }
@@ -4031,7 +4036,7 @@ function hideAllPanels() {
   document.getElementById('app').classList.remove('panel-active');
   document.getElementById('app').classList.remove('gallery-mode');
   const navBtn = document.querySelector('.home-nav-btn');
-  if (navBtn) navBtn.style.display = '';
+  if (navBtn) navBtn.style.display = 'none';
   document.getElementById('entryXpBadge').style.display = 'none';
   document.getElementById('scratchXpBadge').style.display = 'none';
 }
@@ -4065,7 +4070,7 @@ window.addEventListener('message', function(e) {
   // 엔트리 iframe 높이 자동 조절
   if (e.data.type === 'entry-height') {
     const frame = document.getElementById('entryGalleryFrame');
-    if (frame && e.data.height) {
+    if (frame && e.data.height && e.data.height > 400) {
       frame.style.height = e.data.height + 'px';
     }
   }
@@ -4095,7 +4100,7 @@ window.addEventListener('message', function(e) {
   // 스크래치 iframe 높이 자동 조절 (전체 페이지 스크롤)
   if (e.data.type === 'scratch-height') {
     const frame = document.getElementById('scratchGalleryFrame');
-    if (frame && e.data.height) {
+    if (frame && e.data.height && e.data.height > 400) {
       frame.style.height = e.data.height + 'px';
     }
   }
