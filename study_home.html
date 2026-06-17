@@ -1875,6 +1875,7 @@ body::before { display: none !important; }
   left: 50% !important;
   transform: translateX(-50%) !important;
   box-sizing: border-box !important;
+  margin-top: 0 !important;
   margin-bottom: 28px !important;
 }
 /* 오른쪽 하단 큰 링 */
@@ -3996,7 +3997,11 @@ function selectStep(n) {
     if (frame) {
       const name = getStore('studentName', '학생');
       const newSrc = '엔트리_갤러리.html?name=' + encodeURIComponent(name);
-      frame.src = newSrc;
+      // 이미 같은 학생 갤러리가 로드돼 있으면 재로드 방지 (재로드시 깜빡임/공백 발생)
+      if (!frame.src || frame.src.indexOf('엔트리_갤러리.html') === -1 ||
+          frame.src.indexOf('name=' + encodeURIComponent(name)) === -1) {
+        frame.src = newSrc;
+      }
     }
   }
   if (n === 3) {
@@ -4004,7 +4009,10 @@ function selectStep(n) {
     if (frame) {
       const name = getStore('studentName', '학생');
       const newSrc = '스크래치_갤러리.html?name=' + encodeURIComponent(name);
-      frame.src = newSrc;
+      if (!frame.src || frame.src.indexOf('스크래치_갤러리.html') === -1 ||
+          frame.src.indexOf('name=' + encodeURIComponent(name)) === -1) {
+        frame.src = newSrc;
+      }
     }
   }
   window.scrollTo({ top: 0, behavior: 'instant' });
