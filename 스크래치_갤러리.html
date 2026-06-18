@@ -1218,7 +1218,6 @@ function openMission(id){
         <button class="admin-tb-img-btn" onclick="triggerDetailVideoUpload(${id})" style="background:linear-gradient(135deg,rgba(14,165,233,0.15),rgba(139,92,246,0.10));border-color:rgba(14,165,233,0.4);">🎬 영상 업로드${missionVideos[id]?' (변경)':''}</button>
         ${missionVideos[id]?`<button class="admin-tb-img-del" onclick="deleteVideoAndRefresh(${id})">🗑️ 영상 삭제</button>`:''}
         <button class="admin-tb-memo-btn${hasMemo?' open':''}" id="detailMemoToggle_${id}" onclick="toggleDetailMemo(${id})">📝 미션 안내 편집${hasMemo?' ✓':''}</button>
-        <button class="admin-tb-memo-btn${entryLinks[id]?' open':''}" id="detailLinkToggle_${id}" onclick="toggleDetailLink(${id})" style="background:rgba(14,165,233,0.10);border-color:rgba(14,165,233,0.30);color:var(--teal);">🔗 유튜브 링크${entryLinks[id]?' ✓':''}</button>
       </div>
       <div class="admin-detail-memo-panel${hasMemo?' open':''}" id="detailMemoPanel_${id}">
         <div class="admin-detail-memo-label">📌 미션 안내 내용 편집</div>
@@ -1233,16 +1232,6 @@ function openMission(id){
           <span class="admin-detail-memo-status" id="detailMemoSt_${id}"></span>
           <button class="admin-detail-clear-btn" onclick="clearDetailMemo(${id})">🗑️ 초기화</button>
           <button class="admin-detail-save-btn" onclick="saveDetailMemo(${id})">💾 저장하기</button>
-        </div>
-      </div>
-      <div class="admin-detail-memo-panel${entryLinks[id]?' open':''}" id="detailLinkPanel_${id}">
-        <div class="admin-detail-memo-label" style="color:var(--teal);">🔗 유튜브 링크 설정</div>
-        <div class="admin-detail-memo-hint">💡 유튜브 영상 링크를 붙여넣으세요. 미션 카드에 썸네일이 표시됩니다.</div>
-        <input type="url" class="admin-detail-textarea" id="detailLinkInput_${id}" style="min-height:auto;padding:10px 14px;" placeholder="https://youtu.be/... 또는 https://www.youtube.com/watch?v=..." value="${escapeHtml(entryLinks[id]||'')}">
-        <div class="admin-detail-memo-row">
-          <span class="admin-detail-memo-status" id="detailLinkSt_${id}" style="color:var(--teal);"></span>
-          <button class="admin-detail-clear-btn" onclick="clearDetailLink(${id})">🗑️ 초기화</button>
-          <button class="admin-detail-save-btn" style="background:linear-gradient(135deg,var(--teal),var(--blue));" onclick="saveDetailLink(${id})">💾 저장하기</button>
         </div>
       </div>
     </div>`:'';
