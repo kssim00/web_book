@@ -3566,14 +3566,20 @@ function saveCustomSubjects() {
 }
 
 function renderCustomSubjects() {
-  const container = document.getElementById('customSubjectsContainer');
-  if (!container) return;
-  container.innerHTML = '';
+  // display:contents 호환성 문제 방지: 카드를 cn-grid에 직접 삽입
+  const grid = document.querySelector('.cn-grid');
+  const addBtn = document.querySelector('.add-subject-btn');
+  if (!grid) return;
+
+  // 기존 커스텀 카드 제거
+  grid.querySelectorAll('[data-custom-id]').forEach(function(el) { el.remove(); });
+
   customSubjects.forEach(function(s) {
     const isReady = s.status === 'ready';
     const card = document.createElement('div');
     card.className = 'cn-card' + (isReady ? '' : ' cn-soon');
     card.style.cssText = '--cn-color:' + s.color;
+    card.setAttribute('data-custom-id', s.id);
     if (isReady) card.onclick = function() { openCustomPanel(s.id); };
     card.innerHTML =
       '<span class="cn-badge ' + (isReady ? 'ready' : 'soon') + '">' + (isReady ? '학습 가능' : '준비 중') + '</span>' +
@@ -3585,7 +3591,9 @@ function renderCustomSubjects() {
         '<button class="cn-admin-btn cn-edit-btn" onclick="event.stopPropagation();openEditSubjectModal(' + s.id + ')">✏️ 편집</button>' +
         '<button class="cn-admin-btn cn-del-btn" onclick="event.stopPropagation();deleteSubject(' + s.id + ')">🗑 삭제</button>' +
       '</div>';
-    container.appendChild(card);
+    // 추가 버튼 바로 앞에 삽입 (없으면 맨 뒤에)
+    if (addBtn) grid.insertBefore(card, addBtn);
+    else grid.appendChild(card);
   });
 }
 
