@@ -1331,6 +1331,12 @@ function saveMissionMemo(id){
   const val=document.getElementById('memoArea').value;
   try{localStorage.setItem(`entry_memo_${userName}_${id}`,val);}catch(e){}
   const st=document.getElementById('memoStatus'); st.textContent='저장됨 ✓'; setTimeout(()=>st.textContent='',2000);
+  // 선생님 Google Sheets에도 전송
+  if(APPS_SCRIPT_URL && userName && userName!=='학생'){
+    const m=MISSIONS.find(x=>x.id===id);
+    const title=m?m.title:'';
+    fetch(APPS_SCRIPT_URL+'?action=saveMemo&type=entry&name='+encodeURIComponent(userName)+'&missionId='+id+'&missionTitle='+encodeURIComponent(title)+'&memo='+encodeURIComponent(val)).catch(()=>{});
+  }
 }
 
 // ══════════════════════════════════════════
