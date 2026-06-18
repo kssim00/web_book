@@ -1900,17 +1900,16 @@ function openMissionEdit(id){
   document.getElementById('missionEditOverlay').style.display='flex';
   document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
   document.getElementById('editEmoji').value=hasCustom?(custom.emoji||base.emoji||''):(base.emoji||'');
-  ['editEmoji','editTitle','editDesc','editMemo','editYoutubeLink','editSiteLink'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
+  ['editEmoji','editTitle','editDesc','editMemo','editYoutubeLink'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
   document.getElementById('editTitle').value=hasCustom?(custom.title||''):(base.title||'');
   document.getElementById('editDesc').value=hasCustom?(custom.desc||''):'';
   document.getElementById('editChapter').value=(custom.chapter||base.chapter||'ch1');
   document.getElementById('editDiff').value=String(custom.diff||base.diff||1);
   document.getElementById('editSaveStatus').textContent=hasCustom?'':'💡 아직 편집하지 않은 미션이에요. 내용을 입력하고 저장하세요.';
-  renderEditSteps(hasCustom?(custom.steps||[]):[]);
+  renderEditSteps(custom.steps||base.steps||[]);
   // 메모, 링크 로드
   document.getElementById('editMemo').value=customMemos[id]||'';
   document.getElementById('editYoutubeLink').value=entryLinks[id]||'';
-  document.getElementById('editSiteLink').value=entrySiteLinks[id]||'';
   // 이미지/영상 프리뷰
   refreshEditMediaPreview(id);
 }
@@ -1972,10 +1971,6 @@ function saveMissionEdit(){
   const ytVal=document.getElementById('editYoutubeLink').value.trim();
   if(ytVal){entryLinks[id]=ytVal;}else{delete entryLinks[id];}
   saveEntryLinks();
-  // 엔트리 사이트 링크 저장
-  const siteVal=document.getElementById('editSiteLink').value.trim();
-  if(siteVal){entrySiteLinks[id]=siteVal;}else{delete entrySiteLinks[id];}
-  saveEntrySiteLinks();
   renderAdminList();
   if(currentMissionId===id) openMission(id);
   showToast(`✏️ Quest ${id} 저장 완료!`);
@@ -2311,11 +2306,6 @@ if(document.readyState==='loading'){
     <div style="margin-bottom:12px;">
       <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">🔗 유튜브 링크</div>
       <input id="editYoutubeLink" type="url" placeholder="https://youtu.be/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:'Noto Sans KR',sans-serif;">
-    </div>
-    <!-- 엔트리 열기 링크 -->
-    <div style="margin-bottom:16px;">
-      <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">🧩 엔트리 열기 링크</div>
-      <input id="editSiteLink" type="url" placeholder="https://playentry.org/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:'Noto Sans KR',sans-serif;">
     </div>
     <!-- 저장 버튼 -->
     <div style="display:flex;align-items:center;gap:10px;">

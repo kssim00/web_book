@@ -1891,16 +1891,15 @@ function openMissionEdit(id){
   document.getElementById('missionEditOverlay').style.display='flex';
   document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
   document.getElementById('editEmoji').value=hasCustom?(custom.emoji||base.emoji||''):(base.emoji||'');
-  ['editEmoji','editTitle','editDesc','editMemo','editYoutubeLink','editSiteLink'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
+  ['editEmoji','editTitle','editDesc','editMemo','editYoutubeLink'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
   document.getElementById('editTitle').value=hasCustom?(custom.title||''):(base.title||'');
   document.getElementById('editDesc').value=hasCustom?(custom.desc||''):'';
   document.getElementById('editChapter').value=(custom.chapter||base.chapter||'ch1');
   document.getElementById('editDiff').value=String(custom.diff||base.diff||1);
   document.getElementById('editSaveStatus').textContent=hasCustom?'':'💡 아직 편집하지 않은 미션이에요. 내용을 입력하고 저장하세요.';
-  renderEditSteps(hasCustom?(custom.steps||[]):[]);
+  renderEditSteps(custom.steps||base.steps||[]);
   document.getElementById('editMemo').value=customMemos[id]||'';
   document.getElementById('editYoutubeLink').value=entryLinks[id]||'';
-  document.getElementById('editSiteLink').value=scratchSiteLinks[id]||'';
   refreshEditMediaPreview(id);
 }
 function refreshEditMediaPreview(id){
@@ -1959,9 +1958,6 @@ function saveMissionEdit(){
   const ytVal=document.getElementById('editYoutubeLink').value.trim();
   if(ytVal){entryLinks[id]=ytVal;}else{delete entryLinks[id];}
   saveEntryLinks();
-  const siteVal=document.getElementById('editSiteLink').value.trim();
-  if(siteVal){scratchSiteLinks[id]=siteVal;}else{delete scratchSiteLinks[id];}
-  saveScratchSiteLinks();
   renderAdminList();
   if(currentMissionId===id) openMission(id);
   showToast(`✏️ Quest ${id} 저장 완료!`);
@@ -2291,9 +2287,6 @@ if(document.readyState==='loading'){
       <input id="editYoutubeLink" type="url" placeholder="https://youtu.be/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:'Noto Sans KR',sans-serif;">
     </div>
     <div style="margin-bottom:16px;">
-      <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">🐱 스크래치 열기 링크</div>
-      <input id="editSiteLink" type="url" placeholder="https://scratch.mit.edu/projects/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:'Noto Sans KR',sans-serif;">
-    </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <button onclick="saveMissionEdit()" style="flex:2;padding:12px;border-radius:50px;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">💾 저장하기</button>
       <button onclick="resetMissionEdit()" style="flex:1;padding:12px;border-radius:50px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:rgba(255,87,87,0.1);border:1.5px solid rgba(255,87,87,0.3);color:var(--red);cursor:pointer;">↩️ 기본값으로</button>
