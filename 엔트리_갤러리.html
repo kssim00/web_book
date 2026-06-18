@@ -1223,7 +1223,7 @@ function openMission(id){
         <button class="admin-tb-img-btn" onclick="triggerDetailVideoUpload(${id})" style="background:linear-gradient(135deg,rgba(14,165,233,0.15),rgba(139,92,246,0.10));border-color:rgba(14,165,233,0.4);">🎬 영상 업로드${missionVideos[id]?' (변경)':''}</button>
         ${missionVideos[id]?`<button class="admin-tb-img-del" onclick="deleteVideoAndRefresh(${id})">🗑️ 영상 삭제</button>`:''}
         <button class="admin-tb-memo-btn${hasMemo?' open':''}" id="detailMemoToggle_${id}" onclick="toggleDetailMemo(${id})">📝 미션 안내 편집${hasMemo?' ✓':''}</button>
-        <button class="admin-tb-memo-btn${entryLinks[id]?' open':''}" id="detailLinkToggle_${id}" onclick="toggleDetailLink(${id})" style="background:rgba(14,165,233,0.10);border-color:rgba(14,165,233,0.30);color:var(--teal);">🔗 엔트리 링크${entryLinks[id]?' ✓':''}</button>
+        <button class="admin-tb-memo-btn${entrySiteLinks[id]?' open':''}" id="detailLinkToggle_${id}" onclick="toggleDetailLink(${id})" style="background:rgba(14,165,233,0.10);border-color:rgba(14,165,233,0.30);color:var(--teal);">🔗 엔트리 링크${entrySiteLinks[id]?' ✓':''}</button>
       </div>
       <div class="admin-detail-memo-panel${hasMemo?' open':''}" id="detailMemoPanel_${id}">
         <div class="admin-detail-memo-label">📌 미션 안내 내용 편집</div>
@@ -1240,10 +1240,10 @@ function openMission(id){
           <button class="admin-detail-save-btn" onclick="saveDetailMemo(${id})">💾 저장하기</button>
         </div>
       </div>
-      <div class="admin-detail-memo-panel${entryLinks[id]?' open':''}" id="detailLinkPanel_${id}">
+      <div class="admin-detail-memo-panel${entrySiteLinks[id]?' open':''}" id="detailLinkPanel_${id}">
         <div class="admin-detail-memo-label" style="color:var(--teal);">🔗 엔트리 공유 링크 설정</div>
         <div class="admin-detail-memo-hint">💡 playentry.org에서 작품 공유 후 링크를 붙여넣으세요. 학생이 "엔트리 열기" 버튼으로 바로 이동해요.</div>
-        <input type="url" class="admin-detail-textarea" id="detailLinkInput_${id}" style="min-height:auto;padding:10px 14px;" placeholder="https://playentry.org/작품ID" value="${escapeHtml(entryLinks[id]||'')}">
+        <input type="url" class="admin-detail-textarea" id="detailLinkInput_${id}" style="min-height:auto;padding:10px 14px;" placeholder="https://playentry.org/작품ID" value="${escapeHtml(entrySiteLinks[id]||'')}">
         <div class="admin-detail-memo-row">
           <span class="admin-detail-memo-status" id="detailLinkSt_${id}" style="color:var(--teal);"></span>
           <button class="admin-detail-clear-btn" onclick="clearDetailLink(${id})">🗑️ 초기화</button>
@@ -1267,7 +1267,7 @@ function openMission(id){
         </div>
         <div class="hint-row">
           <button class="hint-btn" onclick="toggleHint()">💜 힌트 보기</button>
-          <a class="scratch-link-btn" href="${entryLinks[id]||'https://playentry.org'}" target="_blank">🧩 엔트리 열기 ↗</a>
+          <a class="scratch-link-btn" href="${entrySiteLinks[id]||'https://playentry.org'}" target="_blank">🧩 엔트리 열기 ↗</a>
         </div>
         <div class="hint-popup" id="hintPopup">
           <div class="hint-popup-title">💜 이 블록들을 써보세요!</div>
@@ -1398,6 +1398,7 @@ function launchConfetti(xp, sourceCY){
 let pendingUploadId=null; let missionImages={}; let customMemos={};
 let missionVideos={}; let pendingVideoUploadId=null;
 let entryLinks={};
+let entrySiteLinks={};
 let customMissions={};
 
 // ══════════════════════════════════════════
@@ -1479,6 +1480,8 @@ function saveMissionImages(){ try{localStorage.setItem('eg_admin_images',JSON.st
 function loadCustomMemos(){ try{const raw=localStorage.getItem('eg_admin_memos');if(raw)customMemos=JSON.parse(raw);}catch(e){} }
 function saveCustomMemosToStorage(){ try{localStorage.setItem('eg_admin_memos',JSON.stringify(customMemos));}catch(e){} saveAllAdminToCloud(); }
 function loadEntryLinks(){ try{const raw=localStorage.getItem('eg_admin_links');if(raw)entryLinks=JSON.parse(raw);}catch(e){} }
+function loadEntrySiteLinks(){ try{const raw=localStorage.getItem('eg_admin_site_links');if(raw)entrySiteLinks=JSON.parse(raw);}catch(e){} }
+function saveEntrySiteLinks(){ try{localStorage.setItem('eg_admin_site_links',JSON.stringify(entrySiteLinks));}catch(e){} }
 function saveEntryLinks(){ try{localStorage.setItem('eg_admin_links',JSON.stringify(entryLinks));}catch(e){} saveAllAdminToCloud(); }
 function loadCustomMissions(){ try{const raw=localStorage.getItem('eg_admin_missions');if(raw)customMissions=JSON.parse(raw);}catch(e){} }
 
@@ -1555,6 +1558,7 @@ function loadFromJSON(){
       if(data.images) Object.keys(data.images).forEach(k=>{missionImages[parseInt(k)]=data.images[k];});
       if(data.memos) Object.keys(data.memos).forEach(k=>{customMemos[parseInt(k)]=data.memos[k];});
       if(data.links) Object.keys(data.links).forEach(k=>{entryLinks[parseInt(k)]=data.links[k];});
+      if(data.siteLinks) Object.keys(data.siteLinks).forEach(k=>{entrySiteLinks[parseInt(k)]=data.siteLinks[k];});
       if(data.missions) Object.keys(data.missions).forEach(k=>{customMissions[parseInt(k)]=data.missions[k];});
       console.log('✅ entry_data.json 로드 완료');
       return true;
@@ -1894,16 +1898,16 @@ function toggleDetailLink(id){
 }
 function saveDetailLink(id){
   const val=(document.getElementById('detailLinkInput_'+id)||{}).value||'';
-  entryLinks[id]=val.trim();
-  if(!val.trim()) delete entryLinks[id];
-  saveEntryLinks();
+  entrySiteLinks[id]=val.trim();
+  if(!val.trim()) delete entrySiteLinks[id];
+  saveEntrySiteLinks();
   const st=document.getElementById('detailLinkSt_'+id); if(st){st.textContent='저장됨 ✓';setTimeout(()=>st.textContent='',2000);}
   showToast(`🔗 Quest ${id} 링크 저장 완료!`);
   if(currentMissionId===id) openMission(id);
 }
 function clearDetailLink(id){
-  delete entryLinks[id];
-  saveEntryLinks();
+  delete entrySiteLinks[id];
+  saveEntrySiteLinks();
   if(currentMissionId===id) openMission(id);
   showToast(`🗑️ Quest ${id} 링크 초기화됨`);
 }
@@ -2008,7 +2012,7 @@ function parseAndFillSteps(){
 function exportAll(){
   const count=Object.keys(missionImages).length+Object.keys(customMemos).length;
   if(!count){showToast('📭 내보낼 데이터가 없어요');return;}
-  const data={images:missionImages,memos:customMemos,links:entryLinks,missions:customMissions};
+  const data={images:missionImages,memos:customMemos,links:entryLinks,siteLinks:entrySiteLinks,missions:customMissions};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;
   a.download='entry_data.json'; a.click(); URL.revokeObjectURL(url);
@@ -2158,7 +2162,7 @@ function initApp(){
     const topbar = document.querySelector('#app > .topbar');
     if (topbar) topbar.style.display = 'none';
   }
-  loadMissionImages(); loadCustomMemos(); loadEntryLinks(); loadCustomMissions();
+  loadMissionImages(); loadCustomMemos(); loadEntryLinks(); loadEntrySiteLinks(); loadCustomMissions();
   // 관리자 세션 복원 (다른 페이지에서 로그인한 경우)
   if(localStorage.getItem('학습홈_admin')==='1') restoreAdminUI();
   // 로컬 데이터로 즉시 화면 표시
@@ -2298,4 +2302,4 @@ if(document.readyState==='loading'){
       <div style="font-size:12px;color:var(--text3);margin-top:6px;">MP4, WebM, MOV 등 · 여러 파일 동시 선택 가능</div>
     </div>
     <input type="file" id="bulkVideoFileInput" accept="video/*" multiple style="display:none" onchange="processBulkVideoFiles(this.files);this.value=''">
-    <div id="bulkVideoLog" style="max-height:200px;overflow-y:auto;margin-top:14px;font-size:13px;line-height:1.8;background:var(--bg2);border-radius:10px;padding:10px 14px;display:none;"></d                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+    <div id="bulkVideoLog" style="max-height:200px;overflow-y:auto;margin-top:14px;font-size:13px;line-height:1.8;background:var(--bg2);border-radius:10px;padding:10px 14px;display:none;"></d                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
