@@ -14,10 +14,10 @@ const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwkshNiO9_8gC
 const GITHUB_BASE       = 'https://kssim00.github.io/web_book/';
 //  예시) const GITHUB_BASE     = 'https://본인아이디.github.io/레포이름/';
 
-// 3) 엔트리 갤러리 동영상 링크 시트 (구글 시트 → 파일 → 웹에 게시 → 엔트리 탭 → CSV)
-//    선생님 시트를 그대로 쓰려면 변경하지 마세요.
+// 3) 엔트리 갤러리 동영상 링크 시트 CSV 주소
+//    구글 시트 → 파일 → 웹에 게시 → '엔트리' 탭 선택 → CSV → 게시 → 주소 복사
 const GSHEET_ENTRY_CSV  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?gid=0&single=true&output=csv';
 
-// 4) 스크래치 갤러리 동영상 링크 시트
-//    선생님 시트를 그대로 쓰려면 변경하지 마세요.
+// 4) 스크래치 갤러리 동영상 링크 시트 CSV 주소
+//    구글 시트 → 파일 → 웹에 게시 → '스크래치' 탭 선택 → CSV → 게시 → 주소 복사
 const GSHEET_SCRATCH_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?gid=1931464993&single=true&output=csv';
