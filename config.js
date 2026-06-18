@@ -4,10 +4,20 @@
 //  세 파일 모두 이 파일의 URL을 공유합니다.
 // =====================================================
 
-// ↓↓ 아래 두 줄만 본인 것으로 바꾸세요 ↓↓
+// ↓↓ 아래 네 줄을 본인 것으로 바꾸세요 ↓↓
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkshNiO9_8gCVPww6FitphHoOtEWEtcjEIW3zFKh5YJ3-SsA44JxaFO_728uJ8-OeF/exec';
+// 1) Google Apps Script URL (학생 진도, 과목카드 저장)
+const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwkshNiO9_8gCVPww6FitphHoOtEWEtcjEIW3zFKh5YJ3-SsA44JxaFO_728uJ8-OeF/exec';
 //  예시) const APPS_SCRIPT_URL = '본인_앱스스크립트_URL';
 
-const GITHUB_BASE     = 'https://kssim00.github.io/web_book/';
+// 2) GitHub Pages 주소
+const GITHUB_BASE       = 'https://kssim00.github.io/web_book/';
 //  예시) const GITHUB_BASE     = 'https://본인아이디.github.io/레포이름/';
+
+// 3) 엔트리 갤러리 동영상 링크 시트 (구글 시트 → 파일 → 웹에 게시 → 엔트리 탭 → CSV)
+//    선생님 시트를 그대로 쓰려면 변경하지 마세요.
+const GSHEET_ENTRY_CSV  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?gid=0&single=true&output=csv';
+
+// 4) 스크래치 갤러리 동영상 링크 시트
+//    선생님 시트를 그대로 쓰려면 변경하지 마세요.
+const GSHEET_SCRATCH_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?gid=1931464993&single=true&output=csv';

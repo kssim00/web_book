@@ -1485,7 +1485,7 @@ function loadCustomMissions(){ try{const raw=localStorage.getItem('eg_admin_miss
 // ── 앱스 스크립트: 학생 진도 저장 URL ──
 
 // ── 구글 시트: 유튜브 링크 로드 ──
-const GSHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7bsASbvPWUPy0623j99Aasbms_3xKmEnBkWCh5RzfBl1QULX_zmbuRAaalSOPB47Y0n4HDgcsZPYU/pub?gid=0&single=true&output=csv';
+const GSHEET_CSV_URL = GSHEET_ENTRY_CSV;
 // ── 클라우드 진도 불러오기 ──
 async function loadFromCloud(){
   if(!APPS_SCRIPT_URL || !userName || userName==='학생') return;
