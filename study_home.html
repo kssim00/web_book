@@ -3953,14 +3953,14 @@ function deleteChapter(subjectId, chapterId) {
   if (s) refreshChapterGrid(s);
 }
 
-// 저장된 이름이 있으면 자동 로그인
-(function() {
+// 저장된 이름이 있으면 자동 로그인 (모든 변수 초기화 후 실행)
+setTimeout(function() {
   const saved = localStorage.getItem('__currentStudent__');
   if (saved) {
     document.getElementById('nameInput').value = saved;
     startApp();
   }
-})();
+}, 0);
 
 // ── PANEL SELECT
 let currentStep = 0;
@@ -4013,7 +4013,7 @@ function selectStep(n) {
       const name = getStore('studentName', '학생');
       // frame.src는 한국어가 URL인코딩되므로 indexOf 검사 불가 → JS 변수로 추적
       if (_entryGalleryName !== name) {
-        frame.src = '엔트리_갤러리.html?name=' + encodeURIComponent(name);
+        frame.src = encodeURI('엔트리_갤러리.html') + '?name=' + encodeURIComponent(name);
         _entryGalleryName = name;
       }
     }
@@ -4023,7 +4023,7 @@ function selectStep(n) {
     if (frame) {
       const name = getStore('studentName', '학생');
       if (_scratchGalleryName !== name) {
-        frame.src = '스크래치_갤러리.html?name=' + encodeURIComponent(name);
+        frame.src = encodeURI('스크래치_갤러리.html') + '?name=' + encodeURIComponent(name);
         _scratchGalleryName = name;
       }
     }
