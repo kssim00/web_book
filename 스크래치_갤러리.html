@@ -158,7 +158,7 @@ body{font-family:'Plus Jakarta Sans','Noto Sans KR',sans-serif;background:var(--
 .sh4 .cert-tag{background:rgba(14,165,233,0.12);color:#0369A1;border:1px solid rgba(78,205,196,0.3);}
 .sh5 .cert-tag{background:rgba(139,92,246,0.12);color:#6D28D9;border:1px solid rgba(199,125,255,0.3);}
 
-/* 미션 갤러리 진입 버튼 (스크래치 COS 패널) */
+/* 미션 갤러리 진입 버튼 (엔트리 패널) */
 .gallery-entry-btn{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(74,158,255,0.15),rgba(199,125,255,0.10));border:1.5px solid rgba(74,158,255,0.4);border-radius:18px;padding:16px 20px;cursor:pointer;margin-bottom:18px;transition:all 0.2s;text-decoration:none;}
 .gallery-entry-btn:hover{background:linear-gradient(135deg,rgba(74,158,255,0.25),rgba(199,125,255,0.18));transform:translateY(-2px);box-shadow:0 8px 24px rgba(74,158,255,0.2);}
 .ge-icon{font-size:32px;}
@@ -574,6 +574,11 @@ body.embedded .cm-info-box { background:var(--bg3); border-color:var(--border); 
 body.embedded .cm-cancel { background:var(--bg3); border-color:var(--border2); color:var(--text2); }
 /* 어드민 */
 body.embedded .admin-pw-box { background:var(--card); border-color:rgba(74,158,255,0.3); }
+body.embedded .admin-pw-overlay.visible { align-items:flex-start !important; padding-top:40px !important; }
+body.embedded .complete-modal-overlay.open { align-items:flex-start !important; padding-top:40px !important; }
+body.embedded .modal-overlay.visible { align-items:flex-start !important; padding-top:40px !important; }
+body.embedded #bulkVideoOverlay { align-items:flex-start !important; padding-top:40px !important; }
+body.embedded #missionEditOverlay { align-items:flex-start !important; padding-top:40px !important; }
 body.embedded .admin-pw-input { background:var(--bg2); border-color:var(--border); color:var(--text); }
 body.embedded .admin-header { background:linear-gradient(135deg,rgba(74,158,255,0.10),rgba(167,139,250,0.06)); border-color:rgba(74,158,255,0.30); }
 body.embedded .admin-mission-row { background:var(--card); border-color:var(--border); }
@@ -944,6 +949,7 @@ body { background:#FAFAFA !important; }
   <button onclick="logoutAdmin()" style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.35)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">🔓 종료</button>
 </div>
 
+
 <!-- 관리자 비밀번호 오버레이 -->
 <div class="admin-pw-overlay" id="adminPwOverlay">
   <div class="admin-pw-box">
@@ -1175,7 +1181,7 @@ function renderGallery(){
 //  MISSION DETAIL
 // ══════════════════════════════════════════
 function openMission(id){
-  const m=getMissionData(id); if(!m||!m.id) return;
+  const m=getMissionData(id); if(!m) return;
   currentMissionId=id; showDetail();
   const isDone=!!completedMissions[id]; const starVal=starRatings[id]||0;
   const adminMemoResult=getAdminMemoHTML(id);
@@ -1218,7 +1224,12 @@ function openMission(id){
       </div>
       <div class="admin-detail-memo-panel${hasMemo?' open':''}" id="detailMemoPanel_${id}">
         <div class="admin-detail-memo-label">📌 미션 안내 내용 편집</div>
-        <div class="admin-detail-memo-hint">💡 아래 형식으로 입력하면 자동으로 단계 카드로 표시돼요.<br><br><b>입력 형식:</b><br>1단계 제목<br>설명 내용<br><br>2단계 제목<br>설명 내용</div>
+        <div class="admin-detail-memo-hint">💡 아래 형식으로 입력하면 자동으로 단계 카드로 표시돼요. 빈 칸으로 저장하면 기본 단계가 표시됩니다.<br><br>
+<b>입력 형식:</b><br>
+1단계 제목<br>
+설명 내용<br><br>
+2단계 제목<br>
+설명 내용</div>
         <textarea class="admin-detail-textarea" id="detailMemoTA_${id}" placeholder="예시:&#10;1단계 말하기 블록&#10;&quot;~라고 말하기&quot; 블록을 가져와요.&#10;&#10;2단계 대사 3개&#10;3가지 다른 대사를 차례로 연결해요.">${hasMemo?escapeHtml(customMemos[id]):''}</textarea>
         <div class="admin-detail-memo-row">
           <span class="admin-detail-memo-status" id="detailMemoSt_${id}"></span>
@@ -1308,6 +1319,7 @@ function completeMission(id){
   const m=MISSIONS.find(x=>x.id===id); completedMissions[id]=true; totalXP+=m.xp; updateTopbar(); saveAll(); saveToCloud();
   const btn=document.getElementById('completeMissionBtn');
   btn.textContent='✅ 완료! 잘했어요! 🏆'; btn.classList.add('done-btn'); btn.onclick=null;
+  // 버튼의 실제 위치를 기준으로 폭죽 발사 (iframe 내부에서도 정확한 위치)
   const rect = btn ? btn.getBoundingClientRect() : null;
   const btnCY = rect ? rect.top + rect.height / 2 : null;
   launchConfetti(m.xp, btnCY);
@@ -1331,6 +1343,7 @@ function launchConfetti(xp, sourceCY){
   // 캔버스 생성 — 실제 화면(viewport) 기준으로 크기 설정
   const canvas=document.createElement('canvas');
   canvas.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;pointer-events:none;';
+  // iframe 임베드 시 window.innerHeight가 전체 문서 높이가 되는 문제 대응
   const vw = window.innerWidth;
   const vh = (window.visualViewport ? window.visualViewport.height : null)
               || Math.min(window.innerHeight, screen.availHeight || 1080);
@@ -1339,6 +1352,7 @@ function launchConfetti(xp, sourceCY){
   const ctx=canvas.getContext('2d');
   const colors=['#FF6B6B','#FFD43B','#51CF66','#339AF0','#CC5DE8','#FF922B','#F06595','#74C0FC','#A9E34B'];
   const cx=canvas.width/2;
+  // sourceCY: 버튼의 viewport 기준 y좌표 → 화면 내에 클램핑
   const cy = (sourceCY != null)
     ? Math.max(canvas.height * 0.1, Math.min(sourceCY, canvas.height * 0.85))
     : canvas.height * 0.45;
@@ -1362,7 +1376,7 @@ function launchConfetti(xp, sourceCY){
     });
     t++; if(t<dur) requestAnimationFrame(frame); else canvas.remove();
   })();
-  // XP 토스트
+  // XP 토스트 — 버튼 위치 기준으로 표시
   const toast=document.createElement('div');
   const toastTop = (sourceCY != null)
     ? Math.max(vh * 0.1, Math.min(sourceCY - 60, vh * 0.8))
@@ -1378,15 +1392,97 @@ function launchConfetti(xp, sourceCY){
 // ══════════════════════════════════════════
 //  ADMIN IMAGE / MEMO (이미지 업로드 기능)
 // ══════════════════════════════════════════
-let pendingUploadId=null; let missionImages={}; let customMemos={}; let customMissions={};
+let pendingUploadId=null; let missionImages={}; let customMemos={};
 let missionVideos={}; let pendingVideoUploadId=null;
 let entryLinks={};
+let customMissions={};
+
+// ══════════════════════════════════════════
+//  IndexedDB — 영상 저장 (MP4 등 대용량)
+// ══════════════════════════════════════════
+let videoDB=null;
+function initVideoDB(){
+  return new Promise((res,rej)=>{
+    if(videoDB){res(videoDB);return;}
+    const req=indexedDB.open('scratch_gallery_videos',1);
+    req.onupgradeneeded=e=>{e.target.result.createObjectStore('scratch_videos',{keyPath:'id'});};
+    req.onsuccess=e=>{videoDB=e.target.result;res(videoDB);};
+    req.onerror=e=>rej(e);
+  });
+}
+function saveVideoToDB(id,blob){
+  return initVideoDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction('scratch_videos','readwrite');
+    tx.objectStore('scratch_videos').put({id,blob});
+    tx.oncomplete=()=>res(); tx.onerror=e=>rej(e);
+  }));
+}
+function deleteVideoFromDB(id){
+  return initVideoDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction('scratch_videos','readwrite');
+    tx.objectStore('scratch_videos').delete(id);
+    tx.oncomplete=()=>res(); tx.onerror=e=>rej(e);
+  }));
+}
+function loadAllVideos(){
+  return initVideoDB().then(db=>new Promise(res=>{
+    const tx=db.transaction('scratch_videos','readonly');
+    const req=tx.objectStore('scratch_videos').getAll();
+    req.onsuccess=e=>{
+      Object.values(missionVideos).forEach(u=>URL.revokeObjectURL(u));
+      missionVideos={};
+      (e.target.result||[]).forEach(item=>{
+        missionVideos[item.id]=URL.createObjectURL(item.blob);
+      });
+      res();
+    };
+    req.onerror=()=>res();
+  })).catch(()=>{});
+}
+function triggerVideoUpload(id){ pendingVideoUploadId=id; const inp=document.getElementById('videoUploadInput'); inp.value=''; inp.click(); }
+function triggerDetailVideoUpload(id){ pendingVideoUploadId=id; document.getElementById('videoUploadInput').click(); }
+function handleVideoUpload(event){
+  const file=event.target.files[0]; if(!file||!pendingVideoUploadId) return;
+  const id=pendingVideoUploadId;
+  if(file.size>200*1024*1024) showToast('⚠️ 영상이 커요! 200MB 이하를 권장해요.');
+  saveVideoToDB(id,file).then(()=>{
+    if(missionVideos[id]) URL.revokeObjectURL(missionVideos[id]);
+    missionVideos[id]=URL.createObjectURL(file);
+    updateAdminRow(id);
+    if(currentMissionId===id) openMission(id);
+    showToast(`🎬 Quest ${id} 영상 저장 완료!`);
+    pendingVideoUploadId=null;
+  });
+}
+function deleteVideo(id){
+  deleteVideoFromDB(id).then(()=>{
+    if(missionVideos[id]) URL.revokeObjectURL(missionVideos[id]);
+    delete missionVideos[id];
+    updateAdminRow(id);
+    showToast(`🗑️ Quest ${id} 영상 삭제됨`);
+  });
+}
+function deleteVideoAndRefresh(id){
+  deleteVideoFromDB(id).then(()=>{
+    if(missionVideos[id]) URL.revokeObjectURL(missionVideos[id]);
+    delete missionVideos[id];
+    updateAdminRow(id);
+    openMission(id);
+    showToast(`🗑️ Quest ${id} 영상 삭제됨`);
+  });
+}
+function loadMissionImages(){ try{const raw=localStorage.getItem('sg_admin_images');if(raw)missionImages=JSON.parse(raw);}catch(e){} }
+function saveMissionImages(){ try{localStorage.setItem('sg_admin_images',JSON.stringify(missionImages));}catch(e){showToast('⚠️ 저장 공간 부족!');} saveAllAdminToCloud(); }
+function loadCustomMemos(){ try{const raw=localStorage.getItem('sg_admin_memos');if(raw)customMemos=JSON.parse(raw);}catch(e){} }
+function saveCustomMemosToStorage(){ try{localStorage.setItem('sg_admin_memos',JSON.stringify(customMemos));}catch(e){} saveAllAdminToCloud(); }
+function loadEntryLinks(){ try{const raw=localStorage.getItem('sg_admin_links');if(raw)entryLinks=JSON.parse(raw);}catch(e){} }
+function saveEntryLinks(){ try{localStorage.setItem('sg_admin_links',JSON.stringify(entryLinks));}catch(e){} saveAllAdminToCloud(); }
+function loadCustomMissions(){ try{const raw=localStorage.getItem('sg_admin_missions');if(raw)customMissions=JSON.parse(raw);}catch(e){} }
 
 // ── 앱스 스크립트: 학생 진도 저장 URL ──
 
 // ── 구글 시트: 유튜브 링크 로드 ──
 const GSHEET_CSV_URL = GSHEET_SCRATCH_CSV;
-
 // ── 클라우드 진도 불러오기 ──
 async function loadFromCloud(){
   if(!APPS_SCRIPT_URL || !userName || userName==='학생') return;
@@ -1447,97 +1543,21 @@ function loadFromGoogleSheets(){
     })
     .catch(e => console.log('ℹ️ 구글 시트 로드 실패:', e));
 }
-function loadEntryLinks(){ try{const raw=localStorage.getItem('sg_admin_links');if(raw)entryLinks=JSON.parse(raw);}catch(e){} }
-function saveEntryLinks(){ try{localStorage.setItem('sg_admin_links',JSON.stringify(entryLinks));}catch(e){} saveAllAdminToCloud(); }
-function getYoutubeId(url){
-  if(!url) return null;
-  const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([^?&\n#]+)/);
-  return m?m[1]:null;
-}
-function getYoutubeThumbnail(url){
-  const id=getYoutubeId(url);
-  return id?`https://img.youtube.com/vi/${id}/maxresdefault.jpg`:null;
-}
 
-// ══════════════════════════════════════════
-//  IndexedDB — 영상 저장 (MP4 등 대용량)
-// ══════════════════════════════════════════
-let videoDB=null;
-function initVideoDB(){
-  return new Promise((res,rej)=>{
-    if(videoDB){res(videoDB);return;}
-    const req=indexedDB.open('scratch_gallery_videos',1);
-    req.onupgradeneeded=e=>{e.target.result.createObjectStore('videos',{keyPath:'id'});};
-    req.onsuccess=e=>{videoDB=e.target.result;res(videoDB);};
-    req.onerror=e=>rej(e);
-  });
+// ── GitHub Pages: scratch_data.json 로드 ──
+function loadFromJSON(){
+  return fetch('./scratch_data.json?t='+Date.now())
+    .then(r=>{ if(!r.ok) throw new Error('not found'); return r.json(); })
+    .then(data=>{
+      if(data.images) Object.keys(data.images).forEach(k=>{missionImages[parseInt(k)]=data.images[k];});
+      if(data.memos) Object.keys(data.memos).forEach(k=>{customMemos[parseInt(k)]=data.memos[k];});
+      if(data.links) Object.keys(data.links).forEach(k=>{entryLinks[parseInt(k)]=data.links[k];});
+      if(data.missions) Object.keys(data.missions).forEach(k=>{customMissions[parseInt(k)]=data.missions[k];});
+      console.log('✅ scratch_data.json 로드 완료');
+      return true;
+    })
+    .catch(()=>{ console.log('ℹ️ scratch_data.json 없음 — localStorage 사용'); return false; });
 }
-function saveVideoToDB(id,blob){
-  return initVideoDB().then(db=>new Promise((res,rej)=>{
-    const tx=db.transaction('videos','readwrite');
-    tx.objectStore('videos').put({id,blob});
-    tx.oncomplete=()=>res(); tx.onerror=e=>rej(e);
-  }));
-}
-function deleteVideoFromDB(id){
-  return initVideoDB().then(db=>new Promise((res,rej)=>{
-    const tx=db.transaction('videos','readwrite');
-    tx.objectStore('videos').delete(id);
-    tx.oncomplete=()=>res(); tx.onerror=e=>rej(e);
-  }));
-}
-function loadAllVideos(){
-  return initVideoDB().then(db=>new Promise(res=>{
-    const tx=db.transaction('videos','readonly');
-    const req=tx.objectStore('videos').getAll();
-    req.onsuccess=e=>{
-      Object.values(missionVideos).forEach(u=>URL.revokeObjectURL(u));
-      missionVideos={};
-      (e.target.result||[]).forEach(item=>{
-        missionVideos[item.id]=URL.createObjectURL(item.blob);
-      });
-      res();
-    };
-    req.onerror=()=>res();
-  })).catch(()=>{});
-}
-function triggerVideoUpload(id){ pendingVideoUploadId=id; const inp=document.getElementById('videoUploadInput'); inp.value=''; inp.click(); }
-function triggerDetailVideoUpload(id){ pendingVideoUploadId=id; document.getElementById('videoUploadInput').click(); }
-function handleVideoUpload(event){
-  const file=event.target.files[0]; if(!file||!pendingVideoUploadId) return;
-  const id=pendingVideoUploadId;
-  if(file.size>200*1024*1024) showToast('⚠️ 영상이 커요! 200MB 이하를 권장해요.');
-  saveVideoToDB(id,file).then(()=>{
-    if(missionVideos[id]) URL.revokeObjectURL(missionVideos[id]);
-    missionVideos[id]=URL.createObjectURL(file);
-    updateAdminRow(id);
-    if(currentMissionId===id) openMission(id);
-    showToast(`🎬 Quest ${id} 영상 저장 완료!`);
-    pendingVideoUploadId=null;
-  });
-}
-function deleteVideo(id){
-  deleteVideoFromDB(id).then(()=>{
-    if(missionVideos[id]) URL.revokeObjectURL(missionVideos[id]);
-    delete missionVideos[id];
-    updateAdminRow(id);
-    showToast(`🗑️ Quest ${id} 영상 삭제됨`);
-  });
-}
-function deleteVideoAndRefresh(id){
-  deleteVideoFromDB(id).then(()=>{
-    if(missionVideos[id]) URL.revokeObjectURL(missionVideos[id]);
-    delete missionVideos[id];
-    updateAdminRow(id);
-    openMission(id);
-    showToast(`🗑️ Quest ${id} 영상 삭제됨`);
-  });
-}
-function loadMissionImages(){ try{const raw=localStorage.getItem('sg_admin_images');if(raw)missionImages=JSON.parse(raw);}catch(e){} }
-function saveMissionImages(){ try{localStorage.setItem('sg_admin_images',JSON.stringify(missionImages));}catch(e){showToast('⚠️ 저장 공간 부족!');} saveAllAdminToCloud(); }
-function loadCustomMemos(){ try{const raw=localStorage.getItem('sg_admin_memos');if(raw)customMemos=JSON.parse(raw);}catch(e){} }
-function saveCustomMemosToStorage(){ try{localStorage.setItem('sg_admin_memos',JSON.stringify(customMemos));}catch(e){} saveAllAdminToCloud(); }
-function loadCustomMissions(){ try{const raw=localStorage.getItem('sg_admin_missions');if(raw)customMissions=JSON.parse(raw);}catch(e){} }
 function saveCustomMissions(){ try{localStorage.setItem('sg_admin_missions',JSON.stringify(customMissions));}catch(e){} saveAllAdminToCloud(); }
 async function loadAdminFromCloud(){
   if(!APPS_SCRIPT_URL) return;
@@ -1572,24 +1592,19 @@ async function saveAllAdminToCloud(){
     fetch(url);
   }catch(e){ console.log('관리자 데이터 저장 실패:', e); }
 }
+function getYoutubeId(url){
+  if(!url) return null;
+  const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([^?&\n#]+)/);
+  return m?m[1]:null;
+}
+function getYoutubeThumbnail(url){
+  const id=getYoutubeId(url);
+  return id?`https://img.youtube.com/vi/${id}/maxresdefault.jpg`:null;
+}
 function getMissionData(id){
   const base=MISSIONS.find(m=>m.id===id)||{};
   const custom=customMissions[id]||{};
   return Object.assign({},base,custom);
-}
-// ── GitHub Pages: scratch_data.json 로드 ──
-function loadFromJSON(){
-  return fetch('./scratch_data.json?t='+Date.now())
-    .then(r=>{ if(!r.ok) throw new Error('not found'); return r.json(); })
-    .then(data=>{
-      if(data.images) Object.keys(data.images).forEach(k=>{missionImages[parseInt(k)]=data.images[k];});
-      if(data.memos) Object.keys(data.memos).forEach(k=>{customMemos[parseInt(k)]=data.memos[k];});
-      if(data.links) Object.keys(data.links).forEach(k=>{entryLinks[parseInt(k)]=data.links[k];});
-      if(data.missions) Object.keys(data.missions).forEach(k=>{customMissions[parseInt(k)]=data.missions[k];});
-      console.log('✅ scratch_data.json 로드 완료');
-      return true;
-    })
-    .catch(()=>{ console.log('ℹ️ scratch_data.json 없음 — localStorage 사용'); return false; });
 }
 
 function toggleAdminMenu(){
@@ -1616,9 +1631,10 @@ function processBulkVideoFiles(files){
   log.innerHTML='';
   let pending=files.length; let done=0;
   Array.from(files).forEach(file=>{
+    // extract mission number from filename
     const name=file.name;
-    const mm=name.match(/(\d+)/);
-    const id=mm?parseInt(mm[1]):null;
+    const m=name.match(/(\d+)/);
+    const id=m?parseInt(m[1]):null;
     if(!id||id<1||id>30){
       log.innerHTML+=`<div style="color:var(--red)">⚠️ ${name} — 미션 번호를 찾을 수 없어요 (1~30)</div>`;
       pending--; if(pending===0) log.innerHTML+=`<div style="color:var(--teal);margin-top:8px;font-weight:700;">완료! ✓ ${done}개 저장됨</div>`;
@@ -1636,6 +1652,7 @@ function processBulkVideoFiles(files){
     });
   });
 }
+
 function goAdminGallery(){
   document.getElementById('adminView').classList.remove('active');
   document.getElementById('detailView').classList.remove('active');
@@ -1661,6 +1678,7 @@ document.addEventListener('click',function(e){
   if(wrap&&!wrap.contains(e.target)) closeAdminMenu();
 });
 function openAdminLogin(){
+  if(document.body.classList.contains('embedded')) window.scrollTo(0,0);
   document.getElementById('adminPwInput').value='';
   document.getElementById('adminPwInput').classList.remove('shake');
   document.getElementById('adminPwOverlay').classList.add('visible');
@@ -1694,9 +1712,9 @@ function openAdmin(){
   if(badge) badge.style.display='inline-flex';
   if(btn){ btn.style.color='#DC2626'; btn.title='관리자 메뉴'; }
   showAdminBar();
-  document.getElementById('dashView').classList.remove('active');
-  document.getElementById('galleryView').classList.remove('active');
-  document.getElementById('detailView').classList.remove('active');
+  const dv=document.getElementById('dashView'); if(dv) dv.classList.remove('active');
+  const gv=document.getElementById('galleryView'); if(gv) gv.classList.remove('active');
+  const dtv=document.getElementById('detailView'); if(dtv) dtv.classList.remove('active');
   document.getElementById('adminView').classList.add('active');
   renderAdminList(); window.scrollTo({top:0,behavior:'instant'});
 }
@@ -1749,7 +1767,7 @@ function renderAdminList(){
           <button class="admin-upload-btn" onclick="triggerVideoUpload(${m.id})" style="background:rgba(14,165,233,0.1);border-color:rgba(14,165,233,0.3);">🎬 영상 업로드</button>
           <button class="admin-del-btn ${hasVid?'':'hidden'}" id="adminVidDelBtn${m.id}" onclick="deleteVideo(${m.id})" title="영상삭제">✕영상</button>
           <button class="admin-memo-toggle ${hasMemo?'open':''}" id="memoToggleBtn_${m.id}" onclick="toggleInlineMemo(${m.id})">📝 메모 편집</button>
-          <button class="admin-memo-toggle ${entryLinks[m.id]?'open':''}" id="linkToggleBtn_${m.id}" onclick="toggleInlineLink(${m.id})" style="background:rgba(14,165,233,0.10);border-color:rgba(14,165,233,0.30);color:var(--teal);">🔗 스크래치 링크${entryLinks[m.id]?' ✓':''}</button>
+          <button class="admin-memo-toggle ${entryLinks[m.id]?'open':''}" id="linkToggleBtn_${m.id}" onclick="toggleInlineLink(${m.id})" style="background:rgba(14,165,233,0.10);border-color:rgba(14,165,233,0.30);color:var(--teal);">🔗 유튜브 링크${entryLinks[m.id]?' ✓':''}</button>
         </div></div>
       <div class="admin-inline-memo ${hasMemo?'open':''}" id="inlineMemo_${m.id}">
         <div class="admin-inline-memo-label">📌 Quest ${m.id} — ${m.title} 미션 안내 메모</div>
@@ -1760,8 +1778,8 @@ function renderAdminList(){
           <button class="admin-inline-save-btn" onclick="saveInlineMemo(${m.id})">💾 저장하기</button>
         </div></div>
       <div class="admin-inline-memo ${entryLinks[m.id]?'open':''}" id="inlineLink_${m.id}" style="border-top-color:rgba(14,165,233,0.2);background:rgba(14,165,233,0.03);">
-        <div class="admin-inline-memo-label" style="color:var(--teal);">🔗 Quest ${m.id} — 스크래치 프로젝트 링크</div>
-        <input type="url" class="admin-inline-textarea" id="inlineLinkInput_${m.id}" style="min-height:auto;padding:10px 14px;border-color:rgba(14,165,233,0.25);" placeholder="https://scratch.mit.edu/projects/..." value="${escapeHtml(entryLinks[m.id]||'')}">
+        <div class="admin-inline-memo-label" style="color:var(--teal);">🔗 Quest ${m.id} — 유튜브 링크</div>
+        <input type="url" class="admin-inline-textarea" id="inlineLinkInput_${m.id}" style="min-height:auto;padding:10px 14px;border-color:rgba(14,165,233,0.25);" placeholder="https://youtu.be/... 또는 https://www.youtube.com/watch?v=..." value="${escapeHtml(entryLinks[m.id]||'')}">
         <div class="admin-inline-row">
           <span class="admin-inline-status" id="inlineLinkSt_${m.id}" style="color:var(--teal);"></span>
           <button class="admin-inline-clear-btn" onclick="clearInlineLink(${m.id})">🗑️ 초기화</button>
@@ -1862,6 +1880,128 @@ function clearDetailMemo(id){
   setTimeout(()=>{ if(st) st.textContent=''; },2000);
   updateAdminRow(id);
 }
+
+function toggleDetailLink(id){
+  const panel=document.getElementById('detailLinkPanel_'+id);
+  const btn=document.getElementById('detailLinkToggle_'+id);
+  if(!panel) return;
+  const isOpen=panel.classList.contains('open');
+  panel.classList.toggle('open',!isOpen);
+  if(btn) btn.classList.toggle('open',!isOpen);
+}
+function saveDetailLink(id){
+  const val=(document.getElementById('detailLinkInput_'+id)||{}).value||'';
+  entryLinks[id]=val.trim();
+  if(!val.trim()) delete entryLinks[id];
+  saveEntryLinks();
+  const st=document.getElementById('detailLinkSt_'+id); if(st){st.textContent='저장됨 ✓';setTimeout(()=>st.textContent='',2000);}
+  showToast(`🔗 Quest ${id} 링크 저장 완료!`);
+  if(currentMissionId===id) openMission(id);
+}
+function clearDetailLink(id){
+  delete entryLinks[id];
+  saveEntryLinks();
+  if(currentMissionId===id) openMission(id);
+  showToast(`🗑️ Quest ${id} 링크 초기화됨`);
+}
+
+// ══════════════════════════════════════════
+//  미션 편집
+// ══════════════════════════════════════════
+let editingMissionId=null;
+function openMissionEdit(id){
+  if(document.body.classList.contains('embedded')) window.scrollTo(0,0);
+  editingMissionId=id;
+  const base=MISSIONS.find(x=>x.id===id)||{};
+  const custom=customMissions[id]||{};
+  const hasCustom=Object.keys(custom).length>0;
+  document.getElementById('missionEditOverlay').style.display='flex';
+  document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
+  document.getElementById('editEmoji').value=hasCustom?(custom.emoji||base.emoji||''):(base.emoji||'');
+  ['editEmoji','editTitle','editDesc'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
+  document.getElementById('editTitle').value=hasCustom?(custom.title||''):(base.title||'');
+  document.getElementById('editDesc').value=hasCustom?(custom.desc||''):'';
+  document.getElementById('editChapter').value=(custom.chapter||base.chapter||'ch1');
+  document.getElementById('editDiff').value=String(custom.diff||base.diff||1);
+  document.getElementById('editSaveStatus').textContent=hasCustom?'':'💡 아직 편집하지 않은 미션이에요. 내용을 입력하고 저장하세요.';
+  renderEditSteps(hasCustom?(custom.steps||[]):[]);
+}
+function renderEditSteps(steps){
+  const wrap=document.getElementById('editStepsWrap'); wrap.innerHTML='';
+  const list=steps.slice(0,5);
+  while(list.length<5) list.push({title:'',desc:''});
+  list.forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.style.cssText='background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;';
+    div.innerHTML=`<div style="font-size:11px;color:var(--text3);margin-bottom:5px;">${i+1}단계</div>
+      <input id="es_title_${i}" value="${(s.title||'').replace(/"/g,'&quot;')}" placeholder="단계 제목 (예: 🐱 오브젝트 추가하기)" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:6px 10px;outline:none;margin-bottom:5px;font-family:'Noto Sans KR',sans-serif;">
+      <input id="es_desc_${i}" value="${(s.desc||'').replace(/"/g,'&quot;')}" placeholder="단계 설명" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:6px 10px;outline:none;font-family:'Noto Sans KR',sans-serif;">`;
+    wrap.appendChild(div);
+  });
+}
+function closeMissionEdit(){
+  document.getElementById('missionEditOverlay').style.display='none';
+  editingMissionId=null;
+}
+function saveMissionEdit(){
+  const id=editingMissionId; if(!id) return;
+  const steps=[];
+  for(let i=0;i<5;i++){
+    const t=(document.getElementById('es_title_'+i)||{}).value||'';
+    const d=(document.getElementById('es_desc_'+i)||{}).value||'';
+    if(t||d) steps.push({title:t,desc:d});
+  }
+  customMissions[id]={
+    emoji:document.getElementById('editEmoji').value||undefined,
+    title:document.getElementById('editTitle').value||undefined,
+    desc:document.getElementById('editDesc').value||undefined,
+    chapter:document.getElementById('editChapter').value||undefined,
+    diff:parseInt(document.getElementById('editDiff').value)||undefined,
+    steps:steps.length?steps:undefined
+  };
+  Object.keys(customMissions[id]).forEach(k=>{ if(customMissions[id][k]===undefined) delete customMissions[id][k]; });
+  saveCustomMissions(); renderAdminList();
+  if(currentMissionId===id) openMission(id);
+  showToast(`✏️ Quest ${id} 미션 편집 저장!`);
+  setTimeout(()=>closeMissionEdit(), 600);
+}
+function resetMissionEdit(){
+  if(!editingMissionId) return;
+  if(!confirm('기본값으로 되돌릴까요?')) return;
+  delete customMissions[editingMissionId];
+  saveCustomMissions(); renderAdminList();
+  openMissionEdit(editingMissionId);
+  showToast('↩️ 기본값으로 초기화됨');
+}
+function toggleBulkStepInput(){
+  const wrap=document.getElementById('bulkStepInputWrap');
+  const isOpen=wrap.style.display!=='none';
+  wrap.style.display=isOpen?'none':'block';
+}
+function parseAndFillSteps(){
+  const text=document.getElementById('bulkStepTA').value;
+  if(!text.trim()){showToast('⚠️ 텍스트를 입력하세요');return;}
+  const lines=text.trim().split(/\n/);
+  const steps=[];
+  let cur=null; let descLines=[];
+  for(const line of lines){
+    // "1단계 — 제목", "1단계: 제목", "1단계. 제목", "1단계 제목" 모두 인식
+    const m=line.match(/^(\d+)단계[\s—\-–:.]*(.+)/);
+    if(m){
+      if(cur) steps.push({title:cur.title,desc:descLines.join(' ').trim()});
+      descLines=[];
+      cur={title:m[2].trim()};
+    } else if(cur&&line.trim()){
+      descLines.push(line.trim());
+    }
+  }
+  if(cur) steps.push({title:cur.title,desc:descLines.join(' ').trim()});
+  if(!steps.length){showToast('⚠️ "N단계 — 제목" 형식을 찾지 못했어요');return;}
+  renderEditSteps(steps.slice(0,5));
+  document.getElementById('bulkStepInputWrap').style.display='none';
+  document.getElementById('bulkStepTA').value='';
+  showToast(`✅ ${steps.length}개 단계 자동 입력 완료!`);
+}
 function exportAll(){
   const count=Object.keys(missionImages).length+Object.keys(customMemos).length;
   if(!count){showToast('📭 내보낼 데이터가 없어요');return;}
@@ -1916,14 +2056,14 @@ function saveInlineLink(id){
   if(val.trim()) entryLinks[id]=val.trim(); else delete entryLinks[id];
   saveEntryLinks();
   const btn=document.getElementById('linkToggleBtn_'+id);
-  if(btn) btn.textContent='🔗 스크래치 링크'+(entryLinks[id]?' ✓':'');
+  if(btn) btn.textContent='🔗 유튜브 링크'+(entryLinks[id]?' ✓':'');
   const st=document.getElementById('inlineLinkSt_'+id); if(st){st.textContent='저장됨 ✓';setTimeout(()=>st.textContent='',2000);}
   showToast(`🔗 Quest ${id} 링크 저장!`);
 }
 function clearInlineLink(id){
   delete entryLinks[id]; saveEntryLinks();
   const inp=document.getElementById('inlineLinkInput_'+id); if(inp) inp.value='';
-  const btn=document.getElementById('linkToggleBtn_'+id); if(btn) btn.textContent='🔗 스크래치 링크';
+  const btn=document.getElementById('linkToggleBtn_'+id); if(btn) btn.textContent='🔗 유튜브 링크';
   showToast(`🗑️ Quest ${id} 링크 삭제됨`);
 }
 function toggleInlineMemo(id){
@@ -1946,102 +2086,6 @@ function clearInlineMemo(id){
   document.getElementById('inlineTA_'+id).value=m.steps.map((s,i)=>`${i+1}단계: ${s.title}\n${s.desc}`).join('\n\n');
   document.getElementById('inlineSt_'+id).textContent='초기화됨'; showToast(`🗑️ Quest ${id} 메모 초기화`);
   setTimeout(()=>{document.getElementById('inlineSt_'+id).textContent='';},2000);
-}
-// ══════════════════════════════════════════
-//  미션 편집
-// ══════════════════════════════════════════
-let editingMissionId=null;
-function openMissionEdit(id){
-  if(document.body.classList.contains('embedded')) window.scrollTo(0,0);
-  editingMissionId=id;
-  const base=MISSIONS.find(x=>x.id===id)||{};
-  const custom=customMissions[id]||{};
-  const hasCustom=Object.keys(custom).length>0;
-  document.getElementById('missionEditOverlay').style.display='flex';
-  document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
-  document.getElementById('editEmoji').value=hasCustom?(custom.emoji||base.emoji||''):(base.emoji||'');
-  ['editEmoji','editTitle','editDesc'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
-  document.getElementById('editTitle').value=hasCustom?(custom.title||''):(base.title||'');
-  document.getElementById('editDesc').value=hasCustom?(custom.desc||''):'';
-  document.getElementById('editChapter').value=(custom.chapter||base.chapter||'ch1');
-  document.getElementById('editDiff').value=String(custom.diff||base.diff||1);
-  document.getElementById('editSaveStatus').textContent=hasCustom?'':'💡 아직 편집하지 않은 미션이에요. 내용을 입력하고 저장하세요.';
-  renderEditSteps(hasCustom?(custom.steps||[]):[]);
-}
-function renderEditSteps(steps){
-  const wrap=document.getElementById('editStepsWrap'); wrap.innerHTML='';
-  const list=steps.slice(0,5);
-  while(list.length<5) list.push({title:'',desc:''});
-  list.forEach((s,i)=>{
-    const div=document.createElement('div');
-    div.style.cssText='background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;';
-    div.innerHTML=`<div style="font-size:11px;color:var(--text3);margin-bottom:5px;">${i+1}단계</div>
-      <input id="es_title_${i}" value="${(s.title||'').replace(/"/g,'&quot;')}" placeholder="단계 제목 (예: 🐱 스프라이트 추가하기)" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:6px 10px;outline:none;margin-bottom:5px;font-family:'Noto Sans KR',sans-serif;">
-      <input id="es_desc_${i}" value="${(s.desc||'').replace(/"/g,'&quot;')}" placeholder="단계 설명" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:6px 10px;outline:none;font-family:'Noto Sans KR',sans-serif;">`;
-    wrap.appendChild(div);
-  });
-}
-function closeMissionEdit(){
-  document.getElementById('missionEditOverlay').style.display='none';
-  editingMissionId=null;
-}
-function saveMissionEdit(){
-  const id=editingMissionId; if(!id) return;
-  const steps=[];
-  for(let i=0;i<5;i++){
-    const t=(document.getElementById('es_title_'+i)||{}).value||'';
-    const d=(document.getElementById('es_desc_'+i)||{}).value||'';
-    if(t||d) steps.push({title:t,desc:d});
-  }
-  customMissions[id]={
-    emoji:document.getElementById('editEmoji').value||undefined,
-    title:document.getElementById('editTitle').value||undefined,
-    desc:document.getElementById('editDesc').value||undefined,
-    chapter:document.getElementById('editChapter').value||undefined,
-    diff:parseInt(document.getElementById('editDiff').value)||undefined,
-    steps:steps.length?steps:undefined
-  };
-  Object.keys(customMissions[id]).forEach(k=>{ if(customMissions[id][k]===undefined) delete customMissions[id][k]; });
-  saveCustomMissions(); renderAdminList();
-  if(currentMissionId===id) openMission(id);
-  showToast(`✏️ Quest ${id} 미션 편집 저장!`);
-  setTimeout(()=>closeMissionEdit(), 600);
-}
-function resetMissionEdit(){
-  if(!editingMissionId) return;
-  if(!confirm('기본값으로 되돌릴까요?')) return;
-  delete customMissions[editingMissionId];
-  saveCustomMissions(); renderAdminList();
-  openMissionEdit(editingMissionId);
-  showToast('↩️ 기본값으로 초기화됨');
-}
-function toggleBulkStepInput(){
-  const wrap=document.getElementById('bulkStepInputWrap');
-  const isOpen=wrap.style.display!=='none';
-  wrap.style.display=isOpen?'none':'block';
-}
-function parseAndFillSteps(){
-  const text=document.getElementById('bulkStepTA').value;
-  if(!text.trim()){showToast('⚠️ 텍스트를 입력하세요');return;}
-  const lines=text.trim().split(/\n/);
-  const steps=[];
-  let cur=null; let descLines=[];
-  for(const line of lines){
-    const m=line.match(/^(\d+)단계[\s—\-–:.]*(.+)/);
-    if(m){
-      if(cur) steps.push({title:cur.title,desc:descLines.join(' ').trim()});
-      descLines=[];
-      cur={title:m[2].trim()};
-    } else if(cur&&line.trim()){
-      descLines.push(line.trim());
-    }
-  }
-  if(cur) steps.push({title:cur.title,desc:descLines.join(' ').trim()});
-  if(!steps.length){showToast('⚠️ "N단계 — 제목" 형식을 찾지 못했어요');return;}
-  renderEditSteps(steps.slice(0,5));
-  document.getElementById('bulkStepInputWrap').style.display='none';
-  document.getElementById('bulkStepTA').value='';
-  showToast(`✅ ${steps.length}개 단계 자동 입력 완료!`);
 }
 function parseStepsFromMemo(memo){
   const lines=memo.trim().split(/\n/);
@@ -2066,29 +2110,6 @@ function getAdminMemoHTML(id){
     return {isSteps:true,html};
   }
   return {isSteps:false,html:`<div style="background:var(--bg2);border:1.5px solid var(--border);border-radius:16px;padding:20px 24px;font-family:'Noto Sans KR',sans-serif;font-size:16px;color:var(--text);line-height:2.0;white-space:pre-wrap;">${escapeHtml(memo)}</div>`};
-}
-function toggleDetailLink(id){
-  const panel=document.getElementById('detailLinkPanel_'+id);
-  const btn=document.getElementById('detailLinkToggle_'+id);
-  if(!panel) return;
-  const isOpen=panel.classList.contains('open');
-  panel.classList.toggle('open',!isOpen);
-  if(btn) btn.classList.toggle('open',!isOpen);
-}
-function saveDetailLink(id){
-  const val=(document.getElementById('detailLinkInput_'+id)||{}).value||'';
-  entryLinks[id]=val.trim();
-  if(!val.trim()) delete entryLinks[id];
-  saveEntryLinks();
-  const st=document.getElementById('detailLinkSt_'+id); if(st){st.textContent='저장됨 ✓';setTimeout(()=>st.textContent='',2000);}
-  showToast(`🔗 Quest ${id} 링크 저장 완료!`);
-  if(currentMissionId===id) openMission(id);
-}
-function clearDetailLink(id){
-  delete entryLinks[id]; saveEntryLinks();
-  const inp=document.getElementById('detailLinkInput_'+id); if(inp) inp.value='';
-  showToast(`🗑️ Quest ${id} 링크 삭제됨`);
-  if(currentMissionId===id) openMission(id);
 }
 function escapeHtml(str){ return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -2232,7 +2253,46 @@ if(document.readyState==='loading'){
         <div style="font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.6;">💡 아래 형식으로 붙여넣으면 단계 칸에 자동으로 채워집니다.<br>
           <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px;">1단계 — 제목</code> 또는
           <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px;">1단계: 제목</code> 으로 시작하면 돼요.</div>
-        <textarea id="bulkStepTA" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;resize:vertical;min-height:120px;font-family:'Noto Sans KR',sans-serif;line-height:1.7;" placeholder="1단계 — 스프라이트 추가하기&#10;스프라이트 추가 버튼을 눌러 고양이를 무대에 올려요.&#10;&#10;2단계 — 이동 블록 연결&#10;이동하기 블록을 시작하기 클릭 이벤트에 연결해요.&#10;&#10;3단계 — 반복하기로 계속 움직이기&#10;계속 반복하기 블록 안에 이동 블록을 넣어요."></textarea>
+        <textarea id="bulkStepTA" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;resize:vertical;min-height:120px;font-family:'Noto Sans KR',sans-serif;line-height:1.7;" placeholder="1단계 — 오브젝트 추가하기&#10;오브젝트 추가 버튼을 눌러 공룡을 무대에 올려요.&#10;&#10;2단계 — 말하기 블록 연결&#10;시작하기를 클릭했을 때 블록에 말하기 블록을 연결해요.&#10;&#10;3단계 — 기다리기로 순서 맞추기&#10;기다리기 블록으로 순서를 조절해요."></textarea>
         <div style="display:flex;gap:8px;margin-top:8px;">
           <button onclick="parseAndFillSteps()" style="flex:1;padding:9px;border-radius:50px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">✨ 자동 채우기</button>
-          <button onclick="document.getElementById('bulkStepTA').value=''" style="padding:9px 14px;border-radius:50px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:none;border:1.5px solid var(--border);color:v                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+          <button onclick="document.getElementById('bulkStepTA').value=''" style="padding:9px 14px;border-radius:50px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:none;border:1.5px solid var(--border);color:var(--text3);cursor:pointer;">지우기</button>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:0.06em;">단계별 설명 (최대 5단계)</div>
+    <div id="editStepsWrap" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button onclick="saveMissionEdit()" style="flex:2;padding:12px;border-radius:50px;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">💾 저장하기</button>
+      <button onclick="resetMissionEdit()" style="flex:1;padding:12px;border-radius:50px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:rgba(255,87,87,0.1);border:1.5px solid rgba(255,87,87,0.3);color:var(--red);cursor:pointer;">↩️ 기본값으로</button>
+    </div>
+    <div id="editSaveStatus" style="text-align:center;font-size:13px;color:var(--teal);margin-top:8px;min-height:18px;"></div>
+  </div>
+</div>
+
+
+<!-- 일괄 영상 업로드 오버레이 -->
+<div id="bulkVideoOverlay" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--card);border:1.5px solid rgba(74,158,255,0.3);border-radius:24px;padding:28px;max-width:520px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-family:'Nunito','Noto Sans KR',sans-serif;font-size:18px;font-weight:800;color:var(--blue);">🎬 동영상 일괄 업로드</div>
+      <button onclick="closeBulkVideoOverlay()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">✕</button>
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px;">
+      파일 이름에 미션 번호가 포함되면 자동으로 배정돼요.<br>
+      예: <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;">01.mp4</code>
+      <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;">quest1.mp4</code>
+      <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;">미션01.mp4</code>
+    </div>
+    <div id="bulkVideoDrop"
+      ondrop="handleBulkVideoDrop(event)"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      onclick="document.getElementById('bulkVideoFileInput').click()"
+      style="border:2px dashed rgba(74,158,255,0.4);border-radius:16px;padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(74,158,255,0.04);">
+      <div style="font-size:36px;margin-bottom:10px;">🎬</div>
+      <div style="font-family:'Nunito','Noto Sans KR',sans-serif;font-size:15px;color:var(--text2);">파일을 드래그하거나 클릭해서 선택</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:6px;">MP4, WebM, MOV 등 · 여러 파일 동시 선택 가능</div>
+    </div>
+    <input type="file" id="bulkVideoFileInput" accept="video/*" multiple style="display:none" onchange="processBulkVideoFiles(this.files);this.value=''">
+    <div id="bulkVideoLog" style="max-height:200px;overflow-y:auto;margin-top:14px;font-size:13px;line-height:1.8;background:var(--bg2);border-radius:10px;padding:10px 14px;display:none;"></d                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
