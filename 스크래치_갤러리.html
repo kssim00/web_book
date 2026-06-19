@@ -1095,6 +1095,29 @@ function sendHeight(){
 // ══════════════════════════════════════════
 //  VIEW 전환
 // ══════════════════════════════════════════
+function renderEditHints(hint){
+  const wrap=document.getElementById('editHintWrap'); if(!wrap) return;
+  const cats=[
+    {v:'block-motion',   l:'🔵 이동'},
+    {v:'block-events',   l:'🟡 이벤트'},
+    {v:'block-control',  l:'🟠 제어'},
+    {v:'block-looks',    l:'🟣 형태'},
+    {v:'block-sound',    l:'🔵 소리'},
+    {v:'block-sensing',  l:'🩵 감지'},
+    {v:'block-variables',l:'🟠 변수'},
+    {v:'block-operators',l:'🟢 연산'},
+  ];
+  const opts=cats.map(c=>`<option value="${c.v}">${c.l}</option>`).join('');
+  wrap.innerHTML='';
+  for(let i=0;i<3;i++){
+    const cat=hint[i*2]||''; const txt=hint[i*2+1]||'';
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;gap:6px;align-items:center;';
+    row.innerHTML=`<select id="eh_cat_${i}" style="background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;padding:7px 8px;outline:none;flex-shrink:0;"><option value="">카테고리</option>${opts}</select><input id="eh_txt_${i}" type="text" value="${txt.replace(/"/g,'&quot;')}" placeholder="블록 이름 입력" style="flex:1;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:7px 10px;outline:none;font-family:'Noto Sans KR',sans-serif;">`;
+    wrap.appendChild(row);
+    if(cat) row.querySelector('select').value=cat;
+  }
+}
 function openGallery(){
   document.getElementById('galleryView').classList.add('active');
   document.getElementById('detailView').classList.remove('active');
@@ -1851,6 +1874,7 @@ function openMissionEdit(id){
   renderEditSteps(custom.steps||base.steps||[]);
   document.getElementById('bulkStepTA').value='';
   document.getElementById('editYoutubeLink').value=entryLinks[id]||'';
+  renderEditHints((custom.hint||base.hint)||[]);
   refreshEditMediaPreview(id);
 }
 function refreshEditMediaPreview(id){
@@ -1900,13 +1924,20 @@ function saveMissionEdit(){
     const d=(document.getElementById('es_desc_'+i)||{}).value||'';
     if(t||d) steps.push({title:t,desc:d});
   }
+  const hintArr=[];
+  for(let i=0;i<3;i++){
+    const cat=(document.getElementById('eh_cat_'+i)||{}).value||'';
+    const txt=((document.getElementById('eh_txt_'+i)||{}).value||'').trim();
+    if(cat&&txt){hintArr.push(cat,txt);}
+  }
   customMissions[id]={
     emoji:document.getElementById('editEmoji').value||undefined,
     title:document.getElementById('editTitle').value||undefined,
     desc:document.getElementById('editDesc').value||undefined,
     chapter:document.getElementById('editChapter').value||undefined,
     diff:parseInt(document.getElementById('editDiff').value)||undefined,
-    steps:steps.length?steps:undefined
+    steps:steps.length?steps:undefined,
+    hint:hintArr.length?hintArr:undefined
   };
   Object.keys(customMissions[id]).forEach(k=>{ if(customMissions[id][k]===undefined) delete customMissions[id][k]; });
   saveCustomMissions();
@@ -2255,7 +2286,11 @@ if(document.readyState==='loading'){
       <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">🔗 유튜브 링크</div>
       <input id="editYoutubeLink" type="url" placeholder="https://youtu.be/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:'Noto Sans KR',sans-serif;">
     </div>
-    <div style="margin-bottom:16px;">
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;letter-spacing:0.06em;">💜 힌트 블록 (최대 3개)</div>
+      <div id="editHintWrap" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+        <div style="margin-bottom:16px;">
     <div style="display:flex;align-items:center;gap:10px;">
       <button onclick="saveMissionEdit()" style="flex:2;padding:12px;border-radius:50px;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">💾 저장하기</button>
       <button onclick="resetMissionEdit()" style="flex:1;padding:12px;border-radius:50px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:rgba(255,87,87,0.1);border:1.5px solid rgba(255,87,87,0.3);color:var(--red);cursor:pointer;">↩️ 기본값으로</button>
