@@ -1887,10 +1887,7 @@ let editingMissionId=null;
 function openMissionEdit(id){
   if(document.body.classList.contains('embedded')) window.scrollTo(0,0);
   document.documentElement.style.overscrollBehavior = 'contain';
-  document.body.style.overflow = 'hidden';
-  // 실제 창 높이 기준으로 모달 높이 설정 (iframe 안에서 vh가 왜곡되므로)
-  const panel = document.getElementById('missionEditPanel');
-  if (panel) panel.style.maxHeight = Math.floor(window.innerHeight * 0.92) + 'px';
+
   editingMissionId=id;
   const base=MISSIONS.find(x=>x.id===id)||{};
   const custom=customMissions[id]||{};
@@ -1947,7 +1944,6 @@ function closeMissionEdit(){
   ov.dataset.open='0';
   editingMissionId=null;
   document.documentElement.style.overscrollBehavior = '';
-  document.body.style.overflow = '';
 }
 function toggleMissionEdit(id){
   const overlay=document.getElementById('missionEditOverlay');
@@ -2222,7 +2218,7 @@ if(document.readyState==='loading'){
 
 <!-- 미션 편집 모달 (통합) -->
 <div id="missionEditOverlay" onclick="if(event.target===this)closeMissionEdit()" style="display:none;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:10px;">
-  <div id="missionEditPanel" style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:22px;padding:20px 24px;width:calc(100% - 20px);max-width:1400px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+  <div id="missionEditPanel" style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:22px;padding:20px 24px;width:calc(100% - 20px);max-width:1400px;max-height:700px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
     <!-- 헤더 -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0;">
       <div style="font-family:'Nunito','Noto Sans KR',sans-serif;font-size:17px;font-weight:800;color:var(--purple);">✏️ 미션 편집 <span id="editMissionNum" style="font-size:12px;color:var(--text3);font-weight:400;"></span></div>
