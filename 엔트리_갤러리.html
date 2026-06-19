@@ -2264,29 +2264,23 @@ if(document.readyState==='loading'){
           </div>
         </div>
         <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;">📷 이미지 / 🎬 영상</div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div id="editImgPreview" style="width:56px;height:56px;border-radius:10px;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:24px;flex-shrink:0;"></div>
-            <div style="display:flex;flex-direction:column;gap:5px;">
-              <div style="display:flex;gap:5px;">
-                <button onclick="triggerUpload(editingMissionId)" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(79,110,247,0.1);border:1.5px solid rgba(79,110,247,0.3);color:var(--blue);cursor:pointer;">📷 이미지</button>
-                <button id="editImgDelBtn" onclick="deleteImageFromEdit()" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);cursor:pointer;display:none;">✕</button>
-              </div>
-              <div style="display:flex;gap:5px;align-items:center;">
-                <button onclick="triggerVideoUpload(editingMissionId)" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(14,165,233,0.1);border:1.5px solid rgba(14,165,233,0.3);color:var(--teal);cursor:pointer;">🎬 영상</button>
-                <span id="editVidStatus" style="font-size:11px;color:var(--text3);"></span>
-                <button id="editVidDelBtn" onclick="deleteVideoFromEdit()" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);cursor:pointer;display:none;">✕</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
           <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:4px;">🔗 유튜브 링크</div>
           <input id="editYoutubeLink" type="url" placeholder="https://youtu.be/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;padding:8px 11px;outline:none;font-family:'Noto Sans KR',sans-serif;">
         </div>
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;">💜 힌트 블록 (최대 3개)</div>
           <div id="editHintWrap" style="display:flex;flex-direction:column;gap:5px;"></div>
+        </div>
+        <div style="margin-top:auto;padding-top:8px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;">📷 이미지 / 🎬 영상</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <div id="editImgPreview" style="width:44px;height:44px;border-radius:8px;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px;flex-shrink:0;"></div>
+            <button onclick="triggerUpload(editingMissionId)" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(79,110,247,0.1);border:1.5px solid rgba(79,110,247,0.3);color:var(--blue);cursor:pointer;">📷 이미지</button>
+            <button id="editImgDelBtn" onclick="deleteImageFromEdit()" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);cursor:pointer;display:none;">✕</button>
+            <button onclick="triggerVideoUpload(editingMissionId)" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(14,165,233,0.1);border:1.5px solid rgba(14,165,233,0.3);color:var(--teal);cursor:pointer;">🎬 영상</button>
+            <span id="editVidStatus" style="font-size:11px;color:var(--text3);"></span>
+            <button id="editVidDelBtn" onclick="deleteVideoFromEdit()" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);cursor:pointer;display:none;">✕</button>
+          </div>
         </div>
       </div>
       <!-- 가운데: 자동채우기 -->
