@@ -1831,7 +1831,9 @@ function openMissionEdit(id){
   const base=MISSIONS.find(x=>x.id===id)||{};
   const custom=customMissions[id]||{};
   const hasCustom=Object.keys(custom).length>0;
-  document.getElementById('missionEditOverlay').style.display='flex';
+  const _ov=document.getElementById('missionEditOverlay');
+  _ov.style.display='flex';
+  _ov.dataset.open='1';
   document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
   document.getElementById('editEmoji').value=hasCustom?(custom.emoji||base.emoji||''):(base.emoji||'');
   ['editEmoji','editTitle','editDesc','editYoutubeLink'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
@@ -1874,12 +1876,14 @@ function renderEditSteps(steps){
   });
 }
 function closeMissionEdit(){
-  document.getElementById('missionEditOverlay').style.display='none';
+  const ov=document.getElementById('missionEditOverlay');
+  ov.style.display='none';
+  ov.dataset.open='0';
   editingMissionId=null;
 }
 function toggleMissionEdit(id){
   const overlay=document.getElementById('missionEditOverlay');
-  if(overlay.style.display==='flex'&&editingMissionId===id){closeMissionEdit();}
+  if(overlay.dataset.open==='1'&&editingMissionId===id){closeMissionEdit();}
   else{openMissionEdit(id);}
 }
 function saveMissionEdit(){
