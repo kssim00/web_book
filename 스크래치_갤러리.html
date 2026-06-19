@@ -1857,6 +1857,7 @@ let editingMissionId=null;
 function openMissionEdit(id){
   if(document.body.classList.contains('embedded')) window.scrollTo(0,0);
   document.documentElement.style.overscrollBehavior = 'contain';
+  document.body.style.overflow = 'hidden';
   // 실제 창 높이 기준으로 모달 높이 설정 (iframe 안에서 vh가 왜곡되므로)
   const panel = document.getElementById('missionEditPanel');
   if (panel) panel.style.maxHeight = Math.floor(window.innerHeight * 0.92) + 'px';
@@ -1915,6 +1916,7 @@ function closeMissionEdit(){
   ov.dataset.open='0';
   editingMissionId=null;
   document.documentElement.style.overscrollBehavior = '';
+  document.body.style.overflow = '';
 }
 function toggleMissionEdit(id){
   const overlay=document.getElementById('missionEditOverlay');
@@ -2269,7 +2271,7 @@ if(document.readyState==='loading'){
           <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;">💜 힌트 블록 (최대 3개)</div>
           <div id="editHintWrap" style="display:flex;flex-direction:column;gap:5px;"></div>
         </div>
-        <div style="margin-top:auto;padding-top:8px;">
+        <div style="padding-top:4px;">
           <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;">📷 이미지 / 🎬 영상</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <div id="editImgPreview" style="width:44px;height:44px;border-radius:8px;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px;flex-shrink:0;"></div>
