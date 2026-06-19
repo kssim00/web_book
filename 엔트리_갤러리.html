@@ -1026,6 +1026,7 @@ const MISSIONS = [
 //  STATE
 // ══════════════════════════════════════════
 let userName = '';
+let _parentViewportH = 640; // postMessage로 갱신됨
 let totalXP = 0;
 let completedMissions = {};
 let stepsDone = {};
@@ -1893,6 +1894,7 @@ function openMissionEdit(id){
   const custom=customMissions[id]||{};
   const hasCustom=Object.keys(custom).length>0;
   const _ov=document.getElementById('missionEditOverlay');
+  _ov.style.height = _parentViewportH + 'px';
   _ov.style.display='flex';
   _ov.dataset.open='1';
   document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
@@ -1944,6 +1946,8 @@ function closeMissionEdit(){
   ov.dataset.open='0';
   editingMissionId=null;
   document.documentElement.style.overscrollBehavior = '';
+  const _ov2 = document.getElementById('missionEditOverlay');
+  if(_ov2) _ov2.style.height = '';
 }
 function toggleMissionEdit(id){
   const overlay=document.getElementById('missionEditOverlay');
@@ -2214,10 +2218,15 @@ if(document.readyState==='loading'){
 } else {
   initApp();
 }
+window.addEventListener('message', function(e){
+  if(e.data && e.data.type==='viewport-height' && e.data.height > 100){
+    _parentViewportH = e.data.height;
+  }
+});
 </script>
 
 <!-- 미션 편집 모달 (통합) -->
-<div id="missionEditOverlay" onclick="if(event.target===this)closeMissionEdit()" style="display:none;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);overflow-y:auto;padding:20px 10px;">
+<div id="missionEditOverlay" onclick="if(event.target===this)closeMissionEdit()" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9600;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);overflow-y:auto;padding:20px 10px;">
   <div id="missionEditPanel" style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:22px;padding:20px 24px;width:calc(100% - 20px);max-width:1400px;margin:0 auto;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
     <!-- 헤더 -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">

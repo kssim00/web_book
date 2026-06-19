@@ -3625,6 +3625,7 @@ function openCustomPanel(subjectId) {
   document.getElementById('entryXpBadge').style.display = 'none';
   document.getElementById('scratchXpBadge').style.display = 'none';
   window.scrollTo({ top: 0, behavior: 'instant' });
+  setTimeout(sendViewportHeight, 300);
 }
 
 // 색상 hex → rgb
@@ -4050,6 +4051,15 @@ function hideAllPanels() {
 }
 
 // ── 갤러리 메시지 수신 (XP + 높이 자동 조절)
+function sendViewportHeight() {
+  const h = window.innerHeight;
+  ['entryGalleryFrame','scratchGalleryFrame'].forEach(function(id){
+    const f = document.getElementById(id);
+    if(f && f.contentWindow) f.contentWindow.postMessage({type:'viewport-height',height:h},'*');
+  });
+}
+window.addEventListener('resize', sendViewportHeight);
+
 window.addEventListener('message', function(e) {
   if (!e.data) return;
 
