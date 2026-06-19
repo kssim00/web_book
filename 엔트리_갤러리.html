@@ -1539,7 +1539,9 @@ function loadFromJSON(){
       if(data.memos) Object.keys(data.memos).forEach(k=>{customMemos[parseInt(k)]=data.memos[k];});
       if(data.links) Object.keys(data.links).forEach(k=>{entryLinks[parseInt(k)]=data.links[k];});
       if(data.siteLinks) Object.keys(data.siteLinks).forEach(k=>{entrySiteLinks[parseInt(k)]=data.siteLinks[k];});
-      if(data.missions) Object.keys(data.missions).forEach(k=>{customMissions[parseInt(k)]=data.missions[k];});
+      // missions: localStorage가 있으면 덮어쓰지 않음
+      if(data.missions && !localStorage.getItem('eg_admin_missions'))
+        Object.keys(data.missions).forEach(k=>{customMissions[parseInt(k)]=data.missions[k];});
       console.log('✅ entry_data.json 로드 완료');
       return true;
     })
