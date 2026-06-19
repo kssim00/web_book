@@ -575,7 +575,7 @@ body.embedded .admin-pw-overlay.visible { align-items:flex-start !important; pad
 body.embedded .complete-modal-overlay.open { align-items:flex-start !important; padding-top:40px !important; }
 body.embedded .modal-overlay.visible { align-items:flex-start !important; padding-top:40px !important; }
 body.embedded #bulkVideoOverlay { align-items:flex-start !important; padding-top:40px !important; }
-body.embedded #missionEditOverlay { align-items:flex-start !important; padding-top:40px !important; }
+/* body.embedded #missionEditOverlay — removed: overlay now uses overflow-y:auto scroll */
 body.embedded .admin-pw-input { background:var(--bg2); border-color:var(--border); color:var(--text); }
 body.embedded .admin-header { background:linear-gradient(135deg,rgba(74,158,255,0.10),rgba(167,139,250,0.06)); border-color:rgba(74,158,255,0.30); }
 body.embedded .admin-mission-row { background:var(--card); border-color:var(--border); }
@@ -2217,15 +2217,15 @@ if(document.readyState==='loading'){
 </script>
 
 <!-- 미션 편집 모달 (통합) -->
-<div id="missionEditOverlay" onclick="if(event.target===this)closeMissionEdit()" style="display:none;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:10px;">
-  <div id="missionEditPanel" style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:22px;padding:20px 24px;width:calc(100% - 20px);max-width:1400px;max-height:700px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+<div id="missionEditOverlay" onclick="if(event.target===this)closeMissionEdit()" style="display:none;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);overflow-y:auto;padding:20px 10px;">
+  <div id="missionEditPanel" style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:22px;padding:20px 24px;width:calc(100% - 20px);max-width:1400px;margin:0 auto;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
     <!-- 헤더 -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <div style="font-family:'Nunito','Noto Sans KR',sans-serif;font-size:17px;font-weight:800;color:var(--purple);">✏️ 미션 편집 <span id="editMissionNum" style="font-size:12px;color:var(--text3);font-weight:400;"></span></div>
       <button onclick="closeMissionEdit()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">✕</button>
     </div>
     <!-- 3컬럼 본문 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;overflow-y:auto;flex:1;min-height:0;" id="editModalBody">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;" id="editModalBody">
       <!-- 왼쪽: 기본정보 -->
       <div style="display:flex;flex-direction:column;gap:10px;">
         <div style="font-size:11px;font-weight:700;color:var(--purple);letter-spacing:0.08em;opacity:0.7;margin-bottom:2px;">기본 정보</div>
@@ -2306,7 +2306,7 @@ if(document.readyState==='loading'){
       </div>
     </div>
     <!-- 하단 버튼 -->
-    <div style="flex-shrink:0;margin-top:14px;border-top:1.5px solid var(--border);padding-top:12px;">
+    <div style="margin-top:14px;border-top:1.5px solid var(--border);padding-top:12px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <button onclick="saveMissionEdit()" style="flex:4;padding:11px;border-radius:50px;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">💾 저장하기</button>
         <button onclick="resetMissionEdit()" style="flex:1;padding:11px;border-radius:50px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:rgba(255,87,87,0.1);border:1.5px solid rgba(255,87,87,0.3);color:var(--red);cursor:pointer;">↩️ 초기화</button>
