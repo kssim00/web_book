@@ -1183,7 +1183,7 @@ function openMission(id){
   if(!isAdminMode && localStorage.getItem('학습홈_admin')==='1'){ isAdminMode=true; showAdminBar(); }
   currentMissionId=id; showDetail();
   const isDone=!!completedMissions[id]; const starVal=starRatings[id]||0;
-  const adminMemoResult=isAdminMode?null:getAdminMemoHTML(id);
+  const adminMemoResult=(isAdminMode||(customMissions[id]&&customMissions[id].steps))?null:getAdminMemoHTML(id);
   let stepsSection='';
   if(adminMemoResult){ const label=adminMemoResult.isSteps?'📋 미션 단계':'📋 미션 안내'; stepsSection=`<div class="section-title-small">${label}</div>${adminMemoResult.html}`; }
   else{
