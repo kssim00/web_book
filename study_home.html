@@ -4052,6 +4052,8 @@ function hideAllPanels() {
 // ── 갤러리 메시지 수신 (XP + 높이 자동 조절)
 window.addEventListener('message', function(e) {
   if (!e.data) return;
+  if (e.data.type === 'lock-scroll')   { document.body.style.overflow = 'hidden'; return; }
+  if (e.data.type === 'unlock-scroll') { document.body.style.overflow = '';       return; }
 
   // 엔트리 XP 업데이트
   if (e.data.type === 'entry-xp') {

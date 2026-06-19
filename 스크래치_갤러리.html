@@ -1856,7 +1856,7 @@ function clearDetailLink(id){
 let editingMissionId=null;
 function openMissionEdit(id){
   if(document.body.classList.contains('embedded')) window.scrollTo(0,0);
-  document.body.style.overflow='hidden';
+  window.parent.postMessage({type:'lock-scroll'},'*');
   editingMissionId=id;
   const base=MISSIONS.find(x=>x.id===id)||{};
   const custom=customMissions[id]||{};
@@ -1911,7 +1911,7 @@ function closeMissionEdit(){
   ov.style.display='none';
   ov.dataset.open='0';
   editingMissionId=null;
-  document.body.style.overflow='';
+  window.parent.postMessage({type:'unlock-scroll'},'*');
 }
 function toggleMissionEdit(id){
   const overlay=document.getElementById('missionEditOverlay');
