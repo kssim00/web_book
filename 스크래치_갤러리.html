@@ -340,6 +340,10 @@ body{font-family:'Plus Jakarta Sans','Noto Sans KR',sans-serif;background:var(--
 .step-title{font-family:'Nunito','Noto Sans KR',sans-serif;font-size:17px;color:var(--text);margin-bottom:4px;}
 .step-desc{font-size:14px;color:var(--text2);line-height:1.7;}
 .section-title-small{font-family:'Nunito','Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+/* 인라인 편집 (관리자 모드) */
+.admin-editable{outline:none;border-radius:6px;padding:2px 4px;margin:-2px -4px;transition:background 0.15s,box-shadow 0.15s;cursor:text;}
+.admin-editable:hover{background:rgba(107,71,237,0.07);box-shadow:inset 0 -1.5px 0 rgba(107,71,237,0.35);}
+.admin-editable:focus{background:rgba(107,71,237,0.10);box-shadow:inset 0 -2px 0 var(--purple);}
 
 /* ══════════════════════════════════════════
    MISSION COMPLETE MODAL
@@ -1183,9 +1187,12 @@ function openMission(id){
   if(adminMemoResult){ const label=adminMemoResult.isSteps?'📋 미션 단계':'📋 미션 안내'; stepsSection=`<div class="section-title-small">${label}</div>${adminMemoResult.html}`; }
   else{
     const stepsHTML=m.steps.map((s,i)=>{const key=`m${id}-s${i}`;const doneClass=stepsDone[key]?' done-step':'';const numText=stepsDone[key]?'✓':(i+1);
+      if(isAdminMode){
+        return `<div class="step-card${doneClass}" id="${key}"><div class="step-num" onclick="toggleStep('${key}')" style="cursor:pointer;flex-shrink:0;">${numText}</div><div class="step-body"><div class="step-title admin-editable" contenteditable="true" spellcheck="false" onblur="saveInlineStep(${id},${i},'title',this)">${s.title}</div><div class="step-desc admin-editable" contenteditable="true" spellcheck="false" onblur="saveInlineStep(${id},${i},'desc',this)">${s.desc}</div></div></div>`;
+      }
       return `<div class="step-card${doneClass}" id="${key}" onclick="toggleStep('${key}')"><div class="step-num">${numText}</div><div class="step-body"><div class="step-title">${s.title}</div><div class="step-desc">${s.desc}</div></div></div>`;
     }).join('');
-    stepsSection=`<div class="section-title-small">📋 미션 단계</div>${stepsHTML}`;
+    stepsSection=`<div class="section-title-small">📋 미션 단계${isAdminMode?' <span style="font-size:11px;color:var(--purple);font-weight:400;">✏️ 클릭해서 바로 수정</span>':''}</div>${stepsHTML}`;
   }
   const hintChips=[];
   for(let i=0;i<m.hint.length;i+=2){const cls=m.hint[i];const txt=m.hint[i+1]||'';hintChips.push(`<div class="block-chip ${cls}">${txt}</div>`);}
@@ -1226,8 +1233,10 @@ function openMission(id){
         </div>
         <div class="detail-info">
           <div class="detail-tag" style="color:${m.tagColor}">${m.tag}</div>
-          <div class="detail-title">${m.title}</div>
-          <div class="detail-desc">${m.desc}</div>
+          ${isAdminMode
+            ?`<div class="detail-title admin-editable" contenteditable="true" spellcheck="false" onblur="saveInlineField(${id},'title',this)">${m.title}</div><div class="detail-desc admin-editable" contenteditable="true" spellcheck="false" onblur="saveInlineField(${id},'desc',this)">${m.desc||''}</div>`
+            :`<div class="detail-title">${m.title}</div><div class="detail-desc">${m.desc||''}</div>`
+          }
         </div>
         <div class="hint-row">
           <button class="hint-btn" onclick="toggleHint()">💜 힌트 보기</button>
@@ -2044,6 +2053,29 @@ function escapeHtml(str){ return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').
 
 // ==============================
 //  TOAST & CONFETTI
+function saveInlineField(id,field,el){
+  const val=el.innerText.trim();
+  if(!val) return;
+  if(!customMissions[id]) customMissions[id]={};
+  const base=MISSIONS.find(x=>x.id===id)||{};
+  if(val!==(base[field]||'')) customMissions[id][field]=val;
+  else delete customMissions[id][field];
+  if(Object.keys(customMissions[id]).length===0) delete customMissions[id];
+  saveCustomMissions(); updateAdminRow(id);
+  showToast('✏️ 저장됨');
+}
+function saveInlineStep(id,si,field,el){
+  const val=el.innerText.trim();
+  const base=MISSIONS.find(x=>x.id===id)||{};
+  if(!customMissions[id]) customMissions[id]={};
+  if(!customMissions[id].steps){
+    const src=base.steps||[];
+    customMissions[id].steps=src.map(s=>({title:s.title||'',desc:s.desc||''}));
+  }
+  if(customMissions[id].steps[si]) customMissions[id].steps[si][field]=val;
+  saveCustomMissions();
+  showToast(`✏️ ${si+1}단계 저장됨`);
+}
 // ==============================
 let toastTimer=null;
 function showToast(msg){
