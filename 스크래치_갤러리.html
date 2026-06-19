@@ -1557,12 +1557,9 @@ async function loadAdminFromCloud(){
     if(data.images && data.images!=='{}') try{ missionImages=JSON.parse(data.images); changed=true; }catch(e){}
     if(data.memos  && data.memos !=='{}') try{ customMemos  =JSON.parse(data.memos);  changed=true; }catch(e){}
     if(data.links  && data.links !=='{}') try{ entryLinks   =JSON.parse(data.links);   changed=true; }catch(e){}
-    // missions: localStorage가 이미 있으면 신뢰 (최근 수정이 클라우드보다 최신일 수 있음)
-    const localMissions=localStorage.getItem('sg_admin_missions');
-    if(data.missions && data.missions!=='{}' && !localMissions){
+    // missions: localStorage가 이미 있으면 신뢰 (새로고침 시 클라우드가 덮어쓰지 않음)
+    if(data.missions && data.missions!=='{}' && !localStorage.getItem('sg_admin_missions')){
       try{ customMissions=JSON.parse(data.missions); changed=true; }catch(e){}
-    } else if(localMissions){
-      setTimeout(saveAllAdminToCloud, 500);
     }
     if(changed){
       try{ localStorage.setItem('sg_admin_images',   data.images);   }catch(e){}
@@ -2146,7 +2143,8 @@ function initApp(){
     await loadAdminFromCloud();
     await loadFromCloud();
     updateTopbar();
-    openGallery();
+    // 미션 상세보기 중이면 갤러리로 강제 이동하지 않음
+    if(!currentMissionId) openGallery();
     setTimeout(sendHeight, 100);
   });
   const pwInput = document.getElementById('adminPwInput');
