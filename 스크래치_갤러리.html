@@ -1182,7 +1182,7 @@ function openMission(id){
   const m=getMissionData(id); if(!m) return;
   currentMissionId=id; showDetail();
   const isDone=!!completedMissions[id]; const starVal=starRatings[id]||0;
-  const adminMemoResult=getAdminMemoHTML(id);
+  const adminMemoResult=isAdminMode?null:getAdminMemoHTML(id);
   let stepsSection='';
   if(adminMemoResult){ const label=adminMemoResult.isSteps?'📋 미션 단계':'📋 미션 안내'; stepsSection=`<div class="section-title-small">${label}</div>${adminMemoResult.html}`; }
   else{
@@ -1711,6 +1711,7 @@ function restoreAdminUI(){
   if(badge) badge.style.display='inline-flex';
   if(btn){ btn.style.color='#DC2626'; btn.title='관리자 메뉴'; }
   showAdminBar();
+  if(currentMissionId) openMission(currentMissionId);
 }
 function closeAdmin(){
   isAdminMode=false;
