@@ -1977,7 +1977,7 @@ function saveMissionEdit(){
     chapter:document.getElementById('editChapter').value||undefined,
     diff:parseInt(document.getElementById('editDiff').value)||undefined,
     steps:steps.length?steps:undefined,
-    hint:(()=>{const h=[];for(let i=0;i<3;i++){const cat=(document.getElementById('eh_cat_'+i)||{}).value||'';const txt=((document.getElementById('eh_txt_'+i)||{}).value||'').trim();if(cat&&txt){h.push(cat,txt);}}return h.length?h:undefined;})()
+    hint:(()=>{const h=[];for(let i=0;i<3;i++){const cat=(document.getElementById('eh_cat_'+i)||{}).value||'';const txt=((document.getElementById('eh_txt_'+i)||{}).value||'').trim();if(cat&&txt){h.push(cat,txt);}}return h;})()
   };
   Object.keys(customMissions[id]).forEach(k=>{ if(customMissions[id][k]===undefined) delete customMissions[id][k]; });
   saveCustomMissions();

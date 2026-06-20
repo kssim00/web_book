@@ -1954,7 +1954,7 @@ function saveMissionEdit(){
     chapter:document.getElementById('editChapter').value||undefined,
     diff:parseInt(document.getElementById('editDiff').value)||undefined,
     steps:steps.length?steps:undefined,
-    hint:hintArr.length?hintArr:undefined
+    hint:hintArr
   };
   Object.keys(customMissions[id]).forEach(k=>{ if(customMissions[id][k]===undefined) delete customMissions[id][k]; });
   saveCustomMissions();
