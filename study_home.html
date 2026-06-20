@@ -4139,7 +4139,11 @@ window.addEventListener('message', function(e) {
   // 갤러리 미션 편집 모달 풀스크린 처리
   if (e.data.type === 'scratch-modal-open') {
     const f = document.getElementById('scratchGalleryFrame');
-    if (f) { f.classList.add('modal-fullscreen'); document.body.style.overflow = 'hidden'; }
+    if (f) {
+      f.classList.add('modal-fullscreen');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function(){ if(f.contentWindow) f.contentWindow.postMessage({type:'viewport-height',height:window.innerHeight},'*'); }, 0);
+    }
   }
   if (e.data.type === 'scratch-modal-close') {
     const f = document.getElementById('scratchGalleryFrame');
@@ -4147,7 +4151,11 @@ window.addEventListener('message', function(e) {
   }
   if (e.data.type === 'entry-modal-open') {
     const f = document.getElementById('entryGalleryFrame');
-    if (f) { f.classList.add('modal-fullscreen'); document.body.style.overflow = 'hidden'; }
+    if (f) {
+      f.classList.add('modal-fullscreen');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function(){ if(f.contentWindow) f.contentWindow.postMessage({type:'viewport-height',height:window.innerHeight},'*'); }, 0);
+    }
   }
   if (e.data.type === 'entry-modal-close') {
     const f = document.getElementById('entryGalleryFrame');

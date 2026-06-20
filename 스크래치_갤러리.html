@@ -1864,8 +1864,8 @@ function openMissionEdit(id){
   const custom=customMissions[id]||{};
   const hasCustom=Object.keys(custom).length>0;
   const _ov=document.getElementById('missionEditOverlay');
-  _ov.style.height = '';
-  document.getElementById('missionEditPanel').style.height = (window.innerHeight - 16) + 'px';
+  _ov.style.height = _parentViewportH + 'px';
+  document.getElementById('missionEditPanel').style.height = (_parentViewportH - 16) + 'px';
   _ov.style.display='flex';
   _ov.dataset.open='1';
   window.parent.postMessage({type:'scratch-modal-open'}, '*');
@@ -2224,6 +2224,13 @@ if(document.readyState==='loading'){
 window.addEventListener('message', function(e){
   if(e.data && e.data.type==='viewport-height' && e.data.height > 100){
     _parentViewportH = e.data.height;
+    // 모달이 열려 있으면 새 높이로 즉시 업데이트
+    const _ov = document.getElementById('missionEditOverlay');
+    if(_ov && _ov.dataset.open==='1'){
+      _ov.style.height = _parentViewportH + 'px';
+      const _p = document.getElementById('missionEditPanel');
+      if(_p) _p.style.height = (_parentViewportH - 16) + 'px';
+    }
   }
 });
 </script>
