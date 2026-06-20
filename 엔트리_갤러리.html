@@ -1895,8 +1895,10 @@ function openMissionEdit(id){
   const hasCustom=Object.keys(custom).length>0;
   const _ov=document.getElementById('missionEditOverlay');
   _ov.style.height = _parentViewportH + 'px';
+  document.getElementById('missionEditPanel').style.height = (_parentViewportH - 40) + 'px';
   _ov.style.display='flex';
   _ov.dataset.open='1';
+  window.parent.postMessage({type:'entry-modal-open'}, '*');
   document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
   document.getElementById('editEmoji').value=hasCustom?(custom.emoji||base.emoji||''):(base.emoji||'');
   ['editEmoji','editTitle','editDesc','editYoutubeLink'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
@@ -1948,6 +1950,9 @@ function closeMissionEdit(){
   document.documentElement.style.overscrollBehavior = '';
   const _ov2 = document.getElementById('missionEditOverlay');
   if(_ov2) _ov2.style.height = '';
+  const _panel = document.getElementById('missionEditPanel');
+  if(_panel) _panel.style.height = '';
+  window.parent.postMessage({type:'entry-modal-close'}, '*');
 }
 function toggleMissionEdit(id){
   const overlay=document.getElementById('missionEditOverlay');
@@ -2227,7 +2232,7 @@ window.addEventListener('message', function(e){
 
 <!-- 미션 편집 모달 (통합) -->
 <div id="missionEditOverlay" onclick="if(event.target===this)closeMissionEdit()" style="display:none;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);overflow-y:auto;padding:20px 10px;">
-  <div id="missionEditPanel" style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:22px;padding:20px 24px;width:calc(100% - 20px);max-width:1400px;margin:0 auto;box-shadow:0 24px 60px rgba(0,0,0,0.5);height:calc(100vh - 40px);display:flex;flex-direction:column;overflow:hidden;">
+  <div id="missionEditPanel" style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:22px;padding:20px 24px;width:calc(100% - 20px);max-width:1400px;margin:0 auto;box-shadow:0 24px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;overflow:hidden;">
     <!-- 헤더 -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0;">
       <div style="font-family:'Nunito','Noto Sans KR',sans-serif;font-size:17px;font-weight:800;color:var(--purple);">✏️ 미션 편집 <span id="editMissionNum" style="font-size:12px;color:var(--text3);font-weight:400;"></span></div>
