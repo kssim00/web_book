@@ -4140,26 +4140,30 @@ window.addEventListener('message', function(e) {
   if (e.data.type === 'scratch-modal-open') {
     const f = document.getElementById('scratchGalleryFrame');
     if (f) {
-      f.classList.add('modal-fullscreen');
+      var tbH = (document.querySelector('.topbar') || {offsetHeight:56}).offsetHeight;
+      var rect = f.getBoundingClientRect();
+      window.scrollBy(0, rect.top - tbH);
       document.body.style.overflow = 'hidden';
-      setTimeout(function(){ if(f.contentWindow) f.contentWindow.postMessage({type:'viewport-height',height:window.innerHeight},'*'); }, 0);
+      var effH = window.innerHeight - tbH;
+      if(f.contentWindow) f.contentWindow.postMessage({type:'viewport-height', height: effH}, '*');
     }
   }
   if (e.data.type === 'scratch-modal-close') {
-    const f = document.getElementById('scratchGalleryFrame');
-    if (f) { f.classList.remove('modal-fullscreen'); document.body.style.overflow = ''; }
+    document.body.style.overflow = '';
   }
   if (e.data.type === 'entry-modal-open') {
     const f = document.getElementById('entryGalleryFrame');
     if (f) {
-      f.classList.add('modal-fullscreen');
+      var tbH = (document.querySelector('.topbar') || {offsetHeight:56}).offsetHeight;
+      var rect = f.getBoundingClientRect();
+      window.scrollBy(0, rect.top - tbH);
       document.body.style.overflow = 'hidden';
-      setTimeout(function(){ if(f.contentWindow) f.contentWindow.postMessage({type:'viewport-height',height:window.innerHeight},'*'); }, 0);
+      var effH = window.innerHeight - tbH;
+      if(f.contentWindow) f.contentWindow.postMessage({type:'viewport-height', height: effH}, '*');
     }
   }
   if (e.data.type === 'entry-modal-close') {
-    const f = document.getElementById('entryGalleryFrame');
-    if (f) { f.classList.remove('modal-fullscreen'); document.body.style.overflow = ''; }
+    document.body.style.overflow = '';
   }
 });
 

@@ -1886,10 +1886,14 @@ function clearDetailLink(id){
 // ══════════════════════════════════════════
 let editingMissionId=null;
 function openMissionEdit(id){
-  if(document.body.classList.contains('embedded')) window.scrollTo(0,0);
   document.documentElement.style.overscrollBehavior = 'contain';
-
   editingMissionId=id;
+  window.parent.postMessage({type:'entry-modal-open'}, '*');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    _openMissionEditBody(id);
+  }));
+}
+function _openMissionEditBody(id){
   const base=MISSIONS.find(x=>x.id===id)||{};
   const custom=customMissions[id]||{};
   const hasCustom=Object.keys(custom).length>0;
@@ -1898,7 +1902,6 @@ function openMissionEdit(id){
   document.getElementById('missionEditPanel').style.height = (_parentViewportH - 16) + 'px';
   _ov.style.display='flex';
   _ov.dataset.open='1';
-  window.parent.postMessage({type:'entry-modal-open'}, '*');
   document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
   document.getElementById('editEmoji').value=hasCustom?(custom.emoji||base.emoji||''):(base.emoji||'');
   ['editEmoji','editTitle','editDesc','editYoutubeLink'].forEach(eid=>{const el=document.getElementById(eid);if(el){el.onfocus=()=>el.style.borderColor='var(--purple)';el.onblur=()=>el.style.borderColor='var(--border)';}});
