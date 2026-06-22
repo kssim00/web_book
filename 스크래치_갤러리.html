@@ -1182,9 +1182,10 @@ function renderGallery(){
       card.style.animationDelay=(idx*0.04)+'s'; card.dataset.missionId=m.id;
       const diffDots=[1,2,3].map(d=>`<div class="diff-dot" style="background:${d<=m.diff?getDiffColor(m.diff):'var(--border2)'}"></div>`).join('');
       const _ytThumb=getYoutubeThumbnail(entryLinks[m.id]);
+      const _forceEmoji=(thumbMode[m.id]==='emoji');
       const thumbContent=missionVideos[m.id]
         ?`<video src="${missionVideos[m.id]}" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;"></video>`
-        :_ytThumb
+        :(!_forceEmoji&&_ytThumb)
         ?`<img src="${_ytThumb}" alt="" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','mqdefault');" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:1;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none;"><div style="width:44px;height:44px;background:rgba(255,0,0,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:18px;margin-left:4px;">▶</span></div></div>`
         :missionImages[m.id]
         ?`<img src="${missionImages[m.id]}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;">`
@@ -1407,6 +1408,7 @@ let missionVideos={}; let pendingVideoUploadId=null;
 let entryLinks={};
 let scratchSiteLinks={};
 let customMissions={};
+let thumbMode={}; // {[id]: 'youtube'|'emoji'}
 
 // ══════════════════════════════════════════
 //  IndexedDB — 영상 저장 (MP4 등 대용량)
@@ -1491,6 +1493,8 @@ function saveEntryLinks(){ try{localStorage.setItem('sg_admin_links',JSON.string
 function loadScratchSiteLinks(){ try{const raw=localStorage.getItem('sg_admin_site_links');if(raw)scratchSiteLinks=JSON.parse(raw);}catch(e){} }
 function saveScratchSiteLinks(){ try{localStorage.setItem('sg_admin_site_links',JSON.stringify(scratchSiteLinks));}catch(e){} }
 function loadCustomMissions(){ try{const raw=localStorage.getItem('sg_admin_missions');if(raw)customMissions=JSON.parse(raw);}catch(e){} }
+function loadThumbMode(){ try{const raw=localStorage.getItem('sg_admin_thumbmode');if(raw)thumbMode=JSON.parse(raw);}catch(e){} }
+function saveThumbMode(){ try{localStorage.setItem('sg_admin_thumbmode',JSON.stringify(thumbMode));}catch(e){} }
 
 // ── 앱스 스크립트: 학생 진도 저장 URL ──
 
@@ -1916,6 +1920,7 @@ function openMissionEdit(id){
   renderEditSteps(custom.steps||base.steps||[]);
   document.getElementById('bulkStepTA').value='';
   document.getElementById('editYoutubeLink').value=entryLinks[id]||'';
+  setTimeout(()=>setThumbModeUI(thumbMode[id]||'youtube'),0);
   renderEditHints((custom.hint||base.hint)||[]);
   refreshEditMediaPreview(id);
 }
@@ -1946,6 +1951,20 @@ function renderEditSteps(steps){
       <input id="es_desc_${i}" value="${(s.desc||'').replace(/"/g,'&quot;')}" placeholder="단계 설명" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:6px 10px;outline:none;font-family:'Noto Sans KR',sans-serif;">`;
     wrap.appendChild(div);
   });
+}
+function setThumbModeUI(mode){
+  const ytBtn=document.getElementById('thumbModeYt');
+  const emBtn=document.getElementById('thumbModeEmoji');
+  if(!ytBtn||!emBtn) return;
+  if(mode==='youtube'){
+    ytBtn.style.cssText='flex:1;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;font-family:\'Noto Sans KR\',sans-serif;cursor:pointer;transition:all 0.15s;border:1.5px solid rgba(255,0,0,0.6);background:rgba(255,0,0,0.12);color:#c00;';
+    emBtn.style.cssText='flex:1;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;font-family:\'Noto Sans KR\',sans-serif;cursor:pointer;transition:all 0.15s;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);';
+  } else {
+    emBtn.style.cssText='flex:1;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;font-family:\'Noto Sans KR\',sans-serif;cursor:pointer;transition:all 0.15s;border:1.5px solid rgba(79,110,247,0.5);background:rgba(79,110,247,0.1);color:var(--blue);';
+    ytBtn.style.cssText='flex:1;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;font-family:\'Noto Sans KR\',sans-serif;cursor:pointer;transition:all 0.15s;border:1.5px solid rgba(255,0,0,0.3);background:rgba(255,0,0,0.06);color:#c00;';
+  }
+  ytBtn.dataset.active=(mode==='youtube'?'1':'0');
+  emBtn.dataset.active=(mode==='emoji'?'1':'0');
 }
 function closeMissionEdit(){
   const ov=document.getElementById('missionEditOverlay');
@@ -1988,6 +2007,10 @@ function saveMissionEdit(){
   const ytVal=document.getElementById('editYoutubeLink').value.trim();
   if(ytVal){entryLinks[id]=ytVal;}else{delete entryLinks[id];}
   saveEntryLinks();
+  // 썸네일 모드 저장
+  const emBtn=document.getElementById('thumbModeEmoji');
+  if(emBtn&&emBtn.dataset.active==='1'){thumbMode[id]='emoji';}else{delete thumbMode[id];}
+  saveThumbMode();
   renderAdminList();
   if(currentMissionId===id) openMission(id);
   showToast(`✏️ Quest ${id} 저장 완료!`);
@@ -2200,7 +2223,7 @@ function initApp(){
     const topbar = document.querySelector('#app > .topbar');
     if (topbar) topbar.style.display = 'none';
   }
-  loadMissionImages(); loadCustomMemos(); loadEntryLinks(); loadScratchSiteLinks(); loadCustomMissions();
+  loadMissionImages(); loadCustomMemos(); loadEntryLinks(); loadScratchSiteLinks(); loadCustomMissions(); loadThumbMode();
   // 관리자 세션 복원 (다른 페이지에서 로그인한 경우)
   if(localStorage.getItem('학습홈_admin')==='1') restoreAdminUI();
   // 로컬 데이터로 즉시 화면 표시
@@ -2318,6 +2341,13 @@ if(document.readyState==='loading'){
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">🔗 유튜브 링크</div>
           <input id="editYoutubeLink" type="url" placeholder="https://youtu.be/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:'Noto Sans KR',sans-serif;">
+          <div style="margin-top:8px;">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:5px;">🖼️ 카드 썸네일 표시</div>
+            <div style="display:flex;gap:6px;">
+              <button id="thumbModeYt" onclick="setThumbModeUI('youtube')" style="flex:1;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all 0.15s;border:1.5px solid rgba(255,0,0,0.3);background:rgba(255,0,0,0.06);color:#c00;">▶ 유튜브 썸네일</button>
+              <button id="thumbModeEmoji" onclick="setThumbModeUI('emoji')" style="flex:1;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all 0.15s;border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);">✨ 이모지 애니메이션</button>
+            </div>
+          </div>
         </div>
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:0.06em;">💜 힌트 블록 (최대 3개)</div>
