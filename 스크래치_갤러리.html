@@ -1223,7 +1223,9 @@ function openMission(id){
     stepsSection=`<div class="section-title-small">📋 미션 단계${isAdminMode?' <span style="font-size:11px;color:var(--purple);font-weight:400;">✏️ 클릭해서 바로 수정</span>':''}</div>${stepsHTML}`;
   }
   const hintChips=[];
-  for(let i=0;i<m.hint.length;i+=2){const cls=m.hint[i];const txt=m.hint[i+1]||'';hintChips.push(`<div class="block-chip ${cls}">${txt}</div>`);}
+  const hintArr=m.hint||[];
+  for(let i=0;i<hintArr.length;i+=2){const cls=hintArr[i];const txt=hintArr[i+1]||'';hintChips.push(`<div class="block-chip ${cls}">${txt}</div>`);}
+  const hasHint=hintChips.length>0;
   const starsHTML=[1,2,3].map(n=>`<div class="star-icon${starVal>=n?' lit':''}" onclick="rateStar(${id},${n})">⭐</div>`).join('');
   let memoVal=''; try{memoVal=localStorage.getItem(`memo_${userName}_${id}`)||'';}catch(e){}
   const completeBtnText=isDone?'✅ 완료! 잘했어요! 🏆':`🏆 미션 완료! (+${m.xp} XP)`;
@@ -1267,13 +1269,10 @@ function openMission(id){
           }
         </div>
         <div class="hint-row">
-          <button class="hint-btn" onclick="toggleHint()">💜 힌트 보기</button>
+          ${hasHint?`<button class="hint-btn" onclick="toggleHint()">💜 힌트 보기</button>`:''}
           <a class="scratch-link-btn" href="${scratchSiteLinks[id]||'https://scratch.mit.edu'}" target="_blank">🐱 스크래치 열기 ↗</a>
         </div>
-        <div class="hint-popup" id="hintPopup">
-          <div class="hint-popup-title">💜 이 블록들을 써보세요!</div>
-          <div class="hint-block-visual">${hintChips.join('')}</div>
-        </div>
+        ${hasHint?`<div class="hint-popup" id="hintPopup"><div class="hint-popup-title">💜 이 블록들을 써보세요!</div><div class="hint-block-visual">${hintChips.join('')}</div></div>`:''}
         <div style="display:flex;gap:10px;margin-top:12px;">
           <div style="flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:12px 14px;">
             <div style="font-family:'Nunito','Noto Sans KR',sans-serif;font-size:12px;color:var(--text2);margin-bottom:8px;">🌟 오늘의 별점</div>
@@ -1999,7 +1998,7 @@ function saveMissionEdit(){
     chapter:document.getElementById('editChapter').value||undefined,
     diff:parseInt(document.getElementById('editDiff').value)||undefined,
     steps:steps.length?steps:undefined,
-    hint:hintArr.length?hintArr:undefined
+    hint:hintArr
   };
   Object.keys(customMissions[id]).forEach(k=>{ if(customMissions[id][k]===undefined) delete customMissions[id][k]; });
   saveCustomMissions();
