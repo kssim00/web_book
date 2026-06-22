@@ -1603,15 +1603,21 @@ async function pushAllMissionsToSheet(){
   if(!APPS_SCRIPT_URL) return;
   try{
     const all = MISSIONS.map(m=>getMissionData(m.id));
-    const url = APPS_SCRIPT_URL
-      +'?action=saveMissions&type=entry'
-      +'&missions='+encodeURIComponent(JSON.stringify(all))
-      +'&t='+Date.now();
-    await fetch(url);
-    _missionSourceIsSheet = true;
-    showToast('📋 시트에 미션 '+all.length+'개 저장 완료!');
-    console.log('[시트] '+all.length+'개 미션 시트에 저장');
-  }catch(e){ showToast('❌ 시트 저장 실패'); }
+    // 대용량 데이터는 POST로 전송
+    const res = await fetch(APPS_SCRIPT_URL+'?action=saveMissions&type=entry', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(all)
+    });
+    const data = await res.json();
+    if(data.ok){
+      _missionSourceIsSheet = true;
+      showToast('📋 시트에 미션 '+all.length+'개 저장 완료!');
+      console.log('[시트] '+all.length+'개 미션 시트에 저장');
+    } else {
+      showToast('❌ 시트 저장 실패');
+    }
+  }catch(e){ showToast('❌ 시트 저장 실패: '+e.message); console.log(e); }
 }
 
 // 단일 미션을 시트에 반영 (관리자 편집 저장 시 호출)
