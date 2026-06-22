@@ -1950,6 +1950,12 @@ function renderEditSteps(steps){
     wrap.appendChild(div);
   });
 }
+function clearAllHints(){
+  for(let i=0;i<3;i++){
+    const sel=document.getElementById('eh_cat_'+i); if(sel) sel.value='';
+    const inp=document.getElementById('eh_txt_'+i); if(inp) inp.value='';
+  }
+}
 function setThumbModeUI(mode){
   const ytBtn=document.getElementById('thumbModeYt');
   const emBtn=document.getElementById('thumbModeEmoji');
@@ -2348,7 +2354,10 @@ if(document.readyState==='loading'){
           </div>
         </div>
         <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:0.06em;">💜 힌트 블록 (최대 3개)</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0.06em;">💜 힌트 블록 (최대 3개)</div>
+            <button onclick="clearAllHints()" style="font-size:11px;font-family:'Noto Sans KR',sans-serif;background:none;border:1px solid rgba(239,68,68,0.3);border-radius:6px;color:var(--red);padding:3px 8px;cursor:pointer;">🗑️ 전체 삭제</button>
+          </div>
           <div id="editHintWrap" style="display:flex;flex-direction:column;gap:6px;"></div>
         </div>
       </div>
