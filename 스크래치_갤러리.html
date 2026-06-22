@@ -1257,9 +1257,8 @@ function openMission(id){
     ${adminToolbarHTML}
     <div class="detail-layout">
       <div class="detail-left">
-        <div class="detail-preview" style="background:${m.previewBg};cursor:${isAdminMode?'pointer':'default'};" ${isAdminMode?`onclick="triggerDetailUpload(${id})" title="클릭하면 이미지를 업로드할 수 있어요"`:''}>
+        <div class="detail-preview" style="background:${m.previewBg};">
           ${previewContent}
-          ${isAdminMode?`<div style="position:absolute;bottom:10px;right:12px;background:rgba(79,110,247,0.75);border-radius:20px;padding:5px 12px;font-family:'Nunito','Noto Sans KR',sans-serif;font-size:11px;color:#fff;pointer-events:none;z-index:2;">📷 이미지 업로드</div>`:''}
         </div>
         <div class="detail-info">
           <div class="detail-tag" style="color:${m.tagColor}">${m.tag}</div>
