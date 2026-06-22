@@ -575,7 +575,7 @@ body.embedded .admin-pw-overlay.visible { align-items:flex-start !important; pad
 body.embedded .complete-modal-overlay.open { align-items:flex-start !important; padding-top:40px !important; }
 body.embedded .modal-overlay.visible { align-items:flex-start !important; padding-top:40px !important; }
 body.embedded #bulkVideoOverlay { align-items:flex-start !important; padding-top:40px !important; }
-/* body.embedded #missionEditOverlay — removed: overlay now uses overflow-y:auto scroll */
+body.embedded #missionEditOverlay { align-items:flex-start !important; padding-top:40px !important; }
 body.embedded .admin-pw-input { background:var(--bg2); border-color:var(--border); color:var(--text); }
 body.embedded .admin-header { background:linear-gradient(135deg,rgba(74,158,255,0.10),rgba(167,139,250,0.06)); border-color:rgba(74,158,255,0.30); }
 body.embedded .admin-mission-row { background:var(--card); border-color:var(--border); }
@@ -860,6 +860,7 @@ body { background:#FAFAFA !important; }
         <button class="admin-trigger" id="adminTriggerBtn" onclick="toggleAdminMenu()" title="관리자">⚙️</button>
         <div id="adminDropdown" style="display:none;position:absolute;right:0;top:40px;background:var(--card);border:1.5px solid var(--border2);border-radius:14px;box-shadow:0 8px 28px rgba(79,110,247,0.18);z-index:9999;min-width:180px;overflow:hidden;">
           <button onclick="closeAdminMenu();openAdmin()" style="display:block;width:100%;text-align:left;padding:13px 18px;background:none;border:none;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);">✏️ 미션 편집</button>
+          <button onclick="closeAdminMenu();adminSyncToSheet()" style="display:block;width:100%;text-align:left;padding:13px 18px;background:none;border:none;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:var(--teal);cursor:pointer;border-bottom:1px solid var(--border);">📋 구글 시트 동기화</button>
           <button onclick="closeAdminMenu();logoutAdmin()" style="display:block;width:100%;text-align:left;padding:13px 18px;background:none;border:none;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#DC2626;cursor:pointer;">🔓 관리자 종료</button>
         </div>
       </div>
@@ -986,7 +987,7 @@ let isAdminMode=false;
 // ══════════════════════════════════════════
 //  MISSION DATA (30개)
 // ══════════════════════════════════════════
-const MISSIONS = [
+let MISSIONS = [
   // ── 챕터 1: 기초 (1~10) ──
   {id:1,chapter:'ch1',emoji:'🤖',bg:'linear-gradient(135deg,#1a3a5c,#1e4070)',color:'var(--teal)',title:'엔트리봇을 움직여라!',diff:1,xp:10,tag:'QUEST 1',tagColor:'var(--teal)',desc:'키보드 화살표로 엔트리봇을 움직여봐요. 방향키를 누르면 엔트리봇이 걸어가요!',previewAnim:'wiggle',previewBg:'linear-gradient(135deg,#0d2040,#1a3a5c)',steps:[{title:'🤖 엔트리봇 선택',desc:'기본 오브젝트인 엔트리봇을 사용해요.'},{title:'⬆️ 위쪽 화살표 연결',desc:'"위쪽 화살표 키를 눌렀을 때" 블록을 가져와요.'},{title:'🚶 y 좌표 바꾸기',desc:'"y좌표를 10 바꾸기" 블록을 연결해요.'},{title:'⬇️⬅️➡️ 나머지 방향도',desc:'아래, 왼쪽, 오른쪽 화살표도 똑같이 만들어요.'},{title:'🔄 모양 바꾸기',desc:'움직일 때 모양도 바꿔보세요!'}],hint:['block-motion','이동하기 10','block-events','위쪽 화살표 키를 눌렀을 때','block-motion','x좌표를 10 바꾸기'],modal:{icon:'🤖',title:'엔트리봇 조종 완료!',msg:'키보드로 캐릭터를 움직이는 마법을 배웠어요!'}},
   {id:2,chapter:'ch1',emoji:'🌳',bg:'linear-gradient(135deg,#1a3d2e,#1e4a30)',color:'var(--green)',title:'나무를 10그루 심어라!',diff:1,xp:10,tag:'QUEST 2',tagColor:'var(--green)',desc:'반복 블록을 사용해서 나무 모양을 10번 그려봐요. 반복문의 마법을 경험하세요!',previewAnim:'bounce',previewBg:'linear-gradient(135deg,#0d2a1e,#1a3d2e)',steps:[{title:'🖊️ 붓 블록 추가',desc:'붓 카테고리에서 "도장" 블록을 찾아요.'},{title:'10번 반복하기',desc:'"10번 반복하기" 블록을 가져와요.'},{title:'🌳 도장 찍기',desc:'반복 안에 "도장" 블록을 넣어요.'},{title:'➡️ 위치 이동',desc:'도장 찍고 옆으로 이동하는 블록을 추가해요.'},{title:'✨ 실행해보기',desc:'시작 버튼을 눌러서 결과를 확인해요!'}],hint:['block-control','10번 반복하기','block-motion','x좌표를 40 바꾸기','block-looks','도장찍기'],modal:{icon:'🌳',title:'숲이 생겼어요!',msg:'반복문으로 힘든 일도 척척! 개발자처럼 생각하기 시작했어요!'}},
@@ -1026,7 +1027,6 @@ const MISSIONS = [
 //  STATE
 // ══════════════════════════════════════════
 let userName = '';
-let _parentViewportH = 640; // postMessage로 갱신됨
 let totalXP = 0;
 let completedMissions = {};
 let stepsDone = {};
@@ -1572,6 +1572,66 @@ function loadFromJSON(){
     .catch(()=>{ console.log('ℹ️ entry_data.json 없음 — localStorage 사용'); return false; });
 }
 function saveCustomMissions(){ try{localStorage.setItem('eg_admin_missions',JSON.stringify(customMissions));}catch(e){} saveAllAdminToCloud(); }
+// ══════════════════════════════════════════
+//  구글 시트 ↔ 미션 데이터 동기화
+// ══════════════════════════════════════════
+let _missionSourceIsSheet = false; // 시트에서 미션을 불러왔을 때 true
+
+// 시트에서 미션 목록 불러오기 (앱 초기화 시 호출)
+async function loadMissionsFromSheet(){
+  if(!APPS_SCRIPT_URL) return;
+  try{
+    const res  = await fetch(APPS_SCRIPT_URL+'?action=getMissions&type=entry&t='+Date.now());
+    const data = await res.json();
+    if(data.found && data.missions && data.missions.length > 0){
+      // id를 숫자로 정규화
+      MISSIONS = data.missions.map(m=>Object.assign(m,{id:Number(m.id),diff:Number(m.diff)||1,xp:Number(m.xp)||10}));
+      _missionSourceIsSheet = true;
+      renderGallery(); calcProgress(); updateTopbar();
+      console.log('[시트] 미션 '+MISSIONS.length+'개 로드 완료');
+    } else if(data.found && data.missions && data.missions.length === 0){
+      // 시트 있지만 비어있음 → 현재 미션을 시트에 최초 등록
+      await pushAllMissionsToSheet();
+    }
+    // found=false: 시트 미존재 → 기본값 유지
+  }catch(e){ console.log('[시트] 미션 로드 실패 (기본값 사용):', e); }
+}
+
+// 현재 MISSIONS 전체를 시트에 일괄 저장 (최초 세팅 또는 수동 동기화)
+async function pushAllMissionsToSheet(){
+  if(!APPS_SCRIPT_URL) return;
+  try{
+    const all = MISSIONS.map(m=>getMissionData(m.id));
+    const url = APPS_SCRIPT_URL
+      +'?action=saveMissions&type=entry'
+      +'&missions='+encodeURIComponent(JSON.stringify(all))
+      +'&t='+Date.now();
+    await fetch(url);
+    _missionSourceIsSheet = true;
+    showToast('📋 시트에 미션 '+all.length+'개 저장 완료!');
+    console.log('[시트] '+all.length+'개 미션 시트에 저장');
+  }catch(e){ showToast('❌ 시트 저장 실패'); }
+}
+
+// 단일 미션을 시트에 반영 (관리자 편집 저장 시 호출)
+function syncMissionToSheet(id){
+  if(!APPS_SCRIPT_URL) return;
+  try{
+    const m = getMissionData(id);
+    const url = APPS_SCRIPT_URL
+      +'?action=updateMission&type=entry'
+      +'&mission='+encodeURIComponent(JSON.stringify(m))
+      +'&t='+Date.now();
+    fetch(url).catch(()=>{});
+  }catch(e){}
+}
+
+// 관리자 패널: 수동 전체 동기화 버튼
+async function adminSyncToSheet(){
+  if(!confirm('현재 모든 미션을 구글 시트에 동기화할까요?')) return;
+  showToast('📋 동기화 중...', 2000);
+  await pushAllMissionsToSheet();
+}
 async function loadAdminFromCloud(){
   if(!APPS_SCRIPT_URL) return;
   try{
@@ -1617,6 +1677,9 @@ function getYoutubeThumbnail(url){
   return id?`https://img.youtube.com/vi/${id}/maxresdefault.jpg`:null;
 }
 function getMissionData(id){
+  // 시트 미션이 로드된 경우 우선 사용
+  const sheetM = MISSIONS.find(m=>m.id===id);
+  if(sheetM && _missionSourceIsSheet) return Object.assign({}, sheetM, customMissions[id]||{});
   const base=MISSIONS.find(m=>m.id===id)||{};
   const custom=customMissions[id]||{};
   return Object.assign({},base,custom);
@@ -1886,20 +1949,13 @@ function clearDetailLink(id){
 // ══════════════════════════════════════════
 let editingMissionId=null;
 function openMissionEdit(id){
-  document.documentElement.style.overscrollBehavior = 'contain';
+  if(document.body.classList.contains('embedded')) window.scrollTo(0,0);
+  document.body.style.overflow='hidden';
   editingMissionId=id;
-  window.parent.postMessage({type:'entry-modal-open'}, '*');
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    _openMissionEditBody(id);
-  }));
-}
-function _openMissionEditBody(id){
   const base=MISSIONS.find(x=>x.id===id)||{};
   const custom=customMissions[id]||{};
   const hasCustom=Object.keys(custom).length>0;
   const _ov=document.getElementById('missionEditOverlay');
-  _ov.style.height = _parentViewportH + 'px';
-  document.getElementById('missionEditPanel').style.height = (_parentViewportH - 16) + 'px';
   _ov.style.display='flex';
   _ov.dataset.open='1';
   document.getElementById('editMissionNum').textContent='QUEST '+id+(hasCustom?' ✅':' (미편집)');
@@ -1950,12 +2006,7 @@ function closeMissionEdit(){
   ov.style.display='none';
   ov.dataset.open='0';
   editingMissionId=null;
-  document.documentElement.style.overscrollBehavior = '';
-  const _ov2 = document.getElementById('missionEditOverlay');
-  if(_ov2) _ov2.style.height = '';
-  const _panel = document.getElementById('missionEditPanel');
-  if(_panel) _panel.style.height = '';
-  window.parent.postMessage({type:'entry-modal-close'}, '*');
+  document.body.style.overflow='';
 }
 function toggleMissionEdit(id){
   const overlay=document.getElementById('missionEditOverlay');
@@ -1977,10 +2028,11 @@ function saveMissionEdit(){
     chapter:document.getElementById('editChapter').value||undefined,
     diff:parseInt(document.getElementById('editDiff').value)||undefined,
     steps:steps.length?steps:undefined,
-    hint:(()=>{const h=[];for(let i=0;i<3;i++){const cat=(document.getElementById('eh_cat_'+i)||{}).value||'';const txt=((document.getElementById('eh_txt_'+i)||{}).value||'').trim();if(cat&&txt){h.push(cat,txt);}}return h;})()
+    hint:(()=>{const h=[];for(let i=0;i<3;i++){const cat=(document.getElementById('eh_cat_'+i)||{}).value||'';const txt=((document.getElementById('eh_txt_'+i)||{}).value||'').trim();if(cat&&txt){h.push(cat,txt);}}return h.length?h:undefined;})()
   };
   Object.keys(customMissions[id]).forEach(k=>{ if(customMissions[id][k]===undefined) delete customMissions[id][k]; });
   saveCustomMissions();
+  syncMissionToSheet(id);
   // 유튜브 링크 저장
   const ytVal=document.getElementById('editYoutubeLink').value.trim();
   if(ytVal){entryLinks[id]=ytVal;}else{delete entryLinks[id];}
@@ -1994,7 +2046,7 @@ function resetMissionEdit(){
   if(!editingMissionId) return;
   if(!confirm('기본값으로 되돌릴까요?')) return;
   delete customMissions[editingMissionId];
-  saveCustomMissions(); renderAdminList();
+  saveCustomMissions(); syncMissionToSheet(editingMissionId); renderAdminList();
   openMissionEdit(editingMissionId);
   showToast('↩️ 기본값으로 초기화됨');
 }
@@ -2189,6 +2241,7 @@ function initApp(){
     loadFromGoogleSheets()
   ]).then(async ()=>{
     await loadAdminFromCloud();
+    await loadMissionsFromSheet();
     await loadFromCloud();
     updateTopbar();
     // 미션 상세보기 중이면 갤러리로 강제 이동하지 않음
@@ -2226,58 +2279,46 @@ if(document.readyState==='loading'){
 } else {
   initApp();
 }
-window.addEventListener('message', function(e){
-  if(e.data && e.data.type==='viewport-height' && e.data.height > 100){
-    _parentViewportH = e.data.height;
-    const _ov = document.getElementById('missionEditOverlay');
-    if(_ov && _ov.dataset.open==='1'){
-      _ov.style.height = _parentViewportH + 'px';
-      const _p = document.getElementById('missionEditPanel');
-      if(_p) _p.style.height = (_parentViewportH - 16) + 'px';
-    }
-  }
-});
 </script>
 
 <!-- 미션 편집 모달 (통합) -->
-<div id="missionEditOverlay" onclick="if(event.target===this)closeMissionEdit()" style="display:none;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);overflow-y:auto;padding:8px 10px;">
-  <div id="missionEditPanel" style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:22px;padding:14px 20px;width:calc(100% - 20px);max-width:1400px;margin:0 auto;box-shadow:0 24px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;overflow:hidden;">
+<div id="missionEditOverlay" onclick="if(event.target===this)closeMissionEdit()" style="display:none;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--card);border:1.5px solid rgba(139,92,246,0.35);border-radius:24px;padding:24px 28px;width:95%;max-width:960px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
     <!-- 헤더 -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0;">
-      <div style="font-family:'Nunito','Noto Sans KR',sans-serif;font-size:17px;font-weight:800;color:var(--purple);">✏️ 미션 편집 <span id="editMissionNum" style="font-size:12px;color:var(--text3);font-weight:400;"></span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-shrink:0;">
+      <div style="font-family:'Nunito','Noto Sans KR',sans-serif;font-size:18px;font-weight:800;color:var(--purple);">✏️ 미션 편집 <span id="editMissionNum" style="font-size:13px;color:var(--text3);font-weight:400;"></span></div>
       <button onclick="closeMissionEdit()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">✕</button>
     </div>
-    <!-- 3컬럼 본문 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex:1;min-height:0;overflow-y:auto;" id="editModalBody">
+    <!-- 2컬럼 본문 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;overflow-y:auto;flex:1;min-height:0;">
       <!-- 왼쪽: 기본정보 -->
-      <div style="display:flex;flex-direction:column;gap:7px;">
-        <div style="font-size:11px;font-weight:700;color:var(--purple);letter-spacing:0.08em;opacity:0.7;margin-bottom:1px;">기본 정보</div>
-        <div style="display:grid;grid-template-columns:56px 1fr;gap:6px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:grid;grid-template-columns:72px 1fr;gap:10px;">
           <div>
-            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:3px;">이모지</div>
-            <input id="editEmoji" type="text" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:20px;padding:5px;text-align:center;outline:none;">
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">이모지</div>
+            <input id="editEmoji" type="text" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:22px;padding:8px;text-align:center;outline:none;">
           </div>
           <div>
-            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:3px;">미션 제목</div>
-            <input id="editTitle" type="text" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:6px 10px;outline:none;font-family:'Noto Sans KR',sans-serif;">
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">미션 제목</div>
+            <input id="editTitle" type="text" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:9px 12px;outline:none;font-family:'Noto Sans KR',sans-serif;">
           </div>
         </div>
         <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:3px;">미션 설명</div>
-          <textarea id="editDesc" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:6px 10px;outline:none;resize:none;height:62px;font-family:'Noto Sans KR',sans-serif;line-height:1.5;"></textarea>
+          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">미션 설명</div>
+          <textarea id="editDesc" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;resize:none;height:72px;font-family:'Noto Sans KR',sans-serif;line-height:1.6;"></textarea>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
-            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:3px;">단계 (챕터)</div>
-            <select id="editChapter" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;padding:6px 8px;outline:none;">
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">단계 (챕터)</div>
+            <select id="editChapter" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 10px;outline:none;">
               <option value="ch1">🌱 1단계 — 기초</option>
               <option value="ch2">⚡ 2단계 — 중급</option>
               <option value="ch3">🔥 3단계 — 고급</option>
             </select>
           </div>
           <div>
-            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:3px;">난이도</div>
-            <select id="editDiff" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;padding:6px 8px;outline:none;">
+            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">난이도</div>
+            <select id="editDiff" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 10px;outline:none;">
               <option value="1">⭐ 쉬움</option>
               <option value="2">⭐⭐ 보통</option>
               <option value="3">⭐⭐⭐ 어려움</option>
@@ -2285,62 +2326,57 @@ window.addEventListener('message', function(e){
           </div>
         </div>
         <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:3px;">🔗 유튜브 링크</div>
-          <input id="editYoutubeLink" type="url" placeholder="https://youtu.be/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;padding:6px 10px;outline:none;font-family:'Noto Sans KR',sans-serif;">
-        </div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:4px;">💜 힌트 블록 (최대 3개)</div>
-          <div id="editHintWrap" style="display:flex;flex-direction:column;gap:4px;"></div>
-        </div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:4px;">📷 이미지 / 🎬 영상</div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <div id="editImgPreview" style="width:44px;height:44px;border-radius:8px;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px;flex-shrink:0;"></div>
-            <button onclick="triggerUpload(editingMissionId)" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(79,110,247,0.1);border:1.5px solid rgba(79,110,247,0.3);color:var(--blue);cursor:pointer;">📷 이미지</button>
-            <button id="editImgDelBtn" onclick="deleteImageFromEdit()" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);cursor:pointer;display:none;">✕</button>
-            <button onclick="triggerVideoUpload(editingMissionId)" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(14,165,233,0.1);border:1.5px solid rgba(14,165,233,0.3);color:var(--teal);cursor:pointer;">🎬 영상</button>
-            <span id="editVidStatus" style="font-size:11px;color:var(--text3);"></span>
-            <button id="editVidDelBtn" onclick="deleteVideoFromEdit()" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);cursor:pointer;display:none;">✕</button>
-          </div>
-        </div>
-      </div>
-      <!-- 가운데: 자동채우기 -->
-      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
-        <div style="font-size:11px;font-weight:700;color:var(--purple);letter-spacing:0.08em;opacity:0.7;margin-bottom:2px;">단계 자동 채우기</div>
-        <div style="background:rgba(107,71,237,0.04);border:1.5px solid rgba(107,71,237,0.2);border-radius:12px;padding:12px;flex:1;display:flex;flex-direction:column;gap:8px;">
-          <div style="font-size:11px;color:var(--text3);line-height:1.6;">💡 <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px;">1단계 제목</code> 다음 줄에 설명을 입력하면 오른쪽 단계 칸에 자동으로 채워집니다.</div>
-          <div id="bulkStepInputWrap" style="display:flex;flex-direction:column;gap:7px;flex:1;">
-            <textarea id="bulkStepTA" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;resize:none;flex:1;min-height:200px;font-family:'Noto Sans KR',sans-serif;line-height:1.7;" placeholder="1단계 오브젝트 추가하기
-오브젝트 추가 버튼을 눌러 캐릭터를 무대에 올려요.
-
-2단계 이동 블록 연결
-시작하기를 클릭했을 때 블록에 이동하기 블록을 연결해요."></textarea>
-            <div style="display:flex;gap:8px;">
-              <button onclick="parseAndFillSteps()" style="flex:1;padding:9px;border-radius:50px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">✨ 자동 채우기</button>
-              <button onclick="document.getElementById('bulkStepTA').value=''" style="padding:9px 14px;border-radius:50px;font-size:12px;font-family:'Noto Sans KR',sans-serif;background:none;border:1.5px solid var(--border);color:var(--text3);cursor:pointer;">지우기</button>
+          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:0.06em;">📷 이미지 / 🎬 영상</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="editImgPreview" style="width:56px;height:56px;border-radius:10px;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:24px;flex-shrink:0;"></div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="display:flex;gap:5px;">
+                <button onclick="triggerUpload(editingMissionId)" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(79,110,247,0.1);border:1.5px solid rgba(79,110,247,0.3);color:var(--blue);cursor:pointer;">📷 이미지</button>
+                <button id="editImgDelBtn" onclick="deleteImageFromEdit()" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);cursor:pointer;display:none;">✕</button>
+              </div>
+              <div style="display:flex;gap:5px;align-items:center;">
+                <button onclick="triggerVideoUpload(editingMissionId)" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(14,165,233,0.1);border:1.5px solid rgba(14,165,233,0.3);color:var(--teal);cursor:pointer;">🎬 영상</button>
+                <span id="editVidStatus" style="font-size:11px;color:var(--text3);"></span>
+                <button id="editVidDelBtn" onclick="deleteVideoFromEdit()" style="padding:5px 10px;border-radius:7px;font-size:11px;font-family:'Noto Sans KR',sans-serif;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.25);color:var(--red);cursor:pointer;display:none;">✕</button>
+              </div>
             </div>
           </div>
         </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.06em;">🔗 유튜브 링크</div>
+          <input id="editYoutubeLink" type="url" placeholder="https://youtu.be/..." style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:'Noto Sans KR',sans-serif;">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:0.06em;">💜 힌트 블록 (최대 3개)</div>
+          <div id="editHintWrap" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
       </div>
-      <!-- 오른쪽: 단계별 설명 -->
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div style="font-size:11px;font-weight:700;color:var(--purple);letter-spacing:0.08em;opacity:0.7;margin-bottom:2px;">단계별 설명 (최대 5단계)</div>
+      <!-- 오른쪽: 단계 입력 -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="background:rgba(107,71,237,0.04);border:1.5px solid rgba(107,71,237,0.2);border-radius:12px;padding:12px;">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:7px;line-height:1.6;">💡 <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px;">1단계 제목</code> 다음 줄에 설명을 입력하면 자동으로 채워집니다.</div>
+          <div id="bulkStepInputWrap">
+            <textarea id="bulkStepTA" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;resize:none;height:110px;font-family:'Noto Sans KR',sans-serif;line-height:1.7;" placeholder="1단계 오브젝트 추가하기&#10;오브젝트 추가 버튼을 눌러 캐릭터를 무대에 올려요.&#10;&#10;2단계 이동 블록 연결&#10;시작하기를 클릭했을 때 블록에 이동하기 블록을 연결해요."></textarea>
+            <div style="display:flex;gap:8px;margin-top:7px;">
+              <button onclick="parseAndFillSteps()" style="flex:1;padding:8px;border-radius:50px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">✨ 자동 채우기</button>
+              <button onclick="document.getElementById('bulkStepTA').value=''" style="padding:8px 14px;border-radius:50px;font-size:12px;font-family:'Noto Sans KR',sans-serif;background:none;border:1.5px solid var(--border);color:var(--text3);cursor:pointer;">지우기</button>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0.06em;">단계별 설명 (최대 5단계)</div>
         <div id="editStepsWrap" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
     </div>
     <!-- 하단 버튼 -->
-    <div style="margin-top:10px;border-top:1.5px solid var(--border);padding-top:8px;flex-shrink:0;">
+    <div style="flex-shrink:0;margin-top:16px;border-top:1.5px solid var(--border);padding-top:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button onclick="saveMissionEdit()" style="flex:4;padding:11px;border-radius:50px;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">💾 저장하기</button>
-        <button onclick="resetMissionEdit()" style="flex:1;padding:11px;border-radius:50px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:rgba(255,87,87,0.1);border:1.5px solid rgba(255,87,87,0.3);color:var(--red);cursor:pointer;">↩️ 초기화</button>
+        <button onclick="saveMissionEdit()" style="flex:3;padding:12px;border-radius:50px;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,var(--purple),var(--blue));border:none;color:#fff;cursor:pointer;">💾 저장하기</button>
+        <button onclick="resetMissionEdit()" style="flex:1;padding:12px;border-radius:50px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:rgba(255,87,87,0.1);border:1.5px solid rgba(255,87,87,0.3);color:var(--red);cursor:pointer;">↩️ 초기화</button>
       </div>
-      <div id="editSaveStatus" style="text-align:center;font-size:13px;color:var(--teal);margin-top:7px;min-height:18px;"></div>
+      <div id="editSaveStatus" style="text-align:center;font-size:13px;color:var(--teal);margin-top:8px;min-height:18px;"></div>
     </div>
   </div>
 </div>
-
-
-
 
 
 <!-- 일괄 영상 업로드 오버레이 -->
