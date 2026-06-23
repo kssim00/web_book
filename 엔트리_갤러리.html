@@ -1575,7 +1575,18 @@ function loadFromJSON(){
     })
     .catch(()=>{ console.log('ℹ️ entry_data.json 없음 — localStorage 사용'); return false; });
 }
-function saveCustomMissions(){ try{localStorage.setItem('eg_admin_missions',JSON.stringify(customMissions));}catch(e){} saveAllAdminToCloud(); }
+function saveCustomMissions(){ try{localStorage.setItem('eg_admin_missions',JSON.stringify(customMissions));}catch(e){} saveAllAdminToCloud(); syncMissionsToSheet('entry'); }
+function syncMissionsToSheet(type){
+  if(!APPS_SCRIPT_URL) return;
+  try{
+    const url=APPS_SCRIPT_URL
+      +'?action=writeMissionsToSheet'
+      +'&type='+type
+      +'&missions='+encodeURIComponent(JSON.stringify(customMissions))
+      +'&t='+Date.now();
+    fetch(url).catch(()=>{});
+  }catch(e){ console.log('시트 동기화 실패:',e); }
+}
 async function loadAdminFromCloud(){
   if(!APPS_SCRIPT_URL) return;
   try{
