@@ -4225,6 +4225,21 @@ window.addEventListener('message', function(e) {
   if (e.data.type === 'entry-modal-close') {
     document.body.style.overflow = '';
   }
+  // 터틀 갤러리: 상세 보기 ↔ 목록 전환 시 iframe 너비 변경
+  if (e.data.type === 'turtle-mode') {
+    const f = document.getElementById('turtleGalleryFrame');
+    if (f) {
+      if (e.data.mode === 'detail') {
+        f.style.setProperty('width', '100%', 'important');
+        f.style.left = '0';
+        f.style.transform = 'none';
+      } else {
+        f.style.setProperty('width', 'min(1200px, calc(100vw - 32px))', 'important');
+        f.style.left = '50%';
+        f.style.transform = 'translateX(-50%)';
+      }
+    }
+  }
 });
 
 // ── LESSON LINK

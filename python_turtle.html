@@ -1295,6 +1295,7 @@ function showHome(){
   document.getElementById('sidebar').style.display = 'none';
   document.getElementById('main').style.maxWidth = '100%';
   document.getElementById('main').style.margin = '0';
+  if (window.parent !== window) window.parent.postMessage({type:'turtle-mode',mode:'gallery'}, '*');
   let html = '<h2 style="margin-top:0;">🐢 단계별로 하나씩 코딩해볼까요?</h2>';
   html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요.</div>';
   html += '<div class="grid">';
@@ -1316,6 +1317,7 @@ function showDetail(idx){
   document.getElementById('sidebar').style.display = '';
   document.getElementById('main').style.maxWidth = '';
   document.getElementById('main').style.margin = '';
+  if (window.parent !== window) window.parent.postMessage({type:'turtle-mode',mode:'detail'}, '*');
   setActiveSide(idx);
   let html = '<button class="back-btn" id="backBtn">← 목록으로</button>';
   html += '<div class="cover-section">';
