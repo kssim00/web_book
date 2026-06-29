@@ -1607,6 +1607,19 @@ body::before {
   overflow: hidden;
 }
 
+/* 갤러리 미션 편집 모달 열릴 때 iframe 풀스크린 */
+.gallery-iframe.modal-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  transform: none !important;
+  max-width: none !important;
+  z-index: 9500 !important;
+}
+
 /* s5 — 앰버 */
 .panel-hero.s5 { background: linear-gradient(135deg,#2a1500 0%,#3a1e00 45%,#1c0e00 100%); border-top: 1px solid rgba(251,176,64,0.3); border-bottom: 1px solid rgba(251,176,64,0.3); }
 .panel-hero.s5::after { background: radial-gradient(circle,rgba(251,176,64,0.18) 0%,transparent 65%); }
@@ -2776,7 +2789,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           <div class="py-hero-stats">
             <div class="py-hero-stats-row">
               <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-total">8</div>
+                <div class="py-stat-num" id="py-stat-total">9</div>
                 <div class="py-stat-label">총 챕터</div>
               </div>
               <div class="py-stat-div"></div>
@@ -2946,6 +2959,23 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
           <div class="py-gcard-foot">
             <a href="https://kssim00.github.io/web_book/python_function.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+        <label class="py-gcard func" id="rc-p4-8">
+          <input type="radio" name="today-p4" value="8" onchange="selectToday('p4',8)">
+          <div class="py-gcard-thumb func">
+            <div class="py-thumb-code"><span class="py-tc-kw">import</span> turtle<br>t = turtle.<span class="py-tc-fn">Turtle</span>()<br>t.<span class="py-tc-fn">forward</span>(<span class="py-tc-num">100</span>)</div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">그래픽</div>
+            <div class="py-gcard-name">터틀 그래픽</div>
+            <div class="py-gcard-desc">거북이를 움직여 그림 그리기 — 파이썬 첫 그래픽 체험</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://kssim00.github.io/web_book/python_turtle.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
             <span class="py-gcard-select-dot"></span>
           </div>
         </label>
@@ -3625,6 +3655,7 @@ function openCustomPanel(subjectId) {
   document.getElementById('entryXpBadge').style.display = 'none';
   document.getElementById('scratchXpBadge').style.display = 'none';
   window.scrollTo({ top: 0, behavior: 'instant' });
+  setTimeout(sendViewportHeight, 300);
 }
 
 // 색상 hex → rgb
@@ -4050,8 +4081,18 @@ function hideAllPanels() {
 }
 
 // ── 갤러리 메시지 수신 (XP + 높이 자동 조절)
+function sendViewportHeight() {
+  const h = window.innerHeight;
+  ['entryGalleryFrame','scratchGalleryFrame'].forEach(function(id){
+    const f = document.getElementById(id);
+    if(f && f.contentWindow) f.contentWindow.postMessage({type:'viewport-height',height:h},'*');
+  });
+}
+window.addEventListener('resize', sendViewportHeight);
+
 window.addEventListener('message', function(e) {
   if (!e.data) return;
+
 
   // 엔트리 XP 업데이트
   if (e.data.type === 'entry-xp') {
@@ -4111,6 +4152,35 @@ window.addEventListener('message', function(e) {
     if (frame && e.data.height && e.data.height > 400) {
       frame.style.height = e.data.height + 'px';
     }
+  }
+  // 갤러리 미션 편집 모달 풀스크린 처리
+  if (e.data.type === 'scratch-modal-open') {
+    const f = document.getElementById('scratchGalleryFrame');
+    if (f) {
+      var tbH = (document.querySelector('.topbar') || {offsetHeight:56}).offsetHeight;
+      var rect = f.getBoundingClientRect();
+      window.scrollBy(0, rect.top - tbH);
+      document.body.style.overflow = 'hidden';
+      var effH = window.innerHeight - tbH;
+      if(f.contentWindow) f.contentWindow.postMessage({type:'viewport-height', height: effH}, '*');
+    }
+  }
+  if (e.data.type === 'scratch-modal-close') {
+    document.body.style.overflow = '';
+  }
+  if (e.data.type === 'entry-modal-open') {
+    const f = document.getElementById('entryGalleryFrame');
+    if (f) {
+      var tbH = (document.querySelector('.topbar') || {offsetHeight:56}).offsetHeight;
+      var rect = f.getBoundingClientRect();
+      window.scrollBy(0, rect.top - tbH);
+      document.body.style.overflow = 'hidden';
+      var effH = window.innerHeight - tbH;
+      if(f.contentWindow) f.contentWindow.postMessage({type:'viewport-height', height: effH}, '*');
+    }
+  }
+  if (e.data.type === 'entry-modal-close') {
+    document.body.style.overflow = '';
   }
 });
 
