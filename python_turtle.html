@@ -56,10 +56,10 @@
   .side-item.active{background:rgba(255,255,255,0.26);border-left-color:#fff;opacity:1;font-weight:bold;}
 
   /* 메인 */
-  #main{flex:1;padding:34px 42px 60px;overflow-y:auto;}
+  #main{flex:1;padding:24px 28px 60px;overflow-y:auto;}
   h2{color:var(--primary-dark);}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px;margin-top:18px;}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:18px;}
   .card{
     background:var(--card-bg);border-radius:18px;box-shadow:var(--shadow);
     overflow:hidden;cursor:pointer;transition:transform .15s ease;
@@ -67,7 +67,7 @@
   .card:hover{transform:translateY(-5px);}
   .card-icon{
     aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
-    font-size:44px;background:linear-gradient(135deg,var(--accent),#fff);
+    font-size:34px;background:linear-gradient(135deg,var(--accent),#fff);
   }
   .card .card-body{padding:13px 15px;}
   .card .card-title{font-weight:bold;font-size:15px;color:var(--text);}
@@ -1287,8 +1287,8 @@ function setActiveSide(idx){
 function showHome(){
   setActiveSide(null);
   document.getElementById('sidebar').style.display = 'none';
-  document.getElementById('main').style.maxWidth = '1100px';
-  document.getElementById('main').style.margin = '0 auto';
+  document.getElementById('main').style.maxWidth = '100%';
+  document.getElementById('main').style.margin = '0';
   let html = '<h2 style="margin-top:0;">🐢 단계별로 하나씩 코딩해볼까요?</h2>';
   html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요.</div>';
   html += '<div class="grid">';
