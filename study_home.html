@@ -1567,6 +1567,18 @@ body::before {
 #panel2.visible {
   display: block;
 }
+#panel2 .gallery-iframe {
+  display: block;
+  width: min(1200px, calc(100vw - 32px)) !important;
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  height: calc(100vh - 60px);
+  min-height: 600px;
+  border: none;
+  background: transparent;
+  overflow: hidden;
+}
 
 /* s3 XP 뱃지 (panel3 갤러리) */
 .p3-xp-badge {
