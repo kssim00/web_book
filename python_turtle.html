@@ -1286,6 +1286,9 @@ function setActiveSide(idx){
 
 function showHome(){
   setActiveSide(null);
+  document.getElementById('sidebar').style.display = 'none';
+  document.getElementById('main').style.maxWidth = '1100px';
+  document.getElementById('main').style.margin = '0 auto';
   let html = '<h2 style="margin-top:0;">🐢 단계별로 하나씩 코딩해볼까요?</h2>';
   html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요.</div>';
   html += '<div class="grid">';
@@ -1304,6 +1307,9 @@ function showHome(){
 
 function showDetail(idx){
   const u = UNITS[idx];
+  document.getElementById('sidebar').style.display = '';
+  document.getElementById('main').style.maxWidth = '';
+  document.getElementById('main').style.margin = '';
   setActiveSide(idx);
   let html = '<button class="back-btn" id="backBtn">← 목록으로</button>';
   html += '<div class="cover-section">';
@@ -1487,20 +1493,7 @@ document.addEventListener("keydown", function(e){
 
 showHome();
 
-// 부모 페이지에서 embed-mode 신호를 받으면 사이드바 숨김
-window.addEventListener('message', function(e) {
-  if (e.data && e.data.type === 'embed-mode') {
-    var sidebar = document.getElementById('sidebar');
-    var main = document.getElementById('main');
-    if (sidebar) sidebar.style.display = 'none';
-    if (main) {
-      main.style.padding = '30px 32px 60px';
-      main.style.width = '100%';
-      main.style.maxWidth = '1100px';
-      main.style.margin = '0 auto';
-    }
-  }
-});
+
 </script>
 </body>
 </html>
