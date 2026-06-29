@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파이썬 터틀 웹교재</title>
+<style>
+  :root{
+    --primary:#2f9e6e;
+    --primary-dark:#21794f;
+    --bg:#f3fbf6;
+    --card-bg:#ffffff;
+    --text:#27392f;
+    --muted:#7c948a;
+    --accent:#d9f0e3;
+    --shadow:0 4px 16px rgba(30,90,60,0.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  #app{display:flex;min-height:100vh;}
+
+  /* 사이드바 */
+  #sidebar{
+    width:250px;flex-shrink:0;
+    background:linear-gradient(180deg,#2f9e6e,#57b98c);
+    color:#fff;padding:22px 0 40px;
+    overflow-y:auto;height:100vh;position:sticky;top:0;
+  }
+  #sidebar h1{
+    font-size:19px;margin:0;padding:0 20px 16px;
+    border-bottom:1px solid rgba(255,255,255,0.35);
+    line-height:1.4;
+  }
+  .side-home{
+    display:block;margin:14px 14px 6px;padding:10px 14px;
+    background:rgba(255,255,255,0.18);border-radius:10px;
+    color:#fff;text-decoration:none;cursor:pointer;font-weight:bold;font-size:14px;
+  }
+  .side-home:hover{background:rgba(255,255,255,0.3);}
+  .side-group{margin-top:6px;}
+  .side-group-title{
+    padding:10px 20px 4px;font-size:12.5px;font-weight:bold;
+    opacity:0.85;letter-spacing:0.5px;
+  }
+  .side-item{
+    display:block;padding:9px 24px;color:#fff;text-decoration:none;
+    cursor:pointer;font-size:13.5px;border-left:4px solid transparent;
+    opacity:0.92;
+  }
+  .side-item:hover{background:rgba(255,255,255,0.16);}
+  .side-item.active{background:rgba(255,255,255,0.26);border-left-color:#fff;opacity:1;font-weight:bold;}
+
+  /* 메인 */
+  #main{flex:1;padding:34px 42px 60px;overflow-y:auto;}
+  h2{color:var(--primary-dark);}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px;margin-top:18px;}
+  .card{
+    background:var(--card-bg);border-radius:18px;box-shadow:var(--shadow);
+    overflow:hidden;cursor:pointer;transition:transform .15s ease;
+  }
+  .card:hover{transform:translateY(-5px);}
+  .card-icon{
+    aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
+    font-size:44px;background:linear-gradient(135deg,var(--accent),#fff);
+  }
+  .card .card-body{padding:13px 15px;}
+  .card .card-title{font-weight:bold;font-size:15px;color:var(--text);}
+  .card .card-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+
+  .back-btn{
+    background:#fff;border:1px solid var(--accent);color:var(--primary-dark);
+    padding:9px 18px;border-radius:30px;cursor:pointer;font-size:14px;font-weight:bold;
+    box-shadow:var(--shadow);margin-bottom:22px;
+  }
+  .back-btn:hover{background:var(--accent);}
+
+  .cover-section{
+    background:var(--card-bg);border-radius:22px;padding:28px;box-shadow:var(--shadow);
+    display:flex;gap:26px;margin-bottom:30px;flex-wrap:wrap;
+  }
+  .cover-icon{
+    width:120px;height:120px;border-radius:20px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    display:flex;align-items:center;justify-content:center;font-size:52px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.12);
+  }
+  .cover-section .cover-text{flex:1;min-width:220px;}
+  .cover-section h2{margin-top:0;font-size:24px;}
+  .cover-section p{line-height:1.7;font-size:15px;margin:8px 0 12px;}
+  .cover-section ol{margin:0;padding-left:20px;}
+  .cover-section ol li{font-size:14px;line-height:1.6;margin-bottom:4px;}
+  .cover-section p strong, .cover-section li strong{color:var(--primary-dark);}
+
+  .step-card{
+    background:var(--card-bg);border-radius:20px;box-shadow:var(--shadow);
+    margin-bottom:24px;overflow:hidden;
+  }
+  .step-head{
+    background:var(--accent);padding:15px 22px;font-weight:bold;font-size:17px;
+    display:flex;align-items:center;gap:12px;color:var(--text);
+  }
+  .step-head strong{color:var(--primary-dark);}
+  .step-num{
+    background:var(--primary);color:#fff;width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+  }
+  .step-body{padding:22px;display:flex;flex-direction:column;gap:14px;}
+
+  .code-label{font-size:12.5px;color:var(--muted);font-weight:bold;margin-bottom:6px;}
+  .code-block-wrap{position:relative;}
+  .code-block{
+    background:#1e1e1e;color:#d4d4d4;border-radius:12px;padding:16px 18px;
+    font-family:Consolas,"Courier New",monospace;font-size:13px;line-height:1.6;
+    overflow-x:auto;margin:0;white-space:pre;border:1px solid #333333;
+  }
+  .copy-btn{
+    position:absolute;top:30px;right:10px;background:#3c3c3c;color:#d4d4d4;
+    border:1px solid #555;padding:5px 12px;border-radius:8px;font-size:11.5px;cursor:pointer;
+  }
+  .copy-btn:hover{background:#505050;}
+
+  .step-img-wrap{position:relative;max-width:340px;margin:0 auto;}
+  .step-img-wrap img{
+    width:100%;border-radius:14px;display:block;border:1px solid #d7ecdf;cursor:zoom-in;
+  }
+  .zoom-btn{
+    position:absolute;bottom:10px;right:10px;background:rgba(30,40,30,0.68);color:#fff;
+    border:none;padding:7px 13px;border-radius:20px;font-size:12.5px;cursor:pointer;
+  }
+  .zoom-btn:hover{background:rgba(30,40,30,0.85);}
+
+  .points-card{background:#f3fbf6;border-radius:14px;padding:16px 20px;}
+  .points-card .points-label{color:var(--primary-dark);font-weight:bold;margin-bottom:10px;font-size:14.5px;}
+  .points-card ol{margin:0;padding-left:22px;}
+  .points-card li{margin-bottom:9px;line-height:1.55;font-size:14.5px;}
+  .points-card li:last-child{margin-bottom:0;}
+  .points-card li strong{color:var(--primary-dark);}
+
+  .func-card{background:#eef6fb;border-radius:14px;padding:14px 20px;}
+  .func-card .func-label{color:#2b6cb0;font-weight:bold;margin-bottom:10px;font-size:14.5px;}
+  .func-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .func-item{display:flex;align-items:baseline;gap:10px;background:#fff;border-radius:10px;padding:8px 12px;border:1px solid #d7e6f5;}
+  .func-name{font-family:Consolas,"Courier New",monospace;font-weight:bold;color:#1a73a8;font-size:13px;white-space:nowrap;background:#e3f0fa;padding:2px 8px;border-radius:6px;flex-shrink:0;}
+  .func-desc{font-size:13.5px;color:var(--text);line-height:1.5;}
+
+  .result-note{
+    background:#fff4ec;border-left:4px solid #ff7043;padding:9px 14px;border-radius:8px;
+    font-size:13.5px;color:#8a5536;
+  }
+  .result-note strong{color:#c1501f;}
+
+  .result-img-wrap{position:relative;max-width:340px;margin:0 auto;}
+  .result-img-wrap img{
+    width:100%;border-radius:14px;display:block;border:1px solid #d7ecdf;cursor:zoom-in;
+  }
+
+  /* 코드 신택스 하이라이트 - VS Code Dark+ 테마 */
+  .tok-kw{color:#c586c0;}
+  .tok-const{color:#569cd6;}
+  .tok-builtin{color:#dcdcaa;}
+  .tok-str{color:#ce9178;}
+  .tok-num{color:#b5cea8;}
+  .tok-com{color:#6a9955;}
+  .tok-fn{color:#dcdcaa;}
+  .tok-op{color:#d4d4d4;}
+
+  /* 퀴즈 */
+  .quiz-card{
+    background:var(--card-bg);border-radius:20px;box-shadow:var(--shadow);
+    padding:22px;margin-bottom:24px;
+  }
+  .quiz-card h3{margin:0 0 14px;color:var(--primary-dark);font-size:18px;}
+  .quiz-q{margin-bottom:20px;}
+  .quiz-q:last-child{margin-bottom:0;}
+  .quiz-q-text{font-weight:bold;font-size:14.5px;margin-bottom:10px;}
+  .quiz-choices{display:flex;flex-direction:column;gap:8px;}
+  .quiz-choice{
+    text-align:left;background:#f3fbf6;border:1.5px solid var(--accent);border-radius:10px;
+    padding:10px 14px;font-size:14px;cursor:pointer;color:var(--text);
+  }
+  .quiz-choice:hover{background:var(--accent);}
+  .quiz-choice.correct{background:#dff5e3;border-color:var(--primary);color:var(--primary-dark);font-weight:bold;}
+  .quiz-choice.wrong{background:#fde7e7;border-color:#e57373;color:#c0392b;}
+  .quiz-choice[disabled]{cursor:default;}
+  .quiz-feedback{margin-top:8px;font-size:13.5px;padding:8px 12px;border-radius:8px;}
+  .quiz-feedback.ok{background:#dff5e3;color:var(--primary-dark);}
+  .quiz-feedback.no{background:#fde7e7;color:#c0392b;}
+
+  .quiz-score{
+    background:var(--accent);color:var(--primary-dark);font-weight:bold;font-size:14.5px;
+    padding:10px 16px;border-radius:10px;margin-bottom:18px;
+  }
+  .quiz-retry-wrap{margin-top:6px;text-align:center;}
+  .retry-btn{
+    background:var(--primary);color:#fff;border:none;padding:10px 22px;border-radius:24px;
+    font-size:14px;font-weight:bold;cursor:pointer;box-shadow:var(--shadow);
+  }
+  .retry-btn:hover{background:var(--primary-dark);}
+
+  /* 코딩 미션 */
+  .mission-card{
+    background:linear-gradient(135deg,#fff8f0,#fff);border:2px dashed #ff7043;border-radius:20px;
+    padding:22px;margin-bottom:24px;
+  }
+  .mission-card h3{margin:0 0 10px;color:#c1501f;font-size:18px;}
+  .mission-desc{font-size:14.5px;line-height:1.7;margin-bottom:12px;}
+  .mission-desc strong{color:#c1501f;}
+  .mission-tasks{margin:0 0 12px;padding-left:22px;}
+  .mission-tasks li{font-size:14.5px;line-height:1.7;margin-bottom:9px;}
+  .mission-tasks li:last-child{margin-bottom:0;}
+  .mission-tasks li strong{color:#c1501f;}
+  .hint-btn{
+    background:#ff7043;color:#fff;border:none;padding:8px 16px;border-radius:20px;
+    font-size:13px;font-weight:bold;cursor:pointer;
+  }
+  .hint-btn:hover{background:#e8602f;}
+  .mission-hint{
+    display:none;margin-top:10px;background:#fff4ec;border-left:4px solid #ff7043;
+    padding:10px 14px;border-radius:8px;font-size:13.5px;color:#8a5536;
+  }
+  .mission-hint.show{display:block;}
+
+  .intro-banner{font-size:14px;color:var(--muted);margin-bottom:6px;}
+
+  /* 라이트박스 */
+  #lightbox{
+    position:fixed;inset:0;background:rgba(15,25,18,0.88);display:none;
+    align-items:center;justify-content:center;z-index:999;padding:24px;
+  }
+  #lightbox.show{display:flex;}
+  #lightbox img{max-width:92vw;max-height:88vh;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.4);background:#fff;}
+  #lightbox-close{
+    position:absolute;top:18px;right:26px;color:#fff;font-size:34px;cursor:pointer;
+    background:none;border:none;line-height:1;
+  }
+
+  @media (max-width:700px){
+    #sidebar{width:0;display:none;}
+    #main{padding:20px;}
+    .cover-section{flex-direction:column;}
+    .cover-icon{width:100%;height:90px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <nav id="sidebar">
+    <h1>🐢 파이썬 터틀<br>웹교재</h1>
+    <a class="side-home" id="sideHome">🏠 전체 목록 보기</a>
+    <div id="sideList"></div>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<div id="lightbox">
+  <button id="lightbox-close">×</button>
+  <img id="lightbox-img" src="" alt="크게 보기">
+</div>
+
+<script>
+const SESSION_LABELS = {
+  0:"0차시 · 오리엔테이션",
+  1:"1차시", 2:"2차시", 3:"3차시", 4:"4차시",
+  5:"5차시", 6:"6차시", 7:"7차시",
+  8:"8~10차시 · 미니 프로젝트"
+};
+
+const UNITS = [
+{
+  slug:"00-intro", session:0, icon:"🐢",
+  title:"파이썬 터틀, 시작하기 전에",
+  intro:"코드를 입력하면 거북이가 화면에 그림을 그려요.",
+  learn:["터틀 그래픽이 뭔지 알아보기","무엇이 필요한지 확인하기","따라하는 방법 알아보기"],
+  steps:[
+    { title:"터틀 그래픽이 뭐예요?",
+      points:[
+        "**turtle** 모듈은 화면 위 **거북이**를 코드로 움직이는 파이썬 기능이에요.",
+        "거북이가 지나간 자리에 **선**이 그려져요.",
+        "그림 그리기부터 **게임 만들기**까지 할 수 있어요."
+      ]
+    },
+    { title:"무엇이 필요해요?",
+      points:[
+        "**파이썬**이 설치된 컴퓨터 한 대면 충분해요.",
+        "**turtle** 모듈은 기본 포함이라 따로 설치하지 않아도 돼요.",
+        "코드를 입력할 **에디터**(IDLE, VS Code 등)만 있으면 돼요."
+      ]
+    },
+    { title:"어떻게 따라하면 되나요?",
+      points:[
+        "각 차시의 **코드를 그대로 따라 입력**해요.",
+        "**실행**해서 거북이가 어떻게 움직이는지 확인해요.",
+        "숫자나 색을 **바꿔보면서** 자유롭게 실험해요."
+      ]
+    }
+  ]
+},
+{
+  slug:"01-pen-window", session:1, icon:"✏️",
+  title:"그리기 펜, 윈도우 창 설정",
+  intro:"거북이를 움직이고, 펜을 다루고, 창을 설정하는 가장 첫 단계예요.",
+  learn:["창 만들고 직진하기","펜 올리고 내리기","두께와 점 찍기","창 제목·크기 다루기","화면 지우기"],
+  steps:[
+    { title:"터틀을 불러오고 창 띄우기",
+      code:`import turtle as t          # 터틀 기능 불러오기
+
+t.setup(800, 600)            # 가로 800, 세로 600 크기 창 만들기
+t.mainloop()                 # 창을 계속 열어두기`,
+      funcs:[
+        { name:"t.setup()", desc:"윈도우 창의 크기를 설정해요" }
+      ],
+  result_img:"results/u01_s1.png",
+      points:[
+        "**import turtle as t** 로 터틀 기능을 불러와요.",
+        "**t.setup(가로,세로)** 로 창 크기를 정해요.",
+        "**t.mainloop()** 은 창을 계속 띄워두는 마지막 줄이에요. 꼭 적어요."
+      ],
+      result:"800×600 크기의 빈 창이 열려요."
+    },
+    { title:"앞으로 가게 하기",
+      code:`import turtle as t
+
+t.setup(800, 600)
+t.forward(100)               # 보고 있는 방향으로 100만큼 직진
+t.mainloop()`,
+  result_img:"results/u01_s2.png",
+      points:[
+        "**t.forward(100)** 거북이가 보던 방향으로 100만큼 직진해요.",
+        "거북이가 지나간 자리에 **선**이 그려져요.",
+        "숫자를 바꾸면 **선의 길이**가 바뀌어요."
+      ],
+      result:"거북이가 오른쪽으로 100만큼 직진하며 선을 그려요."
+    },
+    { title:"펜 올리고 내리기",
+      code:`import turtle as t
+
+t.setup(800, 600)
+t.forward(100)
+t.penup()                    # 펜을 올린다. (이동만 하고 선은 안 그려짐)
+t.forward(100)
+t.pendown()                  # 펜을 다시 내린다.
+t.forward(50)`,
+      funcs:[
+        { name:"t.penup()", desc:"펜을 올려요. (이동만 하고 선은 안 그려져요)" },
+        { name:"t.pendown()", desc:"펜을 다시 내려요. (다시 선이 그려져요)" },
+        { name:"t.isdown()", desc:"펜이 지금 내려가 있는 상태인지 알려줘요" }
+      ],
+  result_img:"results/u01_s3.png",
+      points:[
+        "**t.penup()** 펜을 올려요. 이동은 하지만 선이 안 그려져요.",
+        "**t.pendown()** 펜을 다시 내려요. 다시 선이 그려져요.",
+        "**t.isdown()** 으로 지금 펜 상태(True/False)를 확인할 수 있어요."
+      ],
+      result:"선 - 빈칸 - 선 순서로, 끊어진 두 개의 선이 생겨요."
+    },
+    { title:"선 두껍게 그리고 점찍기",
+      code:`t.width(10)                  # 선의 두께를 10으로 정하기
+t.forward(50)
+print(t.isdown())            # 지금 펜이 내려가 있는지 확인 (True)
+t.dot(30)                    # 크기 30짜리 점 찍기`,
+      funcs:[
+        { name:"t.width()", desc:"펜 두께를 정하거나, 지금 두께를 알려줘요. (pensize()와 같아요)" },
+        { name:"t.dot()", desc:"동그란 점을 찍어요" }
+      ],
+  result_img:"results/u01_s4.png",
+      points:[
+        "**t.width(10)** 선의 두께를 10으로 정해요.",
+        "**t.dot(30)** 크기 30짜리 동그란 점을 찍어요.",
+        "두께와 점 크기를 바꿔서 실험해 보아요."
+      ],
+      result:"두꺼운 선 끝에 동그란 점이 생겨요."
+    },
+    { title:"창 제목 정하고 크기 확인하기",
+      code:`import turtle as t
+
+t.setup(800, 600)
+t.title('first window')                # 창 제목을 'first window'로 정하기
+
+print('가로크기:', t.window_width())    # 지금 창의 가로 크기 출력
+print('세로크기:', t.window_height())   # 지금 창의 세로 크기 출력
+t.mainloop()`,
+      funcs:[
+        { name:"t.title()", desc:"윈도우 창의 제목을 정해요" },
+        { name:"t.window_width()", desc:"윈도우 창의 너비(가로 크기)를 알려줘요" },
+        { name:"t.window_height()", desc:"윈도우 창의 높이(세로 크기)를 알려줘요" }
+      ],
+  result_img:"results/u01_s5.png",
+      points:[
+        "**t.title('이름')** 창 맨 위 제목 글자를 바꿔요.",
+        "**t.window_width()** 지금 창의 가로 크기를 알려줘요.",
+        "**t.window_height()** 지금 창의 세로 크기를 알려줘요."
+      ],
+      result:"창 제목이 바뀌고, 가로/세로 크기가 출력돼요."
+    },
+    { title:"그림 지우고 창 닫기",
+      code:`t.forward(100)
+t.clear()         # 그림만 지우기
+t.clearscreen()   # 그림+거북이 모두 지우기
+# t.bye()         # 창 닫기`,
+      funcs:[
+        { name:"t.clear()", desc:"창에 그려진 그림만 지워요. 거북이는 남아요" },
+        { name:"t.clearscreen()", desc:"그림과 거북이를 모두 지워요" },
+        { name:"t.bye()", desc:"윈도우 창을 닫아요" }
+      ],
+  result_img:"results/u01_s6.png",
+      points:[
+        "**t.clear()** 그려진 그림만 지워요. 거북이는 남아요.",
+        "**t.clearscreen()** 그림과 거북이까지 전부 지워요.",
+        "**t.bye()** 는 창을 완전히 닫아요. (필요할 때만 주석을 풀어요)"
+      ],
+      result:"그림과 거북이가 모두 사라져요."
+    }
+  ],
+  quiz:[
+    { q:"창을 계속 띄워두기 위해 마지막에 꼭 적어야 하는 코드는?",
+      choices:["t.mainloop()","t.setup()","t.forward(0)","t.bye()"], answer:0 },
+    { q:"선을 그리지 않고 이동만 하고 싶을 때 쓰는 명령은?",
+      choices:["t.pendown()","t.penup()","t.width(0)","t.clear()"], answer:1 },
+    { q:"창 크기를 가로 800, 세로 600으로 정하는 명령은?",
+      choices:["t.setup(800, 600)","t.size(800, 600)","t.window(800, 600)","t.create(800, 600)"], answer:0 },
+    { q:"펜의 두께를 정하는 명령은?",
+      choices:["t.width(10)","t.size(10)","t.thick(10)","t.pen(10)"], answer:0 },
+    { q:"그려진 그림만 지우고 거북이는 그대로 남기는 명령은?",
+      choices:["t.clear()","t.clearscreen()","t.bye()","t.reset()"], answer:0 }
+  ],
+  mission:{
+    tasks:[
+      "윈도우 창의 제목을 **'turtle연습'**으로 설정해 보세요.",
+      "turtle 윈도우 창의 크기를 **가로 800, 세로 600**으로 설정해 보세요.",
+      "현재 윈도우 창의 **크기를 출력**해 보세요.",
+      "**펜두께 : 5, 펜내리기상태 : True**로 설정한 후 100만큼 이동해 보세요.",
+      "펜을 내리고 100만큼 이동한 후 펜을 올리고 100만큼 이동하기를 **2번 반복**해 보세요."
+    ],
+    hint:"t.title(), t.setup(800,600), t.window_width()/t.window_height(), t.width(5)+t.pendown(), 그리고 forward/penup/pendown을 반복해서 사용해보면 돼요."
+  }
+},
+{
+  slug:"02-bg-color", session:2, icon:"🎨",
+  title:"배경색·배경이미지, 색 설정",
+  intro:"화면 배경과 펜/채우기 색을 마음대로 꾸며 보아요.",
+  learn:["배경색 칠하기","배경 이미지 넣기","펜색·채우기색 정하기","색을 숫자로 표현하기"],
+  steps:[
+    { title:"배경색 칠하기",
+      code:`import turtle as t
+
+t.setup(800, 600)
+t.title('윈도우 배경 설정')
+t.bgcolor('yellow')          # 배경색을 노란색으로 칠하기
+t.mainloop()`,
+      funcs:[
+        { name:"t.bgcolor()", desc:"배경색을 정해요" }
+      ],
+  result_img:"results/u02_s1.png",
+      points:[
+        "**t.bgcolor('yellow')** 배경을 노란색으로 칠해요.",
+        "색 이름을 바꾸면 **다른 배경색**이 돼요. (red, blue, green…)"
+      ],
+      result:"노란 배경 화면이 나와요."
+    },
+    { title:"배경에 그림 넣기",
+      code:`t.bgpic('파일이름.gif')   # 배경을 그 그림 파일로 채우기 (gif만 가능)`,
+      funcs:[
+        { name:"t.bgpic()", desc:"배경을 그림 파일로 정하거나, 지금 배경 그림 이름을 알려줘요" }
+      ],
+  result_img:"results/u02_s2.png",
+      points:[
+        "**t.bgpic('파일명.gif')** 배경에 그림을 넣어요.",
+        "배경 그림은 **gif 파일**만 사용할 수 있어요. (jpg, png는 안돼요)"
+      ],
+      result:"배경에 등록한 gif 그림이 깔려요."
+    },
+    { title:"펜색과 채우기색 정하기",
+      code:`import turtle as t
+
+t.setup(800, 600)
+t.pencolor('blue')           # 선 색을 파란색으로 정하기
+t.fillcolor('pink')          # 채울 색을 분홍색으로 정하기
+t.begin_fill()                # 색 채우기 시작
+for i in range(4):
+    t.forward(100)
+    t.right(90)
+t.end_fill()                  # 색 채우기 끝
+t.mainloop()`,
+      funcs:[
+        { name:"t.pencolor()", desc:"펜 색을 정하거나, 지금 펜 색을 알려줘요" },
+        { name:"t.fillcolor()", desc:"채우기 색을 정하거나, 지금 채우기 색을 알려줘요" },
+        { name:"t.color()", desc:"펜 색과 채우기 색을 한 번에 정하거나 가져와요" }
+      ],
+  result_img:"results/u02_s3.png",
+      points:[
+        "**t.pencolor('blue')** 선 색을 정해요.",
+        "**t.fillcolor('pink')** 채울 색을 정해요.",
+        "**t.begin_fill() ~ t.end_fill()** 사이에 그린 도형이 색으로 채워져요.",
+        "**t.color('red','black')** 처럼 (선색, 채우기색)을 한 번에 정할 수도 있어요."
+      ],
+      result:"파란 선, 분홍색으로 채워진 사각형이 그려져요."
+    },
+    { title:"색을 숫자로 표현하기",
+      code:`t.colormode(1)           # 색상을 0~1 사이 실수로 표현하기
+t.bgcolor((0, 0, 1))     # 0~1 사이 실수
+
+t.colormode(255)         # 색상을 0~255 사이 정수로 표현하기
+t.bgcolor((0, 0, 255))   # 0~255 사이 정수`,
+      funcs:[
+        { name:"t.colormode()", desc:"색을 숫자로 표현할 때 1(실수) 또는 255(정수) 중 어떤 방식으로 쓸지 정해요" }
+      ],
+  result_img:"results/u02_s4.png",
+      points:[
+        "색은 **이름**, **0~1 사이 숫자**, **0~255 사이 숫자**로도 정할 수 있어요.",
+        "**t.colormode(1)** 일 때는 (0~1) 실수로 R,G,B를 정해요.",
+        "**t.colormode(255)** 일 때는 (0~255) 정수로 R,G,B를 정해요."
+      ],
+      result:"배경이 파란색(숫자로 지정한 색)으로 바뀌어요."
+    }
+  ],
+  quiz:[
+    { q:"배경색을 노란색으로 칠하는 코드는?",
+      choices:["t.pencolor('yellow')","t.fillcolor('yellow')","t.bgcolor('yellow')","t.color('yellow')"], answer:2 },
+    { q:"colormode(255)일 때 색을 숫자로 표현하는 범위는?",
+      choices:["0~1","0~10","0~100","0~255"], answer:3 },
+    { q:"배경에 그림을 넣을 때 사용할 수 있는 파일 형식은?",
+      choices:["gif","jpg","png","bmp"], answer:0 },
+    { q:"도형을 채울 색을 정하는 명령은?",
+      choices:["t.pencolor()","t.fillcolor()","t.bgcolor()","t.shape()"], answer:1 },
+    { q:"도형을 색으로 채우기 시작할 때 사용하는 명령은?",
+      choices:["t.begin_fill()","t.start_fill()","t.fill_on()","t.color_fill()"], answer:0 }
+  ],
+  mission:{
+    tasks:[
+      "배경색을 **노란색**으로 설정해 보세요.",
+      "**1초에 한 번씩** 배경색을 yellow, cyan, pink, orange, lightgreen 순서로 변경해 보세요. (1초는 **import time** 후 **time.sleep(1)**로 제어해요)",
+      "그림판에서 그림을 그린 후 **'배경1.gif'**로 저장한 다음, 터틀 윈도우 배경으로 설정해 보세요.",
+      "**보라색 마름모**를 그려보세요."
+    ],
+    hint:"bgcolor()로 배경색을 바꾸고, for문 안에서 time.sleep(1)로 1초씩 쉬면서 색을 바꿔보세요. bgpic()으로 gif 배경을 넣고, color('purple')+begin_fill()~end_fill()로 마름모를 채워보세요."
+  }
+},
+{
+  slug:"03-shape-size", session:3, icon:"🔷",
+  title:"모양, 크기, 보이기 설정",
+  intro:"거북이의 생긴 모습을 바꾸고, 보이거나 숨길 수 있어요.",
+  learn:["모양 목록 확인하기","모양 바꾸기","숨기기·보이기","크기 바꾸기","내 그림으로 모양 만들기"],
+  steps:[
+    { title:"사용할 수 있는 모양 보기",
+      code:`import turtle as t
+
+lst = t.getshapes()   # 사용 가능한 모양 이름 목록 가져오기
+print(lst)
+# ['arrow','blank','circle','classic','square','triangle','turtle']`,
+      funcs:[
+        { name:"t.getshapes()", desc:"지금 사용할 수 있는 거북이 모양 이름을 모두 가져와요" }
+      ],
+  result_img:"results/u03_s1.png",
+      points:[
+        "**t.getshapes()** 거북이가 가질 수 있는 모양 이름들을 가져와요.",
+        "기본 모양: arrow, circle, square, triangle, turtle 등이 있어요."
+      ],
+      result:"사용 가능한 모양 이름 목록이 출력돼요."
+    },
+    { title:"모양 바꿔보기",
+      code:`t.shape('turtle')   # 거북이 모양을 turtle로 바꾸기`,
+  result_img:"results/u03_s2.png",
+      points:[
+        "**t.shape('이름')** 거북이 모양을 바꿔요.",
+        "for문으로 **모양을 하나씩** 차례로 바꿔볼 수도 있어요."
+      ],
+      result:"거북이 모양이 바뀌어요."
+    },
+    { title:"숨기기와 보이기",
+      code:`t.hideturtle()          # 거북이 안 보이게 하기
+print(t.isvisible())   # False
+t.showturtle()          # 거북이 다시 보이게 하기
+print(t.isvisible())   # True`,
+      funcs:[
+        { name:"t.hideturtle()", desc:"거북이 모양을 안 보이게 해요" },
+        { name:"t.showturtle()", desc:"거북이 모양을 다시 보이게 해요" },
+        { name:"t.isvisible()", desc:"거북이가 지금 보이는 상태인지 알려줘요" }
+      ],
+  result_img:"results/u03_s3.png",
+      points:[
+        "**t.hideturtle()** 거북이 모양을 안 보이게 해요.",
+        "**t.showturtle()** 다시 보이게 해요.",
+        "**t.isvisible()** 지금 보이는 상태인지 확인해요."
+      ],
+      result:"거북이가 안 보였다가 다시 보여요."
+    },
+    { title:"크기 바꾸기",
+      code:`t.shape('turtle')
+t.shapesize(5, 2)   # (세로길이, 가로길이)`,
+      funcs:[
+        { name:"t.shapesize()", desc:"거북이 크기를 정해요. 숫자 1은 약 20픽셀이에요" }
+      ],
+  result_img:"results/u03_s4.png",
+      points:[
+        "**t.shapesize(세로,가로)** 거북이 크기를 바꿔요.",
+        "숫자 1은 약 **20픽셀**이에요."
+      ],
+      result:"거북이가 더 크고 길쭉하게 바뀌어요."
+    },
+    { title:"내가 만든 그림으로 모양 만들기",
+      code:`t.addshape('ebssw.gif')   # 내 그림 파일을 모양으로 등록하기
+print(t.getshapes())
+t.shape('ebssw.gif')`,
+      funcs:[
+        { name:"t.addshape()", desc:"내가 가진 그림 파일을 거북이 모양으로 등록해요" }
+      ],
+  result_img:"results/u03_s5.png",
+      points:[
+        "**t.addshape('파일명.gif')** 내 그림 파일을 모양으로 등록해요.",
+        "등록한 이름으로 **t.shape()** 하면 그 그림이 거북이가 돼요."
+      ],
+      result:"등록한 그림이 거북이 모양이 돼요."
+    }
+  ],
+  quiz:[
+    { q:"거북이를 안 보이게 하는 명령은?",
+      choices:["t.hideturtle()","t.penup()","t.clear()","t.bgcolor('white')"], answer:0 },
+    { q:"t.shapesize(5, 2)에서 숫자 1은 대략 몇 픽셀인가요?",
+      choices:["1픽셀","10픽셀","20픽셀","50픽셀"], answer:2 },
+    { q:"거북이가 가질 수 있는 모양 이름들을 가져오는 명령은?",
+      choices:["t.getshapes()","t.shapes()","t.listshapes()","t.shape()"], answer:0 },
+    { q:"거북이 모양을 'turtle'로 바꾸는 명령은?",
+      choices:["t.turtle('shape')","t.shape('turtle')","t.setshape('turtle')","t.form('turtle')"], answer:1 },
+    { q:"지금 거북이가 보이는 상태인지 확인하는 명령은?",
+      choices:["t.isvisible()","t.visible()","t.showturtle()","t.getstate()"], answer:0 }
+  ],
+  mission:{
+    tasks:[
+      "현재 사용 가능한 **모든 거북이 모양 이름**을 출력해 보세요.",
+      "현재 사용 가능한 모든 거북이 모양을 **1초 간격**으로 출력해 보세요. (힌트: time.sleep(1))",
+      "터틀 객체의 모양을 **이미지 파일**로 설정해 보세요.",
+      "거북이의 **색상과 크기**를 정해서 폭 2, 길이 5로 설정해 보세요."
+    ],
+    hint:"getshapes()로 모양 목록을 얻고, for문 안에서 shape()와 time.sleep(1)을 같이 써보세요. addshape()로 이미지를 등록하고 shape()로 적용한 뒤, shapesize(5,2)와 color()로 크기·색을 정하면 돼요."
+  }
+},
+{
+  slug:"04-coord-state", session:4, icon:"📍",
+  title:"거북이 좌표, 거북이 상태",
+  intro:"거북이의 위치(좌표)와 방향(각도)을 다루는 법을 알아보아요.",
+  learn:["좌표 이해하기","원하는 위치로 이동하기","각도 이해하기","방향 돌리기","위치·거리 확인하기"],
+  steps:[
+    { title:"좌표가 뭐예요?",
+      image:"coord_diagram.svg",
+      points:[
+        "화면은 가로 **x축**, 세로 **y축**으로 된 좌표 평면이에요.",
+        "화면 **정가운데**가 **(0,0)** 이에요.",
+        "오른쪽/위쪽은 **+**, 왼쪽/아래쪽은 **-** 예요."
+      ]
+    },
+    { title:"원하는 위치로 이동하기",
+      code:`import turtle as t
+
+t.goto(100, 100)   # (100,100) 좌표로 이동하기
+t.setx(300)         # x좌표만 300으로 바꾸기
+t.sety(0)           # y좌표만 0으로 바꾸기
+t.home()            # (0,0)으로 되돌아가기`,
+      funcs:[
+        { name:"t.goto()", desc:"그 좌표로 바로 이동해요" },
+        { name:"t.setx()", desc:"x좌표만 바꿔요" },
+        { name:"t.sety()", desc:"y좌표만 바꿔요" },
+        { name:"t.home()", desc:"(0,0)으로 되돌아가요" }
+      ],
+  result_img:"results/u04_s2.png",
+      points:[
+        "**t.goto(x,y)** 그 좌표로 바로 이동해요.",
+        "**t.setx(x)** x좌표만 바꿔요.",
+        "**t.sety(y)** y좌표만 바꿔요.",
+        "**t.home()** (0,0)으로 되돌아가요."
+      ],
+      result:"거북이가 정해진 좌표로 차례차례 이동해요."
+    },
+    { title:"각도가 뭐예요?",
+      image:"angle_diagram.svg",
+      points:[
+        "거북이가 보는 방향을 **각도(0~360)** 로 나타내요.",
+        "**0도는 오른쪽**, 90도는 위, 180도는 왼쪽, 270도는 아래예요.",
+        "**t.left()/right()** 는 지금 방향에서 더하고 빼는 거예요."
+      ]
+    },
+    { title:"방향 돌리기",
+      code:`t.home()
+t.right(90)          # 오른쪽으로 90도 돌기
+t.forward(100)
+t.left(90)            # 왼쪽으로 90도 돌기
+t.forward(100)
+
+t.setheading(90)      # 90도(위쪽)를 바로 바라보기
+print(t.heading())    # 지금 보고 있는 각도 출력`,
+      funcs:[
+        { name:"t.right()", desc:"오른쪽으로 도는 명령이에요" },
+        { name:"t.left()", desc:"왼쪽으로 도는 명령이에요" },
+        { name:"t.setheading()", desc:"그 각도를 바로 바라보게 해요" },
+        { name:"t.heading()", desc:"지금 보고 있는 각도를 알려줘요" }
+      ],
+  result_img:"results/u04_s4.png",
+      points:[
+        "**t.right(90)** 오른쪽으로 90도 돌아요.",
+        "**t.left(90)** 왼쪽으로 90도 돌아요.",
+        "**t.setheading(각도)** 그 각도를 바로 바라보게 해요.",
+        "**t.heading()** 지금 보는 각도를 알려줘요."
+      ],
+      result:"방향을 바꾸며 움직이고, 마지막엔 위쪽(90도)을 바라봐요."
+    },
+    { title:"지금 위치와 거리 알아보기",
+      code:`print(t.position())          # 지금 좌표 (x,y) 출력
+print(t.xcor())               # 지금 x좌표만 출력
+print(t.ycor())               # 지금 y좌표만 출력
+print(t.towards(100, 100))   # (100,100)을 보려면 몇 도로 돌아야 하는지 출력
+print(t.distance(100, 0))    # (100,0)까지의 거리 출력`,
+      funcs:[
+        { name:"t.position()", desc:"지금 좌표(x,y)를 알려줘요" },
+        { name:"t.xcor()", desc:"지금 x좌표만 알려줘요" },
+        { name:"t.ycor()", desc:"지금 y좌표만 알려줘요" },
+        { name:"t.towards()", desc:"그 좌표를 보려면 몇 도로 돌아야 하는지 알려줘요" },
+        { name:"t.distance()", desc:"그 좌표까지의 거리를 알려줘요" }
+      ],
+  result_img:"results/u04_s5.png",
+      points:[
+        "**t.position()** 지금 좌표 (x,y)를 알려줘요.",
+        "**t.xcor() / t.ycor()** 는 x, y 좌표만 따로 알려줘요.",
+        "**t.distance(x,y)** 그 좌표까지 거리를 알려줘요.",
+        "**t.towards(x,y)** 그 좌표를 보려면 몇 도로 돌아야 하는지 알려줘요."
+      ],
+      result:"현재 좌표, 각도, 거리 값이 출력돼요."
+    }
+  ],
+  quiz:[
+    { q:"화면 정가운데의 좌표는?",
+      choices:["(0,0)","(100,100)","(400,300)","좌표가 없다"], answer:0 },
+    { q:"0도는 어느 방향인가요?",
+      choices:["위쪽","아래쪽","오른쪽","왼쪽"], answer:2 },
+    { q:"거북이를 (0,0)으로 되돌아가게 하는 명령은?",
+      choices:["t.home()","t.reset()","t.center()","t.origin()"], answer:0 },
+    { q:"지금 거북이가 보고 있는 각도를 알려주는 명령은?",
+      choices:["t.heading()","t.angle()","t.direction()","t.degree()"], answer:0 },
+    { q:"두 좌표 사이의 거리를 구하는 명령은?",
+      choices:["t.distance(x,y)","t.length(x,y)","t.gap(x,y)","t.towards(x,y)"], answer:0 }
+  ],
+  mission:{
+    tasks:[
+      "**(-50,-50)** 좌표로 이동한 후, 한 변의 길이가 **100인 삼각형**을 그려보세요.",
+      "**(-150,0)** 좌표로 이동하여 다시 펜을 내려서 한 변의 길이가 **100인 사각형**을 그리세요.",
+      "현재 거북이의 **위치(x,y)와 각도**를 구해보세요.",
+      "**(0,0)** 위치에 있는 거북이 위치로부터 **(100,100)까지의 거리**를 구해보세요.",
+      "**(0,0)** 위치에 있는 거북이를 기준으로 **(-100,-100) 좌표의 방향(각도)**을 구해보세요."
+    ],
+    hint:"goto()로 먼저 이동한 뒤 for문으로 forward+right(120) 또는 forward+right(90)을 반복하면 도형이 그려져요. position(), heading(), distance(), towards()를 출력해보면 값을 확인할 수 있어요."
+  }
+},
+{
+  slug:"05-write-text", session:5, icon:"🔤",
+  title:"거북이 글자쓰기",
+  intro:"화면에 글자와 점수를 써 보아요.",
+  learn:["글자 쓰기","정렬·글꼴 바꾸기","점수판 만들기"],
+  steps:[
+    { title:"화면에 글자 쓰기",
+      code:`import turtle as t
+
+t.setup(800, 600)
+t.write('hello world')   # 거북이가 있는 자리에 글자 쓰기
+t.mainloop()`,
+      funcs:[
+        { name:"t.write()", desc:"거북이가 있는 자리에 글자를 써요. write(글자, move=False, align='left', font=(글꼴,크기,굵기))" }
+      ],
+  result_img:"results/u05_s1.png",
+      points:[
+        "**t.write('글자')** 거북이가 있는 자리에 글자를 써요."
+      ],
+      result:"거북이가 있던 자리에 글자가 써져요."
+    },
+    { title:"정렬과 글꼴 크기 바꾸기",
+      code:`t.write('hello world', move=True, align='center', font=('', 100, 'bold'))
+# 가운데 정렬, 글꼴 크기 100, 굵게`,
+  result_img:"results/u05_s2.png",
+      points:[
+        "**align** 으로 왼쪽/가운데/오른쪽 정렬을 정해요.",
+        "**font=(글꼴,크기,굵기)** 로 글자 모양을 정해요.",
+        "**move=True** 면 펜이 글자 오른쪽 끝으로 이동해요."
+      ],
+      result:"화면 가운데에 큰 굵은 글씨로 글자가 써져요."
+    },
+    { title:"점수판처럼 글자 쓰기",
+      code:`t.goto(350, 200)   # 글자 쓸 위치로 이동
+t.write('score:'+str(100), move=True, align='right', font=('', 14, 'bold'))
+# 점수를 오른쪽 정렬로 쓰기`,
+  result_img:"results/u05_s3.png",
+      points:[
+        "**goto()** 로 먼저 글자를 쓸 위치로 이동해요.",
+        "숫자는 **str()** 로 글자로 바꿔서 합쳐요.",
+        "오른쪽 위에 점수를 표시할 때 자주 쓰는 방법이에요."
+      ],
+      result:"화면 오른쪽 위에 'score:100' 이 표시돼요."
+    }
+  ],
+  quiz:[
+    { q:"화면에 글자를 쓰는 명령은?",
+      choices:["t.print()","t.text()","t.write()","t.say()"], answer:2 },
+    { q:"write()에서 글자를 가운데 정렬하려면 어떤 옵션을 쓰나요?",
+      choices:["align='center'","center=True","pos='mid'","write='center'"], answer:0 },
+    { q:"글자의 글꼴, 크기, 굵기를 정하는 옵션은?",
+      choices:["font=(글꼴,크기,굵기)","size=(글꼴,크기,굵기)","style=(글꼴,크기,굵기)","text=(글꼴,크기,굵기)"], answer:0 },
+    { q:"숫자를 글자와 합치기 위해 먼저 해야 하는 것은?",
+      choices:["str()로 바꾸기","int()로 바꾸기","float()로 바꾸기","그냥 +로 합치기"], answer:0 },
+    { q:"write()의 move=True 옵션은 어떤 역할을 하나요?",
+      choices:["펜이 글자 오른쪽 끝으로 이동한다","거북이가 사라진다","글자가 움직인다","배경색이 바뀐다"], answer:0 }
+  ],
+  mission:{
+    tasks:[
+      "화면에 **'글자쓰기'**라고 써보세요.",
+      "**(200,100)** 좌표에 **'글자크기 쓰기'**라는 글자를 center를 기준으로 폰트 arial, 크기 20, **굵게** 써보세요.",
+      "다음과 같이 글자를 써보세요: Hello World(30,center,Times New Roman,일반) / Python(15,right,Courier,bold) / Welcome(20,left,Comic Sans MS,일반) / Turtle Graphics(25,center,Arial,bold) / Happy Birthday(35,right,Impact,bold)"
+    ],
+    hint:"write()의 font=(글꼴,크기,굵기) 옵션에서 굵기는 'bold' 또는 'normal'을 넣어요. goto()로 먼저 위치를 옮긴 뒤 write()를 호출하면 돼요."
+  }
+},
+{
+  slug:"06-events", session:6, icon:"⌨️",
+  title:"화면 이벤트 (키보드, 마우스)",
+  intro:"키보드와 마우스로 거북이를 조종해 보아요.",
+  learn:["키보드 누름 반응","키보드 뗌 반응","마우스 클릭 반응","드래그 반응","타이머 반응"],
+  steps:[
+    { title:"키보드를 누르면 반응하기",
+      code:`import turtle as t
+
+t.setup(800, 600)
+
+def set_red():            # r키를 누르면 실행될 함수
+    t.bgcolor('red')
+
+t.onkeypress(set_red, 'r')   # r키를 누르면 set_red 실행
+t.listen()                    # 키보드 입력 받을 준비하기
+t.mainloop()`,
+      funcs:[
+        { name:"t.onkeypress()", desc:"키를 누르면 정해진 함수를 실행해요" },
+        { name:"t.listen()", desc:"키보드 입력을 받을 준비를 해요" }
+      ],
+  result_img:"results/u06_s1.png",
+      points:[
+        "**def 함수이름():** 으로 실행할 동작을 먼저 만들어요.",
+        "**t.onkeypress(함수,'키')** 그 키를 누르면 함수가 실행돼요.",
+        "**t.listen()** 키보드 입력을 받을 준비를 해요. 꼭 적어요."
+      ],
+      result:"r키를 누르면 배경이 빨간색이 돼요."
+    },
+    { title:"키보드를 뗄 때 반응하기",
+      code:`def set_red2():
+    t.clear()
+    t.color('white')
+    t.write('Red', align='center', font=('', 50))
+
+t.onkey(set_red2, 'r')   # r키를 떼면 set_red2 실행`,
+      funcs:[
+        { name:"t.onkey()", desc:"키를 떼면 정해진 함수를 실행해요" }
+      ],
+  result_img:"results/u06_s2.png",
+      points:[
+        "**t.onkey(함수,'키')** 키를 **뗄 때** 함수가 실행돼요.",
+        "onkeypress(누를 때)와 onkey(뗄 때)를 구분해서 써요."
+      ],
+      result:"r키를 떼면 화면에 'Red' 글자가 써져요."
+    },
+    { title:"마우스 클릭에 반응하기",
+      code:`def draw_red(x, y):
+    t.color('red')
+    t.goto(x, y)
+
+t.onscreenclick(draw_red, 1)   # 1:왼쪽 2:가운데 3:오른쪽`,
+      funcs:[
+        { name:"t.onscreenclick()", desc:"마우스로 화면을 클릭하면 정해진 함수를 실행해요. (1:왼쪽 2:가운데 3:오른쪽)" }
+      ],
+  result_img:"results/u06_s3.png",
+      points:[
+        "**def 함수(x,y):** 클릭한 좌표를 받는 함수를 만들어요.",
+        "**t.onscreenclick(함수,버튼번호)** 1은 왼쪽, 2는 가운데, 3은 오른쪽이에요."
+      ],
+      result:"마우스 왼쪽을 클릭하면 그 자리까지 빨간 선이 그려져요."
+    },
+    { title:"거북이를 마우스로 끌기",
+      code:`t.ondrag(t.goto)   # 거북이를 마우스로 끌면 그 자리로 이동`,
+      funcs:[
+        { name:"t.ondrag()", desc:"거북이를 마우스로 클릭한 채 끌면 정해진 함수를 실행해요" }
+      ],
+  result_img:"results/u06_s4.png",
+      points:[
+        "**t.ondrag(t.goto)** 거북이를 마우스로 끌면 그 자리로 이동해요."
+      ],
+      result:"거북이를 마우스로 끌면 따라와요."
+    },
+    { title:"시간이 지나면 실행하기",
+      code:`def func1():
+    for i in range(5):
+        t.forward(50)
+
+t.ontimer(func1, 1000)   # 1000밀리초(1초) 뒤에 func1 실행`,
+      funcs:[
+        { name:"t.ontimer()", desc:"정해진 시간(밀리초)이 지나면 함수를 한 번 실행해요" }
+      ],
+  result_img:"results/u06_s5.png",
+      points:[
+        "**t.ontimer(함수,밀리초)** 정해진 시간 뒤에 함수를 한 번 실행해요.",
+        "1000밀리초 = **1초** 예요."
+      ],
+      result:"1초 뒤에 거북이가 앞으로 5번 움직여요."
+    }
+  ],
+  quiz:[
+    { q:"키를 누를 때 반응하게 하는 명령은?",
+      choices:["t.onkey()","t.onkeypress()","t.onscreenclick()","t.ontimer()"], answer:1 },
+    { q:"키보드 입력을 받기 위해 꼭 호출해야 하는 명령은?",
+      choices:["t.listen()","t.setup()","t.tracer(0)","t.update()"], answer:0 },
+    { q:"키를 뗄 때 함수가 실행되게 하는 명령은?",
+      choices:["t.onkey()","t.onkeypress()","t.ontimer()","t.onscreenclick()"], answer:0 },
+    { q:"마우스 클릭에 반응하는 명령은?",
+      choices:["t.onscreenclick()","t.onclick()","t.onmouse()","t.ondrag()"], answer:0 },
+    { q:"정해진 시간 뒤에 함수를 한 번 실행하는 명령은?",
+      choices:["t.ontimer()","t.onkey()","t.update()","t.listen()"], answer:0 }
+  ],
+  mission:{
+    tasks:[
+      "스크린 위에서 **마우스 왼쪽 버튼**을 클릭했을 때 거북이가 그 위치로 이동하게 해보세요.",
+      "**'r'키**를 눌렀을 때 빨간색, **'g'키**를 눌렀을 때 녹색, **'b'키**를 눌렀을 때 파란색으로 펜색을 설정하세요.",
+      "스크린 위에서 **마우스 오른쪽 버튼**을 클릭했을 때 화면을 깨끗하게 지우세요.",
+      "스크린 위에서 마우스를 클릭했을 때 클릭 지점에 **빨간색으로 채워진 사각형**을 그리세요.",
+      "**'g'키**를 눌렀을 때 **'빨간색이라고'**를 출력해 보세요."
+    ],
+    hint:"onscreenclick(함수,1)은 왼쪽 클릭, onscreenclick(함수,3)은 오른쪽 클릭이에요. onkeypress(함수,'r')처럼 키마다 함수를 따로 만들어 등록하고, 마지막엔 꼭 listen()을 호출하세요."
+  }
+},
+{
+  slug:"07-animation-multi", session:7, icon:"🎞️",
+  title:"애니메이션 제어, 여러 거북이 다루기",
+  intro:"속도와 화면 업데이트를 조절하고, 거북이를 여러 마리 만들어 보아요.",
+  learn:["속도 바꾸기","화면 업데이트 제어하기","거북이 여러 마리 다루기"],
+  steps:[
+    { title:"거북이 속도 바꾸기",
+      code:`t.speed(1)    # 가장 느림
+t.speed(10)   # 가장 빠름
+t.speed(0)    # 속도 제한 없이 가장 빠르게`,
+      funcs:[
+        { name:"t.speed()", desc:"거북이가 움직이는 속도를 정해요. 1(가장 느림)~10(가장 빠름), 0(제한 없이 가장 빠름)" }
+      ],
+  result_img:"results/u07_s1.png",
+      points:[
+        "**t.speed(숫자)** 1은 가장 느리고 10은 가장 빨라요.",
+        "**0**은 속도 제한 없이 **가장 빠르게** 그려요."
+      ],
+      result:"속도에 따라 거북이가 그림을 그리는 빠르기가 달라져요."
+    },
+    { title:"화면 업데이트를 따로 하기",
+      code:`t.tracer(0)         # 화면에 바로바로 보여주지 않기
+for i in range(300):
+    t.forward(3)
+    t.left(1)
+t.update()           # 지금까지 그린 걸 화면에 한 번에 보여주기`,
+      funcs:[
+        { name:"t.tracer()", desc:"화면에 바로바로 보여줄지 정해요. (0: 안 보여줌, 1: 바로 보여줌)" },
+        { name:"t.update()", desc:"지금까지 그린 그림을 화면에 한 번에 보여줘요" }
+      ],
+  result_img:"results/u07_s2.png",
+      points:[
+        "**t.tracer(0)** 그리는 과정을 화면에 바로 안 보여줘요.",
+        "**t.update()** 그 시점까지 그린 걸 한 번에 보여줘요.",
+        "그림이 많을 때 **훨씬 빨라져요**."
+      ],
+      result:"tracer(0)+update() 조합이 화면 그리기를 훨씬 빠르게 만들어요."
+    },
+    { title:"거북이 여러 마리 만들기",
+      code:`import turtle as t
+
+t.setup(800, 600)
+
+t1 = t.Turtle()   # 새 거북이 만들기
+t2 = t.Turtle()   # 새 거북이 만들기
+t3 = t.Turtle()   # 새 거북이 만들기
+
+t1.goto(0, 100)
+t2.goto(0, -100)
+t3.goto(0, -200)
+
+t.mainloop()`,
+      funcs:[
+        { name:"t.Turtle()", desc:"새로운 거북이를 하나 더 만들어요. 변수에 담아서 각각 따로 움직일 수 있어요" }
+      ],
+  result_img:"results/u07_s3.png",
+      points:[
+        "**t.Turtle()** 새로운 거북이를 하나 더 만들어요.",
+        "각 거북이는 **따로따로** 움직일 수 있어요.",
+        "변수 이름(t1,t2,t3…)으로 거북이를 구분해요."
+      ],
+      result:"세 개의 거북이가 각각 다른 자리로 이동해요."
+    }
+  ],
+  quiz:[
+    { q:"그리는 과정을 화면에 바로 보여주지 않게 하는 명령은?",
+      choices:["t.speed(0)","t.tracer(0)","t.hideturtle()","t.penup()"], answer:1 },
+    { q:"새로운 거북이를 하나 더 만드는 명령은?",
+      choices:["t.new()","t.Turtle()","t.add()","t.clone()"], answer:1 },
+    { q:"거북이 속도를 제한 없이 가장 빠르게 만드는 값은?",
+      choices:["t.speed(0)","t.speed(1)","t.speed(10)","t.speed(100)"], answer:0 },
+    { q:"tracer(0)으로 그린 내용을 화면에 한 번에 보여주는 명령은?",
+      choices:["t.update()","t.show()","t.draw()","t.refresh()"], answer:0 },
+    { q:"여러 거북이를 서로 구분할 때 사용하는 것은?",
+      choices:["변수 이름(t1, t2, t3…)","모양","색깔","크기"], answer:0 }
+  ],
+  mission:{
+    tasks:[
+      "**tracer(0)을 쓰지 않은 코드**와 **tracer(0)+update()를 쓴 코드**, 이렇게 2가지를 직접 구현해 보고 걸린 시간을 출력해서 **속도를 비교**해 보세요."
+    ],
+    hint:"time.time()으로 시작 시각을 저장하고, 100번 forward(2)를 반복한 뒤 다시 time.time()을 찍어서 차이를 출력하면 걸린 시간을 알 수 있어요. tracer(0)을 쓴 쪽이 훨씬 빨라요."
+  }
+},
+{
+  slug:"08-10-game", session:8, icon:"🎮",
+  title:"미니 프로젝트: 똥피하기 게임",
+  intro:"지금까지 배운 걸 모아서 진짜 게임 하나를 완성해요. 순서대로 한 단계씩 추가해 보아요.",
+  learn:["화면 준비하기","플레이어 만들기","방향키로 움직이기","똥 만들기","충돌 검사하기","목숨 표시하기","반복 실행과 게임오버"],
+  steps:[
+    { title:"게임 화면 준비하기",
+      code:`import turtle as t
+import random as r
+import time
+
+s_w, s_h = 800, 600
+t.setup(s_w, s_h)
+t.title('똥피하기 게임')
+t.tracer(0)    # 화면 자동 업데이트 끄기
+t.penup()      # 선 안 그리게 펜 올리기
+t.ht()         # 기본 거북이(화살표) 숨기기`,
+  result_img:"results/u08_s1.png",
+      points:[
+        "**t.tracer(0)** 화면을 직접 그릴 거라 자동 업데이트는 꺼요.",
+        "**t.ht()** 기본 거북이(화살표)는 숨겨요. 안 쓸 거니까요.",
+        "게임에서 자주 쓰는 **시작 준비 코드**예요."
+      ],
+      result:"검은 화면 대신 빈 창만 떠요. (아직 그림은 안 보여요)"
+    },
+    { title:"플레이어(고양이) 만들기",
+      code:`img = ['toicat.gif', 'ddong1.gif', 'ddong2.gif', 'ddong3.gif']
+for i in range(len(img)):
+    t.addshape(img[i])   # 그림 파일을 모양으로 등록하기
+
+player = t.Turtle()       # 플레이어용 거북이 만들기
+player.penup()
+player.goto(0, -s_h/2 + 40)   # 화면 아래쪽에 자리잡기
+player.shape(img[0])           # 고양이 모양 적용`,
+  result_img:"results/u08_s2.png",
+      points:[
+        "그림 파일들을 **addshape**으로 미리 등록해요.",
+        "**player** 라는 새 거북이를 만들어 고양이 모양을 줘요.",
+        "화면 **아래쪽**에 자리잡게 해요."
+      ],
+      result:"화면 아래쪽에 고양이 모양이 나타나요."
+    },
+    { title:"방향키로 플레이어 움직이기",
+      code:`p_x, p_arrow = 0, None
+
+def go_right():
+    global p_arrow
+    p_arrow = 'R'
+
+def go_left():
+    global p_arrow
+    p_arrow = 'L'
+
+def go_none():
+    global p_arrow
+    p_arrow = None
+
+def move_player():
+    global p_x
+    if p_arrow == 'R':
+        p_x += 10        # 오른쪽으로 10만큼 이동
+    if p_arrow == 'L':
+        p_x -= 10        # 왼쪽으로 10만큼 이동
+    player.setx(p_x)
+
+t.onkeypress(go_right, 'Right')      # → 키를 누르면 go_right 실행
+t.onkeypress(go_left, 'Left')        # ← 키를 누르면 go_left 실행
+t.onkeyrelease(go_none, 'Right')     # → 키를 떼면 멈추기
+t.onkeyrelease(go_none, 'Left')      # ← 키를 떼면 멈추기
+t.listen()                            # 키보드 입력 받을 준비하기`,
+  result_img:"results/u08_s3.png",
+      points:[
+        "**방향키를 누르면** p_arrow 값이 바뀌어요.",
+        "**move_player()** 가 그 값을 보고 고양이를 좌우로 움직여요.",
+        "키를 **떼면(onkeyrelease)** 다시 멈추도록 해요."
+      ],
+      result:"방향키로 고양이가 좌우로 움직여요."
+    },
+    { title:"떨어지는 똥 만들기",
+      code:`ddong_cnt = 10
+ddong = []
+ddong_speed = []
+
+for i in range(ddong_cnt):       # 똥 거북이 10개 만들기
+    d = t.Turtle()
+    d.penup()
+    d.shape(r.choice(img[1:]))    # 똥 그림 중 무작위로 모양 정하기
+    x = r.randint(-s_w//2 + 20, s_w//2 - 20)   # 무작위 x좌표
+    y = r.randint(200, s_h//2)                  # 무작위 y좌표
+    d.goto(x, y)
+    ddong.append(d)
+    ddong_speed.append(r.randint(1, 20))         # 무작위 떨어지는 속도`,
+  result_img:"results/u08_s4.png",
+      points:[
+        "**for문**으로 똥 거북이를 **10개** 만들어요.",
+        "**r.randint()** 로 위치와 떨어지는 속도를 **무작위**로 정해요.",
+        "리스트(ddong, ddong_speed)에 모아서 한꺼번에 관리해요."
+      ],
+      result:"화면 위쪽에 똥 그림 10개가 나타나요."
+    },
+    { title:"똥을 떨어뜨리고 충돌 검사하기",
+      code:`life = 3
+
+def move_ddong():
+    global life
+    for i in range(len(ddong)):
+        ddong[i].sety(ddong[i].ycor() - ddong_speed[i])   # 조금씩 아래로 내려가기
+
+        if ddong[i].distance(player) < 48:    # 고양이와 가까워졌는지 확인
+            life -= 1                          # 부딫치면 목숨 1 줄이기
+
+        if ddong[i].ycor() < -s_h//2:          # 화면 밑으로 사라지면
+            x = r.randint(-s_w//2 + 20, s_w//2 - 20)
+            ddong[i].goto(x, s_h/2)             # 위쪽으로 다시 보내기`,
+  result_img:"results/u08_s5.png",
+      points:[
+        "**sety(ycor()-속도)** 마다 조금씩 아래로 내려가요.",
+        "**distance()** 로 고양이와 가까워졌는지 확인해요.",
+        "부딫치면 **life를 1 줄여요**.",
+        "화면 밑으로 사라지면 **위쪽으로 다시** 보내요."
+      ],
+      result:"똥이 아래로 떨어지고, 고양이에 닿으면 부딫혀요."
+    },
+    { title:"남은 목숨 표시하기",
+      code:`def write_life():
+    t.goto(-s_w//2 + 10, s_h//2 - 30)   # 글자 쓸 위치(좌측 상단)로 이동
+    t.clear()                            # 이전 글자 지우기
+    t.write('Life:'+str(life), False, 'left', ('', 20))   # 남은 목숨 쓰기
+
+write_life()`,
+  result_img:"results/u08_s6.png",
+      points:[
+        "**write_life()** 화면 왼쪽 위에 남은 목숨을 써요.",
+        "충돌할 때마다 **다시 호출**해서 숫자를 갱신해요."
+      ],
+      result:"화면 왼쪽 위에 'Life:3' 이 표시돼요."
+    },
+    { title:"게임 반복 실행과 게임오버",
+      code:`while True:          # 게임을 계속 반복하기
+    move_player()
+    move_ddong()
+
+    if life <= 0:        # 목숨이 다 떨어지면
+        t.goto(0, 0)
+        t.color('red')
+        t.write('GAME OVER', False, 'center', ('', 50))
+        break              # 반복 멈추기
+
+    t.update()             # 화면 새로 그리기
+    time.sleep(0.02)       # 잠깐 쉬기
+
+t.mainloop()`,
+  result_img:"results/u08_s7.png",
+      points:[
+        "**while True** 로 게임을 계속 반복해요.",
+        "목숨이 **0 이하**가 되면 GAME OVER를 쓰고 멈춰요.",
+        "**t.update()** 로 화면을 매번 새로 그려줘요."
+      ],
+      result:"똥을 피하는 게임이 동작하고, 목숨이 다하면 GAME OVER가 나와요."
+    }
+  ],
+  quiz:[
+    { q:"게임에서 부딫혔는지 확인할 때 사용한 명령은?",
+      choices:["t.heading()","ddong[i].distance(player)","t.towards()","t.position()"], answer:1 },
+    { q:"while True 안에서 목숨이 0 이하가 되면 어떤 일이 일어나나요?",
+      choices:["창이 닫힌다","아무 일도 없다","GAME OVER 글자가 써지고 반복이 멈춘다","목숨이 다시 3이 된다"], answer:2 },
+    { q:"자동 화면 업데이트를 끄기 위해 게임 시작에 사용하는 명령은?",
+      choices:["t.tracer(0)","t.hideturtle()","t.penup()","t.listen()"], answer:0 },
+    { q:"똥이 화면 아래로 사라지면 어떻게 처리하나요?",
+      choices:["위쪽으로 다시 보낸다","사라진 채로 둔다","게임이 끝난다","색이 바뀐다"], answer:0 },
+    { q:"방향키를 떼면 멈추도록 만들 때 사용한 명령은?",
+      choices:["t.onkeyrelease()","t.onkeypress()","t.onscreenclick()","t.ontimer()"], answer:0 }
+  ],
+  mission:{
+    desc:"똥의 개수를 **20개**로 늘리거나, 충돌 거리를 **더 엄격하게** 바꿔서 난이도를 조절해보세요. 살아있는 시간만큼 올라가는 **score** 변수를 추가해도 좋아요.",
+    hint:"ddong_cnt 값을 바꾸거나, distance(player) < 48 의 숫자를 줄이면 더 어려워져요. score 변수를 만들고 while문 안에서 1씩 더해보세요."
+  }
+}
+];
+
+function escapeHtml(s){
+  return (s==null?"":String(s)).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];
+  });
+}
+function mdBold(s){
+  return escapeHtml(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
+
+// 파이썬 코드 신택스 하이라이팅 (키워드/문자열/숫자/주석/함수 색상 표시)
+const PY_KEYWORDS = ["import","as","from","def","return","if","elif","else","for","while",
+  "in","not","and","or","break","continue","global","class",
+  "try","except","pass","lambda","with","yield"];
+const PY_CONSTANTS = ["True","False","None"];
+const PY_BUILTINS = ["print","range","len","str","int","float","list","input","abs",
+  "tuple","dict","min","max","round","choice","randint"];
+function highlightPy(code){
+  const pattern = /(#[^\n]*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b\d+\.?\d*\b)|(\b[A-Za-z_][A-Za-z0-9_]*\b)(\s*)(\()?/g;
+  let out = "", last = 0, m;
+  while((m = pattern.exec(code))){
+    out += escapeHtml(code.slice(last, m.index));
+    last = m.index + m[0].length;
+    if(m[1] != null){
+      out += '<span class="tok-com">' + escapeHtml(m[1]) + '</span>';
+    } else if(m[2] != null){
+      out += '<span class="tok-str">' + escapeHtml(m[2]) + '</span>';
+    } else if(m[3] != null){
+      out += '<span class="tok-num">' + escapeHtml(m[3]) + '</span>';
+    } else if(m[4] != null){
+      const word = m[4], ws = m[5] || "", hasParen = m[6] === "(";
+      if(PY_KEYWORDS.indexOf(word) !== -1){
+        out += '<span class="tok-kw">' + escapeHtml(word) + '</span>' + ws + (hasParen ? "(" : "");
+      } else if(PY_CONSTANTS.indexOf(word) !== -1){
+        out += '<span class="tok-const">' + escapeHtml(word) + '</span>' + ws + (hasParen ? "(" : "");
+      } else if(hasParen && PY_BUILTINS.indexOf(word) !== -1){
+        out += '<span class="tok-builtin">' + escapeHtml(word) + '</span>' + ws + "(";
+      } else if(hasParen){
+        out += '<span class="tok-fn">' + escapeHtml(word) + '</span>' + ws + "(";
+      } else {
+        out += escapeHtml(word) + ws;
+      }
+    }
+  }
+  out += escapeHtml(code.slice(last));
+  return out;
+}
+
+const sideList = document.getElementById("sideList");
+const main = document.getElementById("main");
+
+// 사이드바: 차시별로 그룹화
+const groups = {};
+const order = [];
+UNITS.forEach(function(u, i){
+  if(!(u.session in groups)){ groups[u.session] = []; order.push(u.session); }
+  groups[u.session].push(i);
+});
+order.sort(function(a,b){ return a-b; });
+
+order.forEach(function(sess){
+  const g = document.createElement("div");
+  g.className = "side-group";
+  const t = document.createElement("div");
+  t.className = "side-group-title";
+  t.textContent = SESSION_LABELS[sess] || (sess + "차시");
+  g.appendChild(t);
+  groups[sess].forEach(function(idx){
+    const u = UNITS[idx];
+    const a = document.createElement("a");
+    a.className = "side-item";
+    a.textContent = u.title;
+    a.dataset.idx = idx;
+    a.onclick = function(){ showDetail(idx); };
+    g.appendChild(a);
+  });
+  sideList.appendChild(g);
+});
+
+document.getElementById("sideHome").onclick = showHome;
+
+function setActiveSide(idx){
+  document.querySelectorAll(".side-item").forEach(function(el){ el.classList.remove("active"); });
+  if(idx != null){
+    const el = document.querySelector('.side-item[data-idx="' + idx + '"]');
+    if(el) el.classList.add("active");
+  }
+}
+
+function showHome(){
+  setActiveSide(null);
+  let html = '<h2 style="margin-top:0;">🐢 단계별로 하나씩 코딩해볼까요?</h2>';
+  html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요.</div>';
+  html += '<div class="grid">';
+  UNITS.forEach(function(u, i){
+    html += '<div class="card" onclick="showDetail(' + i + ')">'
+      + '<div class="card-icon">' + u.icon + '</div>'
+      + '<div class="card-body">'
+      + '<div class="card-title">' + escapeHtml(u.title) + '</div>'
+      + '<div class="card-sub">' + (SESSION_LABELS[u.session] || (u.session+'차시')) + '</div>'
+      + '</div></div>';
+  });
+  html += '</div>';
+  main.innerHTML = html;
+  main.scrollTop = 0;
+}
+
+function showDetail(idx){
+  const u = UNITS[idx];
+  setActiveSide(idx);
+  let html = '<button class="back-btn" id="backBtn">← 목록으로</button>';
+  html += '<div class="cover-section">';
+  html += '<div class="cover-icon">' + u.icon + '</div>';
+  html += '<div class="cover-text"><h2>' + mdBold(u.title) + '</h2><p>' + mdBold(u.intro) + '</p>';
+  if(u.learn && u.learn.length){
+    html += '<ol>';
+    u.learn.forEach(function(l){ html += '<li>' + mdBold(l) + '</li>'; });
+    html += '</ol>';
+  }
+  html += '</div></div>';
+
+  (u.steps || []).forEach(function(s, i){
+    html += '<div class="step-card">';
+    html += '<div class="step-head"><span class="step-num">' + (i+1) + '</span>' + mdBold(s.title) + '</div>';
+    html += '<div class="step-body">';
+
+    if(s.funcs && s.funcs.length){
+      html += '<div class="func-card"><div class="func-label">🔧 이번에 배울 명령어</div><ul class="func-list">';
+      s.funcs.forEach(function(f){
+        html += '<li class="func-item"><span class="func-name">' + escapeHtml(f.name) + '</span><span class="func-desc">' + mdBold(f.desc) + '</span></li>';
+      });
+      html += '</ul></div>';
+    }
+    if(s.result_img){
+      html += '<div class="result-img-wrap">'
+        + '<img src="' + s.result_img + '" alt="실행결과" onclick="openLightbox(\'' + s.result_img + '\')">'
+        + '</div>';
+      if(s.result){
+        html += '<div class="result-note" style="text-align:center;">💡 ' + mdBold(s.result) + '</div>';
+      }
+    }
+    if(s.code){
+      html += '<div class="code-block-wrap">'
+        + '<div class="code-label">🐍 코드</div>'
+        + '<button class="copy-btn" onclick="copyCode(this)">복사</button>'
+        + '<pre class="code-block"><code>' + highlightPy(s.code) + '</code></pre>'
+        + '</div>';
+    }
+    if(s.image){
+      html += '<div class="step-img-wrap">'
+        + '<img src="' + s.image + '" alt="' + escapeHtml(s.title) + '" onclick="openLightbox(\'' + s.image + '\')">'
+        + '<button class="zoom-btn" onclick="openLightbox(\'' + s.image + '\')">🔍 눌러서 크게 보기</button>'
+        + '</div>';
+    }
+    html += '<div class="points-card"><div class="points-label">✏️ 따라 코딩하기</div><ol>';
+    (s.points || []).forEach(function(p){
+      html += '<li>' + mdBold(p) + '</li>';
+    });
+    html += '</ol></div>';
+    html += '</div></div>';
+  });
+
+  if(u.quiz && u.quiz.length){
+    quizScore[idx] = { correct:0, answered:0, total:u.quiz.length };
+    html += '<div class="quiz-card" id="quiz-card-' + idx + '"><h3>🧩 단원 퀴즈</h3>';
+    html += '<div class="quiz-score" id="quiz-score-' + idx + '">맞은 개수: 0 / ' + u.quiz.length + '</div>';
+    u.quiz.forEach(function(q, qi){
+      html += '<div class="quiz-q">'
+        + '<div class="quiz-q-text">Q' + (qi+1) + '. ' + mdBold(q.q) + '</div>'
+        + '<div class="quiz-choices" data-answered="0">';
+      q.choices.forEach(function(c, ci){
+        html += '<button class="quiz-choice" onclick="checkQuiz(this,' + ci + ',' + q.answer + ',\'' + idx + '_' + qi + '\')">' + mdBold(c) + '</button>';
+      });
+      html += '</div><div class="quiz-feedback" id="qf-' + idx + '_' + qi + '" style="display:none;"></div>';
+      html += '</div>';
+    });
+    html += '<div class="quiz-retry-wrap"><button class="retry-btn" onclick="retryQuiz(' + idx + ')">🔄 다시 풀기</button></div>';
+    html += '</div>';
+  }
+
+  if(u.mission){
+    html += '<div class="mission-card">'
+      + '<h3>🚀 코딩 미션</h3>';
+    if(u.mission.tasks && u.mission.tasks.length){
+      html += '<ol class="mission-tasks">';
+      u.mission.tasks.forEach(function(tk){
+        html += '<li>' + mdBold(tk) + '</li>';
+      });
+      html += '</ol>';
+    } else if(u.mission.desc){
+      html += '<div class="mission-desc">' + mdBold(u.mission.desc) + '</div>';
+    }
+    if(u.mission.hint){
+      html += '<button class="hint-btn" onclick="toggleHint(this)">💡 힌트 보기</button>'
+        + '<div class="mission-hint">' + mdBold(u.mission.hint) + '</div>';
+    }
+    html += '</div>';
+  }
+
+  main.innerHTML = html;
+  document.getElementById("backBtn").onclick = showHome;
+  main.scrollTop = 0;
+}
+
+const quizScore = {};
+
+function checkQuiz(btn, choiceIdx, answerIdx, qid){
+  const choicesBox = btn.parentElement;
+  if(choicesBox.dataset.answered === '1') return;
+  choicesBox.dataset.answered = '1';
+  Array.from(choicesBox.children).forEach(function(b){ b.disabled = true; });
+  const fb = document.getElementById('qf-' + qid);
+  fb.style.display = 'block';
+
+  const idx = qid.split('_')[0];
+  if(quizScore[idx]) quizScore[idx].answered += 1;
+
+  if(choiceIdx === answerIdx){
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback ok';
+    fb.textContent = '🎉 정답이에요!';
+    if(quizScore[idx]) quizScore[idx].correct += 1;
+  } else {
+    btn.classList.add('wrong');
+    choicesBox.children[answerIdx].classList.add('correct');
+    fb.className = 'quiz-feedback no';
+    fb.textContent = '🙏 정답은 다른 보기였어요. 초록색을 확인해보세요!';
+  }
+  updateQuizScore(idx);
+}
+
+function updateQuizScore(idx){
+  const st = quizScore[idx];
+  const el = document.getElementById('quiz-score-' + idx);
+  if(!st || !el) return;
+  let text = '맞은 개수: ' + st.correct + ' / ' + st.total;
+  if(st.answered >= st.total){
+    text += '  🎉 모든 문제를 다 풀었어요!';
+  }
+  el.textContent = text;
+}
+
+function retryQuiz(idx){
+  quizScore[idx] = { correct:0, answered:0, total: UNITS[idx].quiz.length };
+  const card = document.getElementById('quiz-card-' + idx);
+  if(!card) return;
+  card.querySelectorAll('.quiz-choices').forEach(function(box){
+    box.dataset.answered = '0';
+    Array.from(box.children).forEach(function(b){
+      b.disabled = false;
+      b.classList.remove('correct', 'wrong');
+    });
+  });
+  card.querySelectorAll('.quiz-feedback').forEach(function(fb){
+    fb.style.display = 'none';
+    fb.textContent = '';
+    fb.className = 'quiz-feedback';
+  });
+  updateQuizScore(idx);
+}
+
+function toggleHint(btn){
+  const hint = btn.nextElementSibling;
+  hint.classList.toggle('show');
+  btn.textContent = hint.classList.contains('show') ? '💡 힌트 숨기기' : '💡 힌트 보기';
+}
+
+function copyCode(btn){
+  const code = btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(function(){
+    const old = btn.textContent;
+    btn.textContent = '복사됨!';
+    setTimeout(function(){ btn.textContent = old; }, 1200);
+  });
+}
+
+function openLightbox(src){
+  document.getElementById("lightbox-img").src = src;
+  document.getElementById("lightbox").classList.add("show");
+}
+document.getElementById("lightbox-close").onclick = function(){
+  document.getElementById("lightbox").classList.remove("show");
+};
+document.getElementById("lightbox").addEventListener("click", function(e){
+  if(e.target.id === "lightbox") this.classList.remove("show");
+});
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape") document.getElementById("lightbox").classList.remove("show");
+});
+
+showHome();
+</script>
+</body>
+</html>
