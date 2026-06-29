@@ -1607,6 +1607,20 @@ body::before {
   overflow: hidden;
 }
 
+/* panel4 레이아웃 */
+#panel4.visible {
+  display: block;
+}
+#panel4 .gallery-iframe {
+  display: block;
+  width: 100% !important;
+  height: calc(100vh - 60px);
+  min-height: 700px;
+  border: none;
+  background: var(--bg, #f3fbf6);
+  overflow: hidden;
+}
+
 /* 갤러리 미션 편집 모달 열릴 때 iframe 풀스크린 */
 .gallery-iframe.modal-fullscreen {
   position: fixed !important;
@@ -1621,6 +1635,14 @@ body::before {
 }
 
 /* s5 — 앰버 */
+
+/* 파이썬 터틀 히어로 — 청록/그린 계열 */
+.panel-hero.s4 { background: linear-gradient(135deg,#0a2218 0%,#0d2e1e 45%,#061811 100%); border-top: 1px solid rgba(44,193,165,0.3); border-bottom: 1px solid rgba(44,193,165,0.3); }
+.panel-hero.s4::after { background: radial-gradient(circle,rgba(44,193,165,0.18) 0%,transparent 65%); }
+.panel-hero.s4 .panel-hero-orb-l { background: radial-gradient(circle,rgba(44,193,165,0.10) 0%,transparent 65%); }
+.panel-hero.s4 .panel-hero-lv { color: rgba(44,193,165,0.85); }
+.panel-hero.s4 .panel-hero-title { text-shadow: 0 0 22px rgba(44,193,165,0.4); }
+.panel-hero.s4 .panel-hero-tag { background: rgba(44,193,165,0.15); border-color: rgba(44,193,165,0.35); color: #6ee7d4; }
 .panel-hero.s5 { background: linear-gradient(135deg,#2a1500 0%,#3a1e00 45%,#1c0e00 100%); border-top: 1px solid rgba(251,176,64,0.3); border-bottom: 1px solid rgba(251,176,64,0.3); }
 .panel-hero.s5::after { background: radial-gradient(circle,rgba(251,176,64,0.18) 0%,transparent 65%); }
 .panel-hero.s5 .panel-hero-orb-l { background: radial-gradient(circle,rgba(255,107,107,0.1) 0%,transparent 65%); }
@@ -2722,17 +2744,13 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </div>
       </div>
-      <div class="lesson-card-grid">
-        <a href="https://kssim00.github.io/web_book/python_turtle.html" target="_blank" class="lesson-card s4">
-          <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:26px;">🐢</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">터틀 그래픽</div>
-            <div class="lesson-card-title">파이썬 터틀 웹교재</div>
-            <div class="lesson-card-sub">단계별 그림 코딩 — 별, 나선, 다각형까지!</div>
-          </div>
-          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
-        </a>
-      </div>
+      <!-- 터틀 웹교재 iframe -->
+      <iframe id="turtleGalleryFrame"
+        class="gallery-iframe"
+        src="python_turtle.html"
+        allowtransparency="true"
+        title="파이썬 터틀 웹교재">
+      </iframe>
       <div class="lesson-done-row">
         <label class="done-toggle" id="done-p4" onclick="toggleDone('p4')">
           <div class="chk" id="chk-p4">✓</div>
