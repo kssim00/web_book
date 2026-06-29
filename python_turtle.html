@@ -1486,6 +1486,19 @@ document.addEventListener("keydown", function(e){
 });
 
 showHome();
+
+// embed 파라미터가 있을 때 사이드바 숨김
+if (new URLSearchParams(location.search).get('embed') === '1') {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  if (sidebar) sidebar.style.display = "none";
+  if (main) {
+    main.style.padding = "30px 32px 60px";
+    main.style.width = "100%";
+    main.style.maxWidth = "1100px";
+    main.style.margin = "0 auto";
+  }
+}
 </script>
 </body>
 </html>
