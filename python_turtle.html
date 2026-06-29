@@ -17,6 +17,12 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  /* 스크롤바 투명 처리 */
+  ::-webkit-scrollbar{width:6px;height:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:transparent;}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.15);}
+  *{scrollbar-width:none;}
   body{
     font-family:"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",sans-serif;
     background:var(--bg);
@@ -59,7 +65,7 @@
   #main{flex:1;padding:24px 28px 60px;overflow-y:auto;}
   h2{color:var(--primary-dark);}
 
-  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:18px;}
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:18px;}
   .card{
     background:var(--card-bg);border-radius:18px;box-shadow:var(--shadow);
     overflow:hidden;cursor:pointer;transition:transform .15s ease;
