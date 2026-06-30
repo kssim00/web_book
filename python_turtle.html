@@ -258,7 +258,7 @@
 <div id="app">
   <nav id="sidebar">
     <h1>🐢 파이썬 터틀<br>웹교재</h1>
-    <a class="side-home" id="sideHome">🏠 전체 목록 보기</a>
+    <a class="side-home" id="sideHome" style="display:none;">🏠 전체 목록 보기</a>
     <div id="sideList"></div>
   </nav>
   <main id="main"></main>
@@ -1312,7 +1312,8 @@ function showHome(){
 }
 
 function openLesson(i){
-  window.open('python_turtle.html#lesson-' + i, '_blank');
+  localStorage.setItem('turtle_open_lesson', i);
+  window.open('python_turtle.html', '_blank');
 }
 
 function showDetail(idx){
@@ -1503,10 +1504,10 @@ document.addEventListener("keydown", function(e){
   if(e.key === "Escape") document.getElementById("lightbox").classList.remove("show");
 });
 
-var _hash = location.hash;
-var _lessonMatch = _hash.match(/^#lesson-(\d+)$/);
-if (_lessonMatch) {
-  showDetail(parseInt(_lessonMatch[1]));
+var _storedLesson = localStorage.getItem('turtle_open_lesson');
+if (_storedLesson !== null) {
+  localStorage.removeItem('turtle_open_lesson');
+  showDetail(parseInt(_storedLesson));
 } else {
   showHome();
 }
