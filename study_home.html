@@ -1613,10 +1613,10 @@ body::before {
 }
 #panel4 .gallery-iframe {
   display: block;
-  width: min(1200px, calc(100vw - 32px)) !important;
+  width: 100% !important;
   position: relative !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  left: 0 !important;
+  transform: none !important;
   height: calc(100vh - 60px);
   min-height: 600px;
   border: none;
@@ -4236,21 +4236,6 @@ window.addEventListener('message', function(e) {
   }
   if (e.data.type === 'entry-modal-close') {
     document.body.style.overflow = '';
-  }
-  // 터틀 갤러리: 상세 보기 ↔ 목록 전환 시 iframe 너비 변경
-  if (e.data.type === 'turtle-mode') {
-    const f = document.getElementById('turtleGalleryFrame');
-    if (f) {
-      if (e.data.mode === 'detail') {
-        f.style.setProperty('width', '100%', 'important');
-        f.style.setProperty('left', '0', 'important');
-        f.style.setProperty('transform', 'none', 'important');
-      } else {
-        f.style.setProperty('width', 'min(1200px, calc(100vw - 32px))', 'important');
-        f.style.setProperty('left', '50%', 'important');
-        f.style.setProperty('transform', 'translateX(-50%)', 'important');
-      }
-    }
   }
 });
 
