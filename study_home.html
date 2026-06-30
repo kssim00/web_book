@@ -3747,10 +3747,24 @@ function calcProgress() {
   }
 
   const pct = Math.round(currentDone / currentTotal * 100);
-  document.getElementById('totalProgressBar').style.width = pct + '%';
-  document.getElementById('totalProgressPct').textContent = pct + '%';
-  const lbl = document.getElementById('currentSubjectLabel');
-  if (lbl) lbl.textContent = currentLabel;
+
+  // 파이썬(p5) 이상: 챕터 완료 수 표시
+  if (lastStep >= 5) {
+    const pyKey = 'py-chapters-' + name;
+    let pyDone = [];
+    try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(e) {}
+    const pyTotal = 13;
+    const pyPct = Math.round(pyDone.length / pyTotal * 100);
+    document.getElementById('totalProgressBar').style.width = pyPct + '%';
+    document.getElementById('totalProgressPct').textContent = pyDone.length;
+    const lbl2 = document.getElementById('currentSubjectLabel');
+    if (lbl2) lbl2.textContent = '/ ' + pyTotal + ' 챕터';
+  } else {
+    document.getElementById('totalProgressBar').style.width = pct + '%';
+    document.getElementById('totalProgressPct').textContent = pct + '%';
+    const lbl = document.getElementById('currentSubjectLabel');
+    if (lbl) lbl.textContent = currentLabel;
+  }
 
   // 과목별 미니 진도 바
   const bars = [
@@ -4638,6 +4652,22 @@ async function confirmComplete() {
   // 로컬 완료 처리
   setStore('done-' + panelKey, true);
   applyDone(panelKey, true);
+
+  // 파이썬: 선택된 챕터를 완료 목록에 추가
+  if (panelKey === 'p5') {
+    const todayIdx = parseInt(getStore('today-p5', -1));
+    if (todayIdx >= 0) {
+      const pyKey = 'py-chapters-' + name;
+      let pyDone = [];
+      try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(e) {}
+      if (!pyDone.includes(todayIdx)) {
+        pyDone.push(todayIdx);
+        localStorage.setItem(pyKey, JSON.stringify(pyDone));
+      }
+      restorePyDoneCards();
+    }
+  }
+
   calcProgress();
   fireConfetti();
 
@@ -4680,6 +4710,7 @@ function loadAllState() {
     if (el) el.value = memo;
   });
   loadTodaySelect('p5');
+  restorePyDoneCards();
   // 로그인 후에는 항상 홈 화면으로 시작 (과목 자동 이동 없음)
 }
 
@@ -4693,13 +4724,25 @@ function selectToday(panel, idx) {
   applyTodaySelect(panel, idx, false);
 }
 function applyTodaySelect(panel, idx, isDoneMode) {
+  // p5(파이썬): 이미 완료된 챕터 목록 로드
+  const studentName = getStore('studentName', '');
+  let pyDoneSet = [];
+  if (panel === 'p5') {
+    try { pyDoneSet = JSON.parse(localStorage.getItem('py-chapters-' + studentName) || '[]'); } catch(e) {}
+  }
   const cards = document.querySelectorAll('[id^="rc-' + panel + '-"]');
   cards.forEach((c, i) => {
-    c.classList.remove('selected-today', 'done-last');
+    c.classList.remove('selected-today');
+    // p5: 완료된 챕터는 done-last 유지, 나머지만 제거
+    if (panel === 'p5') {
+      if (!pyDoneSet.includes(i)) c.classList.remove('done-last');
+    } else {
+      c.classList.remove('done-last');
+    }
     if (isDoneMode) {
       if (i === idx) c.classList.add('done-last');
     } else {
-      if (i === idx) c.classList.add('selected-today');
+      if (i === idx && !pyDoneSet.includes(i)) c.classList.add('selected-today');
       const input = c.querySelector('input[type=radio]');
       if (input && i === idx) input.checked = true;
     }
@@ -4716,6 +4759,22 @@ function applyTodaySelect(panel, idx, isDoneMode) {
     if (banner) banner.style.display = 'none';
   }
   if (panel === 'p5') updatePyHeroStats();
+}
+
+/* 파이썬 완료된 챕터 카드 복원 */
+function restorePyDoneCards() {
+  const name = getStore('studentName', '');
+  const pyKey = 'py-chapters-' + name;
+  let pyDone = [];
+  try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(e) {}
+  const cards = document.querySelectorAll('[id^="rc-p5-"]');
+  cards.forEach((c, i) => {
+    if (pyDone.includes(i)) {
+      c.classList.add('done-last');
+      c.classList.remove('selected-today');
+    }
+  });
+  updatePyHeroStats();
 }
 
 /* 파이썬 히어로 스탯 업데이트 */
