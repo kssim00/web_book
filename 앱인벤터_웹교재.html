@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>앱인벤터 따라 만들기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#293c66; --sky:#46bfe6; --sun:#ffc638; --coral:#f36b6b;
+    --blk-event:#c79a2e; --blk-event-d:#a9831f;
+    --blk-method:#9a6bb0; --blk-prop:#3f9b6c; --blk-prop-d:#2f7c54;
+    --blk-text:#c63a6c; --blk-num:#4a8fd6; --blk-var:#e58b3a; --blk-list:#43a8c2;
+    --ai-green:#a5c249;
+    --cream:#fbf6ec; --cream-2:#f3ecdd; --ink:#36302a; --ink-soft:#6c6256;
+    --card:#fff; --line:#e7ddc9; --shadow:0 10px 30px rgba(41,60,102,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:86px}
+  body{font-family:"Noto Sans KR",sans-serif;color:var(--ink);background:var(--cream);
+    line-height:1.75;font-size:17px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  @media (max-width:600px){ body{font-size:16px} }
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(circle at 50% 50%, rgba(255,198,56,.06) 0 1.5px, transparent 2px);
+    background-size:22px 22px}
+  a{color:inherit}
+  h1,h2,h3,h4{font-family:"Jua",sans-serif;font-weight:400;line-height:1.3}
+  small{font-size:.82em}
+
+  /* 상단바 */
+  .topbar{position:sticky;top:0;z-index:50}
+  .stripe{height:6px;display:flex}.stripe span{flex:1}
+  .stripe span:nth-child(1){background:var(--navy)}.stripe span:nth-child(2){background:var(--sun)}
+  .stripe span:nth-child(3){background:var(--sky)}.stripe span:nth-child(4){background:var(--coral)}
+  .stripe span:nth-child(5){background:var(--navy)}
+  nav{background:rgba(251,246,236,.93);backdrop-filter:blur(8px);border-bottom:2px solid var(--line)}
+  .nav-in{max-width:1120px;margin:0 auto;padding:8px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:8px;font-family:"Jua";font-size:19px;color:var(--navy)}
+  .nav-links{display:flex;gap:3px;flex-wrap:wrap;margin-left:auto}
+  .nav-links a{text-decoration:none;font-weight:700;font-size:13.5px;color:var(--ink-soft);
+    padding:6px 11px;border-radius:999px;transition:.15s;white-space:nowrap}
+  .nav-links a:hover{background:var(--cream-2);color:var(--navy)}
+  .nav-links a.on{background:var(--navy);color:#fff}
+  .progress{height:4px;background:var(--cream-2)}
+  .progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sun),var(--coral));transition:width .15s}
+  @media (max-width:780px){ .nav-links a{padding:5px 8px;font-size:12.5px} }
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+  section{padding:60px 0;scroll-margin-top:82px}
+  @media (max-width:600px){ section{padding:44px 0} }
+
+  /* 히어로 */
+  .hero{text-align:center;padding:70px 18px 56px;
+    background:radial-gradient(ellipse 60% 80% at 50% 0%, rgba(70,191,230,.16), transparent 60%),linear-gradient(180deg,#fffdf8,var(--cream))}
+  .hero .eyebrow{font-family:"Gaegu";font-weight:700;font-size:20px;color:var(--coral);display:inline-block;transform:rotate(-2deg)}
+  .hero h1{font-size:clamp(32px,7vw,60px);color:var(--navy);margin:6px 0 14px;line-height:1.15}
+  .hero h1 .pop{color:var(--coral)}
+  .hero p.lead{max-width:640px;margin:0 auto 24px;color:var(--ink-soft);font-size:clamp(16px,2.4vw,20px)}
+  .bees{font-size:44px;margin-bottom:6px}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{font-family:"Jua";font-size:18px;text-decoration:none;padding:13px 26px;border-radius:999px;
+    display:inline-block;transition:transform .12s,box-shadow .12s;border:none;cursor:pointer}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-main{background:var(--coral);color:#fff;box-shadow:0 6px 0 #c94f4f}
+  .btn-sub{background:#fff;color:var(--navy);box-shadow:0 6px 0 var(--line)}
+  .tag{font-weight:700;font-size:13px;padding:6px 13px;border-radius:999px;background:#fff;border:2px solid var(--line);color:var(--ink-soft)}
+  .hero-strip{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+
+  /* 차시 헤더 */
+  .lesson-head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+  .lesson-num{font-family:"Jua";font-size:15px;letter-spacing:1px;color:#fff;background:var(--navy);padding:5px 16px;border-radius:999px}
+  .lesson-head h2{font-size:clamp(25px,5vw,38px);color:var(--navy)}
+  .lesson-line{height:4px;background:repeating-linear-gradient(90deg,var(--sun) 0 18px,var(--sky) 18px 36px,var(--coral) 36px 54px);border-radius:4px;margin:14px 0 34px;opacity:.8}
+
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:780px){ .g2,.g3{grid-template-columns:1fr} }
+
+  .card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}
+  .card h3{font-size:20px;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .card p{color:var(--ink-soft)}
+  .card ul{margin:8px 0 0 2px;list-style:none}
+  .card ul li{padding-left:22px;position:relative;margin:6px 0;color:var(--ink-soft)}
+  .card ul li::before{content:"🍯";position:absolute;left:0;top:0;font-size:13px}
+  .mini-label{font-family:"Gaegu";font-weight:700;color:var(--coral);font-size:18px;margin:30px 0 6px}
+
+  /* 콜아웃 */
+  .note{border-radius:14px;padding:14px 18px 14px 50px;position:relative;margin:16px 0;font-size:15px;line-height:1.7}
+  .note::before{position:absolute;left:16px;top:13px;font-size:21px}
+  .tip{background:#eaf7fb;border:2px solid #bfe6f1}.tip::before{content:"💡"}
+  .warn{background:#fdeeee;border:2px solid #f6cfcf}.warn::before{content:"⚠️"}
+  .star{background:#fff7e3;border:2px solid #ffe19a}.star::before{content:"⭐"}
+  .why{background:#eef4ec;border:2px solid #cfe3c9}.why::before{content:"🧠"}
+  .note b{color:var(--navy)}
+
+  /* ===== 앱 카드 + 3단계 ===== */
+  .app{margin:34px 0;border:3px solid var(--line);border-radius:24px;background:#fffdfa;
+    padding:8px;box-shadow:var(--shadow)}
+  .app-title{font-family:"Jua";font-size:23px;color:var(--navy);padding:14px 16px 6px;display:flex;align-items:center;gap:10px}
+  .app-sub{padding:0 16px 8px;color:var(--ink-soft);font-size:15px}
+
+  .phase{margin:10px;border-radius:16px;overflow:hidden;border:2px solid var(--line);background:#fff}
+  .phase-head{display:flex;align-items:center;gap:12px;padding:11px 16px;color:#fff;flex-wrap:wrap}
+  .phase-head .b{font-family:"Jua";font-size:12px;background:rgba(255,255,255,.32);padding:3px 11px;border-radius:999px;letter-spacing:.5px}
+  .phase-head h4{font-size:17px}
+  .phase-1 .phase-head{background:var(--sky)}
+  .phase-2 .phase-head{background:var(--sun);color:var(--navy)}
+  .phase-2 .phase-head .b{background:rgba(41,60,102,.16)}
+  .phase-3 .phase-head{background:var(--blk-event)}
+  .phase-body{padding:18px}
+  @media (max-width:600px){ .phase-body{padding:14px} }
+
+  .live-badge{font-family:"Gaegu";font-weight:700;font-size:15px;color:var(--blk-prop-d);
+    background:#eafaf1;border:1.5px solid #bfe6cf;border-radius:999px;padding:3px 12px;display:inline-block}
+
+  /* ===== 휴대폰 ===== */
+  .phone{width:215px;flex:none;background:#1c1c1c;border-radius:28px;padding:9px;box-shadow:0 14px 30px rgba(0,0,0,.22)}
+  .phone .scr{background:#fff;border-radius:18px;overflow:hidden;aspect-ratio:9/17;display:flex;flex-direction:column}
+  .phone .bar{background:#5a5a5a;color:#fff;font-size:10px;padding:5px 9px}
+  .phone .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px;text-align:center}
+  .phone .nav3{display:flex;justify-content:space-around;padding:7px;color:#bbb;font-size:13px;border-top:1px solid #eee}
+  .ph-row{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+  .ph-side{flex:1;min-width:240px}
+
+  .cat-btn{font-size:74px;line-height:1;background:none;border:none;cursor:pointer;transition:transform .08s}
+  .cat-btn small{display:block;font-size:12px;color:#999;font-family:"Noto Sans KR"}
+  .cat-btn:active{transform:scale(.92)}
+  @keyframes buzz{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px) rotate(-3deg)}40%{transform:translateX(5px) rotate(3deg)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+  .buzzing{animation:buzz .45s}
+
+  .demo-field{width:100%;border:1.5px solid #cbd3da;border-radius:8px;padding:9px;font-size:14px;font-family:inherit}
+  .demo-btn{font-family:"Jua";font-size:15px;border:none;border-radius:10px;padding:9px 16px;cursor:pointer;color:#fff;background:var(--sky);box-shadow:0 4px 0 rgba(0,0,0,.12)}
+  .demo-btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.12)}
+  .demo-btn.coral{background:var(--coral)}.demo-btn.sun{background:var(--sun);color:var(--navy)}
+  .demo-btn.dark{background:#2c2c2c}
+  .demo-btn.ghost{background:#fff;color:var(--navy);box-shadow:0 0 0 2px var(--line) inset}
+  .demo-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .result-line{margin-top:8px;min-height:24px;font-weight:700;color:var(--navy)}
+  .speak-circle{width:120px;height:120px;border-radius:50%;background:#1c1c1c;color:#fff;border:none;cursor:pointer;font-family:"Jua";font-size:18px;display:grid;place-items:center}
+  .speak-circle.rec{background:#cf3b3b;animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(207,59,59,.5)}50%{box-shadow:0 0 0 14px rgba(207,59,59,0)}}
+
+  /* ===== 디자이너 재현 ===== */
+  .designer{border:2px solid var(--ai-green);border-radius:14px;overflow:hidden;background:#fff;box-shadow:var(--shadow);font-size:13px}
+  .d-top{background:var(--ai-green);color:#fff;display:flex;align-items:center;gap:10px;padding:8px 12px;font-weight:700}
+  .d-top .proj{font-family:"Jua";font-size:15px}
+  .d-top .scr-pill{background:rgba(255,255,255,.25);padding:2px 10px;border-radius:6px;font-size:12px}
+  .d-top .toggle{margin-left:auto;display:flex;border-radius:7px;overflow:hidden;border:1px solid rgba(255,255,255,.7)}
+  .d-top .toggle span{padding:3px 12px;font-size:12px;background:rgba(255,255,255,.12)}
+  .d-top .toggle .act{background:#fff;color:#5b6b22}
+  .d-cols{display:grid;grid-template-columns:1.15fr 1fr 1fr .95fr}
+  .d-col{padding:10px;border-right:1px solid #eee;min-width:0}
+  .d-col:last-child{border-right:none}
+  .d-h{font-weight:700;color:#7a8a3a;background:#f3f6e6;margin:-10px -10px 8px;padding:6px 10px;border-bottom:1px solid #e6ecca}
+  .pal-cat{font-weight:700;color:#888;margin:8px 0 3px;font-size:12px}
+  .pal-item{display:flex;align-items:center;gap:6px;padding:4px 5px;color:#666;border-radius:6px;margin:1px 0}
+  .pal-item.hot{background:#fff3cf;color:#8a6d12;font-weight:700;box-shadow:0 0 0 2px var(--sun) inset}
+  .pal-item.hot::after{content:"끌어오기 →";font-family:"Gaegu";font-size:11px;color:var(--coral);margin-left:auto;white-space:nowrap}
+  .vphone{background:#1c1c1c;border-radius:10px;padding:5px}
+  .vphone .vscr{background:#fff;border-radius:6px;min-height:200px;display:flex;flex-direction:column;overflow:hidden}
+  .vbar{background:#5a5a5a;color:#fff;font-size:9px;padding:3px 6px}
+  .vbody{flex:1;padding:8px;display:flex;flex-direction:column;gap:6px;align-items:center}
+  .v-el{font-size:11px;border:1px dashed #ccc;border-radius:4px;padding:4px 6px;width:100%;text-align:center;color:#555;background:#fafafa}
+  .v-el.btn{background:#eee;border-style:solid}
+  .v-img{width:100%;height:64px;border-radius:4px;background:linear-gradient(135deg,#46bfe6,#ffc638,#f36b6b);opacity:.8}
+  .tree-item{display:flex;align-items:center;gap:6px;padding:2px 0;color:#555;font-size:12.5px}
+  .tree-item.ind{padding-left:16px}.tree-item.ind2{padding-left:30px}
+  .tree-item.sel{background:#eef7d8;border-radius:5px;font-weight:700;color:#5b6b22}
+  .dot{width:14px;height:14px;border-radius:3px;display:inline-block;flex:none}
+  .prop-row{margin:7px 0}.prop-row .k{color:#888;font-size:11.5px}
+  .prop-row .v{border:1px solid #ddd;border-radius:5px;padding:4px 7px;font-size:12px;color:#444;margin-top:2px}
+  .prop-row .v.hi{border-color:var(--coral);box-shadow:0 0 0 2px #f6cfcf inset;color:var(--navy);font-weight:700}
+  @media (max-width:820px){ .d-cols{grid-template-columns:1fr 1fr} .d-col{border-bottom:1px solid #eee} }
+  @media (max-width:520px){ .d-cols{grid-template-columns:1fr} }
+
+  /* 부품 설정표 */
+  .spec{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px;background:#fff;border-radius:12px;overflow:hidden;border:2px solid var(--line)}
+  .spec th,.spec td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+  .spec th{background:#f3ecdd;color:var(--navy);font-weight:700}
+  .spec tr:last-child td{border-bottom:none}
+  .spec code{background:#fff3cf;border-radius:5px;padding:1px 7px;font-weight:700;color:#8a6d12;font-family:inherit}
+
+  /* ===== 블록 ===== */
+  .blocks{background:#fdfaf2;border:2px dashed var(--line);border-radius:16px;padding:20px 18px;margin:14px 0;overflow-x:auto}
+  .blocks .cap{font-family:"Gaegu";font-weight:700;color:var(--ink-soft);font-size:16px;margin-bottom:12px}
+  .stack{display:inline-flex;flex-direction:column;min-width:min-content}
+  .stack>.blk+.blk{margin-top:-3px}
+  .blk{position:relative;display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap;color:#fff;font-weight:700;
+    font-size:15px;padding:9px 13px;border-radius:7px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);width:max-content}
+  .b-event{background:var(--blk-event)}.b-method{background:var(--blk-method)}.b-prop{background:var(--blk-prop)}
+  .b-text{background:var(--blk-text)}.b-num{background:var(--blk-num)}.b-var{background:var(--blk-var)}.b-list{background:var(--blk-list)}
+  .blk .chip{background:rgba(255,255,255,.92);color:#3a3a3a;border-radius:6px;padding:2px 9px;font-weight:700;font-size:14px;box-shadow:0 1px 0 rgba(0,0,0,.15)}
+  .blk .chip::after{content:" ▾";color:#999;font-size:11px}
+  .blk .chip.plain::after{content:""}
+  .blk .lit{background:rgba(255,255,255,.95);color:#c63a6c;border-radius:5px;padding:2px 10px;font-weight:700}
+  .b-do{flex-direction:column;align-items:flex-start;padding:9px 13px 13px;border-radius:7px}
+  .b-do>.row{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .b-do .inner{margin:8px 0 0 24px;display:flex;flex-direction:column;gap:8px;border-left:6px solid rgba(0,0,0,.12);padding-left:8px}
+  .pill{box-shadow:none!important;padding:5px 9px!important;font-size:13.5px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--ink-soft)}
+  .legend i{width:16px;height:16px;border-radius:4px;display:inline-block}
+
+  /* ===== 퀴즈 ===== */
+  .quiz{background:linear-gradient(135deg,#fff,#fff7e8);border:2px solid var(--sun);border-radius:22px;padding:26px;box-shadow:var(--shadow)}
+  .quiz h3{color:var(--navy);font-size:22px;margin-bottom:4px;display:flex;gap:8px;align-items:center}
+  .q{margin-top:20px}.q .qtxt{font-weight:700;margin-bottom:10px}
+  .q .opts{display:grid;gap:9px}
+  .q button.opt{text-align:left;font-family:inherit;font-size:15.5px;font-weight:500;cursor:pointer;background:#fff;border:2px solid var(--line);border-radius:12px;padding:11px 15px;transition:.12s;color:var(--ink)}
+  .q button.opt:hover{border-color:var(--sky);background:#f4fbfe}
+  .q button.opt.right{border-color:var(--blk-prop);background:#eafaf1;color:var(--blk-prop-d);font-weight:700}
+  .q button.opt.wrong{border-color:var(--coral);background:#fdeeee;color:#c94f4f}
+  .q button.opt:disabled{cursor:default}
+  .q .fb{margin-top:9px;font-size:14.5px;font-weight:700;min-height:20px}
+  .q .fb.ok{color:var(--blk-prop-d)}.q .fb.no{color:#c94f4f}
+
+  footer{background:var(--navy);color:#dfe6f2;text-align:center;padding:40px 18px;margin-top:30px}
+  footer .bee{font-size:30px}footer p{font-size:14px;opacity:.85;margin-top:8px}
+  footer small{display:block;opacity:.55;margin-top:14px;font-size:12px}
+
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .55s,transform .55s}
+  .reveal.show{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.btn:hover{transform:none}.buzzing{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="stripe"><span></span><span></span><span></span><span></span><span></span></div>
+  <nav>
+    <div class="nav-in">
+      <div class="brand"><span>🐝</span>앱인벤터 교실</div>
+      <div class="nav-links" id="navLinks">
+        <a href="#start">시작</a>
+        <a href="#basic">기본기</a>
+        <a href="#cat">고양이앱</a>
+        <a href="#tts">말하는앱</a>
+        <a href="#stt">음성인식</a>
+        <a href="#mp3">MP3앱</a>
+        <a href="#quiz">퀴즈</a>
+      </div>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+  </nav>
+</div>
+
+<!-- 히어로 -->
+<header class="hero" id="start">
+  <div class="bees">🐝</div>
+  <div class="eyebrow">읽고 → 체험하고 → 똑같이 따라 만들어요</div>
+  <h1>블록을 끼우면<br><span class="pop">진짜 앱</span>이 완성돼요</h1>
+  <p class="lead">앱마다 ① 완성된 앱을 직접 눌러보고, ② 디자이너 화면에서 부품을 배치하고,
+    ③ 블록을 끼우는 3단계로 차근차근 따라 만들어요.</p>
+  <div class="hero-cta">
+    <a class="btn btn-main" href="#cat">첫 앱 만들러 가기</a>
+    <a class="btn btn-sub" href="#basic">앱인벤터 기본기 먼저</a>
+  </div>
+  <div class="hero-strip">
+    <span class="tag">🐱 고양이 소리</span>
+    <span class="tag">🗣️ 말하는 앱</span>
+    <span class="tag">🎤 음성 인식</span>
+    <span class="tag">🎵 MP3 플레이어</span>
+  </div>
+  <p style="margin-top:22px;color:var(--ink-soft);font-size:14px">
+    🔊 이 페이지의 데모는 <b>크롬 브라우저</b>에서 가장 잘 작동해요. 소리를 켜주세요!</p>
+</header>
+
+<!-- ===== 기본기 ===== -->
+<section id="basic">
+  <div class="wrap">
+    <div class="lesson-head reveal"><span class="lesson-num">기본기</span><h2>앱인벤터, 이것만 알면 시작!</h2></div>
+    <div class="lesson-line reveal"></div>
+
+    <div class="grid g2">
+      <div class="card reveal">
+        <h3>🧩 앱인벤터가 뭐예요?</h3>
+        <p><b>블록을 끼워서 스마트폰 앱을 만드는 도구</b>예요. 어려운 코드 없이 레고처럼 맞추면 돼요.
+          미국 MIT가 만들었고, 무료이고, 작품은 인터넷에 저장돼요.</p>
+        <ul>
+          <li>크롬으로 <b>appinventor.mit.edu</b> 접속 → 구글 로그인 → <b>Create apps!</b></li>
+          <li>[프로젝트] → [새 프로젝트] (이름은 <b>영어로 시작</b>)</li>
+          <li>다 만들면 [빌드] → <b>QR 코드</b>를 폰으로 스캔해 설치</li>
+        </ul>
+      </div>
+      <div class="card reveal">
+        <h3>🖥️ 만드는 중에 폰으로 확인하기</h3>
+        <ul>
+          <li><b>AI 컴패니언</b>: 폰에 MIT AI2 Companion 앱 설치 후 QR 스캔
+            <br><small>컴퓨터와 폰이 <b>같은 와이파이</b>여야 해요</small></li>
+          <li><b>에뮬레이터</b>: 폰이 없을 때 컴퓨터 속 가짜 폰으로 확인</li>
+          <li><b>USB</b>: 케이블로 연결 ([개발자 옵션] → USB 디버깅 켜기)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="mini-label reveal">앱인벤터 화면은 ‘두 개’예요</h3>
+    <div class="grid g2">
+      <div class="card reveal">
+        <h3>🎨 디자이너 — 앱을 ‘꾸미는’ 곳</h3>
+        <p>앱이 어떻게 생길지 정해요. <b>① 팔레트</b>(부품 모음) → <b>② 뷰어</b>(폰 화면)로 부품을 끌어다 놓고,
+          <b>③ 컴포넌트</b> 목록에서 고른 뒤 <b>④ 속성</b>에서 색·크기를 바꿔요. <b>⑤ 미디어</b>에 그림·소리를 올려요.</p>
+      </div>
+      <div class="card reveal">
+        <h3>🧱 블록 — 앱을 ‘움직이는’ 곳</h3>
+        <p>부품이 어떻게 동작할지 블록으로 짜요. 왼쪽 <b>블록 모음</b>에서 블록을 꺼내
+          오른쪽 <b>작업 공간</b>에 끼워 맞춰요. 블록은 <b>색깔로 종류</b>를 구별해요 👇</p>
+        <div class="legend">
+          <span><i style="background:var(--blk-event)"></i>이벤트</span>
+          <span><i style="background:var(--blk-method)"></i>호출(동작)</span>
+          <span><i style="background:var(--blk-prop)"></i>속성(값)</span>
+          <span><i style="background:var(--blk-text)"></i>글자</span>
+          <span><i style="background:var(--blk-num)"></i>숫자</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="note why reveal">
+      <b>블록의 기본 문장은 이래요.</b>
+      “<b>언제</b> 〇〇가 △△하면(이벤트) → <b>실행</b> 안에서 □□를 <b>호출</b>하거나 값을 <b>지정</b>해라.”
+      거의 모든 앱이 이 한 문장의 반복이에요. 이것만 기억하면 아래 앱들이 쉬워져요!
+    </div>
+  </div>
+</section>
+
+<!-- ================= 앱 1: 고양이 ================= -->
+<section id="cat" style="background:linear-gradient(180deg,#fff,var(--cream))">
+  <div class="wrap">
+    <div class="lesson-head reveal"><span class="lesson-num">앱 1</span><h2>고양이 울음소리 앱</h2></div>
+    <div class="lesson-line reveal"></div>
+
+    <div class="app reveal">
+      <div class="app-title">🐱 고양이 소리 + 진동 앱</div>
+      <div class="app-sub">고양이를 누르면 울음소리가 나고 폰이 부르르 떨려요. 가장 쉬운 첫 앱이에요!</div>
+
+      <!-- STEP 1 -->
+      <div class="phase phase-1">
+        <div class="phase-head"><span class="b">STEP 1</span><h4>완성된 앱 체험하기</h4>
+          <span class="live-badge" style="margin-left:auto">진짜로 작동해요!</span></div>
+        <div class="phase-body">
+          <div class="ph-row">
+            <div class="phone">
+              <div class="scr">
+                <div class="bar">Screen1</div>
+                <div class="body" id="catScreen">
+                  <button class="cat-btn" id="catBtn">🐱<small>눌러보세요</small></button>
+                </div>
+                <div class="nav3"><span>◁</span><span>○</span><span>▢</span></div>
+              </div>
+            </div>
+            <div class="ph-side">
+              <p style="color:var(--ink-soft)">고양이 그림(버튼)을 눌러보세요. 누르는 순간 <b>소리가 재생</b>되고
+                폰이 흔들리듯 <b>진동</b>해요. 진짜 앱에서는 ‘소리’ 부품이 이 일을 해줘요.</p>
+              <div class="note tip" style="margin-top:14px">스마트폰에서 열면 실제로 폰이 진동해요. 컴퓨터에서는 화면이 흔들리는 걸로 진동을 표현했어요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="phase phase-2">
+        <div class="phase-head"><span class="b">STEP 2</span><h4>디자이너 탭에서 화면 만들기</h4></div>
+        <div class="phase-body">
+          <p style="color:var(--ink-soft);margin-bottom:14px">디자이너 화면에서 <b>노란 칸의 부품</b>을 뷰어(폰)로 끌어다 놓으세요.</p>
+          <div class="designer">
+            <div class="d-top"><span class="proj">cat_sound</span><span class="scr-pill">Screen1 ▾</span>
+              <span class="toggle"><span class="act">디자이너</span><span>블록</span></span></div>
+            <div class="d-cols">
+              <div class="d-col">
+                <div class="d-h">팔레트</div>
+                <div class="pal-cat">사용자 인터페이스</div>
+                <div class="pal-item hot">🔘 버튼</div>
+                <div class="pal-item">🔤 레이블</div>
+                <div class="pal-item">⌨ 텍스트 상자</div>
+                <div class="pal-cat">미디어</div>
+                <div class="pal-item hot">🔊 소리</div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">뷰어</div>
+                <div class="vphone"><div class="vscr">
+                  <div class="vbar">Screen1</div>
+                  <div class="vbody"><div class="v-el btn">🐱 버튼_고양이</div></div>
+                </div></div>
+                <p style="font-size:11px;color:#999;margin-top:6px">소리 부품은 화면에 안 보여요(보이지 않는 컴포넌트)</p>
+              </div>
+              <div class="d-col">
+                <div class="d-h">컴포넌트</div>
+                <div class="tree-item"><span class="dot" style="background:#bbb"></span>Screen1</div>
+                <div class="tree-item ind sel"><span class="dot" style="background:#7aa0d0"></span>버튼_고양이</div>
+                <div class="tree-item ind"><span class="dot" style="background:#9a6bb0"></span>소리1</div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">속성</div>
+                <div class="prop-row"><div class="k">이미지</div><div class="v hi">cat.png</div></div>
+                <div class="prop-row"><div class="k">텍스트</div><div class="v">눌러보세요</div></div>
+                <div class="prop-row"><div class="k">너비 / 높이</div><div class="v">자동</div></div>
+              </div>
+            </div>
+          </div>
+
+          <table class="spec">
+            <tr><th>가져올 부품</th><th>이름 바꾸기</th><th>설정할 속성</th></tr>
+            <tr><td><b>버튼</b> (사용자 인터페이스)</td><td><code>버튼_고양이</code></td><td>이미지 → 고양이 그림 올리기</td></tr>
+            <tr><td><b>소리</b> (미디어)</td><td><code>소리1</code></td><td>소스 → 고양이 울음 mp3 올리기</td></tr>
+          </table>
+          <div class="note star">먼저 <b>⑤ 미디어</b>에 고양이 그림과 울음소리 파일을 <b>‘파일 올리기’</b>로 올려두면,
+            속성에서 그 파일을 고를 수 있어요.</div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="phase phase-3">
+        <div class="phase-head"><span class="b">STEP 3</span><h4>블록 끼우기 (원리 먼저!)</h4></div>
+        <div class="phase-body">
+          <div class="note why">
+            <b>이렇게 생각하면 쉬워요.</b> “<b>언제</b> 고양이 버튼을 <b>클릭하면</b> →
+            <b>실행</b> 안에서 소리를 <b>재생</b>하고, 이어서 <b>진동</b>시켜라.”
+            이벤트(노란 블록) 안에 동작(보라 블록)을 위에서 아래 순서대로 끼우면, 그 순서대로 실행돼요.
+          </div>
+          <div class="blocks">
+            <div class="cap">블록 모음에서 꺼내 이렇게 끼워요</div>
+            <div class="stack">
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">버튼_고양이</span><span>.클릭했을때</span></div>
+                <div class="inner">
+                  <div class="blk b-method"><span>호출</span><span class="chip">소리1</span><span>.재생하기</span></div>
+                  <div class="blk b-method"><span>호출</span><span class="chip">소리1</span><span>.진동하기</span> <span class="lit">밀리초 500</span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="note tip"><b>‘밀리초’는 1000분의 1초!</b> 500을 넣으면 0.5초 동안 진동해요. 숫자를 바꿔 진동 길이를 조절해 보세요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 앱 2: 말하는 앱 ================= -->
+<section id="tts">
+  <div class="wrap">
+    <div class="lesson-head reveal"><span class="lesson-num">앱 2</span><h2>글자를 읽어주는 ‘말하는 앱’</h2></div>
+    <div class="lesson-line reveal"></div>
+
+    <div class="app reveal">
+      <div class="app-title">🗣️ 말하는 앱 (음성 변환)</div>
+      <div class="app-sub">상자에 적은 글자를 폰이 소리내어 읽어줘요. 폰을 흔들면 “흔들지마세요”라고 말하게도 해요.</div>
+
+      <!-- STEP 1 -->
+      <div class="phase phase-1">
+        <div class="phase-head"><span class="b">STEP 1</span><h4>완성된 앱 체험하기</h4>
+          <span class="live-badge" style="margin-left:auto">진짜로 말해요!</span></div>
+        <div class="phase-body">
+          <div class="ph-row">
+            <div class="phone"><div class="scr">
+              <div class="bar">Screen1</div>
+              <div class="body" style="justify-content:flex-start;padding-top:24px">
+                <div style="font-size:54px">🐱</div>
+                <input class="demo-field" id="ttsInput" placeholder="여기에 글자를 적어요" value="안녕하세요 반가워요">
+                <button class="demo-btn sun" id="ttsBtn" style="width:100%">음성 변환 ▶</button>
+                <button class="demo-btn ghost" id="ttsShake" style="width:100%">📳 흔들기 흉내내기</button>
+              </div>
+              <div class="nav3"><span>◁</span><span>○</span><span>▢</span></div>
+            </div></div>
+            <div class="ph-side">
+              <p style="color:var(--ink-soft)">글자를 적고 <b>음성 변환</b>을 누르면 폰이 읽어줘요.
+                <b>흔들기</b> 버튼을 누르면 “어지러워요, 흔들지마세요”라고 말해요. (실제 폰에서는 진짜로 흔들면 작동해요.)</p>
+              <div class="note tip" style="margin-top:14px">소리가 안 들리면 기기 음량을 확인하세요. 이 기능은 브라우저의 ‘읽어주기’ 기능을 사용해요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="phase phase-2">
+        <div class="phase-head"><span class="b">STEP 2</span><h4>디자이너 탭에서 화면 만들기</h4></div>
+        <div class="phase-body">
+          <div class="designer">
+            <div class="d-top"><span class="proj">voice_say</span><span class="scr-pill">Screen1 ▾</span>
+              <span class="toggle"><span class="act">디자이너</span><span>블록</span></span></div>
+            <div class="d-cols">
+              <div class="d-col">
+                <div class="d-h">팔레트</div>
+                <div class="pal-cat">사용자 인터페이스</div>
+                <div class="pal-item hot">⌨ 텍스트 상자</div>
+                <div class="pal-item hot">🔘 버튼</div>
+                <div class="pal-cat">미디어</div>
+                <div class="pal-item hot">💬 음성 변환</div>
+                <div class="pal-cat">센서</div>
+                <div class="pal-item hot">🧭 가속도 센서</div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">뷰어</div>
+                <div class="vphone"><div class="vscr">
+                  <div class="vbar">Screen1</div>
+                  <div class="vbody">
+                    <div class="v-el">텍스트박스1</div>
+                    <div class="v-el btn">음성변환</div>
+                  </div>
+                </div></div>
+                <p style="font-size:11px;color:#999;margin-top:6px">음성 변환·가속도 센서는 보이지 않는 부품</p>
+              </div>
+              <div class="d-col">
+                <div class="d-h">컴포넌트</div>
+                <div class="tree-item"><span class="dot" style="background:#bbb"></span>Screen1</div>
+                <div class="tree-item ind"><span class="dot" style="background:#7aa0d0"></span>텍스트박스1</div>
+                <div class="tree-item ind sel"><span class="dot" style="background:#7aa0d0"></span>버튼_말하기</div>
+                <div class="tree-item ind"><span class="dot" style="background:#9a6bb0"></span>음성_변환1</div>
+                <div class="tree-item ind"><span class="dot" style="background:#cf8a3a"></span>가속도_센서1</div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">속성</div>
+                <div class="prop-row"><div class="k">버튼 텍스트</div><div class="v hi">음성변환</div></div>
+                <div class="prop-row"><div class="k">텍스트박스 힌트</div><div class="v">읽을 말을 적어요</div></div>
+                <div class="prop-row"><div class="k">음성변환 속도</div><div class="v">1.0</div></div>
+              </div>
+            </div>
+          </div>
+          <table class="spec">
+            <tr><th>가져올 부품</th><th>이름 바꾸기</th><th>설정할 속성</th></tr>
+            <tr><td><b>텍스트 상자</b></td><td><code>텍스트박스1</code></td><td>힌트(안내글) 적기</td></tr>
+            <tr><td><b>버튼</b></td><td><code>버튼_말하기</code></td><td>텍스트 → “음성변환”</td></tr>
+            <tr><td><b>음성 변환</b> (미디어)</td><td><code>음성_변환1</code></td><td>피치·속도(0~2) 기본 1.0</td></tr>
+            <tr><td><b>가속도 센서</b> (센서)</td><td><code>가속도_센서1</code></td><td>그대로 두기</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="phase phase-3">
+        <div class="phase-head"><span class="b">STEP 3</span><h4>블록 끼우기 (원리 먼저!)</h4></div>
+        <div class="phase-body">
+          <div class="note why">
+            <b>핵심은 ‘무엇을 말할지’ 정해주는 거예요.</b> 음성 변환의 <b>‘말하기’</b> 동작에는 <b>메시지</b> 칸이 있어요.
+            그 칸에 <b>텍스트박스의 텍스트</b>(=사람이 적은 글자)를 끼우면, 적은 그대로 읽어줘요.
+            초록 ‘속성 블록’은 <b>값을 꺼내오는</b> 역할이라는 걸 기억하세요!
+          </div>
+          <div class="blocks">
+            <div class="cap">① 버튼을 누르면 상자의 글자를 말해요</div>
+            <div class="stack">
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">버튼_말하기</span><span>.클릭했을때</span></div>
+                <div class="inner">
+                  <div class="blk b-method"><span>호출</span><span class="chip">음성_변환1</span><span>.말하기</span>
+                    <span style="opacity:.85">메시지</span>
+                    <span class="blk b-prop pill"><span class="chip plain">텍스트박스1</span>.<span class="chip plain">텍스트</span></span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="blocks">
+            <div class="cap">② 폰을 흔들면 “흔들지마세요”라고 말해요</div>
+            <div class="stack">
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">가속도_센서1</span><span>.흔들렸을때</span></div>
+                <div class="inner">
+                  <div class="blk b-method"><span>호출</span><span class="chip">음성_변환1</span><span>.말하기</span>
+                    <span style="opacity:.85">메시지</span><span class="lit">"흔들지마세요"</span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="note tip">메시지 칸에 <b>분홍 글자 블록</b>("...")을 직접 끼우면 ‘정해진 말’을,
+            <b>초록 속성 블록</b>을 끼우면 ‘상자에 적힌 말’을 읽어요. 둘의 차이를 꼭 익혀두세요!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 앱 3: 음성 인식 ================= -->
+<section id="stt" style="background:linear-gradient(180deg,#fff,var(--cream))">
+  <div class="wrap">
+    <div class="lesson-head reveal"><span class="lesson-num">앱 3</span><h2>내 말을 글자로! 음성 인식 앱</h2></div>
+    <div class="lesson-line reveal"></div>
+
+    <div class="app reveal">
+      <div class="app-title">🎤 음성 인식 앱</div>
+      <div class="app-sub">‘speak’를 누르고 말하면 인식한 말이 글자로 적혀요. 폰을 흔들면 글자가 사라져요.</div>
+
+      <!-- STEP 1 -->
+      <div class="phase phase-1">
+        <div class="phase-head"><span class="b">STEP 1</span><h4>완성된 앱 체험하기</h4>
+          <span class="live-badge" style="margin-left:auto">마이크로 진짜 인식!</span></div>
+        <div class="phase-body">
+          <div class="ph-row">
+            <div class="phone"><div class="scr">
+              <div class="bar">Screen1</div>
+              <div class="body" style="gap:18px">
+                <button class="speak-circle" id="sttBtn">speak</button>
+                <div class="result-line" id="sttResult" style="font-size:15px"></div>
+                <button class="demo-btn ghost" id="sttShake" style="font-size:13px;padding:6px 12px">📳 흔들기(지우기)</button>
+              </div>
+              <div class="nav3"><span>◁</span><span>○</span><span>▢</span></div>
+            </div></div>
+            <div class="ph-side">
+              <p style="color:var(--ink-soft)"><b>speak</b> 버튼을 누르고 마이크에 말해보세요.
+                인식한 말이 아래에 글자로 나타나요. <b>흔들기</b>를 누르면 글자가 지워져요.</p>
+              <div class="note warn" style="margin-top:14px">마이크 권한을 허용해야 하고, <b>크롬</b>에서 가장 잘 돼요.
+                안 되는 환경에서는 글자를 직접 입력하는 칸이 대신 나타나요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="phase phase-2">
+        <div class="phase-head"><span class="b">STEP 2</span><h4>디자이너 탭에서 화면 만들기</h4></div>
+        <div class="phase-body">
+          <div class="designer">
+            <div class="d-top"><span class="proj">voice_listen</span><span class="scr-pill">Screen1 ▾</span>
+              <span class="toggle"><span class="act">디자이너</span><span>블록</span></span></div>
+            <div class="d-cols">
+              <div class="d-col">
+                <div class="d-h">팔레트</div>
+                <div class="pal-cat">사용자 인터페이스</div>
+                <div class="pal-item hot">🔘 버튼</div>
+                <div class="pal-item hot">🔤 레이블</div>
+                <div class="pal-cat">미디어</div>
+                <div class="pal-item hot">🎤 음성 인식</div>
+                <div class="pal-cat">센서</div>
+                <div class="pal-item hot">🧭 가속도 센서</div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">뷰어</div>
+                <div class="vphone"><div class="vscr">
+                  <div class="vbar">Screen1</div>
+                  <div class="vbody"><div class="v-el btn" style="border-radius:50%;width:54px;height:54px;display:grid;place-items:center">speak</div>
+                    <div class="v-el">레이블_결과</div></div>
+                </div></div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">컴포넌트</div>
+                <div class="tree-item"><span class="dot" style="background:#bbb"></span>Screen1</div>
+                <div class="tree-item ind sel"><span class="dot" style="background:#7aa0d0"></span>버튼_speak</div>
+                <div class="tree-item ind"><span class="dot" style="background:#7aa0d0"></span>레이블_결과</div>
+                <div class="tree-item ind"><span class="dot" style="background:#9a6bb0"></span>음성_인식1</div>
+                <div class="tree-item ind"><span class="dot" style="background:#cf8a3a"></span>가속도_센서1</div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">속성</div>
+                <div class="prop-row"><div class="k">버튼 텍스트</div><div class="v hi">speak</div></div>
+                <div class="prop-row"><div class="k">레이블 텍스트</div><div class="v">(비워두기)</div></div>
+              </div>
+            </div>
+          </div>
+          <table class="spec">
+            <tr><th>가져올 부품</th><th>이름 바꾸기</th><th>설정할 속성</th></tr>
+            <tr><td><b>버튼</b></td><td><code>버튼_speak</code></td><td>텍스트 → “speak”, 크게/동그랗게</td></tr>
+            <tr><td><b>레이블</b></td><td><code>레이블_결과</code></td><td>텍스트 비워두기</td></tr>
+            <tr><td><b>음성 인식</b> (미디어)</td><td><code>음성_인식1</code></td><td>그대로 두기</td></tr>
+            <tr><td><b>가속도 센서</b></td><td><code>가속도_센서1</code></td><td>그대로 두기</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="phase phase-3">
+        <div class="phase-head"><span class="b">STEP 3</span><h4>블록 끼우기 (원리 먼저!)</h4></div>
+        <div class="phase-body">
+          <div class="note why">
+            <b>음성 인식은 ‘두 박자’로 일해요.</b> ① 버튼을 누르면 <b>‘텍스트 가져오기’</b>로 듣기 시작해요.
+            ② 다 듣고 나면 <b>‘텍스트 가져온 후에’</b> 이벤트가 저절로 실행돼요. 그 안의 <b>결과</b>에 인식한 말이 들어있죠.
+            그래서 결과를 레이블에 ‘지정’해 화면에 보여줘요.
+          </div>
+          <div class="blocks">
+            <div class="cap">① speak 버튼 → 듣기 시작</div>
+            <div class="stack">
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">버튼_speak</span><span>.클릭했을때</span></div>
+                <div class="inner"><div class="blk b-method"><span>호출</span><span class="chip">음성_인식1</span><span>.텍스트가져오기</span></div></div>
+                <div class="row"><span>실행</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="blocks">
+            <div class="cap">② 다 들으면 → 결과를 화면에 표시 / 흔들면 → 지우기</div>
+            <div class="stack" style="gap:14px">
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">음성_인식1</span><span>.텍스트가져온후에</span></div>
+                <div class="inner">
+                  <div class="blk b-prop"><span>지정하기</span><span class="chip">레이블_결과</span>.<span class="chip">텍스트</span><span>값</span>
+                    <span class="blk b-var pill">가져오기 결과</span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">가속도_센서1</span><span>.흔들렸을때</span></div>
+                <div class="inner">
+                  <div class="blk b-prop"><span>지정하기</span><span class="chip">레이블_결과</span>.<span class="chip">텍스트</span><span>값</span>
+                    <span class="lit">" "</span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="note star"><b>도전!</b> 인식한 말과 내가 정한 단어가 같은지 ‘만약’ 블록으로 비교하면
+            <b>발음 테스트 앱</b>이 돼요. 같으면 “훌륭한 발음입니다”, 다르면 “다시 도전해 보세요”라고 말하게 해보세요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 앱 4(2차시): MP3 ================= -->
+<section id="mp3">
+  <div class="wrap">
+    <div class="lesson-head reveal"><span class="lesson-num">2차시</span><h2>나만의 MP3 음악 플레이어</h2></div>
+    <div class="lesson-line reveal"></div>
+
+    <div class="app reveal">
+      <div class="app-title">🎵 MP3 플레이어 앱</div>
+      <div class="app-sub">곡을 고르고 재생·멈춤·일시정지, 슬라이더로 볼륨 조절, 흔들어서 멈추기, 랜덤 선곡까지!</div>
+
+      <!-- STEP 1 -->
+      <div class="phase phase-1">
+        <div class="phase-head"><span class="b">STEP 1</span><h4>완성된 앱 체험하기</h4>
+          <span class="live-badge" style="margin-left:auto">진짜로 소리가 나요!</span></div>
+        <div class="phase-body">
+          <div class="ph-row">
+            <div class="phone"><div class="scr">
+              <div class="bar">Screen1</div>
+              <div class="body" style="justify-content:flex-start;gap:10px;padding-top:14px">
+                <div class="v-img" id="mp3Art" style="height:80px;border-radius:8px"></div>
+                <div class="demo-row" style="justify-content:center">
+                  <button class="demo-btn ghost" id="mp3Pick" style="font-size:12px;padding:7px 10px">🎶 음악선곡</button>
+                  <button class="demo-btn" id="mp3Play" style="padding:7px 12px">▶</button>
+                  <button class="demo-btn dark" id="mp3Stop" style="padding:7px 12px">⏹</button>
+                  <button class="demo-btn dark" id="mp3Pause" style="padding:7px 12px">⏸</button>
+                </div>
+                <button class="demo-btn coral" id="mp3Rand" style="font-size:12px;padding:7px 12px;width:100%">🎲 랜덤 선곡</button>
+                <div style="font-size:12px;color:#555;width:100%;text-align:left">선택된 노래: <b id="mp3Now">없음</b></div>
+                <div style="width:100%">
+                  <div style="font-size:11px;color:#888">🔊 볼륨</div>
+                  <input type="range" id="mp3Vol" min="0" max="100" value="50" style="width:100%">
+                </div>
+                <button class="demo-btn ghost" id="mp3Flip" style="font-size:12px;padding:6px 10px;width:100%">📱 뒤집기 흉내(일시정지/재생)</button>
+                <div id="mp3List" style="width:100%;display:none"></div>
+              </div>
+              <div class="nav3"><span>◁</span><span>○</span><span>▢</span></div>
+            </div></div>
+            <div class="ph-side">
+              <p style="color:var(--ink-soft)"><b>음악선곡</b>으로 곡을 고르고 <b>▶</b>를 눌러보세요. 진짜 멜로디가 흘러나와요!
+                <b>볼륨 슬라이더</b>로 크기를 조절하고, <b>🎲 랜덤</b>으로 아무 곡이나 틀 수 있어요.
+                <b>뒤집기</b> 버튼은 ‘폰을 뒤집으면 일시정지’ 기능을 흉내낸 거예요.</p>
+              <div class="note tip" style="margin-top:14px">실제 앱에서는 mp3 파일을 ‘미디어’에 올려서 재생해요. 여기서는 체험을 위해 간단한 멜로디를 만들어 들려줘요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="phase phase-2">
+        <div class="phase-head"><span class="b">STEP 2</span><h4>디자이너 탭에서 화면 만들기</h4></div>
+        <div class="phase-body">
+          <p style="color:var(--ink-soft);margin-bottom:12px">버튼 3개를 가로로 나란히 두려면 <b>레이아웃</b>의
+            <b>수평배치(HorizontalArrangement)</b> 안에 넣어요.</p>
+          <div class="designer">
+            <div class="d-top"><span class="proj">mp3_player</span><span class="scr-pill">Screen1 ▾</span>
+              <span class="toggle"><span class="act">디자이너</span><span>블록</span></span></div>
+            <div class="d-cols">
+              <div class="d-col">
+                <div class="d-h">팔레트</div>
+                <div class="pal-cat">사용자 인터페이스</div>
+                <div class="pal-item hot">🖼 이미지</div>
+                <div class="pal-item hot">📋 목록 선택</div>
+                <div class="pal-item hot">🔘 버튼</div>
+                <div class="pal-item hot">🎚 슬라이더</div>
+                <div class="pal-cat">레이아웃</div>
+                <div class="pal-item hot">↔ 수평배치</div>
+                <div class="pal-cat">미디어</div>
+                <div class="pal-item hot">📻 플레이어</div>
+                <div class="pal-cat">센서</div>
+                <div class="pal-item hot">🧭 가속도 센서</div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">뷰어</div>
+                <div class="vphone"><div class="vscr">
+                  <div class="vbar">Screen1</div>
+                  <div class="vbody" style="gap:5px">
+                    <div class="v-img"></div>
+                    <div class="demo-row" style="gap:3px;width:100%">
+                      <div class="v-el btn" style="flex:1;padding:3px">선곡</div>
+                      <div class="v-el btn" style="flex:1;padding:3px">▶</div>
+                      <div class="v-el btn" style="flex:1;padding:3px">⏹</div>
+                      <div class="v-el btn" style="flex:1;padding:3px">⏸</div>
+                    </div>
+                    <div class="v-el">선택된 노래:</div>
+                    <div class="v-el" style="border:none">━━●━━━</div>
+                  </div>
+                </div></div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">컴포넌트</div>
+                <div class="tree-item"><span class="dot" style="background:#bbb"></span>Screen1</div>
+                <div class="tree-item ind"><span class="dot" style="background:#8fb56b"></span>이미지1</div>
+                <div class="tree-item ind sel"><span class="dot" style="background:#888"></span>수평배치1</div>
+                <div class="tree-item ind2"><span class="dot" style="background:#7aa0d0"></span>목록_선택_음악선곡</div>
+                <div class="tree-item ind2"><span class="dot" style="background:#7aa0d0"></span>버튼_재생</div>
+                <div class="tree-item ind2"><span class="dot" style="background:#7aa0d0"></span>버튼_멈춤</div>
+                <div class="tree-item ind2"><span class="dot" style="background:#7aa0d0"></span>버튼_일시정지</div>
+                <div class="tree-item ind"><span class="dot" style="background:#caa83a"></span>Slider1</div>
+                <div class="tree-item ind"><span class="dot" style="background:#9a6bb0"></span>플레이어1</div>
+                <div class="tree-item ind"><span class="dot" style="background:#cf8a3a"></span>가속도센서1</div>
+              </div>
+              <div class="d-col">
+                <div class="d-h">속성 (슬라이더)</div>
+                <div class="prop-row"><div class="k">최댓값</div><div class="v hi">100</div></div>
+                <div class="prop-row"><div class="k">최솟값</div><div class="v hi">0</div></div>
+                <div class="prop-row"><div class="k">너비</div><div class="v">부모에 맞추기</div></div>
+              </div>
+            </div>
+          </div>
+          <table class="spec">
+            <tr><th>가져올 부품</th><th>이름</th><th>설정할 속성</th></tr>
+            <tr><td><b>이미지</b></td><td><code>이미지1</code></td><td>앨범 그림 올리기</td></tr>
+            <tr><td><b>수평배치</b> (레이아웃)</td><td><code>수평배치1</code></td><td>아래 4개를 이 안에 넣기</td></tr>
+            <tr><td><b>목록 선택</b> + <b>버튼</b>×3</td><td><code>목록_선택_음악선곡</code> / <code>버튼_재생·멈춤·일시정지</code></td><td>버튼 텍스트 ▶ ⏹ ⏸</td></tr>
+            <tr><td><b>슬라이더</b></td><td><code>Slider1</code></td><td>최솟값 0, 최댓값 100</td></tr>
+            <tr><td><b>플레이어</b> (미디어)</td><td><code>플레이어1</code></td><td>볼륨 0~100</td></tr>
+            <tr><td><b>가속도 센서</b> (센서)</td><td><code>가속도센서1</code></td><td>그대로</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="phase phase-3">
+        <div class="phase-head"><span class="b">STEP 3</span><h4>블록 끼우기 (원리 먼저!)</h4></div>
+        <div class="phase-body">
+          <div class="note why">
+            <b>먼저 ‘곡 목록’을 상자에 담아둬요.</b> 변수(상자) <b>음악리스트</b>에 곡 이름을 리스트로 넣고,
+            목록 선택을 <b>누르기 전에</b> 그 리스트를 보여줘요. 곡을 <b>고른 후에</b> 플레이어의 <b>소스</b>에 그 곡을 넣으면 재생 준비 끝!
+          </div>
+          <div class="blocks">
+            <div class="cap">① 곡 목록 만들고, 선택창에 보여주고, 고른 곡을 플레이어에 넣기</div>
+            <div class="stack" style="gap:12px">
+              <div class="blk b-var"><span>전역변수 만들기</span><span class="chip plain">음악리스트</span><span>초기값</span>
+                <span class="blk b-list pill">⚙ 리스트 만들기</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-left:30px">
+                <span class="blk b-text" style="padding:6px 12px">"music1.mp3"</span>
+                <span class="blk b-text" style="padding:6px 12px">"music2.mp3"</span>
+                <span class="blk b-text" style="padding:6px 12px">"music3.mp3"</span>
+              </div>
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">목록_선택_음악선곡</span><span>.선택전에</span></div>
+                <div class="inner">
+                  <div class="blk b-prop"><span>지정하기</span><span class="chip">목록_선택_음악선곡</span>.<span class="chip">요소</span><span>값</span>
+                    <span class="blk b-var pill">가져오기 음악리스트</span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">목록_선택_음악선곡</span><span>.선택후에</span></div>
+                <div class="inner">
+                  <div class="blk b-prop"><span>지정하기</span><span class="chip">플레이어1</span>.<span class="chip">소스</span><span>값</span>
+                    <span class="blk b-prop pill"><span class="chip plain">목록_선택_음악선곡</span>.<span class="chip plain">선택된항목</span></span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="blocks">
+            <div class="cap">② 재생 · 멈춤 · 일시정지 버튼</div>
+            <div class="grid g3" style="gap:12px">
+              <div class="blk b-event b-do"><div class="row"><span>언제</span><span class="chip">버튼_재생</span><span>.클릭</span></div>
+                <div class="inner"><div class="blk b-method"><span>호출</span><span class="chip">플레이어1</span><span>.시작</span></div></div><div class="row"><span>실행</span></div></div>
+              <div class="blk b-event b-do"><div class="row"><span>언제</span><span class="chip">버튼_멈춤</span><span>.클릭</span></div>
+                <div class="inner"><div class="blk b-method"><span>호출</span><span class="chip">플레이어1</span><span>.정지</span></div></div><div class="row"><span>실행</span></div></div>
+              <div class="blk b-event b-do"><div class="row"><span>언제</span><span class="chip">버튼_일시정지</span><span>.클릭</span></div>
+                <div class="inner"><div class="blk b-method"><span>호출</span><span class="chip">플레이어1</span><span>.일시정지</span></div></div><div class="row"><span>실행</span></div></div>
+            </div>
+          </div>
+
+          <div class="blocks">
+            <div class="cap">③ 슬라이더로 볼륨 조절 (0~100)</div>
+            <div class="stack">
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">Slider1</span><span>.위치가변경되었을때</span></div>
+                <div class="inner">
+                  <div class="blk b-prop"><span>지정하기</span><span class="chip">플레이어1</span>.<span class="chip">볼륨</span><span>값</span>
+                    <span class="blk b-var pill">가져오기 섬네일위치</span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="blocks">
+            <div class="cap">④ 🎲 랜덤 선곡 (리스트에서 아무 곡이나 뽑기)</div>
+            <div class="stack">
+              <div class="blk b-event b-do">
+                <div class="row"><span>언제</span><span class="chip">버튼_랜덤선곡</span><span>.클릭했을때</span></div>
+                <div class="inner" style="gap:8px">
+                  <div class="blk b-prop"><span>지정하기</span><span class="chip">플레이어1</span>.<span class="chip">소스</span><span>값</span>
+                    <span class="blk b-list pill">임의의 항목 선택하기 〔음악리스트〕</span></div>
+                  <div class="blk b-method"><span>호출</span><span class="chip">플레이어1</span><span>.시작</span></div>
+                </div>
+                <div class="row"><span>실행</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note tip"><b>한 단계 더!</b> ‘가속도 센서’의 <b>가속도가변화했을때</b> 블록에서 <b>z가속도가 -7보다 작으면</b>
+            (=폰을 뒤집으면) 플레이어를 일시정지하고, 아니면 다시 시작하게 ‘만약’ 블록을 넣어 보세요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 퀴즈 ===== -->
+<section id="quiz" style="background:linear-gradient(180deg,#fff,var(--cream))">
+  <div class="wrap">
+    <div class="lesson-head reveal"><span class="lesson-num">정리</span><h2>배운 내용 퀴즈</h2></div>
+    <div class="lesson-line reveal"></div>
+    <div class="quiz reveal" id="quizBox">
+      <h3>🐝 얼마나 알게 됐을까?</h3>
+      <p style="color:var(--ink-soft)">정답을 눌러보세요. 바로 맞았는지 알려줄게요!</p>
+
+      <div class="q" data-answer="1">
+        <div class="qtxt">1. 앱인벤터에서 ‘앱의 모습을 꾸미는’ 화면은?</div>
+        <div class="opts"><button class="opt">블록 화면</button><button class="opt">디자이너 화면</button><button class="opt">미디어 화면</button></div>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-answer="2">
+        <div class="qtxt">2. 노란(황금) ‘언제 ~ 했을때’ 블록의 종류는?</div>
+        <div class="opts"><button class="opt">호출 블록</button><button class="opt">속성 블록</button><button class="opt">이벤트 블록</button></div>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-answer="0">
+        <div class="qtxt">3. 음성 변환의 ‘말하기’에서 상자에 적힌 글자를 읽게 하려면 메시지 칸에 무엇을 끼울까요?</div>
+        <div class="opts"><button class="opt">텍스트박스1 . 텍스트 (초록 속성 블록)</button><button class="opt">"안녕" (분홍 글자 블록)</button><button class="opt">호출 소리1 (보라 블록)</button></div>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-answer="1">
+        <div class="qtxt">4. 손잡이를 끌어 볼륨을 0~100으로 조절할 때 쓰는 부품은?</div>
+        <div class="opts"><button class="opt">레이블</button><button class="opt">슬라이더</button><button class="opt">목록 선택</button></div>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-answer="2">
+        <div class="qtxt">5. 음성 인식이 다 끝난 뒤 결과를 처리하는 이벤트 블록은?</div>
+        <div class="opts"><button class="opt">.클릭했을때</button><button class="opt">.흔들렸을때</button><button class="opt">.텍스트가져온후에</button></div>
+        <div class="fb"></div>
+      </div>
+      <div id="score" style="margin-top:24px;font-family:'Jua';font-size:20px;color:var(--navy);text-align:center;display:none"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="bee">🐝🍯</div>
+  <p>읽고 → 눌러보고 → 똑같이 따라 만들면 누구나 앱 개발자!<br>오늘 배운 블록으로 나만의 앱에 도전해 보세요.</p>
+  <small>안랩샘 아카데미 9기 · 앱인벤터 과정 학습 자료를 바탕으로 만든 학습용 웹페이지</small>
+</footer>
+
+<script>
+/* ===== 공통: 진행바 + 네비 + 등장 ===== */
+const bar=document.getElementById('bar');
+const navA=[...document.querySelectorAll('#navLinks a')];
+const secs=navA.map(a=>document.querySelector(a.getAttribute('href')));
+function onScroll(){
+  const h=document.documentElement, sc=h.scrollTop, max=h.scrollHeight-h.clientHeight;
+  bar.style.width=(max>0?sc/max*100:0)+'%';
+  let idx=0; secs.forEach((s,i)=>{ if(s&&s.getBoundingClientRect().top<=120) idx=i; });
+  navA.forEach((a,i)=>a.classList.toggle('on',i===idx));
+}
+document.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target);}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* 페이지 안에서만 이동하도록 처리 (미리보기 액자 밖으로 나가는 문제 방지) */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');
+    const el=(id&&id.length>1)?document.querySelector(id):null;
+    if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth',block:'start'}); }
+  });
+});
+
+/* ===== 오디오 도우미 ===== */
+let AC, master;
+function audio(){
+  if(!AC){ AC=new (window.AudioContext||window.webkitAudioContext)(); master=AC.createGain(); master.gain.value=0.5; master.connect(AC.destination); }
+  if(AC.state==='suspended') AC.resume();
+  return AC;
+}
+function tone(freq,dur,type,dest){
+  const ac=audio(), o=ac.createOscillator(), g=ac.createGain();
+  o.type=type||'triangle'; o.frequency.value=freq;
+  const t=ac.currentTime;
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(0.9,t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g).connect(dest||ac.destination); o.start(t); o.stop(t+dur+0.03);
+}
+function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
+function buzz(el){ el.classList.remove('buzzing'); void el.offsetWidth; el.classList.add('buzzing'); }
+
+/* ===== 음성 합성(말하기) ===== */
+function speak(text){
+  if(!('speechSynthesis'in window)){ alert('이 브라우저는 말하기를 지원하지 않아요.'); return; }
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=1; speechSynthesis.speak(u);
+}
+
+/* ===== 앱1: 고양이 ===== */
+const catBtn=document.getElementById('catBtn'), catScreen=document.getElementById('catScreen');
+catBtn.addEventListener('click',()=>{
+  const ac=audio(), o=ac.createOscillator(), g=ac.createGain(), t=ac.currentTime;
+  o.type='sawtooth';
+  o.frequency.setValueAtTime(720,t);
+  o.frequency.exponentialRampToValueAtTime(900,t+0.12);
+  o.frequency.exponentialRampToValueAtTime(480,t+0.45);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(0.28,t+0.05);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.5);
+  o.connect(g).connect(ac.destination); o.start(t); o.stop(t+0.55);
+  vibrate(500); buzz(catScreen);
+});
+
+/* ===== 앱2: 말하는 앱 ===== */
+document.getElementById('ttsBtn').addEventListener('click',()=>{
+  const v=document.getElementById('ttsInput').value.trim();
+  speak(v||'입력된 내용이 없습니다');
+});
+document.getElementById('ttsShake').addEventListener('click',e=>{ buzz(e.target.closest('.body')); speak('어지러워요, 흔들지마세요'); });
+window.addEventListener('devicemotion',e=>{
+  const a=e.accelerationIncludingGravity; if(!a) return;
+  const mag=Math.hypot(a.x||0,a.y||0,a.z||0);
+  if(mag>26 && Date.now()-(window._lastShake||0)>1200){ window._lastShake=Date.now(); speak('어지러워요, 흔들지마세요'); }
+});
+
+/* ===== 앱3: 음성 인식 ===== */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const sttBtn=document.getElementById('sttBtn'), sttResult=document.getElementById('sttResult');
+if(SR){
+  const rec=new SR(); rec.lang='ko-KR'; rec.interimResults=false; rec.maxAlternatives=1;
+  let busy=false;
+  sttBtn.addEventListener('click',()=>{ if(busy)return; try{rec.start();}catch(e){} });
+  rec.onstart=()=>{ busy=true; sttBtn.classList.add('rec'); sttResult.textContent='듣고 있어요…'; };
+  rec.onresult=e=>{ sttResult.textContent='“'+e.results[0][0].transcript+'”'; };
+  rec.onerror=e=>{ sttResult.textContent = e.error==='no-speech'?'말소리가 없었어요. 다시 눌러주세요.':'다시 시도해 주세요.'; };
+  rec.onend=()=>{ busy=false; sttBtn.classList.remove('rec'); };
+}else{
+  // 미지원: 직접 입력으로 대체
+  sttBtn.addEventListener('click',()=>{
+    if(document.getElementById('sttFallback')) return;
+    const inp=document.createElement('input'); inp.className='demo-field'; inp.id='sttFallback';
+    inp.placeholder='여기에 말한 내용을 적어보세요';
+    inp.addEventListener('input',()=>{ sttResult.textContent = inp.value?('“'+inp.value+'”'):''; });
+    sttResult.after(inp); sttResult.textContent='(이 브라우저는 마이크 인식이 안 돼요 — 직접 입력해 보세요)';
+  });
+}
+document.getElementById('sttShake').addEventListener('click',e=>{ buzz(e.target.closest('.body')); sttResult.textContent=''; const f=document.getElementById('sttFallback'); if(f)f.value=''; });
+
+/* ===== 앱4: MP3 플레이어 ===== */
+const songs=[
+  {name:'music1.mp3', art:'linear-gradient(135deg,#46bfe6,#293c66)', notes:[[523,.28],[587,.28],[659,.28],[523,.28],[659,.4],[587,.5]]},
+  {name:'music2.mp3', art:'linear-gradient(135deg,#ffc638,#f36b6b)', notes:[[440,.25],[440,.25],[494,.25],[523,.4],[494,.25],[440,.5]]},
+  {name:'music3.mp3', art:'linear-gradient(135deg,#7ad0a0,#3f9b6c)', notes:[[659,.22],[622,.22],[659,.22],[622,.22],[659,.22],[494,.3],[587,.3],[523,.5]]}
+];
+let cur=0, idx=0, playing=false, mTimer=null;
+const mp3Art=document.getElementById('mp3Art'), mp3Now=document.getElementById('mp3Now');
+function showSong(){ mp3Art.style.background=songs[cur].art; mp3Now.textContent=songs[cur].name; }
+showSong();
+function mStep(){
+  if(!playing) return;
+  const notes=songs[cur].notes, n=notes[idx%notes.length];
+  tone(n[0],n[1],'triangle',master); idx++;
+  mTimer=setTimeout(mStep, n[1]*1000*0.92);
+}
+function mPlay(){ audio(); if(playing)return; playing=true; mStep(); }
+function mPause(){ playing=false; clearTimeout(mTimer); }
+function mStop(){ playing=false; clearTimeout(mTimer); idx=0; }
+document.getElementById('mp3Play').addEventListener('click',mPlay);
+document.getElementById('mp3Pause').addEventListener('click',mPause);
+document.getElementById('mp3Stop').addEventListener('click',mStop);
+document.getElementById('mp3Vol').addEventListener('input',e=>{ if(master) master.gain.value=e.target.value/100; });
+document.getElementById('mp3Rand').addEventListener('click',()=>{ cur=Math.floor(Math.random()*songs.length); idx=0; showSong(); mStop(); mPlay(); });
+document.getElementById('mp3Flip').addEventListener('click',()=>{ if(playing) mPause(); else mPlay(); });
+// 목록 선택창
+const mp3List=document.getElementById('mp3List');
+document.getElementById('mp3Pick').addEventListener('click',()=>{
+  if(mp3List.style.display==='block'){ mp3List.style.display='none'; return; }
+  mp3List.innerHTML=''; mp3List.style.display='block';
+  songs.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.textContent=s.name; b.className='demo-btn ghost';
+    b.style.cssText='width:100%;font-size:12px;padding:8px;margin-top:5px;text-align:left';
+    b.addEventListener('click',()=>{ cur=i; idx=0; showSong(); mStop(); mp3List.style.display='none'; });
+    mp3List.appendChild(b);
+  });
+});
+
+/* ===== 퀴즈 ===== */
+let answered=0, correct=0;
+const totalQ=document.querySelectorAll('#quizBox .q').length;
+document.querySelectorAll('#quizBox .q').forEach(q=>{
+  const ans=+q.dataset.answer, fb=q.querySelector('.fb'), opts=[...q.querySelectorAll('.opt')];
+  opts.forEach((btn,i)=>btn.addEventListener('click',()=>{
+    if(q.dataset.done)return; q.dataset.done='1'; answered++;
+    opts.forEach(b=>b.disabled=true);
+    if(i===ans){ btn.classList.add('right'); fb.textContent='정답이에요! 🎉'; fb.className='fb ok'; correct++; }
+    else{ btn.classList.add('wrong'); opts[ans].classList.add('right'); fb.textContent='아쉬워요. 초록색이 정답이에요 🙂'; fb.className='fb no'; }
+    if(answered===totalQ){
+      const s=document.getElementById('score'); s.style.display='block';
+      s.textContent=`🐝 ${totalQ}문제 중 ${correct}개 정답! `+(correct===totalQ?'완벽해요, 앱인벤터 박사님!':correct>=3?'잘하고 있어요!':'다시 읽어보면 금방 익숙해질 거예요!');
+    }
+  }));
+});
+</script>
+</body>
+</html>
