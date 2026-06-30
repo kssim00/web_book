@@ -1247,6 +1247,8 @@ body::before {
   content: ''; flex-shrink: 0;
   width: 3px; height: 14px; border-radius: 2px;
 }
+.py-sec-title.io::before   { background: #f59e0b; }
+.py-sec-title.str::before  { background: #ec4899; }
 .py-sec-title.ctrl::before { background: #3b82f6; }
 .py-sec-title.data::before { background: #10b981; }
 .py-sec-title.func::before { background: #8b5cf6; }
@@ -1293,6 +1295,8 @@ body::before {
   flex-shrink: 0; padding: 14px 18px;
 }
 /* 카테고리별 밝은 그라디언트 */
+.py-gcard-thumb.io   { background: linear-gradient(145deg, #b45309 0%, #f59e0b 100%); }
+.py-gcard-thumb.str  { background: linear-gradient(145deg, #be185d 0%, #ec4899 100%); }
 .py-gcard-thumb.ctrl { background: linear-gradient(145deg, #1d4ed8 0%, #3b82f6 100%); }
 .py-gcard-thumb.data { background: linear-gradient(145deg, #059669 0%, #10b981 100%); }
 .py-gcard-thumb.func { background: linear-gradient(145deg, #6d28d9 0%, #8b5cf6 100%); }
@@ -1363,6 +1367,27 @@ body::before {
 .py-gcard.func:hover { border-color: rgba(139,92,246,0.45); box-shadow: 0 10px 32px rgba(139,92,246,0.18); }
 .py-gcard.func.selected-today { border-color: rgba(139,92,246,0.65); box-shadow: 0 0 0 2px rgba(139,92,246,0.2), 0 10px 28px rgba(139,92,246,0.2); }
 .py-gcard.func .py-gcard-badge { background: rgba(139,92,246,0.25); border-color: rgba(139,92,246,0.6); color: #c4b5fd; }
+
+/* io (입출력) */
+.py-gcard.io .py-gcard-cat  { color: #fbbf24; }
+.py-gcard.io .py-gcard-name { color: #fde68a; }
+.py-gcard.io .py-gcard-open:hover { color: #fcd34d; border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.1); }
+.py-gcard.io .py-gcard-select-dot { background: rgba(245,158,11,0.4); }
+.py-gcard.io.selected-today .py-gcard-select-dot { background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.9); }
+.py-gcard.io { border-color: rgba(245,158,11,0.18); }
+.py-gcard.io:hover { border-color: rgba(245,158,11,0.45); box-shadow: 0 10px 32px rgba(245,158,11,0.18); }
+.py-gcard.io.selected-today { border-color: rgba(245,158,11,0.65); box-shadow: 0 0 0 2px rgba(245,158,11,0.2), 0 10px 28px rgba(245,158,11,0.2); }
+.py-gcard.io .py-gcard-badge { background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.6); color: #fcd34d; }
+/* str (문자열/리스트) */
+.py-gcard.str .py-gcard-cat  { color: #f472b6; }
+.py-gcard.str .py-gcard-name { color: #fbcfe8; }
+.py-gcard.str .py-gcard-open:hover { color: #f9a8d4; border-color: rgba(236,72,153,0.45); background: rgba(236,72,153,0.1); }
+.py-gcard.str .py-gcard-select-dot { background: rgba(236,72,153,0.4); }
+.py-gcard.str.selected-today .py-gcard-select-dot { background: #ec4899; box-shadow: 0 0 8px rgba(236,72,153,0.9); }
+.py-gcard.str { border-color: rgba(236,72,153,0.18); }
+.py-gcard.str:hover { border-color: rgba(236,72,153,0.45); box-shadow: 0 10px 32px rgba(236,72,153,0.18); }
+.py-gcard.str.selected-today { border-color: rgba(236,72,153,0.65); box-shadow: 0 0 0 2px rgba(236,72,153,0.2), 0 10px 28px rgba(236,72,153,0.2); }
+.py-gcard.str .py-gcard-badge { background: rgba(236,72,153,0.25); border-color: rgba(236,72,153,0.6); color: #f9a8d4; }
 
 /* 선택 배지 */
 .py-gcard-badge {
@@ -2045,6 +2070,12 @@ body::before { display: none !important; }
 .py-gcard.data { border-color: rgba(16,185,129,0.12) !important; }
 .py-gcard.data:hover { border-color: rgba(16,185,129,0.28) !important; box-shadow: 0 6px 24px rgba(16,185,129,0.1) !important; }
 .py-gcard.data.selected-today { border-color: rgba(16,185,129,0.5) !important; box-shadow: 0 0 0 2px rgba(16,185,129,0.12), 0 6px 20px rgba(16,185,129,0.12) !important; }
+.py-gcard.io { border-color: rgba(245,158,11,0.12) !important; }
+.py-gcard.io:hover { border-color: rgba(245,158,11,0.28) !important; box-shadow: 0 6px 24px rgba(245,158,11,0.1) !important; }
+.py-gcard.io.selected-today { border-color: rgba(245,158,11,0.5) !important; box-shadow: 0 0 0 2px rgba(245,158,11,0.12), 0 6px 20px rgba(245,158,11,0.12) !important; }
+.py-gcard.str { border-color: rgba(236,72,153,0.12) !important; }
+.py-gcard.str:hover { border-color: rgba(236,72,153,0.28) !important; box-shadow: 0 6px 24px rgba(236,72,153,0.1) !important; }
+.py-gcard.str.selected-today { border-color: rgba(236,72,153,0.5) !important; box-shadow: 0 0 0 2px rgba(236,72,153,0.12), 0 6px 20px rgba(236,72,153,0.12) !important; }
 .py-gcard.func { border-color: rgba(139,92,246,0.12) !important; }
 .py-gcard.func:hover { border-color: rgba(139,92,246,0.28) !important; box-shadow: 0 6px 24px rgba(139,92,246,0.1) !important; }
 .py-gcard.func.selected-today { border-color: rgba(139,92,246,0.5) !important; box-shadow: 0 0 0 2px rgba(139,92,246,0.12), 0 6px 20px rgba(139,92,246,0.12) !important; }
@@ -2869,7 +2900,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           <div class="py-hero-stats">
             <div class="py-hero-stats-row">
               <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-total">8</div>
+                <div class="py-stat-num" id="py-stat-total">13</div>
                 <div class="py-stat-label">총 챕터</div>
               </div>
               <div class="py-stat-div"></div>
@@ -2891,12 +2922,109 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         </div>
       </div>
 
+      <!-- ✦ 입출력과 자료형 (CH02) -->
+      <div class="py-sec-title io">입출력과 자료형</div>
+      <div class="py-gallery">
+
+        <label class="py-gcard io" id="rc-p5-0">
+          <input type="radio" name="today-p5" value="0" onchange="selectToday('p5',0)">
+          <div class="py-gcard-thumb io">
+            <div class="py-thumb-code"><span class="py-tc-fn">print</span>(<span class="py-tc-str">"Hello World!"</span>)<br><span class="py-tc-fn">print</span>(<span class="py-tc-str">"반가워요"</span>)<br><span class="py-tc-cm"># 화면에 출력</span></div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">입출력</div>
+            <div class="py-gcard-name">출력 print()</div>
+            <div class="py-gcard-desc">괄호 안의 내용을 화면에 출력하는 기본 명령어</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/02-01_print" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+        <label class="py-gcard io" id="rc-p5-1">
+          <input type="radio" name="today-p5" value="1" onchange="selectToday('p5',1)">
+          <div class="py-gcard-thumb io">
+            <div class="py-thumb-code">x = <span class="py-tc-num">10</span><br>name = <span class="py-tc-str">"파이썬"</span><br><span class="py-tc-fn">print</span>(x, name)</div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">입출력</div>
+            <div class="py-gcard-name">변수와 자료형</div>
+            <div class="py-gcard-desc">값을 저장하는 변수와 데이터 형태(자료형) 이해</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/02-02_var" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+        <label class="py-gcard io" id="rc-p5-2">
+          <input type="radio" name="today-p5" value="2" onchange="selectToday('p5',2)">
+          <div class="py-gcard-thumb io">
+            <div class="py-thumb-code">name = <span class="py-tc-fn">input</span>(<span class="py-tc-str">"이름: "</span>)<br><span class="py-tc-fn">print</span>(name, <span class="py-tc-str">"님!"</span>)<br><span class="py-tc-cm"># 사용자 입력</span></div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">입출력</div>
+            <div class="py-gcard-name">입력 input()</div>
+            <div class="py-gcard-desc">사용자로부터 데이터를 입력받는 함수</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/02-03_input" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- ✦ 문자열과 리스트 (CH03) -->
+      <div class="py-sec-title str">문자열과 리스트</div>
+      <div class="py-gallery">
+
+        <label class="py-gcard str" id="rc-p5-3">
+          <input type="radio" name="today-p5" value="3" onchange="selectToday('p5',3)">
+          <div class="py-gcard-thumb str">
+            <div class="py-thumb-code">s = <span class="py-tc-str">"Hello World"</span><br><span class="py-tc-fn">print</span>(s[<span class="py-tc-num">0</span>:<span class="py-tc-num">5</span>])<br><span class="py-tc-cm"># → Hello</span></div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">문자열</div>
+            <div class="py-gcard-name">문자열 (string)</div>
+            <div class="py-gcard-desc">인덱싱·슬라이싱·메서드로 문자열 자유롭게 다루기</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/03-01_string" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+        <label class="py-gcard str" id="rc-p5-4">
+          <input type="radio" name="today-p5" value="4" onchange="selectToday('p5',4)">
+          <div class="py-gcard-thumb str">
+            <div class="py-thumb-code">nums = [<span class="py-tc-num">1</span>,<span class="py-tc-num">2</span>,<span class="py-tc-num">3</span>]<br>nums.append(<span class="py-tc-num">4</span>)<br><span class="py-tc-fn">print</span>(nums)</div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">문자열</div>
+            <div class="py-gcard-name">리스트 (list)</div>
+            <div class="py-gcard-desc">여러 데이터를 하나의 이름으로 묶어 관리하는 자료형</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/03-02_list" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+      </div>
+
       <!-- ✦ 제어문 -->
       <div class="py-sec-title ctrl">제어문</div>
       <div class="py-gallery">
 
-        <label class="py-gcard ctrl" id="rc-p5-0">
-          <input type="radio" name="today-p5" value="0" onchange="selectToday('p5',0)">
+        <label class="py-gcard ctrl" id="rc-p5-5">
+          <input type="radio" name="today-p5" value="5" onchange="selectToday('p5',5)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">while</span> x &gt; 0:<br>&nbsp;&nbsp;x -= <span class="py-tc-num">1</span><br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(x)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2912,8 +3040,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard ctrl" id="rc-p5-1">
-          <input type="radio" name="today-p5" value="1" onchange="selectToday('p5',1)">
+        <label class="py-gcard ctrl" id="rc-p5-6">
+          <input type="radio" name="today-p5" value="6" onchange="selectToday('p5',6)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">5</span>):<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2929,8 +3057,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard ctrl" id="rc-p5-2">
-          <input type="radio" name="today-p5" value="2" onchange="selectToday('p5',2)">
+        <label class="py-gcard ctrl" id="rc-p5-7">
+          <input type="radio" name="today-p5" value="7" onchange="selectToday('p5',7)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;<span class="py-tc-kw">for</span> j <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i, j)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2952,8 +3080,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
       <div class="py-sec-title data">자료형</div>
       <div class="py-gallery">
 
-        <label class="py-gcard data" id="rc-p5-3">
-          <input type="radio" name="today-p5" value="3" onchange="selectToday('p5',3)">
+        <label class="py-gcard data" id="rc-p5-8">
+          <input type="radio" name="today-p5" value="8" onchange="selectToday('p5',8)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">s = <span class="py-tc-str">"안녕하세요"</span><br><span class="py-tc-fn">print</span>(<span class="py-tc-fn">len</span>(s))<br><span class="py-tc-cm"># → 5</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2969,8 +3097,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p5-4">
-          <input type="radio" name="today-p5" value="4" onchange="selectToday('p5',4)">
+        <label class="py-gcard data" id="rc-p5-9">
+          <input type="radio" name="today-p5" value="9" onchange="selectToday('p5',9)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">t = (<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>)<br><span class="py-tc-fn">print</span>(t[<span class="py-tc-num">0</span>])<br><span class="py-tc-cm"># → 1</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2986,8 +3114,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p5-5">
-          <input type="radio" name="today-p5" value="5" onchange="selectToday('p5',5)">
+        <label class="py-gcard data" id="rc-p5-10">
+          <input type="radio" name="today-p5" value="10" onchange="selectToday('p5',10)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">s = {<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>}<br>s.add(<span class="py-tc-num">4</span>)<br><span class="py-tc-cm"># 중복 없음</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3003,8 +3131,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p5-6">
-          <input type="radio" name="today-p5" value="6" onchange="selectToday('p5',6)">
+        <label class="py-gcard data" id="rc-p5-11">
+          <input type="radio" name="today-p5" value="11" onchange="selectToday('p5',11)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">d = {<span class="py-tc-str">"name"</span>:<span class="py-tc-str">"코딩"</span>}<br>d[<span class="py-tc-str">"age"</span>] = <span class="py-tc-num">10</span><br><span class="py-tc-cm"># key: value</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3026,8 +3154,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
       <div class="py-sec-title func">함수</div>
       <div class="py-gallery">
 
-        <label class="py-gcard func" id="rc-p5-7">
-          <input type="radio" name="today-p5" value="7" onchange="selectToday('p5',7)">
+        <label class="py-gcard func" id="rc-p5-12">
+          <input type="radio" name="today-p5" value="12" onchange="selectToday('p5',12)">
           <div class="py-gcard-thumb func">
             <div class="py-thumb-code"><span class="py-tc-kw">def</span> <span class="py-tc-fn">greet</span>(name):<br>&nbsp;&nbsp;<span class="py-tc-kw">return</span> <span class="py-tc-str">"Hi, "</span> + name<br><span class="py-tc-fn">greet</span>(<span class="py-tc-str">"코딩"</span>)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -4557,7 +4685,7 @@ function loadAllState() {
 
 
 // ── TODAY CHAPTER SELECT (버전 B)
-const CHAPTER_NAMES = ['반복문 (while)','반복문 (for)','중첩 반복문','유니코드 & 문자열','튜플 (tuple)','집합 (set)','딕셔너리 (dict)','함수 (function)'];
+const CHAPTER_NAMES = ['출력 print()','변수와 자료형','입력 input()','문자열 (string)','리스트 (list)','반복문 (while)','반복문 (for)','중첩 반복문','유니코드 & 문자열','튜플 (tuple)','집합 (set)','딕셔너리 (dict)','함수 (function)'];
 let simMode = false;
 
 function selectToday(panel, idx) {
