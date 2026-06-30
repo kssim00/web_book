@@ -1613,10 +1613,10 @@ body::before {
 }
 #panel4 .gallery-iframe {
   display: block;
-  width: 100% !important;
+  width: min(1200px, calc(100vw - 32px)) !important;
   position: relative !important;
-  left: 0 !important;
-  transform: none !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
   height: calc(100vh - 60px);
   min-height: 600px;
   border: none;

@@ -1299,7 +1299,7 @@ function showHome(){
   html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요.</div>';
   html += '<div class="grid">';
   UNITS.forEach(function(u, i){
-    html += '<div class="card" onclick="showDetail(' + i + ')">'
+    html += '<div class="card" onclick="openLesson(' + i + ')">'
       + '<div class="card-icon">' + u.icon + '</div>'
       + '<div class="card-body">'
       + '<div class="card-title">' + escapeHtml(u.title) + '</div>'
@@ -1309,6 +1309,10 @@ function showHome(){
   html += '</div>';
   main.innerHTML = html;
   main.scrollTop = 0;
+}
+
+function openLesson(i){
+  window.open('python_turtle.html?lesson=' + i, '_blank');
 }
 
 function showDetail(idx){
@@ -1407,7 +1411,15 @@ function showDetail(idx){
   }
 
   main.innerHTML = html;
-  document.getElementById("backBtn").onclick = showHome;
+  document.getElementById("backBtn").onclick = function(){
+    if (window.opener || window.history.length <= 1) { window.close(); }
+    else { var _lessonParam = new URLSearchParams(location.search).get('lesson');
+if (_lessonParam !== null && !isNaN(parseInt(_lessonParam))) {
+  showDetail(parseInt(_lessonParam));
+} else {
+  showHome();
+} }
+  };
   main.scrollTop = 0;
 }
 
