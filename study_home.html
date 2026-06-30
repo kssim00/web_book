@@ -4243,12 +4243,12 @@ window.addEventListener('message', function(e) {
     if (f) {
       if (e.data.mode === 'detail') {
         f.style.setProperty('width', '100%', 'important');
-        f.style.left = '0';
-        f.style.transform = 'none';
+        f.style.setProperty('left', '0', 'important');
+        f.style.setProperty('transform', 'none', 'important');
       } else {
         f.style.setProperty('width', 'min(1200px, calc(100vw - 32px))', 'important');
-        f.style.left = '50%';
-        f.style.transform = 'translateX(-50%)';
+        f.style.setProperty('left', '50%', 'important');
+        f.style.setProperty('transform', 'translateX(-50%)', 'important');
       }
     }
   }
