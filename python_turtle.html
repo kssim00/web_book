@@ -1292,6 +1292,7 @@ function setActiveSide(idx){
 
 function showHome(){
   setActiveSide(null);
+  localStorage.removeItem('turtle_open_lesson');
   document.getElementById('sidebar').style.display = 'none';
   document.getElementById('main').style.maxWidth = 'min(1200px, calc(100vw - 32px))';
   document.getElementById('main').style.margin = '0 auto';
