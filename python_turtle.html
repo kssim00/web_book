@@ -1445,11 +1445,15 @@ function setActiveSide(idx){
 
 function showHome(){
   setActiveSide(null);
+  localStorage.removeItem('turtle_open_lesson');
+  document.getElementById('sidebar').style.display = 'none';
+  document.getElementById('main').style.maxWidth = 'min(1200px, calc(100vw - 32px))';
+  document.getElementById('main').style.margin = '0 auto';
   let html = '<h2 style="margin-top:0;">🐢 단계별로 하나씩 코딩해볼까요?</h2>';
   html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요.</div>';
   html += '<div class="grid">';
   UNITS.forEach(function(u, i){
-    html += '<div class="card" onclick="showDetail(' + i + ')">'
+    html += '<div class="card" onclick="openLesson(' + i + ')">'
       + '<div class="card-icon">' + u.icon + '</div>'
       + '<div class="card-body">'
       + '<div class="card-title">' + escapeHtml(u.title) + '</div>'
@@ -1461,8 +1465,16 @@ function showHome(){
   main.scrollTop = 0;
 }
 
+function openLesson(i){
+  localStorage.setItem('turtle_open_lesson', i);
+  window.open('python_turtle.html', '_blank');
+}
+
 function showDetail(idx){
   const u = UNITS[idx];
+  document.getElementById('sidebar').style.display = '';
+  document.getElementById('main').style.maxWidth = '';
+  document.getElementById('main').style.margin = '';
   setActiveSide(idx);
   let html = '<button class="back-btn" id="backBtn">← 목록으로</button>';
   html += '<div class="cover-section">';
@@ -1565,7 +1577,7 @@ function showDetail(idx){
   }
 
   main.innerHTML = html;
-  document.getElementById("backBtn").onclick = showHome;
+  document.getElementById("backBtn").onclick = function(){ window.close(); };
   main.scrollTop = 0;
 }
 
@@ -1647,7 +1659,13 @@ document.addEventListener("keydown", function(e){
   if(e.key === "Escape") document.getElementById("lightbox").classList.remove("show");
 });
 
-showHome();
+var _storedLesson = localStorage.getItem('turtle_open_lesson');
+if(_storedLesson !== null){
+  localStorage.removeItem('turtle_open_lesson');
+  showDetail(parseInt(_storedLesson));
+} else {
+  showHome();
+}
 </script>
 </body>
 </html>
