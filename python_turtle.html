@@ -1293,7 +1293,7 @@ function setActiveSide(idx){
 function showHome(){
   setActiveSide(null);
   document.getElementById('sidebar').style.display = 'none';
-  document.getElementById('main').style.maxWidth = '1100px';
+  document.getElementById('main').style.maxWidth = 'min(1200px, calc(100vw - 32px))';
   document.getElementById('main').style.margin = '0 auto';
   let html = '<h2 style="margin-top:0;">🐢 단계별로 하나씩 코딩해볼까요?</h2>';
   html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요.</div>';
