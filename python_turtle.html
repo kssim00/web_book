@@ -1412,14 +1412,7 @@ function showDetail(idx){
 
   main.innerHTML = html;
   document.getElementById("backBtn").onclick = function(){
-    if (window.opener || window.history.length <= 1) { window.close(); }
-    else { var _hash = location.hash;
-var _lessonMatch = _hash.match(/^#lesson-(\d+)$/);
-if (_lessonMatch) {
-  showDetail(parseInt(_lessonMatch[1]));
-} else {
-  showHome();
-} }
+    window.close();
   };
   main.scrollTop = 0;
 }
@@ -1510,7 +1503,13 @@ document.addEventListener("keydown", function(e){
   if(e.key === "Escape") document.getElementById("lightbox").classList.remove("show");
 });
 
-showHome();
+var _hash = location.hash;
+var _lessonMatch = _hash.match(/^#lesson-(\d+)$/);
+if (_lessonMatch) {
+  showDetail(parseInt(_lessonMatch[1]));
+} else {
+  showHome();
+}
 
 
 </script>
