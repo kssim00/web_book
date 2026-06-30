@@ -1624,6 +1624,23 @@ body::before {
   overflow: hidden;
 }
 
+/* panel7 레이아웃 */
+#panel7.visible {
+  display: block;
+}
+#panel7 .gallery-iframe {
+  display: block;
+  width: min(1200px, calc(100vw - 32px)) !important;
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  height: calc(100vh - 60px);
+  min-height: 600px;
+  border: none;
+  background: transparent;
+  overflow: hidden;
+}
+
 /* 갤러리 미션 편집 모달 열릴 때 iframe 풀스크린 */
 .gallery-iframe.modal-fullscreen {
   position: fixed !important;
@@ -3049,8 +3066,87 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
 
     </div>
 
-    <!-- ── PANEL 5: AI ── -->
+    <!-- ── PANEL 6: 앱인벤터 ── -->
     <div class="content-panel" id="panel6">
+      <div class="panel-hero s4">
+        <span class="panel-hero-orb-l"></span>
+        <div class="panel-hero-inner">
+          <div class="panel-hero-left">
+            <div class="panel-hero-row">
+              <div class="panel-hero-icon" style="font-size:52px;">📱</div>
+              <div>
+                <div class="panel-hero-lv">Level 6 · 앱 개발</div>
+                <div class="panel-hero-title">앱인벤터</div>
+              </div>
+            </div>
+            <div class="panel-hero-desc">블록 코딩으로 나만의 스마트폰 앱을 만들어요!</div>
+            <div class="panel-hero-tags">
+              <span class="panel-hero-tag">📱 앱 만들기</span>
+              <span class="panel-hero-tag">UI 디자인</span>
+              <span class="panel-hero-tag">이벤트 처리</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card-grid">
+        <div class="lesson-card s4" style="opacity:0.5;pointer-events:none;">
+          <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:26px;">📱</div></div>
+          <div class="lesson-card-body">
+            <div class="lesson-card-label">준비 중</div>
+            <div class="lesson-card-title">앱인벤터 웹교재</div>
+            <div class="lesson-card-sub">곧 업로드될 예정이에요!</div>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p6" onclick="toggleDone('p6')">
+          <div class="chk" id="chk-p6">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="panel-done-btn s4" onclick="openCompleteModal(6)">✅ 수업 완료 보고</button>
+    </div>
+
+    <!-- ── PANEL 7: 3D 모델링 (틴커캐드) ── -->
+    <div class="content-panel" id="panel7">
+      <div class="panel-hero s4" style="background:linear-gradient(135deg,#0d1a2e 0%,#0f2040 45%,#070e1c 100%);border-top:1px solid rgba(99,179,237,0.3);border-bottom:1px solid rgba(99,179,237,0.3);">
+        <span class="panel-hero-orb-l" style="background:radial-gradient(circle,rgba(99,179,237,0.10) 0%,transparent 65%);"></span>
+        <div class="panel-hero-inner">
+          <div class="panel-hero-left">
+            <div class="panel-hero-row">
+              <div class="panel-hero-icon" style="font-size:52px;">🖨️</div>
+              <div>
+                <div class="panel-hero-lv" style="color:rgba(99,179,237,0.85);">Level 7 · 3D 모델링</div>
+                <div class="panel-hero-title">3D 모델링</div>
+              </div>
+            </div>
+            <div class="panel-hero-desc">틴커캐드로 3D 작품을 설계하고 프린터로 출력해요!</div>
+            <div class="panel-hero-tags">
+              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">🖨️ 3D 프린팅</span>
+              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">틴커캐드</span>
+              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">3D 설계</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 틴커캐드 웹교재 iframe -->
+      <iframe id="tinkercadGalleryFrame"
+        class="gallery-iframe"
+        src="틴커캐드_웹교재.html"
+        allowtransparency="true"
+        title="틴커캐드 웹교재">
+      </iframe>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p7" onclick="toggleDone('p7')">
+          <div class="chk" id="chk-p7">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="panel-done-btn s4" onclick="openCompleteModal(7)">✅ 수업 완료 보고</button>
+    </div>
+
+    <!-- ── PANEL 8: 자격증 ── -->
+    <div class="content-panel" id="panel8">
       <div class="panel-hero s5">
         <span class="panel-hero-orb-l"></span>
         <div class="panel-hero-inner">
@@ -3165,7 +3261,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         </div>
       </div>
       <div class="lesson-card-grid">
-        <a href="#" class="lesson-card s5" data-key="p6-l1" onclick="return goLesson(this)">
+        <a href="#" class="lesson-card s5" data-key="p8-l1" onclick="return goLesson(this)">
           <div class="lesson-card-thumb"><div class="lesson-card-num">AI 1</div></div>
           <div class="lesson-card-body">
             <div class="lesson-card-label">AICE Future</div>
@@ -3174,7 +3270,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
           <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
         </a>
-        <a href="#" class="lesson-card s5" data-key="p6-l2" onclick="return goLesson(this)">
+        <a href="#" class="lesson-card s5" data-key="p8-l2" onclick="return goLesson(this)">
           <div class="lesson-card-thumb"><div class="lesson-card-num">AI 2</div></div>
           <div class="lesson-card-body">
             <div class="lesson-card-label">AICE Junior</div>
@@ -3183,7 +3279,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
           <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
         </a>
-        <a href="#" class="lesson-card s5" data-key="p6-l3" onclick="return goLesson(this)">
+        <a href="#" class="lesson-card s5" data-key="p8-l3" onclick="return goLesson(this)">
           <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:20px;">Vibe</div></div>
           <div class="lesson-card-body">
             <div class="lesson-card-label">바이브코딩</div>
@@ -3194,12 +3290,12 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         </a>
       </div>
       <div class="lesson-done-row">
-        <label class="done-toggle" id="done-p6" onclick="toggleDone('p6')">
-          <div class="chk" id="chk-p6">✓</div>
+        <label class="done-toggle" id="done-p8" onclick="toggleDone('p8')">
+          <div class="chk" id="chk-p8">✓</div>
           오늘 단계 완료 표시
         </label>
       </div>
-      <button class="panel-done-btn s5" onclick="openCompleteModal(6">✅ 수업 완료 보고</button>
+      <button class="panel-done-btn s5" onclick="openCompleteModal(8">✅ 수업 완료 보고</button>
     </div>
 
     <!-- PLACEHOLDER / HOME DASHBOARD -->
@@ -3274,10 +3370,28 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <div class="cn-footer" style="color:#2AC1A5">학습 시작하기 →</div>
             </div>
 
-            <!-- STEP 06: 자격증 과정 -->
+            <!-- STEP 06: 앱인벤터 -->
+            <div class="cn-card" onclick="selectStep(6)" style="--cn-color:#2AC1A5">
+              <span class="cn-badge ready">학습 가능</span>
+              <div class="cn-step" style="color:#2AC1A5">STEP 06</div>
+              <div class="cn-title">📱 앱인벤터</div>
+              <div class="cn-desc">블록 코딩으로<br>나만의 앱을 만들어요!</div>
+              <div class="cn-footer" style="color:#2AC1A5">학습 시작하기 →</div>
+            </div>
+
+            <!-- STEP 07: 3D 모델링 -->
+            <div class="cn-card" onclick="selectStep(7)" style="--cn-color:#63B3ED">
+              <span class="cn-badge ready">학습 가능</span>
+              <div class="cn-step" style="color:#63B3ED">STEP 07</div>
+              <div class="cn-title">🖨️ 3D 모델링</div>
+              <div class="cn-desc">틴커캐드로 설계하고<br>3D 프린터로 출력!</div>
+              <div class="cn-footer" style="color:#63B3ED">학습 시작하기 →</div>
+            </div>
+
+            <!-- STEP 08: 자격증 과정 -->
             <div class="cn-card cn-soon" style="--cn-color:#BE4BDB">
               <span class="cn-badge soon">준비 중</span>
-              <div class="cn-step" style="color:#BE4BDB">STEP 06</div>
+              <div class="cn-step" style="color:#BE4BDB">STEP 08</div>
               <div class="cn-title">자격증 과정</div>
               <div class="cn-desc">최상급 자격증 완벽 대비!<br>선생님이 열심히 준비 중입니다.</div>
             </div>
@@ -3522,6 +3636,8 @@ function calcProgress() {
     { id: 'hbar4', pct: getStore('done-p4', false) ? 100 : 0 },
     { id: 'hbar5', pct: getStore('done-p5', false) ? 100 : 0 },
     { id: 'hbar6', pct: getStore('done-p6', false) ? 100 : 0 },
+    { id: 'hbar7', pct: getStore('done-p7', false) ? 100 : 0 },
+    { id: 'hbar8', pct: getStore('done-p8', false) ? 100 : 0 },
   ];
   bars.forEach(({ id, pct }) => {
     const bar = document.getElementById(id);
@@ -4318,14 +4434,16 @@ const LEVEL_NAMES = {
   p2: 'Level 2 — 엔트리 COS',
   p3: 'Level 3 — 스크래치 COS',
   p4: 'Level 4 — 파이썬 터틀',
-  p5: 'Level 5 — 파이썬 COS Pro',
-  p6: 'Level 6 — AI 마스터 🏆'
+  p5: 'Level 5 — 파이썬 기초',
+  p6: 'Level 6 — 앱인벤터',
+  p7: 'Level 7 — 3D 모델링',
+  p8: 'Level 8 — AI 마스터 🏆'
 };
 
 // ── COMPLETE MODAL
 let modalPanelKey = '';
-const EMOJI_MAP = { p1:'🌱', p2:'🧩', p3:'🐱', p4:'🐢', p5:'💻', p6:'🤖' };
-const STEP_CLASS = { p1:'s1', p2:'s2', p3:'s3', p4:'s4', p5:'s4', p6:'s5' };
+const EMOJI_MAP = { p1:'🌱', p2:'🧩', p3:'🐱', p4:'🐢', p5:'💻', p6:'📱', p7:'🖨️', p8:'🤖' };
+const STEP_CLASS = { p1:'s1', p2:'s2', p3:'s3', p4:'s4', p5:'s4', p6:'s4', p7:'s4', p8:'s5' };
 
 function openCompleteModal(stepNum) {
   const panelKey = 'p' + stepNum;
@@ -4430,7 +4548,7 @@ async function confirmComplete() {
 
 // ── CONFETTI
 function loadAllState() {
-  ['p1','p2','p3','p4','p5','p6'].forEach(p => {
+  ['p1','p2','p3','p4','p5','p6','p7','p8'].forEach(p => {
     const isDone = getStore('done-' + p, false);
     applyDone(p, isDone);
     const memo = getStore('memo-' + p, '');
