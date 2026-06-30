@@ -1312,7 +1312,7 @@ function showHome(){
 }
 
 function openLesson(i){
-  window.open('python_turtle.html?lesson=' + i, '_blank');
+  window.open('python_turtle.html#lesson-' + i, '_blank');
 }
 
 function showDetail(idx){
@@ -1413,9 +1413,10 @@ function showDetail(idx){
   main.innerHTML = html;
   document.getElementById("backBtn").onclick = function(){
     if (window.opener || window.history.length <= 1) { window.close(); }
-    else { var _lessonParam = new URLSearchParams(location.search).get('lesson');
-if (_lessonParam !== null && !isNaN(parseInt(_lessonParam))) {
-  showDetail(parseInt(_lessonParam));
+    else { var _hash = location.hash;
+var _lessonMatch = _hash.match(/^#lesson-(\d+)$/);
+if (_lessonMatch) {
+  showDetail(parseInt(_lessonMatch[1]));
 } else {
   showHome();
 } }
