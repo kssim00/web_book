@@ -1670,7 +1670,13 @@ function getYoutubeThumbnail(url){
 function getMissionData(id){
   const base=MISSIONS.find(m=>m.id===id)||{};
   const custom=customMissions[id]||{};
-  return Object.assign({},base,custom);
+  const merged=Object.assign({},base,custom);
+  // 시트에서 아직 실제 내용이 안 들어온 카드는 예전 가상 텍스트 대신 빈 값으로 보여줌.
+  // 이모지/색상/챕터/XP 등 구조 데이터는 base 값을 그대로 써서 카드가 휑해 보이지 않게 함.
+  if(custom.title===undefined) merged.title='';
+  if(custom.desc===undefined) merged.desc='';
+  if(custom.steps===undefined) merged.steps=[];
+  return merged;
 }
 
 function toggleAdminMenu(){
@@ -1772,7 +1778,9 @@ function hideAdminBar(){
 function openAdmin(){
   isAdminMode=true;
   localStorage.setItem('학습홈_admin','1');
-  saveAllAdminToCloud();
+  // 로그인만 했을 뿐인데 여기서 클라우드에 업로드하면, 아직 최신 데이터를 못 받아온 상태의
+  // 브라우저 캐시(customMissions 등)로 방금 시트에서 동기화한 내용을 덮어써버리는 사고가 남.
+  // 실제 저장은 각 편집 함수(saveCustomMissions 등)에서 개별적으로 처리하므로 여기선 업로드하지 않음.
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
   if(badge) badge.style.display='inline-flex';
@@ -1786,7 +1794,9 @@ function openAdmin(){
 }
 function restoreAdminUI(){
   isAdminMode=true;
-  setTimeout(saveAllAdminToCloud, 2000);
+  // 페이지를 열 때마다 2초 뒤 자동으로 클라우드 업로드하던 코드 제거함:
+  // 아직 서버 최신값을 못 받아온 시점의 로컬 캐시로 방금 시트에서 동기화한 내용을 덮어써버리는
+  // 원인이었음(관리자 계정으로 새로고침할 때마다 반복 발생). 실제 저장은 각 편집 함수에서 처리.
   const badge=document.getElementById('adminBadge');
   const btn=document.getElementById('adminTriggerBtn');
   if(badge) badge.style.display='inline-flex';
