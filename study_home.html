@@ -2051,7 +2051,7 @@ body::before { display: none !important; }
 .py-sec-title.func::before { background: #7C3AED !important; }
 
 /* 파이썬 갤러리 — 1200px 풀넓이 */
-.py-gallery, .py-sec-title, .py-today-bar, .py-done-btn {
+.py-gallery, .py-sec-title, .py-today-bar, .py-done-btn, .py-toc-header, .py-toc-grid {
   width: min(1200px, calc(100vw - 32px)) !important;
   position: relative !important;
   left: 50% !important;
@@ -2116,8 +2116,65 @@ body::before { display: none !important; }
 .py-today-bar-icon::after { background: #0078FF !important; }
 
 /* 파이썬 완료 버튼 */
-.py-done-btn { background: rgba(0,120,255,0.06) !important; border-color: rgba(0,120,255,0.2) !important; color: #0060CC !important; }
-.py-done-btn:hover { background: #0078FF !important; border-color: #0078FF !important; color: #fff !important; transform: translateY(-1px) !important; }
+.py-done-btn { background: rgba(42,193,165,0.08) !important; border-color: rgba(42,193,165,0.3) !important; color: #0F8A73 !important; }
+.py-done-btn:hover { background: #2AC1A5 !important; border-color: #2AC1A5 !important; color: #fff !important; transform: translateY(-1px) !important; }
+
+/* 파이썬 기초 목차 — 코든클래스 스타일 (coden-class.netlify.app 참조) */
+.py-toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  margin-bottom: 32px;
+  margin-top: 0;
+  border-bottom: 2px solid #E2E8F0;
+}
+.py-toc-title { font-size: 26px; font-weight: 900; color: #0F172A; }
+.py-toc-back {
+  background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 20px;
+  border-radius: 12px; font-weight: 700; font-size: 13px; color: #64748B;
+  cursor: pointer; transition: 0.25s ease;
+}
+.py-toc-back:hover { background: #F8FAFC; color: #2AC1A5; border-color: #2AC1A5; }
+
+.py-toc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.py-toc-chapter {
+  background: #FFFFFF; border-radius: 20px; padding: 28px;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
+  height: fit-content;
+}
+.py-toc-chapter-title {
+  font-size: 18px; font-weight: 800; color: #0F172A;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+}
+.py-toc-chapter-title::before {
+  content: ''; width: 4px; height: 18px; background: #2AC1A5; border-radius: 10px; flex-shrink: 0;
+}
+.py-toc-lessons { display: flex; flex-direction: column; gap: 10px; }
+.py-toc-lesson {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 20px; background: #F8FAFC; border-radius: 14px;
+  text-decoration: none; color: inherit; border: 1px solid #F1F5F9;
+  transition: 0.25s ease;
+}
+.py-toc-lesson:hover {
+  background: #FFFFFF; border-color: #2AC1A5; transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.py-toc-lesson-title { font-weight: 700; font-size: 15px; color: #334155; }
+.py-toc-lesson-icon {
+  width: 28px; height: 28px; background: #FFFFFF; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #94A3B8; font-size: 13px; border: 1px solid #E2E8F0;
+  transition: 0.25s ease; flex-shrink: 0;
+}
+.py-toc-lesson:hover .py-toc-lesson-icon { background: #2AC1A5; color: #fff; border-color: #2AC1A5; transform: rotate(-45deg); }
+@media (max-width: 900px) { .py-toc-grid { grid-template-columns: 1fr; } }
 
 /* 파이썬 메모 */
 
@@ -2814,429 +2871,124 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
     <!-- ── PANEL 5: 파이썬 기초 ── -->
     <div class="content-panel" id="panel5">
 
-      <!-- ✦ 히어로 -->
-      <div class="py-hero">
-        <span class="py-hero-orb-l"></span>
-        <div class="py-hero-inner">
-          <!-- 좌측: 아이콘 + 텍스트 -->
-          <div class="py-hero-left">
-            <div class="py-hero-row">
-              <div class="py-hero-icon-box"><svg width="240" height="290" viewBox="0 0 240 290" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="sh4a"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="rgba(0,0,0,0.3)"/></filter>
-    <linearGradient id="mb4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D1D5DB"/><stop offset="1" stop-color="#9CA3AF"/></linearGradient>
-    <linearGradient id="tb4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1a2e"/><stop offset="1" stop-color="#16213e"/></linearGradient>
-    <linearGradient id="cup4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5F5F5"/><stop offset="1" stop-color="#D0D0D0"/></linearGradient>
-    <linearGradient id="pyb4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4B8BBE"/><stop offset="1" stop-color="#306998"/></linearGradient>
-    <linearGradient id="pyy4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE873"/><stop offset="1" stop-color="#FFD43B"/></linearGradient>
-  </defs>
-  <g transform="translate(0,55)">
-    <g filter="url(#sh4a)">
-      <path d="M18 168 L222 168 L234 186 L6 186 Z" fill="url(#mb4)"/>
-      <ellipse cx="120" cy="168" rx="22" ry="3.5" fill="#9CA3AF"/>
-      <rect x="26" y="16" width="188" height="150" rx="12" fill="url(#mb4)"/>
-      <circle cx="120" cy="91" r="18" fill="rgba(0,0,0,0.06)"/>
-      <rect x="35" y="24" width="170" height="134" rx="7" fill="url(#tb4)"/>
-    </g>
-    <rect x="35" y="24" width="170" height="22" rx="7" fill="#2D2D2D"/>
-    <rect x="35" y="38" width="170" height="8" fill="#2D2D2D"/>
-    <circle cx="49" cy="35" r="5" fill="#FF5F57"/>
-    <circle cx="64" cy="35" r="5" fill="#FEBC2E"/>
-    <circle cx="79" cy="35" r="5" fill="#28C840"/>
-    <rect x="100" y="31" width="60" height="8" rx="3" fill="rgba(255,255,255,0.1)"/>
-    <rect x="42" y="58" width="14" height="7" rx="2" fill="#34D399"/>
-    <rect x="60" y="58" width="20" height="7" rx="3" fill="#60A5FA"/>
-    <rect x="84" y="58" width="38" height="7" rx="2" fill="rgba(255,255,255,0.4)"/>
-    <rect x="126" y="58" width="22" height="7" rx="2" fill="#FCD34D"/>
-    <rect x="42" y="72" width="14" height="7" rx="2" fill="#34D399"/>
-    <rect x="60" y="72" width="16" height="7" rx="3" fill="#60A5FA"/>
-    <rect x="80" y="72" width="32" height="7" rx="2" fill="#FCD34D"/>
-    <rect x="116" y="72" width="12" height="7" rx="2" fill="rgba(255,255,255,0.45)"/>
-    <rect x="132" y="72" width="28" height="7" rx="2" fill="#34D399"/>
-    <rect x="52" y="86" width="22" height="7" rx="3" fill="#60A5FA"/>
-    <rect x="78" y="86" width="55" height="7" rx="2" fill="rgba(255,255,255,0.5)"/>
-    <rect x="137" y="86" width="30" height="7" rx="2" fill="#FCD34D"/>
-    <rect x="52" y="100" width="30" height="7" rx="3" fill="#A78BFA"/>
-    <rect x="86" y="100" width="45" height="7" rx="2" fill="rgba(255,255,255,0.4)"/>
-    <rect x="42" y="114" width="14" height="7" rx="2" fill="#34D399"/>
-    <rect x="60" y="114" width="16" height="7" rx="3" fill="#60A5FA"/>
-    <rect x="80" y="114" width="20" height="7" rx="2" fill="rgba(255,255,255,0.55)"/>
-    <rect x="104" y="114" width="28" height="7" rx="2" fill="#F87171"/>
-    <rect x="52" y="128" width="32" height="7" rx="3" fill="#A78BFA"/>
-    <rect x="88" y="128" width="50" height="7" rx="2" fill="rgba(255,255,255,0.4)"/>
-    <rect x="42" y="142" width="14" height="7" rx="2" fill="#34D399"/>
-    <rect x="60" y="142" width="9" height="7" rx="1" fill="rgba(255,255,255,0.85)"/>
-    <g filter="url(#sh4a)" transform="rotate(8,215,55)">
-      <rect x="198" y="18" width="34" height="30" rx="10" fill="url(#pyb4)"/>
-      <rect x="206" y="34" width="34" height="30" rx="10" fill="url(#pyy4)"/>
-      <circle cx="208" cy="24" r="3.5" fill="rgba(255,255,255,0.7)"/>
-      <circle cx="228" cy="58" r="3.5" fill="rgba(255,255,255,0.7)"/>
-    </g>
-    <g filter="url(#sh4a)" transform="rotate(-10,215,148)">
-      <rect x="198" y="132" width="30" height="28" rx="5" fill="url(#cup4)"/>
-      <path d="M228 140 Q238 140 238 150 Q238 160 228 160" stroke="#D0D0D0" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-      <rect x="200" y="134" width="26" height="16" rx="3" fill="#795548"/>
-      <path d="M205 128 Q207 122 205 116" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M212 126 Q214 120 212 114" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
-    </g>
-    <circle cx="14" cy="40" r="8" fill="#FFD43B" opacity="0.9" filter="url(#sh4a)"/>
-    <circle cx="14" cy="165" r="6" fill="rgba(255,255,255,0.55)"/>
-    <path d="M222 8 L225 0 L228 8 L236 11 L228 14 L225 22 L222 14 L214 11 Z" fill="white" opacity="0.95"/>
-  </g>
-</svg></div>
-              <div>
-                <div class="py-hero-lv">Level 5 · 텍스트 코딩</div>
-                <div class="py-hero-title">파이썬 기초</div>
-              </div>
-            </div>
-            <div class="py-hero-desc">중학교·고등학교 수행평가 완벽 대비! 변수, 반복문, 함수까지 실생활에 바로 쓰이는 파이썬을 배워봐요.</div>
-            <div class="py-hero-tags">
-              <span class="py-hero-tag">COS Pro 3급</span>
-              <span class="py-hero-tag">COS Pro 2급</span>
-              <span class="py-hero-tag">COS Pro 1급</span>
-            </div>
-          </div>
-          <!-- 우측: 학습 스탯 -->
-          <div class="py-hero-stats">
-            <div class="py-hero-stats-row">
-              <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-total">15</div>
-                <div class="py-stat-label">총 챕터</div>
-              </div>
-              <div class="py-stat-div"></div>
-              <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-done">0</div>
-                <div class="py-stat-label">완료</div>
-              </div>
-              <div class="py-stat-div"></div>
-              <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-pct">0%</div>
-                <div class="py-stat-label">달성률</div>
-              </div>
-            </div>
-            <div class="py-prog-label">학습 진도</div>
-            <div class="py-prog-bar">
-              <div class="py-prog-fill" id="py-prog-fill"></div>
-            </div>
+      <!-- ✦ 목차 헤더 (coden-class.netlify.app 스타일) -->
+      <div class="py-toc-header">
+        <div class="py-toc-title">📂 파이썬 기초 목차</div>
+        <button class="py-toc-back" onclick="goHome()">← 홈으로</button>
+      </div>
+
+      <div class="py-toc-grid">
+
+        <!-- CHAPTER: 입출력과 자료형 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">입출력과 자료형</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" href="https://coden-class.netlify.app/06_python/02-01_print" target="_blank">
+              <span class="py-toc-lesson-title">출력 print()</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+            <a class="py-toc-lesson" href="https://coden-class.netlify.app/06_python/02-02_var" target="_blank">
+              <span class="py-toc-lesson-title">변수와 자료형</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+            <a class="py-toc-lesson" href="https://coden-class.netlify.app/06_python/02-03_input" target="_blank">
+              <span class="py-toc-lesson-title">입력 input()</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
           </div>
         </div>
-      </div>
 
-      <!-- ✦ 입출력과 자료형 (CH02) -->
-      <div class="py-sec-title io">입출력과 자료형</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard io" id="rc-p5-0">
-          <input type="radio" name="today-p5" value="0" onchange="selectToday('p5',0)">
-          <div class="py-gcard-thumb io">
-            <div class="py-thumb-code"><span class="py-tc-fn">print</span>(<span class="py-tc-str">"Hello World!"</span>)<br><span class="py-tc-fn">print</span>(<span class="py-tc-str">"반가워요"</span>)<br><span class="py-tc-cm"># 화면에 출력</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
+        <!-- CHAPTER: 문자열과 리스트 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">문자열과 리스트</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" href="https://coden-class.netlify.app/06_python/03-01_string" target="_blank">
+              <span class="py-toc-lesson-title">문자열 (string)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+            <a class="py-toc-lesson" href="https://coden-class.netlify.app/06_python/03-02_list" target="_blank">
+              <span class="py-toc-lesson-title">리스트 (list)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
           </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">입출력</div>
-            <div class="py-gcard-name">출력 print()</div>
-            <div class="py-gcard-desc">괄호 안의 내용을 화면에 출력하는 기본 명령어</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/02-01_print" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard io" id="rc-p5-1">
-          <input type="radio" name="today-p5" value="1" onchange="selectToday('p5',1)">
-          <div class="py-gcard-thumb io">
-            <div class="py-thumb-code">x = <span class="py-tc-num">10</span><br>name = <span class="py-tc-str">"파이썬"</span><br><span class="py-tc-fn">print</span>(x, name)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">입출력</div>
-            <div class="py-gcard-name">변수와 자료형</div>
-            <div class="py-gcard-desc">값을 저장하는 변수와 데이터 형태(자료형) 이해</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/02-02_var" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard io" id="rc-p5-2">
-          <input type="radio" name="today-p5" value="2" onchange="selectToday('p5',2)">
-          <div class="py-gcard-thumb io">
-            <div class="py-thumb-code">name = <span class="py-tc-fn">input</span>(<span class="py-tc-str">"이름: "</span>)<br><span class="py-tc-fn">print</span>(name, <span class="py-tc-str">"님!"</span>)<br><span class="py-tc-cm"># 사용자 입력</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">입출력</div>
-            <div class="py-gcard-name">입력 input()</div>
-            <div class="py-gcard-desc">사용자로부터 데이터를 입력받는 함수</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/02-03_input" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 문자열과 리스트 (CH03) -->
-      <div class="py-sec-title str">문자열과 리스트</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard str" id="rc-p5-3">
-          <input type="radio" name="today-p5" value="3" onchange="selectToday('p5',3)">
-          <div class="py-gcard-thumb str">
-            <div class="py-thumb-code">s = <span class="py-tc-str">"Hello World"</span><br><span class="py-tc-fn">print</span>(s[<span class="py-tc-num">0</span>:<span class="py-tc-num">5</span>])<br><span class="py-tc-cm"># → Hello</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">문자열</div>
-            <div class="py-gcard-name">문자열 (string)</div>
-            <div class="py-gcard-desc">인덱싱·슬라이싱·메서드로 문자열 자유롭게 다루기</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/03-01_string" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard str" id="rc-p5-4">
-          <input type="radio" name="today-p5" value="4" onchange="selectToday('p5',4)">
-          <div class="py-gcard-thumb str">
-            <div class="py-thumb-code">nums = [<span class="py-tc-num">1</span>,<span class="py-tc-num">2</span>,<span class="py-tc-num">3</span>]<br>nums.append(<span class="py-tc-num">4</span>)<br><span class="py-tc-fn">print</span>(nums)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">문자열</div>
-            <div class="py-gcard-name">리스트 (list)</div>
-            <div class="py-gcard-desc">여러 데이터를 하나의 이름으로 묶어 관리하는 자료형</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/03-02_list" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 조건문 -->
-      <div class="py-sec-title ctrl">조건문</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard ctrl" id="rc-p5-5">
-          <input type="radio" name="today-p5" value="5" onchange="selectToday('p5',5)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code">score = <span class="py-tc-num">85</span><br><span class="py-tc-kw">if</span> score &gt;= <span class="py-tc-num">90</span>:<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(<span class="py-tc-str">"A"</span>)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">조건문 (if)</div>
-            <div class="py-gcard-desc">조건에 따라 실행할 코드를 다르게 선택하는 if · elif · else</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_if.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 반복문 -->
-      <div class="py-sec-title ctrl">반복문</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard ctrl" id="rc-p5-6">
-          <input type="radio" name="today-p5" value="6" onchange="selectToday('p5',6)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code"><span class="py-tc-kw">while</span> x &gt; 0:<br>&nbsp;&nbsp;x -= <span class="py-tc-num">1</span><br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(x)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">반복문 (while)</div>
-            <div class="py-gcard-desc">조건이 참인 동안 반복 실행하는 기본 반복 구조</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_while.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard ctrl" id="rc-p5-7">
-          <input type="radio" name="today-p5" value="7" onchange="selectToday('p5',7)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">5</span>):<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">반복문 (for)</div>
-            <div class="py-gcard-desc">순서대로 반복하는 가장 많이 쓰이는 반복문</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_for.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard ctrl" id="rc-p5-8">
-          <input type="radio" name="today-p5" value="8" onchange="selectToday('p5',8)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;<span class="py-tc-kw">for</span> j <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i, j)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">중첩 반복문</div>
-            <div class="py-gcard-desc">반복문 안의 반복문, 복잡한 패턴 만들기</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_nested_loop.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 자료형 -->
-      <div class="py-sec-title data">자료형</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard data" id="rc-p5-9">
-          <input type="radio" name="today-p5" value="9" onchange="selectToday('p5',9)">
-          <div class="py-gcard-thumb data">
-            <div class="py-thumb-code">s = <span class="py-tc-str">"안녕하세요"</span><br><span class="py-tc-fn">print</span>(<span class="py-tc-fn">len</span>(s))<br><span class="py-tc-cm"># → 5</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">자료형</div>
-            <div class="py-gcard-name">유니코드 &amp; 문자열</div>
-            <div class="py-gcard-desc">문자를 다루는 string 자료형</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_unicode.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard data" id="rc-p5-10">
-          <input type="radio" name="today-p5" value="10" onchange="selectToday('p5',10)">
-          <div class="py-gcard-thumb data">
-            <div class="py-thumb-code">t = (<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>)<br><span class="py-tc-fn">print</span>(t[<span class="py-tc-num">0</span>])<br><span class="py-tc-cm"># → 1</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">자료형</div>
-            <div class="py-gcard-name">튜플 (tuple)</div>
-            <div class="py-gcard-desc">변경 불가능한 순서있는 데이터 묶음</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_tuple.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard data" id="rc-p5-11">
-          <input type="radio" name="today-p5" value="11" onchange="selectToday('p5',11)">
-          <div class="py-gcard-thumb data">
-            <div class="py-thumb-code">s = {<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>}<br>s.add(<span class="py-tc-num">4</span>)<br><span class="py-tc-cm"># 중복 없음</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">자료형</div>
-            <div class="py-gcard-name">집합 (set)</div>
-            <div class="py-gcard-desc">중복 없는 데이터 모음, 교집합·합집합 연산</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_set.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard data" id="rc-p5-12">
-          <input type="radio" name="today-p5" value="12" onchange="selectToday('p5',12)">
-          <div class="py-gcard-thumb data">
-            <div class="py-thumb-code">d = {<span class="py-tc-str">"name"</span>:<span class="py-tc-str">"코딩"</span>}<br>d[<span class="py-tc-str">"age"</span>] = <span class="py-tc-num">10</span><br><span class="py-tc-cm"># key: value</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">자료형</div>
-            <div class="py-gcard-name">딕셔너리 (dict)</div>
-            <div class="py-gcard-desc">키-값 쌍으로 저장하는 강력한 자료형</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_dict.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 함수 -->
-      <div class="py-sec-title func">함수</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard func" id="rc-p5-13">
-          <input type="radio" name="today-p5" value="13" onchange="selectToday('p5',13)">
-          <div class="py-gcard-thumb func">
-            <div class="py-thumb-code"><span class="py-tc-kw">def</span> <span class="py-tc-fn">greet</span>(name):<br>&nbsp;&nbsp;<span class="py-tc-kw">return</span> <span class="py-tc-str">"Hi, "</span> + name<br><span class="py-tc-fn">greet</span>(<span class="py-tc-str">"코딩"</span>)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">함수</div>
-            <div class="py-gcard-name">함수 (function)</div>
-            <div class="py-gcard-desc">코드를 재사용 가능한 블록으로 묶는 핵심 개념</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_function.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 클래스 -->
-      <div class="py-sec-title func">클래스</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard func" id="rc-p5-14">
-          <input type="radio" name="today-p5" value="14" onchange="selectToday('p5',14)">
-          <div class="py-gcard-thumb func">
-            <div class="py-thumb-code"><span class="py-tc-kw">class</span> Dog:<br>&nbsp;&nbsp;<span class="py-tc-kw">def</span> <span class="py-tc-fn">__init__</span>(self, name):<br>&nbsp;&nbsp;&nbsp;&nbsp;self.name = name</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">클래스</div>
-            <div class="py-gcard-name">클래스 (class)</div>
-            <div class="py-gcard-desc">속성과 기능을 하나로 묶어 나만의 객체를 만드는 객체지향의 시작</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_class.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 오늘 선택 배너 -->
-      <div class="py-today-bar" id="today-p5-wrap">
-        <div class="py-today-bar-icon"></div>
-        <div>
-          <div class="py-today-bar-label">오늘 선택한 챕터</div>
-          <div class="py-today-bar-name" id="today-p5-name"></div>
         </div>
-        <div class="py-today-bar-arrow">›</div>
-      </div>
 
-      <!-- 시뮬레이션 모드 배너 -->
-      <div class="sim-banner" id="sim-p5-banner" style="display:none">
-        <span>👁 시뮬레이션 중 — 다음 수업 날 이렇게 보여요</span>
-        <button class="sim-reset-btn" onclick="resetSimulation('p5')">돌아가기</button>
-      </div>
+        <!-- CHAPTER: 조건문 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">조건문</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_if.html" target="_blank">
+              <span class="py-toc-lesson-title">조건문 (if)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+          </div>
+        </div>
 
-      <!-- ✦ 완료 버튼 -->
-      <button class="py-done-btn" onclick="openCompleteModal(5)">✅ 수업 완료 보고</button>
+        <!-- CHAPTER: 반복문 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">반복문</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_while.html" target="_blank">
+              <span class="py-toc-lesson-title">반복문 (while)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_for.html" target="_blank">
+              <span class="py-toc-lesson-title">반복문 (for)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_nested_loop.html" target="_blank">
+              <span class="py-toc-lesson-title">중첩 반복문</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- CHAPTER: 자료형 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">자료형</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_unicode.html" target="_blank">
+              <span class="py-toc-lesson-title">유니코드 &amp; 문자열</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_tuple.html" target="_blank">
+              <span class="py-toc-lesson-title">튜플 (tuple)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_set.html" target="_blank">
+              <span class="py-toc-lesson-title">집합 (set)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_dict.html" target="_blank">
+              <span class="py-toc-lesson-title">딕셔너리 (dict)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- CHAPTER: 함수 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">함수</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_function.html" target="_blank">
+              <span class="py-toc-lesson-title">함수 (function)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- CHAPTER: 클래스 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">클래스</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_class.html" target="_blank">
+              <span class="py-toc-lesson-title">클래스 (class)</span>
+              <span class="py-toc-lesson-icon">➜</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
 
     </div>
 
