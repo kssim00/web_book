@@ -1597,9 +1597,9 @@ async function loadAdminFromCloud(){
     if(data.images && data.images!=='{}') try{ missionImages=JSON.parse(data.images); changed=true; }catch(e){}
     if(data.memos  && data.memos !=='{}') try{ customMemos  =JSON.parse(data.memos);  changed=true; }catch(e){}
     if(data.links  && data.links !=='{}') try{ entryLinks   =JSON.parse(data.links);   changed=true; }catch(e){}
-    // missions: localStorage가 이미 있으면 신뢰 (새로고침 시 클라우드가 덮어쓰지 않음)
-    if(data.missions && data.missions!=='{}' && !localStorage.getItem('eg_admin_missions')){
-      try{ customMissions=JSON.parse(data.missions); changed=true; }catch(e){}
+    // missions: 관리자 화면은 로컬 미저장 편집을 보호, 학생 화면은 항상 최신 클라우드 값 반영
+    if(data.missions && data.missions!=='{}' && (!isAdminMode || !localStorage.getItem('eg_admin_missions'))){
+      try{ customMissions=JSON.parse(data.missions); try{localStorage.setItem('eg_admin_missions',data.missions);}catch(e){} changed=true; }catch(e){}
     }
     if(changed){
       try{ localStorage.setItem('eg_admin_images',   data.images);   }catch(e){}

@@ -3730,22 +3730,34 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
 // ════════════════════════════════════════════════
 
 // ── APP STATE (localStorage 기반)
+// 로그인 상태(현재 학생이 누구인지)는 sessionStorage에 저장 — 브라우저/탭을 닫으면 자동 로그아웃됨.
+// 학생별 진도/기록 데이터(name::key, eg_*, sg_* 등)는 계속 localStorage에 남아서 다음에 로그인해도 이어짐.
 function _storeKey(key) {
   // 학생 이름별로 분리 저장 — 같은 컴퓨터에서 다른 학생이 앉아도 데이터가 섞이지 않아요
-  const name = localStorage.getItem('__currentStudent__') || '';
+  const name = sessionStorage.getItem('__currentStudent__') || '';
   // studentName 자체는 공통 키로 유지
   if (key === 'studentName') return key;
   return name ? name + '::' + key : key;
 }
 function getStore(key, def) {
-  try { const v = localStorage.getItem(_storeKey(key)); return v !== null ? JSON.parse(v) : def; }
+  try {
+    if (key === 'studentName') {
+      const v = sessionStorage.getItem('studentName');
+      return v !== null ? JSON.parse(v) : def;
+    }
+    const v = localStorage.getItem(_storeKey(key)); return v !== null ? JSON.parse(v) : def;
+  }
   catch(e) { return def; }
 }
 function setStore(key, val) {
   try {
+    if (key === 'studentName') {
+      // 로그인 이름은 세션에만 저장 (브라우저 닫으면 사라짐)
+      sessionStorage.setItem('studentName', JSON.stringify(val));
+      sessionStorage.setItem('__currentStudent__', val);
+      return;
+    }
     localStorage.setItem(_storeKey(key), JSON.stringify(val));
-    // 현재 학생 이름이 studentName이면 __currentStudent__도 업데이트
-    if (key === 'studentName') localStorage.setItem('__currentStudent__', val);
   } catch(e) {}
 }
 
@@ -3819,7 +3831,7 @@ function startApp() {
   const name = document.getElementById('nameInput').value.trim();
   if (!name) { document.getElementById('nameInput').focus(); return; }
   // 이전 학생과 다른 이름이면 단계 초기화
-  const prevName = localStorage.getItem('__currentStudent__') || null;
+  const prevName = sessionStorage.getItem('__currentStudent__') || null;
   if (prevName !== null && prevName !== name) {
     setStore('lastStep', 0);
     hideAllPanels();
@@ -3831,7 +3843,7 @@ function startApp() {
     _entryGalleryName = null;
     _scratchGalleryName = null;
   }
-  localStorage.setItem('__currentStudent__', name);
+  sessionStorage.setItem('__currentStudent__', name);
   setStore('studentName', name);
   applyName(name);
   document.getElementById('welcome').style.display = 'none';
@@ -3851,8 +3863,8 @@ function applyName(name) {
 }
 
 function resetApp() {
-  localStorage.removeItem('studentName');
-  localStorage.removeItem('__currentStudent__');
+  sessionStorage.removeItem('studentName');
+  sessionStorage.removeItem('__currentStudent__');
   document.getElementById('welcome').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('nameInput').value = '';
@@ -4326,7 +4338,7 @@ function deleteChapter(subjectId, chapterId) {
 
 // 저장된 이름이 있으면 자동 로그인 (모든 변수 초기화 후 실행)
 setTimeout(function() {
-  const saved = localStorage.getItem('__currentStudent__');
+  const saved = sessionStorage.getItem('__currentStudent__');
   if (saved) {
     document.getElementById('nameInput').value = saved;
     startApp();
