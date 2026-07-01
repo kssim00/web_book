@@ -2175,6 +2175,16 @@ body::before { display: none !important; }
 .py-toc-lesson.py-done .py-toc-lesson-title { color: #16A34A; }
 .py-toc-lesson.py-done .py-toc-lesson-icon { background: #22C55E; color: #fff; border-color: #22C55E; }
 .py-toc-lesson.py-done:hover .py-toc-lesson-icon { background: #16A34A; border-color: #16A34A; transform: none; }
+.py-toc-lesson-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.py-toc-ver-group { display: flex; gap: 6px; }
+.py-toc-ver {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #94A3B8;
+  background: #FFFFFF; border: 1px solid #E2E8F0;
+  text-decoration: none; transition: 0.2s ease; flex-shrink: 0;
+}
+.py-toc-ver:hover { background: #2AC1A5; color: #fff; border-color: #2AC1A5; }
 @media (max-width: 900px) { .py-toc-grid { grid-template-columns: 1fr; } }
 
 /* 파이썬 메모 */
@@ -3032,10 +3042,16 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <span class="py-toc-lesson-title">집합 (set)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'set')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="dict" href="https://kssim00.github.io/web_book/python_dict.html" target="_blank">
+            <div class="py-toc-lesson" data-lid="dict">
               <span class="py-toc-lesson-title">딕셔너리 (dict)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'dict')">➜</span>
-            </a>
+              <div class="py-toc-lesson-right">
+                <div class="py-toc-ver-group">
+                  <a class="py-toc-ver" href="https://kssim00.github.io/web_book/python_dict.html" target="_blank" title="버전 1">1</a>
+                  <a class="py-toc-ver" href="https://kssim00.github.io/web_book/python_dict2.html" target="_blank" title="버전 2">2</a>
+                </div>
+                <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'dict')">➜</span>
+              </div>
+            </div>
           </div>
         </div>
 
