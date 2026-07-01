@@ -2130,23 +2130,19 @@ body::before { display: none !important; }
   border-bottom: 2px solid #E2E8F0;
 }
 .py-toc-title { font-size: 26px; font-weight: 900; color: #0F172A; }
-.py-toc-back {
-  background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 20px;
-  border-radius: 12px; font-weight: 700; font-size: 13px; color: #64748B;
-  cursor: pointer; transition: 0.25s ease;
-}
-.py-toc-back:hover { background: #F8FAFC; color: #2AC1A5; border-color: #2AC1A5; }
 
 .py-toc-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
+  align-items: stretch;
 }
 .py-toc-chapter {
   background: #FFFFFF; border-radius: 20px; padding: 28px;
   box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
-  height: fit-content;
+  display: flex;
+  flex-direction: column;
 }
 .py-toc-chapter-title {
   font-size: 18px; font-weight: 800; color: #0F172A;
@@ -2155,7 +2151,7 @@ body::before { display: none !important; }
 .py-toc-chapter-title::before {
   content: ''; width: 4px; height: 18px; background: #2AC1A5; border-radius: 10px; flex-shrink: 0;
 }
-.py-toc-lessons { display: flex; flex-direction: column; gap: 10px; }
+.py-toc-lessons { display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: flex-start; }
 .py-toc-lesson {
   display: flex; align-items: center; justify-content: space-between;
   padding: 15px 20px; background: #F8FAFC; border-radius: 14px;
@@ -2874,7 +2870,6 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
       <!-- ✦ 목차 헤더 (coden-class.netlify.app 스타일) -->
       <div class="py-toc-header">
         <div class="py-toc-title">📂 파이썬 기초 목차</div>
-        <button class="py-toc-back" onclick="goHome()">← 홈으로</button>
       </div>
 
       <div class="py-toc-grid">
@@ -2913,21 +2908,14 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </div>
 
-        <!-- CHAPTER: 조건문 -->
+        <!-- CHAPTER: 조건문 · 반복문 -->
         <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">조건문</div>
+          <div class="py-toc-chapter-title">조건문 · 반복문</div>
           <div class="py-toc-lessons">
             <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_if.html" target="_blank">
               <span class="py-toc-lesson-title">조건문 (if)</span>
               <span class="py-toc-lesson-icon">➜</span>
             </a>
-          </div>
-        </div>
-
-        <!-- CHAPTER: 반복문 -->
-        <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">반복문</div>
-          <div class="py-toc-lessons">
             <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_while.html" target="_blank">
               <span class="py-toc-lesson-title">반복문 (while)</span>
               <span class="py-toc-lesson-icon">➜</span>
@@ -2966,21 +2954,14 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </div>
 
-        <!-- CHAPTER: 함수 -->
+        <!-- CHAPTER: 함수와 클래스 -->
         <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">함수</div>
+          <div class="py-toc-chapter-title">함수와 클래스</div>
           <div class="py-toc-lessons">
             <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_function.html" target="_blank">
               <span class="py-toc-lesson-title">함수 (function)</span>
               <span class="py-toc-lesson-icon">➜</span>
             </a>
-          </div>
-        </div>
-
-        <!-- CHAPTER: 클래스 -->
-        <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">클래스</div>
-          <div class="py-toc-lessons">
             <a class="py-toc-lesson" href="https://kssim00.github.io/web_book/python_class.html" target="_blank">
               <span class="py-toc-lesson-title">클래스 (class)</span>
               <span class="py-toc-lesson-icon">➜</span>
