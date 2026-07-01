@@ -1133,7 +1133,7 @@ body::before {
 /* ══════════════════════════════════════
    🐍 PYTHON PANEL — GALLERY CARD STYLE
    ══════════════════════════════════════ */
-#panel4 { padding-bottom: 40px; }
+#panel5 { padding-bottom: 40px; }
 
 /* ── 히어로 — 풀폭 + A+C 합친 레이아웃 ── */
 .py-hero {
@@ -1247,6 +1247,8 @@ body::before {
   content: ''; flex-shrink: 0;
   width: 3px; height: 14px; border-radius: 2px;
 }
+.py-sec-title.io::before   { background: #f59e0b; }
+.py-sec-title.str::before  { background: #ec4899; }
 .py-sec-title.ctrl::before { background: #3b82f6; }
 .py-sec-title.data::before { background: #10b981; }
 .py-sec-title.func::before { background: #8b5cf6; }
@@ -1293,6 +1295,8 @@ body::before {
   flex-shrink: 0; padding: 14px 18px;
 }
 /* 카테고리별 밝은 그라디언트 */
+.py-gcard-thumb.io   { background: linear-gradient(145deg, #b45309 0%, #f59e0b 100%); }
+.py-gcard-thumb.str  { background: linear-gradient(145deg, #be185d 0%, #ec4899 100%); }
 .py-gcard-thumb.ctrl { background: linear-gradient(145deg, #1d4ed8 0%, #3b82f6 100%); }
 .py-gcard-thumb.data { background: linear-gradient(145deg, #059669 0%, #10b981 100%); }
 .py-gcard-thumb.func { background: linear-gradient(145deg, #6d28d9 0%, #8b5cf6 100%); }
@@ -1363,6 +1367,27 @@ body::before {
 .py-gcard.func:hover { border-color: rgba(139,92,246,0.45); box-shadow: 0 10px 32px rgba(139,92,246,0.18); }
 .py-gcard.func.selected-today { border-color: rgba(139,92,246,0.65); box-shadow: 0 0 0 2px rgba(139,92,246,0.2), 0 10px 28px rgba(139,92,246,0.2); }
 .py-gcard.func .py-gcard-badge { background: rgba(139,92,246,0.25); border-color: rgba(139,92,246,0.6); color: #c4b5fd; }
+
+/* io (입출력) */
+.py-gcard.io .py-gcard-cat  { color: #fbbf24; }
+.py-gcard.io .py-gcard-name { color: #fde68a; }
+.py-gcard.io .py-gcard-open:hover { color: #fcd34d; border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.1); }
+.py-gcard.io .py-gcard-select-dot { background: rgba(245,158,11,0.4); }
+.py-gcard.io.selected-today .py-gcard-select-dot { background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.9); }
+.py-gcard.io { border-color: rgba(245,158,11,0.18); }
+.py-gcard.io:hover { border-color: rgba(245,158,11,0.45); box-shadow: 0 10px 32px rgba(245,158,11,0.18); }
+.py-gcard.io.selected-today { border-color: rgba(245,158,11,0.65); box-shadow: 0 0 0 2px rgba(245,158,11,0.2), 0 10px 28px rgba(245,158,11,0.2); }
+.py-gcard.io .py-gcard-badge { background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.6); color: #fcd34d; }
+/* str (문자열/리스트) */
+.py-gcard.str .py-gcard-cat  { color: #f472b6; }
+.py-gcard.str .py-gcard-name { color: #fbcfe8; }
+.py-gcard.str .py-gcard-open:hover { color: #f9a8d4; border-color: rgba(236,72,153,0.45); background: rgba(236,72,153,0.1); }
+.py-gcard.str .py-gcard-select-dot { background: rgba(236,72,153,0.4); }
+.py-gcard.str.selected-today .py-gcard-select-dot { background: #ec4899; box-shadow: 0 0 8px rgba(236,72,153,0.9); }
+.py-gcard.str { border-color: rgba(236,72,153,0.18); }
+.py-gcard.str:hover { border-color: rgba(236,72,153,0.45); box-shadow: 0 10px 32px rgba(236,72,153,0.18); }
+.py-gcard.str.selected-today { border-color: rgba(236,72,153,0.65); box-shadow: 0 0 0 2px rgba(236,72,153,0.2), 0 10px 28px rgba(236,72,153,0.2); }
+.py-gcard.str .py-gcard-badge { background: rgba(236,72,153,0.25); border-color: rgba(236,72,153,0.6); color: #f9a8d4; }
 
 /* 선택 배지 */
 .py-gcard-badge {
@@ -1573,7 +1598,7 @@ body::before {
   position: relative !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  height: 900px;
+  height: calc(100vh - 60px);
   min-height: 600px;
   border: none;
   background: transparent;
@@ -1600,7 +1625,41 @@ body::before {
   position: relative !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  height: 900px;
+  height: calc(100vh - 60px);
+  min-height: 600px;
+  border: none;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* panel4 레이아웃 */
+#panel4.visible {
+  display: block;
+}
+#panel4 .gallery-iframe {
+  display: block;
+  width: min(1200px, calc(100vw - 32px)) !important;
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  height: calc(100vh - 60px);
+  min-height: 600px;
+  border: none;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* panel7 레이아웃 */
+#panel7.visible {
+  display: block;
+}
+#panel7 .gallery-iframe {
+  display: block;
+  width: min(1200px, calc(100vw - 32px)) !important;
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  height: calc(100vh - 60px);
   min-height: 600px;
   border: none;
   background: transparent;
@@ -1621,6 +1680,14 @@ body::before {
 }
 
 /* s5 — 앰버 */
+
+/* 파이썬 터틀 히어로 — 청록/그린 계열 */
+.panel-hero.s4 { background: linear-gradient(135deg,#0a2218 0%,#0d2e1e 45%,#061811 100%); border-top: 1px solid rgba(44,193,165,0.3); border-bottom: 1px solid rgba(44,193,165,0.3); }
+.panel-hero.s4::after { background: radial-gradient(circle,rgba(44,193,165,0.18) 0%,transparent 65%); }
+.panel-hero.s4 .panel-hero-orb-l { background: radial-gradient(circle,rgba(44,193,165,0.10) 0%,transparent 65%); }
+.panel-hero.s4 .panel-hero-lv { color: rgba(44,193,165,0.85); }
+.panel-hero.s4 .panel-hero-title { text-shadow: 0 0 22px rgba(44,193,165,0.4); }
+.panel-hero.s4 .panel-hero-tag { background: rgba(44,193,165,0.15); border-color: rgba(44,193,165,0.35); color: #6ee7d4; }
 .panel-hero.s5 { background: linear-gradient(135deg,#2a1500 0%,#3a1e00 45%,#1c0e00 100%); border-top: 1px solid rgba(251,176,64,0.3); border-bottom: 1px solid rgba(251,176,64,0.3); }
 .panel-hero.s5::after { background: radial-gradient(circle,rgba(251,176,64,0.18) 0%,transparent 65%); }
 .panel-hero.s5 .panel-hero-orb-l { background: radial-gradient(circle,rgba(255,107,107,0.1) 0%,transparent 65%); }
@@ -2003,6 +2070,12 @@ body::before { display: none !important; }
 .py-gcard.data { border-color: rgba(16,185,129,0.12) !important; }
 .py-gcard.data:hover { border-color: rgba(16,185,129,0.28) !important; box-shadow: 0 6px 24px rgba(16,185,129,0.1) !important; }
 .py-gcard.data.selected-today { border-color: rgba(16,185,129,0.5) !important; box-shadow: 0 0 0 2px rgba(16,185,129,0.12), 0 6px 20px rgba(16,185,129,0.12) !important; }
+.py-gcard.io { border-color: rgba(245,158,11,0.12) !important; }
+.py-gcard.io:hover { border-color: rgba(245,158,11,0.28) !important; box-shadow: 0 6px 24px rgba(245,158,11,0.1) !important; }
+.py-gcard.io.selected-today { border-color: rgba(245,158,11,0.5) !important; box-shadow: 0 0 0 2px rgba(245,158,11,0.12), 0 6px 20px rgba(245,158,11,0.12) !important; }
+.py-gcard.str { border-color: rgba(236,72,153,0.12) !important; }
+.py-gcard.str:hover { border-color: rgba(236,72,153,0.28) !important; box-shadow: 0 6px 24px rgba(236,72,153,0.1) !important; }
+.py-gcard.str.selected-today { border-color: rgba(236,72,153,0.5) !important; box-shadow: 0 0 0 2px rgba(236,72,153,0.12), 0 6px 20px rgba(236,72,153,0.12) !important; }
 .py-gcard.func { border-color: rgba(139,92,246,0.12) !important; }
 .py-gcard.func:hover { border-color: rgba(139,92,246,0.28) !important; box-shadow: 0 6px 24px rgba(139,92,246,0.1) !important; }
 .py-gcard.func.selected-today { border-color: rgba(139,92,246,0.5) !important; box-shadow: 0 0 0 2px rgba(139,92,246,0.12), 0 6px 20px rgba(139,92,246,0.12) !important; }
@@ -2700,8 +2773,46 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
 
     </div>
 
-    <!-- ── PANEL 4: 파이썬 ── -->
+    <!-- ── PANEL 4: 파이썬 터틀 ── -->
     <div class="content-panel" id="panel4">
+      <div class="panel-hero s4">
+        <span class="panel-hero-orb-l"></span>
+        <div class="panel-hero-inner">
+          <div class="panel-hero-left">
+            <div class="panel-hero-row">
+              <div class="panel-hero-icon" style="font-size:52px;">🐢</div>
+              <div>
+                <div class="panel-hero-lv">Level 4 · 시각형 파이썬</div>
+                <div class="panel-hero-title">파이썬 터틀</div>
+              </div>
+            </div>
+            <div class="panel-hero-desc">코드 한 줄로 그림을 그려요! 거북이를 움직여 파이썬의 재미를 처음 경험해봐요.</div>
+            <div class="panel-hero-tags">
+              <span class="panel-hero-tag">🐢 터틀 그래픽</span>
+              <span class="panel-hero-tag">반복문 응용</span>
+              <span class="panel-hero-tag">시각적 코딩</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 터틀 웹교재 iframe -->
+      <iframe id="turtleGalleryFrame"
+        class="gallery-iframe"
+        src="python_turtle.html"
+        allowtransparency="true"
+        title="파이썬 터틀 웹교재">
+      </iframe>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p4" onclick="toggleDone('p4')">
+          <div class="chk" id="chk-p4">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="panel-done-btn s4" onclick="openCompleteModal(4)">✅ 수업 완료 보고</button>
+    </div>
+
+    <!-- ── PANEL 5: 파이썬 기초 ── -->
+    <div class="content-panel" id="panel5">
 
       <!-- ✦ 히어로 -->
       <div class="py-hero">
@@ -2774,7 +2885,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
   </g>
 </svg></div>
               <div>
-                <div class="py-hero-lv">Level 4 · 텍스트 코딩</div>
+                <div class="py-hero-lv">Level 5 · 텍스트 코딩</div>
                 <div class="py-hero-title">파이썬 기초</div>
               </div>
             </div>
@@ -2789,7 +2900,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           <div class="py-hero-stats">
             <div class="py-hero-stats-row">
               <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-total">9</div>
+                <div class="py-stat-num" id="py-stat-total">14</div>
                 <div class="py-stat-label">총 챕터</div>
               </div>
               <div class="py-stat-div"></div>
@@ -2811,12 +2922,132 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         </div>
       </div>
 
-      <!-- ✦ 제어문 -->
-      <div class="py-sec-title ctrl">제어문</div>
+      <!-- ✦ 입출력과 자료형 (CH02) -->
+      <div class="py-sec-title io">입출력과 자료형</div>
       <div class="py-gallery">
 
-        <label class="py-gcard ctrl" id="rc-p4-0">
-          <input type="radio" name="today-p4" value="0" onchange="selectToday('p4',0)">
+        <label class="py-gcard io" id="rc-p5-0">
+          <input type="radio" name="today-p5" value="0" onchange="selectToday('p5',0)">
+          <div class="py-gcard-thumb io">
+            <div class="py-thumb-code"><span class="py-tc-fn">print</span>(<span class="py-tc-str">"Hello World!"</span>)<br><span class="py-tc-fn">print</span>(<span class="py-tc-str">"반가워요"</span>)<br><span class="py-tc-cm"># 화면에 출력</span></div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">입출력</div>
+            <div class="py-gcard-name">출력 print()</div>
+            <div class="py-gcard-desc">괄호 안의 내용을 화면에 출력하는 기본 명령어</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/02-01_print" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+        <label class="py-gcard io" id="rc-p5-1">
+          <input type="radio" name="today-p5" value="1" onchange="selectToday('p5',1)">
+          <div class="py-gcard-thumb io">
+            <div class="py-thumb-code">x = <span class="py-tc-num">10</span><br>name = <span class="py-tc-str">"파이썬"</span><br><span class="py-tc-fn">print</span>(x, name)</div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">입출력</div>
+            <div class="py-gcard-name">변수와 자료형</div>
+            <div class="py-gcard-desc">값을 저장하는 변수와 데이터 형태(자료형) 이해</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/02-02_var" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+        <label class="py-gcard io" id="rc-p5-2">
+          <input type="radio" name="today-p5" value="2" onchange="selectToday('p5',2)">
+          <div class="py-gcard-thumb io">
+            <div class="py-thumb-code">name = <span class="py-tc-fn">input</span>(<span class="py-tc-str">"이름: "</span>)<br><span class="py-tc-fn">print</span>(name, <span class="py-tc-str">"님!"</span>)<br><span class="py-tc-cm"># 사용자 입력</span></div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">입출력</div>
+            <div class="py-gcard-name">입력 input()</div>
+            <div class="py-gcard-desc">사용자로부터 데이터를 입력받는 함수</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/02-03_input" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- ✦ 문자열과 리스트 (CH03) -->
+      <div class="py-sec-title str">문자열과 리스트</div>
+      <div class="py-gallery">
+
+        <label class="py-gcard str" id="rc-p5-3">
+          <input type="radio" name="today-p5" value="3" onchange="selectToday('p5',3)">
+          <div class="py-gcard-thumb str">
+            <div class="py-thumb-code">s = <span class="py-tc-str">"Hello World"</span><br><span class="py-tc-fn">print</span>(s[<span class="py-tc-num">0</span>:<span class="py-tc-num">5</span>])<br><span class="py-tc-cm"># → Hello</span></div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">문자열</div>
+            <div class="py-gcard-name">문자열 (string)</div>
+            <div class="py-gcard-desc">인덱싱·슬라이싱·메서드로 문자열 자유롭게 다루기</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/03-01_string" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+        <label class="py-gcard str" id="rc-p5-4">
+          <input type="radio" name="today-p5" value="4" onchange="selectToday('p5',4)">
+          <div class="py-gcard-thumb str">
+            <div class="py-thumb-code">nums = [<span class="py-tc-num">1</span>,<span class="py-tc-num">2</span>,<span class="py-tc-num">3</span>]<br>nums.append(<span class="py-tc-num">4</span>)<br><span class="py-tc-fn">print</span>(nums)</div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">문자열</div>
+            <div class="py-gcard-name">리스트 (list)</div>
+            <div class="py-gcard-desc">여러 데이터를 하나의 이름으로 묶어 관리하는 자료형</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://coden-class.netlify.app/06_python/03-02_list" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- ✦ 조건문 -->
+      <div class="py-sec-title ctrl">조건문</div>
+      <div class="py-gallery">
+
+        <label class="py-gcard ctrl" id="rc-p5-5">
+          <input type="radio" name="today-p5" value="5" onchange="selectToday('p5',5)">
+          <div class="py-gcard-thumb ctrl">
+            <div class="py-thumb-code">score = <span class="py-tc-num">85</span><br><span class="py-tc-kw">if</span> score &gt;= <span class="py-tc-num">90</span>:<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(<span class="py-tc-str">"A"</span>)</div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">제어문</div>
+            <div class="py-gcard-name">조건문 (if)</div>
+            <div class="py-gcard-desc">조건에 따라 실행할 코드를 다르게 선택하는 if · elif · else</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://kssim00.github.io/web_book/python_if.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- ✦ 반복문 -->
+      <div class="py-sec-title ctrl">반복문</div>
+      <div class="py-gallery">
+
+        <label class="py-gcard ctrl" id="rc-p5-6">
+          <input type="radio" name="today-p5" value="6" onchange="selectToday('p5',6)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">while</span> x &gt; 0:<br>&nbsp;&nbsp;x -= <span class="py-tc-num">1</span><br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(x)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2832,8 +3063,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard ctrl" id="rc-p4-1">
-          <input type="radio" name="today-p4" value="1" onchange="selectToday('p4',1)">
+        <label class="py-gcard ctrl" id="rc-p5-7">
+          <input type="radio" name="today-p5" value="7" onchange="selectToday('p5',7)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">5</span>):<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2849,8 +3080,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard ctrl" id="rc-p4-2">
-          <input type="radio" name="today-p4" value="2" onchange="selectToday('p4',2)">
+        <label class="py-gcard ctrl" id="rc-p5-8">
+          <input type="radio" name="today-p5" value="8" onchange="selectToday('p5',8)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;<span class="py-tc-kw">for</span> j <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i, j)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2872,8 +3103,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
       <div class="py-sec-title data">자료형</div>
       <div class="py-gallery">
 
-        <label class="py-gcard data" id="rc-p4-3">
-          <input type="radio" name="today-p4" value="3" onchange="selectToday('p4',3)">
+        <label class="py-gcard data" id="rc-p5-9">
+          <input type="radio" name="today-p5" value="9" onchange="selectToday('p5',9)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">s = <span class="py-tc-str">"안녕하세요"</span><br><span class="py-tc-fn">print</span>(<span class="py-tc-fn">len</span>(s))<br><span class="py-tc-cm"># → 5</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2889,8 +3120,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p4-4">
-          <input type="radio" name="today-p4" value="4" onchange="selectToday('p4',4)">
+        <label class="py-gcard data" id="rc-p5-10">
+          <input type="radio" name="today-p5" value="10" onchange="selectToday('p5',10)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">t = (<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>)<br><span class="py-tc-fn">print</span>(t[<span class="py-tc-num">0</span>])<br><span class="py-tc-cm"># → 1</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2906,8 +3137,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p4-5">
-          <input type="radio" name="today-p4" value="5" onchange="selectToday('p4',5)">
+        <label class="py-gcard data" id="rc-p5-11">
+          <input type="radio" name="today-p5" value="11" onchange="selectToday('p5',11)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">s = {<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>}<br>s.add(<span class="py-tc-num">4</span>)<br><span class="py-tc-cm"># 중복 없음</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2923,8 +3154,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p4-6">
-          <input type="radio" name="today-p4" value="6" onchange="selectToday('p4',6)">
+        <label class="py-gcard data" id="rc-p5-12">
+          <input type="radio" name="today-p5" value="12" onchange="selectToday('p5',12)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">d = {<span class="py-tc-str">"name"</span>:<span class="py-tc-str">"코딩"</span>}<br>d[<span class="py-tc-str">"age"</span>] = <span class="py-tc-num">10</span><br><span class="py-tc-cm"># key: value</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2946,8 +3177,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
       <div class="py-sec-title func">함수</div>
       <div class="py-gallery">
 
-        <label class="py-gcard func" id="rc-p4-7">
-          <input type="radio" name="today-p4" value="7" onchange="selectToday('p4',7)">
+        <label class="py-gcard func" id="rc-p5-13">
+          <input type="radio" name="today-p5" value="13" onchange="selectToday('p5',13)">
           <div class="py-gcard-thumb func">
             <div class="py-thumb-code"><span class="py-tc-kw">def</span> <span class="py-tc-fn">greet</span>(name):<br>&nbsp;&nbsp;<span class="py-tc-kw">return</span> <span class="py-tc-str">"Hi, "</span> + name<br><span class="py-tc-fn">greet</span>(<span class="py-tc-str">"코딩"</span>)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -2963,48 +3194,110 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard func" id="rc-p4-8">
-          <input type="radio" name="today-p4" value="8" onchange="selectToday('p4',8)">
-          <div class="py-gcard-thumb func">
-            <div class="py-thumb-code"><span class="py-tc-kw">import</span> turtle<br>t = turtle.<span class="py-tc-fn">Turtle</span>()<br>t.<span class="py-tc-fn">forward</span>(<span class="py-tc-num">100</span>)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">그래픽</div>
-            <div class="py-gcard-name">터틀 그래픽</div>
-            <div class="py-gcard-desc">거북이를 움직여 그림 그리기 — 파이썬 첫 그래픽 체험</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_turtle.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
       </div>
 
       <!-- ✦ 오늘 선택 배너 -->
-      <div class="py-today-bar" id="today-p4-wrap">
+      <div class="py-today-bar" id="today-p5-wrap">
         <div class="py-today-bar-icon"></div>
         <div>
           <div class="py-today-bar-label">오늘 선택한 챕터</div>
-          <div class="py-today-bar-name" id="today-p4-name"></div>
+          <div class="py-today-bar-name" id="today-p5-name"></div>
         </div>
         <div class="py-today-bar-arrow">›</div>
       </div>
 
       <!-- 시뮬레이션 모드 배너 -->
-      <div class="sim-banner" id="sim-p4-banner" style="display:none">
+      <div class="sim-banner" id="sim-p5-banner" style="display:none">
         <span>👁 시뮬레이션 중 — 다음 수업 날 이렇게 보여요</span>
-        <button class="sim-reset-btn" onclick="resetSimulation('p4')">돌아가기</button>
+        <button class="sim-reset-btn" onclick="resetSimulation('p5')">돌아가기</button>
       </div>
 
       <!-- ✦ 완료 버튼 -->
-      <button class="py-done-btn" onclick="openCompleteModal(4)">✅ 수업 완료 보고</button>
+      <button class="py-done-btn" onclick="openCompleteModal(5)">✅ 수업 완료 보고</button>
 
     </div>
 
-    <!-- ── PANEL 5: AI ── -->
-    <div class="content-panel" id="panel5">
+    <!-- ── PANEL 6: 앱인벤터 ── -->
+    <div class="content-panel" id="panel6">
+      <div class="panel-hero s4">
+        <span class="panel-hero-orb-l"></span>
+        <div class="panel-hero-inner">
+          <div class="panel-hero-left">
+            <div class="panel-hero-row">
+              <div class="panel-hero-icon" style="font-size:52px;">📱</div>
+              <div>
+                <div class="panel-hero-lv">Level 6 · 앱 개발</div>
+                <div class="panel-hero-title">앱인벤터</div>
+              </div>
+            </div>
+            <div class="panel-hero-desc">블록 코딩으로 나만의 스마트폰 앱을 만들어요!</div>
+            <div class="panel-hero-tags">
+              <span class="panel-hero-tag">📱 앱 만들기</span>
+              <span class="panel-hero-tag">UI 디자인</span>
+              <span class="panel-hero-tag">이벤트 처리</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card-grid">
+        <div class="lesson-card s4" style="opacity:0.5;pointer-events:none;">
+          <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:26px;">📱</div></div>
+          <div class="lesson-card-body">
+            <div class="lesson-card-label">준비 중</div>
+            <div class="lesson-card-title">앱인벤터 웹교재</div>
+            <div class="lesson-card-sub">곧 업로드될 예정이에요!</div>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p6" onclick="toggleDone('p6')">
+          <div class="chk" id="chk-p6">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="panel-done-btn s4" onclick="openCompleteModal(6)">✅ 수업 완료 보고</button>
+    </div>
+
+    <!-- ── PANEL 7: 3D 모델링 (틴커캐드) ── -->
+    <div class="content-panel" id="panel7">
+      <div class="panel-hero s4" style="background:linear-gradient(135deg,#0d1a2e 0%,#0f2040 45%,#070e1c 100%);border-top:1px solid rgba(99,179,237,0.3);border-bottom:1px solid rgba(99,179,237,0.3);">
+        <span class="panel-hero-orb-l" style="background:radial-gradient(circle,rgba(99,179,237,0.10) 0%,transparent 65%);"></span>
+        <div class="panel-hero-inner">
+          <div class="panel-hero-left">
+            <div class="panel-hero-row">
+              <div class="panel-hero-icon" style="font-size:52px;">🖨️</div>
+              <div>
+                <div class="panel-hero-lv" style="color:rgba(99,179,237,0.85);">Level 7 · 3D 모델링</div>
+                <div class="panel-hero-title">3D 모델링</div>
+              </div>
+            </div>
+            <div class="panel-hero-desc">틴커캐드로 3D 작품을 설계하고 프린터로 출력해요!</div>
+            <div class="panel-hero-tags">
+              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">🖨️ 3D 프린팅</span>
+              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">틴커캐드</span>
+              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">3D 설계</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 틴커캐드 웹교재 iframe -->
+      <iframe id="tinkercadGalleryFrame"
+        class="gallery-iframe"
+        src="틴커캐드_웹교재.html"
+        allowtransparency="true"
+        title="틴커캐드 웹교재">
+      </iframe>
+      <div class="lesson-done-row">
+        <label class="done-toggle" id="done-p7" onclick="toggleDone('p7')">
+          <div class="chk" id="chk-p7">✓</div>
+          오늘 단계 완료 표시
+        </label>
+      </div>
+      <button class="panel-done-btn s4" onclick="openCompleteModal(7)">✅ 수업 완료 보고</button>
+    </div>
+
+    <!-- ── PANEL 8: 자격증 ── -->
+    <div class="content-panel" id="panel8">
       <div class="panel-hero s5">
         <span class="panel-hero-orb-l"></span>
         <div class="panel-hero-inner">
@@ -3105,7 +3398,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
   <path d="M185 15 L188 7 L191 15 L199 18 L191 21 L188 29 L185 21 L177 18 Z" fill="#FCD34D" opacity="0.85"/>
 </svg></div>
               <div>
-                <div class="panel-hero-lv">Level 5 · AI 마스터</div>
+                <div class="panel-hero-lv">Level 6 · AI 마스터</div>
                 <div class="panel-hero-title">실전 AI (AICE · 바이브코딩)</div>
               </div>
             </div>
@@ -3119,7 +3412,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         </div>
       </div>
       <div class="lesson-card-grid">
-        <a href="#" class="lesson-card s5" data-key="p5-l1" onclick="return goLesson(this)">
+        <a href="#" class="lesson-card s5" data-key="p8-l1" onclick="return goLesson(this)">
           <div class="lesson-card-thumb"><div class="lesson-card-num">AI 1</div></div>
           <div class="lesson-card-body">
             <div class="lesson-card-label">AICE Future</div>
@@ -3128,7 +3421,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
           <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
         </a>
-        <a href="#" class="lesson-card s5" data-key="p5-l2" onclick="return goLesson(this)">
+        <a href="#" class="lesson-card s5" data-key="p8-l2" onclick="return goLesson(this)">
           <div class="lesson-card-thumb"><div class="lesson-card-num">AI 2</div></div>
           <div class="lesson-card-body">
             <div class="lesson-card-label">AICE Junior</div>
@@ -3137,7 +3430,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
           <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
         </a>
-        <a href="#" class="lesson-card s5" data-key="p5-l3" onclick="return goLesson(this)">
+        <a href="#" class="lesson-card s5" data-key="p8-l3" onclick="return goLesson(this)">
           <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:20px;">Vibe</div></div>
           <div class="lesson-card-body">
             <div class="lesson-card-label">바이브코딩</div>
@@ -3148,12 +3441,12 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         </a>
       </div>
       <div class="lesson-done-row">
-        <label class="done-toggle" id="done-p5" onclick="toggleDone('p5')">
-          <div class="chk" id="chk-p5">✓</div>
+        <label class="done-toggle" id="done-p8" onclick="toggleDone('p8')">
+          <div class="chk" id="chk-p8">✓</div>
           오늘 단계 완료 표시
         </label>
       </div>
-      <button class="panel-done-btn s5" onclick="openCompleteModal(5)">✅ 수업 완료 보고</button>
+      <button class="panel-done-btn s5" onclick="openCompleteModal(8">✅ 수업 완료 보고</button>
     </div>
 
     <!-- PLACEHOLDER / HOME DASHBOARD -->
@@ -3186,7 +3479,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           <div class="cn-grid">
 
             <!-- STEP 01: 스크래치 주니어 -->
-            <div class="cn-card cn-soon" style="--cn-color:#FF6B6B">
+            <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#FF6B6B">
               <span class="cn-badge soon">준비 중</span>
               <div class="cn-step" style="color:#FF6B6B">STEP 01</div>
               <div class="cn-title">스크래치 주니어</div>
@@ -3211,31 +3504,61 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <div class="cn-footer" style="color:#4DABF7">학습 시작하기 →</div>
             </div>
 
-            <!-- STEP 04: 파이썬 기초 -->
-            <div class="cn-card" onclick="selectStep(4)" style="--cn-color:#2AC1A5">
+            <!-- STEP 04: 앱인벤터 -->
+            <div class="cn-card" onclick="window.open('앱인벤터_웹교재.html','_blank')" style="--cn-color:#8B5CF6">
               <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#2AC1A5">STEP 04</div>
-              <div class="cn-title">파이썬 기초</div>
-              <div class="cn-desc">COS Pro 완벽 대비!<br>파이썬으로 실력을 한 단계 높여봐요.</div>
-              <div class="cn-footer" style="color:#2AC1A5">학습 시작하기 →</div>
+              <div class="cn-step" style="color:#8B5CF6">STEP 04</div>
+              <div class="cn-title">📱 앱인벤터</div>
+              <div class="cn-desc">블록 코딩으로<br>나만의 앱을 만들어요!</div>
+              <div class="cn-footer" style="color:#8B5CF6">학습 시작하기 →</div>
             </div>
 
-            <!-- STEP 05: 자격증 과정 -->
-            <div class="cn-card cn-soon" style="--cn-color:#BE4BDB">
+            <!-- STEP 05: 파이썬 터틀 -->
+            <div class="cn-card" onclick="selectStep(4)" style="--cn-color:#10B981">
+              <span class="cn-badge ready">학습 가능</span>
+              <div class="cn-step" style="color:#10B981">STEP 05</div>
+              <div class="cn-title">🐢 파이썬 터틀</div>
+              <div class="cn-desc">코드로 그림 그리기!<br>파이썬 첫 그래픽 체험</div>
+              <div class="cn-footer" style="color:#10B981">학습 시작하기 →</div>
+            </div>
+
+            <!-- STEP 06: 파이썬 기초 -->
+            <div class="cn-card" onclick="selectStep(5)" style="--cn-color:#2563EB">
+              <span class="cn-badge ready">학습 가능</span>
+              <div class="cn-step" style="color:#2563EB">STEP 06</div>
+              <div class="cn-title">💻 파이썬 기초</div>
+              <div class="cn-desc">COS Pro 완벽 대비!<br>파이썬으로 실력을 한 단계 높여봐요.</div>
+              <div class="cn-footer" style="color:#2563EB">학습 시작하기 →</div>
+            </div>
+
+            <!-- STEP 07: 파이썬 실전 프로젝트 -->
+            <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#0891B2">
               <span class="cn-badge soon">준비 중</span>
-              <div class="cn-step" style="color:#BE4BDB">STEP 05</div>
+              <div class="cn-step" style="color:#0891B2">STEP 07</div>
+              <div class="cn-title">🎮 파이썬 실전 프로젝트</div>
+              <div class="cn-desc">Pygame · Ursina로<br>나만의 게임을 직접 만들어요!</div>
+            </div>
+
+            <!-- STEP 08: 3D 모델링 -->
+            <div class="cn-card" onclick="selectStep(7)" style="--cn-color:#F97316">
+              <span class="cn-badge ready">학습 가능</span>
+              <div class="cn-step" style="color:#F97316">STEP 08</div>
+              <div class="cn-title">🖨️ 3D 모델링</div>
+              <div class="cn-desc">틴커캐드로 설계하고<br>3D 프린터로 출력!</div>
+              <div class="cn-footer" style="color:#F97316">학습 시작하기 →</div>
+            </div>
+
+            <!-- STEP 09: 자격증 과정 -->
+            <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#BE4BDB">
+              <span class="cn-badge soon">준비 중</span>
+              <div class="cn-step" style="color:#BE4BDB">STEP 09</div>
               <div class="cn-title">자격증 과정</div>
-              <div class="cn-desc">최상급 자격증 완벽 대비!<br>선생님이 열심히 준비 중입니다.</div>
+              <div class="cn-desc">최상급 자격증 완벽 대비!</div>
             </div>
 
             <!-- 커스텀 과목 카드 (관리자가 추가한 것) -->
             <div id="customSubjectsContainer" style="display:contents;"></div>
 
-            <!-- 과목 추가 버튼 (관리자 모드에서만 표시) -->
-            <button class="add-subject-btn" onclick="openAddSubjectModal()">
-              <span style="font-size:32px; opacity:0.4;">+</span>
-              <span>과목 추가하기</span>
-            </button>
 
           </div>
         </div>
@@ -3455,10 +3778,24 @@ function calcProgress() {
   }
 
   const pct = Math.round(currentDone / currentTotal * 100);
-  document.getElementById('totalProgressBar').style.width = pct + '%';
-  document.getElementById('totalProgressPct').textContent = pct + '%';
-  const lbl = document.getElementById('currentSubjectLabel');
-  if (lbl) lbl.textContent = currentLabel;
+
+  // 파이썬(p5) 이상: 챕터 완료 수 표시
+  if (lastStep >= 5) {
+    const pyKey = 'py-chapters-' + name;
+    let pyDone = [];
+    try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(e) {}
+    const pyTotal = 13;
+    const pyPct = Math.round(pyDone.length / pyTotal * 100);
+    document.getElementById('totalProgressBar').style.width = pyPct + '%';
+    document.getElementById('totalProgressPct').textContent = pyDone.length;
+    const lbl2 = document.getElementById('currentSubjectLabel');
+    if (lbl2) lbl2.textContent = '/ ' + pyTotal + ' 챕터';
+  } else {
+    document.getElementById('totalProgressBar').style.width = pct + '%';
+    document.getElementById('totalProgressPct').textContent = pct + '%';
+    const lbl = document.getElementById('currentSubjectLabel');
+    if (lbl) lbl.textContent = currentLabel;
+  }
 
   // 과목별 미니 진도 바
   const bars = [
@@ -3467,6 +3804,9 @@ function calcProgress() {
     { id: 'hbar3', pct: Math.round(scratchDone / 30 * 100) },
     { id: 'hbar4', pct: getStore('done-p4', false) ? 100 : 0 },
     { id: 'hbar5', pct: getStore('done-p5', false) ? 100 : 0 },
+    { id: 'hbar6', pct: getStore('done-p6', false) ? 100 : 0 },
+    { id: 'hbar7', pct: getStore('done-p7', false) ? 100 : 0 },
+    { id: 'hbar8', pct: getStore('done-p8', false) ? 100 : 0 },
   ];
   bars.forEach(({ id, pct }) => {
     const bar = document.getElementById(id);
@@ -4262,14 +4602,17 @@ const LEVEL_NAMES = {
   p1: 'Level 1 — 스크래치 주니어',
   p2: 'Level 2 — 엔트리 COS',
   p3: 'Level 3 — 스크래치 COS',
-  p4: 'Level 4 — 파이썬 COS Pro',
-  p5: 'Level 5 — 실전 AI 🏆'
+  p4: 'Level 4 — 파이썬 터틀',
+  p5: 'Level 5 — 파이썬 기초',
+  p6: 'Level 6 — 앱인벤터',
+  p7: 'Level 7 — 3D 모델링',
+  p8: 'Level 8 — AI 마스터 🏆'
 };
 
 // ── COMPLETE MODAL
 let modalPanelKey = '';
-const EMOJI_MAP = { p1:'🌱', p2:'🧩', p3:'🐱', p4:'💻', p5:'🤖' };
-const STEP_CLASS = { p1:'s1', p2:'s2', p3:'s3', p4:'s4', p5:'s5' };
+const EMOJI_MAP = { p1:'🌱', p2:'🧩', p3:'🐱', p4:'🐢', p5:'💻', p6:'📱', p7:'🖨️', p8:'🤖' };
+const STEP_CLASS = { p1:'s1', p2:'s2', p3:'s3', p4:'s4', p5:'s4', p6:'s4', p7:'s4', p8:'s5' };
 
 function openCompleteModal(stepNum) {
   const panelKey = 'p' + stepNum;
@@ -4340,6 +4683,22 @@ async function confirmComplete() {
   // 로컬 완료 처리
   setStore('done-' + panelKey, true);
   applyDone(panelKey, true);
+
+  // 파이썬: 선택된 챕터를 완료 목록에 추가
+  if (panelKey === 'p5') {
+    const todayIdx = parseInt(getStore('today-p5', -1));
+    if (todayIdx >= 0) {
+      const pyKey = 'py-chapters-' + name;
+      let pyDone = [];
+      try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(e) {}
+      if (!pyDone.includes(todayIdx)) {
+        pyDone.push(todayIdx);
+        localStorage.setItem(pyKey, JSON.stringify(pyDone));
+      }
+      restorePyDoneCards();
+    }
+  }
+
   calcProgress();
   fireConfetti();
 
@@ -4374,20 +4733,21 @@ async function confirmComplete() {
 
 // ── CONFETTI
 function loadAllState() {
-  ['p1','p2','p3','p4','p5'].forEach(p => {
+  ['p1','p2','p3','p4','p5','p6','p7','p8'].forEach(p => {
     const isDone = getStore('done-' + p, false);
     applyDone(p, isDone);
     const memo = getStore('memo-' + p, '');
     const el = document.getElementById('memo-' + p);
     if (el) el.value = memo;
   });
-  loadTodaySelect('p4');
+  loadTodaySelect('p5');
+  restorePyDoneCards();
   // 로그인 후에는 항상 홈 화면으로 시작 (과목 자동 이동 없음)
 }
 
 
 // ── TODAY CHAPTER SELECT (버전 B)
-const CHAPTER_NAMES = ['반복문 (while)','반복문 (for)','중첩 반복문','유니코드 & 문자열','튜플 (tuple)','집합 (set)','딕셔너리 (dict)','함수 (function)'];
+const CHAPTER_NAMES = ['출력 print()','변수와 자료형','입력 input()','문자열 (string)','리스트 (list)','반복문 (while)','반복문 (for)','중첩 반복문','유니코드 & 문자열','튜플 (tuple)','집합 (set)','딕셔너리 (dict)','함수 (function)'];
 let simMode = false;
 
 function selectToday(panel, idx) {
@@ -4395,13 +4755,25 @@ function selectToday(panel, idx) {
   applyTodaySelect(panel, idx, false);
 }
 function applyTodaySelect(panel, idx, isDoneMode) {
+  // p5(파이썬): 이미 완료된 챕터 목록 로드
+  const studentName = getStore('studentName', '');
+  let pyDoneSet = [];
+  if (panel === 'p5') {
+    try { pyDoneSet = JSON.parse(localStorage.getItem('py-chapters-' + studentName) || '[]'); } catch(e) {}
+  }
   const cards = document.querySelectorAll('[id^="rc-' + panel + '-"]');
   cards.forEach((c, i) => {
-    c.classList.remove('selected-today', 'done-last');
+    c.classList.remove('selected-today');
+    // p5: 완료된 챕터는 done-last 유지, 나머지만 제거
+    if (panel === 'p5') {
+      if (!pyDoneSet.includes(i)) c.classList.remove('done-last');
+    } else {
+      c.classList.remove('done-last');
+    }
     if (isDoneMode) {
       if (i === idx) c.classList.add('done-last');
     } else {
-      if (i === idx) c.classList.add('selected-today');
+      if (i === idx && !pyDoneSet.includes(i)) c.classList.add('selected-today');
       const input = c.querySelector('input[type=radio]');
       if (input && i === idx) input.checked = true;
     }
@@ -4417,14 +4789,30 @@ function applyTodaySelect(panel, idx, isDoneMode) {
     if (name) name.textContent = CHAPTER_NAMES[idx] || '';
     if (banner) banner.style.display = 'none';
   }
-  if (panel === 'p4') updatePyHeroStats();
+  if (panel === 'p5') updatePyHeroStats();
+}
+
+/* 파이썬 완료된 챕터 카드 복원 */
+function restorePyDoneCards() {
+  const name = getStore('studentName', '');
+  const pyKey = 'py-chapters-' + name;
+  let pyDone = [];
+  try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(e) {}
+  const cards = document.querySelectorAll('[id^="rc-p5-"]');
+  cards.forEach((c, i) => {
+    if (pyDone.includes(i)) {
+      c.classList.add('done-last');
+      c.classList.remove('selected-today');
+    }
+  });
+  updatePyHeroStats();
 }
 
 /* 파이썬 히어로 스탯 업데이트 */
 function updatePyHeroStats() {
-  const cards = document.querySelectorAll('[id^="rc-p4-"]');
+  const cards = document.querySelectorAll('[id^="rc-p5-"]');
   const total = cards.length;
-  const done  = document.querySelectorAll('[id^="rc-p4-"].done-last').length;
+  const done  = document.querySelectorAll('[id^="rc-p5-"].done-last').length;
   const pct   = total > 0 ? Math.round(done / total * 100) : 0;
   const numEl = document.getElementById('py-stat-done');
   const pctEl = document.getElementById('py-stat-pct');
@@ -4579,25 +4967,7 @@ function doPost(e) {
       data.level || '',
       data.memo || ''
     ]);
-    return ContentService.createTextOutput('ok').setMimeType(ContentService.MimeType.TEXT);
-  } catch(err) {
-    return ContentService.createTextOutput('error').setMimeType(ContentService.MimeType.TEXT);
-  }
-}
-─────────────────────────────────────
-
-[STEP 4] 배포하기
-  - 우측 상단 "배포" → "새 배포" 클릭
-  - 유형 선택 → "웹 앱" 선택
-  - 액세스 권한 → "모든 사용자" 로 변경
-  - "배포" 버튼 클릭 → 권한 허용
-
-[STEP 5] URL 복사해서 이 파일에 붙여넣기
-  - 배포 완료 후 나오는 "웹 앱 URL" 복사
-  - 이 파일 상단 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkshNiO9_8gCVPww6FitphHoOtEWEtcjEIW3zFKh5YJ3-SsA44JxaFO_728uJ8-OeF/exec'; 부분에 붙여넣기
-
-✅ 완료! 이제 학생이 저장/보고 버튼을 누르면 구글 시트에 자동 기록돼요.
-════════════════════════════════════════════════════════════
+    return ContentService.createTextOutput('ok').setMimeType(ContentService
 */
 </script>
 </body>
