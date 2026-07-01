@@ -956,6 +956,19 @@ body {
 .home-nav-btn:hover { background:rgba(74,158,255,0.2); }
 #app.panel-active .home-nav-btn { display:flex; }
 
+/* 미션 상세화면에서 갤러리로 돌아가는 버튼 — 스크롤해도 topbar에 항상 떠 있음 */
+.gallery-back-nav-btn {
+  display: none; align-items: center; gap:8px;
+  font-size: 15px; font-weight: 700; color: #fff;
+  background: var(--purple); border: none;
+  border-radius: 24px; padding: 10px 20px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; transition: filter 0.15s; white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(107,71,237,0.4);
+}
+.gallery-back-nav-btn:hover { filter: brightness(1.08); }
+.gallery-back-nav-arrow { display:inline-block; font-size:18px; animation: galleryBackNavWiggle 1.4s ease-in-out infinite; }
+@keyframes galleryBackNavWiggle { 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(-4px); } }
+
 @media(max-width:900px) {
   .cn-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -2565,6 +2578,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
     <div class="topbar-logo">코드앤 코딩 스튜디오</div>
     <div style="flex:1;"></div>
     <div class="topbar-right">
+      <button class="gallery-back-nav-btn" id="galleryBackNavBtn" onclick="goBackToGalleryFromTopbar()"><span class="gallery-back-nav-arrow">←</span> 미션 갤러리로</button>
       <button class="home-nav-btn" onclick="goHome()">← 홈으로</button>
       <span class="topbar-xp" id="entryXpBadge" style="display:none;">⭐ 0 XP</span>
       <span class="topbar-xp" id="scratchXpBadge" style="display:none;">⭐ 0 XP</span>
@@ -4211,6 +4225,13 @@ let currentStep = 0;
 // 갤러리 로드 상태 추적 (frame.src는 한국어가 URL인코딩되어 indexOf 검사가 항상 실패함)
 let _entryGalleryName = null;
 let _scratchGalleryName = null;
+// 미션 상세화면이 열려있는 갤러리(entry/scratch) — topbar의 "미션 갤러리로" 버튼 제어용
+let _activeGallerySubject = null;
+function goBackToGalleryFromTopbar() {
+  const frameId = _activeGallerySubject === 'scratch' ? 'scratchGalleryFrame' : 'entryGalleryFrame';
+  const frame = document.getElementById(frameId);
+  if (frame && frame.contentWindow) frame.contentWindow.postMessage({ type: 'gallery-go-back' }, '*');
+}
 function selectStep(n) {
   hideAllPanels();
   document.getElementById('panel'+n).classList.add('visible');
@@ -4291,6 +4312,9 @@ function hideAllPanels() {
   if (navBtn) navBtn.style.display = 'none';
   document.getElementById('entryXpBadge').style.display = 'none';
   document.getElementById('scratchXpBadge').style.display = 'none';
+  const galleryBackBtn = document.getElementById('galleryBackNavBtn');
+  if (galleryBackBtn) galleryBackBtn.style.display = 'none';
+  _activeGallerySubject = null;
 }
 
 // ── 갤러리 메시지 수신 (XP + 높이 자동 조절)
@@ -4328,6 +4352,23 @@ window.addEventListener('message', function(e) {
       setTimeout(() => { topBadge.style.transform = 'scale(1)'; }, 300);
     }
     calcProgress();
+  }
+  // 갤러리 카드를 눌러 상세화면을 열 때 항상 맨 위가 보이도록 스크롤
+  if (e.data.type === 'gallery-scroll-top') {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  // 미션 상세화면 열림/닫힘에 따라 topbar의 "미션 갤러리로" 버튼 표시/숨김
+  if (e.data.type === 'gallery-detail-state') {
+    const btn = document.getElementById('galleryBackNavBtn');
+    if (btn) {
+      if (e.data.open) {
+        _activeGallerySubject = e.data.subject || null;
+        btn.style.display = 'flex';
+      } else if (_activeGallerySubject === e.data.subject) {
+        _activeGallerySubject = null;
+        btn.style.display = 'none';
+      }
+    }
   }
   // 엔트리 iframe 높이 자동 조절
   if (e.data.type === 'entry-height') {
