@@ -3019,12 +3019,35 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
 
       </div>
 
-      <!-- ✦ 제어문 -->
-      <div class="py-sec-title ctrl">제어문</div>
+      <!-- ✦ 조건문 -->
+      <div class="py-sec-title ctrl">조건문</div>
       <div class="py-gallery">
 
         <label class="py-gcard ctrl" id="rc-p5-5">
           <input type="radio" name="today-p5" value="5" onchange="selectToday('p5',5)">
+          <div class="py-gcard-thumb ctrl">
+            <div class="py-thumb-code">score = <span class="py-tc-num">85</span><br><span class="py-tc-kw">if</span> score &gt;= <span class="py-tc-num">90</span>:<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(<span class="py-tc-str">"A"</span>)</div>
+            <span class="py-gcard-badge">오늘 선택</span>
+          </div>
+          <div class="py-gcard-body">
+            <div class="py-gcard-cat">제어문</div>
+            <div class="py-gcard-name">조건문 (if)</div>
+            <div class="py-gcard-desc">조건에 따라 실행할 코드를 다르게 선택하는 if · elif · else</div>
+          </div>
+          <div class="py-gcard-foot">
+            <a href="https://kssim00.github.io/web_book/python_if.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
+            <span class="py-gcard-select-dot"></span>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- ✦ 반복문 -->
+      <div class="py-sec-title ctrl">반복문</div>
+      <div class="py-gallery">
+
+        <label class="py-gcard ctrl" id="rc-p5-6">
+          <input type="radio" name="today-p5" value="6" onchange="selectToday('p5',6)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">while</span> x &gt; 0:<br>&nbsp;&nbsp;x -= <span class="py-tc-num">1</span><br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(x)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3040,8 +3063,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard ctrl" id="rc-p5-6">
-          <input type="radio" name="today-p5" value="6" onchange="selectToday('p5',6)">
+        <label class="py-gcard ctrl" id="rc-p5-7">
+          <input type="radio" name="today-p5" value="7" onchange="selectToday('p5',7)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">5</span>):<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3057,8 +3080,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard ctrl" id="rc-p5-7">
-          <input type="radio" name="today-p5" value="7" onchange="selectToday('p5',7)">
+        <label class="py-gcard ctrl" id="rc-p5-8">
+          <input type="radio" name="today-p5" value="8" onchange="selectToday('p5',8)">
           <div class="py-gcard-thumb ctrl">
             <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;<span class="py-tc-kw">for</span> j <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i, j)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3080,8 +3103,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
       <div class="py-sec-title data">자료형</div>
       <div class="py-gallery">
 
-        <label class="py-gcard data" id="rc-p5-8">
-          <input type="radio" name="today-p5" value="8" onchange="selectToday('p5',8)">
+        <label class="py-gcard data" id="rc-p5-9">
+          <input type="radio" name="today-p5" value="9" onchange="selectToday('p5',9)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">s = <span class="py-tc-str">"안녕하세요"</span><br><span class="py-tc-fn">print</span>(<span class="py-tc-fn">len</span>(s))<br><span class="py-tc-cm"># → 5</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3097,8 +3120,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p5-9">
-          <input type="radio" name="today-p5" value="9" onchange="selectToday('p5',9)">
+        <label class="py-gcard data" id="rc-p5-10">
+          <input type="radio" name="today-p5" value="10" onchange="selectToday('p5',10)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">t = (<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>)<br><span class="py-tc-fn">print</span>(t[<span class="py-tc-num">0</span>])<br><span class="py-tc-cm"># → 1</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3114,8 +3137,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p5-10">
-          <input type="radio" name="today-p5" value="10" onchange="selectToday('p5',10)">
+        <label class="py-gcard data" id="rc-p5-11">
+          <input type="radio" name="today-p5" value="11" onchange="selectToday('p5',11)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">s = {<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>}<br>s.add(<span class="py-tc-num">4</span>)<br><span class="py-tc-cm"># 중복 없음</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3131,8 +3154,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
         </label>
 
-        <label class="py-gcard data" id="rc-p5-11">
-          <input type="radio" name="today-p5" value="11" onchange="selectToday('p5',11)">
+        <label class="py-gcard data" id="rc-p5-12">
+          <input type="radio" name="today-p5" value="12" onchange="selectToday('p5',12)">
           <div class="py-gcard-thumb data">
             <div class="py-thumb-code">d = {<span class="py-tc-str">"name"</span>:<span class="py-tc-str">"코딩"</span>}<br>d[<span class="py-tc-str">"age"</span>] = <span class="py-tc-num">10</span><br><span class="py-tc-cm"># key: value</span></div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3154,8 +3177,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
       <div class="py-sec-title func">함수</div>
       <div class="py-gallery">
 
-        <label class="py-gcard func" id="rc-p5-12">
-          <input type="radio" name="today-p5" value="12" onchange="selectToday('p5',12)">
+        <label class="py-gcard func" id="rc-p5-13">
+          <input type="radio" name="today-p5" value="13" onchange="selectToday('p5',13)">
           <div class="py-gcard-thumb func">
             <div class="py-thumb-code"><span class="py-tc-kw">def</span> <span class="py-tc-fn">greet</span>(name):<br>&nbsp;&nbsp;<span class="py-tc-kw">return</span> <span class="py-tc-str">"Hi, "</span> + name<br><span class="py-tc-fn">greet</span>(<span class="py-tc-str">"코딩"</span>)</div>
             <span class="py-gcard-badge">오늘 선택</span>
@@ -3167,29 +3190,6 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
           </div>
           <div class="py-gcard-foot">
             <a href="https://kssim00.github.io/web_book/python_function.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 조건문 -->
-      <div class="py-sec-title ctrl">조건문</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard ctrl" id="rc-p5-13">
-          <input type="radio" name="today-p5" value="13" onchange="selectToday('p5',13)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code">score = <span class="py-tc-num">85</span><br><span class="py-tc-kw">if</span> score &gt;= <span class="py-tc-num">90</span>:<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(<span class="py-tc-str">"A"</span>)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">조건문 (if)</div>
-            <div class="py-gcard-desc">조건에 따라 실행할 코드를 다르게 선택하는 if · elif · else</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_if.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
             <span class="py-gcard-select-dot"></span>
           </div>
         </label>
