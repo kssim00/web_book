@@ -1756,6 +1756,12 @@ body::before {
 .lesson-card.s5 .lesson-card-label { color: #FBB040; }
 .lesson-card.s5 .lesson-card-arrow { color: #FBB040; }
 
+.lesson-card.s4 { border-color: rgba(44,193,165,0.2); }
+.lesson-card.s4:hover { border-color: rgba(44,193,165,0.45); box-shadow: 0 10px 32px rgba(44,193,165,0.18); }
+.lesson-card.s4 .lesson-card-thumb { background: linear-gradient(145deg,#0d6b5a,#2CC1A5); }
+.lesson-card.s4 .lesson-card-label { color: #2CC1A5; }
+.lesson-card.s4 .lesson-card-arrow { color: #2CC1A5; }
+
 /* 패널 완료 버튼 */
 .panel-done-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -2220,6 +2226,10 @@ body::before { display: none !important; }
 .lesson-card.s5:hover { border-color: rgba(245,158,11,0.28) !important; box-shadow: 0 8px 24px rgba(245,158,11,0.1) !important; }
 .lesson-card.s5 .lesson-card-label { color: #92400E !important; }
 .lesson-card.s5 .lesson-card-arrow { color: #D97706 !important; }
+.lesson-card.s4 { border-color: rgba(0,150,125,0.12) !important; }
+.lesson-card.s4:hover { border-color: rgba(0,150,125,0.28) !important; box-shadow: 0 8px 24px rgba(0,150,125,0.1) !important; }
+.lesson-card.s4 .lesson-card-label { color: #047857 !important; }
+.lesson-card.s4 .lesson-card-arrow { color: #00967D !important; }
 
 /* 패널 완료 버튼 */
 .panel-done-btn.s1 { background: #0078FF !important; border-color: transparent !important; color: #fff !important; box-shadow: 0 4px 14px rgba(0,120,255,0.25) !important; }
@@ -2884,6 +2894,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         allowtransparency="true"
         title="파이썬 터틀 웹교재">
       </iframe>
+
       <div class="lesson-done-row">
         <label class="done-toggle" id="done-p4" onclick="toggleDone('p4')">
           <div class="chk" id="chk-p4">✓</div>

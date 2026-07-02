@@ -278,6 +278,11 @@
 </div>
 
 <script>
+const WORKSHEETS = [
+  { file:"turtle_arrow_game.html", icon:"🏹", title:"화살 쏘기 게임" },
+  { file:"turtle_paint.html", icon:"🎨", title:"나만의 그림판" }
+];
+
 const SESSION_LABELS = {
   0:"0차시 · 오리엔테이션",
   1:"1차시", 2:"2차시", 3:"3차시", 4:"4차시",
@@ -1458,6 +1463,14 @@ function showHome(){
       + '<div class="card-body">'
       + '<div class="card-title">' + escapeHtml(u.title) + '</div>'
       + '<div class="card-sub">' + (SESSION_LABELS[u.session] || (u.session+'차시')) + '</div>'
+      + '</div></div>';
+  });
+  WORKSHEETS.forEach(function(w){
+    html += '<div class="card" onclick="window.open(\'' + w.file + '\',\'_blank\')">'
+      + '<div class="card-icon">' + w.icon + '</div>'
+      + '<div class="card-body">'
+      + '<div class="card-title">' + escapeHtml(w.title) + '</div>'
+      + '<div class="card-sub">실습 워크시트</div>'
       + '</div></div>';
   });
   html += '</div>';
