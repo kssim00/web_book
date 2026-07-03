@@ -2138,7 +2138,7 @@ body::before { display: none !important; }
 .py-done-btn { background: rgba(42,193,165,0.08) !important; border-color: rgba(42,193,165,0.3) !important; color: #0F8A73 !important; }
 .py-done-btn:hover { background: #2AC1A5 !important; border-color: #2AC1A5 !important; color: #fff !important; transform: translateY(-1px) !important; }
 
-/* 파이썬 기초 목차 — 코든클래스 스타일 (coden-class.netlify.app 참조) */
+/* 파이썬 문법완성 목차 — 코든클래스 스타일 (coden-class.netlify.app 참조) */
 .py-toc-header {
   display: flex;
   align-items: center;
@@ -2904,7 +2904,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
       <button class="panel-done-btn s4" onclick="openCompleteModal(4)">✅ 수업 완료 보고</button>
     </div>
 
-    <!-- ── PANEL 5: 파이썬 기초 ── -->
+    <!-- ── PANEL 5: 파이썬 문법완성 ── -->
     <div class="content-panel" id="panel5">
 
       <!-- ✦ 히어로 -->
@@ -2979,7 +2979,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
 </svg></div>
               <div>
                 <div class="py-hero-lv">Level 5 · 텍스트 코딩</div>
-                <div class="py-hero-title">파이썬 기초</div>
+                <div class="py-hero-title">파이썬 문법완성</div>
               </div>
             </div>
             <div class="py-hero-desc">중학교·고등학교 수행평가 완벽 대비! 변수, 반복문, 함수까지 실생활에 바로 쓰이는 파이썬을 배워봐요.</div>
@@ -2998,15 +2998,15 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         <div class="py-toc-chapter">
           <div class="py-toc-chapter-title">입출력과 자료형</div>
           <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="print" href="https://coden-class.netlify.app/06_python/02-01_print" target="_blank">
+            <a class="py-toc-lesson" data-lid="print" href="https://kssim00.github.io/web_book/python_print.html" target="_blank">
               <span class="py-toc-lesson-title">출력 print()</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'print')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="var" href="https://coden-class.netlify.app/06_python/02-02_var" target="_blank">
+            <a class="py-toc-lesson" data-lid="var" href="https://kssim00.github.io/web_book/python_var.html" target="_blank">
               <span class="py-toc-lesson-title">변수와 자료형</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'var')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="input" href="https://coden-class.netlify.app/06_python/02-03_input" target="_blank">
+            <a class="py-toc-lesson" data-lid="input" href="https://kssim00.github.io/web_book/python_input.html" target="_blank">
               <span class="py-toc-lesson-title">입력 input()</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'input')">➜</span>
             </a>
@@ -3017,11 +3017,11 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         <div class="py-toc-chapter">
           <div class="py-toc-chapter-title">문자열과 리스트</div>
           <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="string" href="https://coden-class.netlify.app/06_python/03-01_string" target="_blank">
+            <a class="py-toc-lesson" data-lid="string" href="https://kssim00.github.io/web_book/python_string.html" target="_blank">
               <span class="py-toc-lesson-title">문자열 (string)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'string')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="list" href="https://coden-class.netlify.app/06_python/03-02_list" target="_blank">
+            <a class="py-toc-lesson" data-lid="list" href="https://kssim00.github.io/web_book/python_list.html" target="_blank">
               <span class="py-toc-lesson-title">리스트 (list)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'list')">➜</span>
             </a>
@@ -3408,11 +3408,11 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <div class="cn-footer" style="color:#10B981">학습 시작하기 →</div>
             </div>
 
-            <!-- STEP 06: 파이썬 기초 -->
+            <!-- STEP 06: 파이썬 문법완성 -->
             <div class="cn-card" onclick="selectStep(5)" style="--cn-color:#2563EB">
               <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#2563EB">STEP 06</div>
-              <div class="cn-title">파이썬 기초</div>
+              <div class="cn-title">파이썬 문법완성</div>
               <div class="cn-desc">COS Pro 완벽 대비!<br>파이썬으로 실력을 한 단계 높여봐요.</div>
               <div class="cn-footer" style="color:#2563EB">학습 시작하기 →</div>
             </div>
@@ -4528,7 +4528,7 @@ const LEVEL_NAMES = {
   p2: 'Level 2 — 엔트리 COS',
   p3: 'Level 3 — 스크래치 COS',
   p4: 'Level 4 — 파이썬 터틀',
-  p5: 'Level 5 — 파이썬 기초',
+  p5: 'Level 5 — 파이썬 문법완성',
   p6: 'Level 6 — 앱인벤터',
   p7: 'Level 7 — 3D 모델링',
   p8: 'Level 8 — AI 마스터 🏆'
