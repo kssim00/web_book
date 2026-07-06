@@ -61,6 +61,7 @@
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px;margin-top:18px;}
   .card{
+    position:relative;
     background:var(--card-bg);border-radius:18px;box-shadow:var(--shadow);
     overflow:hidden;cursor:pointer;transition:transform .15s ease;
   }
@@ -72,6 +73,19 @@
   .card .card-body{padding:13px 15px;}
   .card .card-title{font-weight:bold;font-size:15px;color:var(--text);}
   .card .card-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+  .card-complete-btn{
+    position:absolute;top:8px;right:8px;z-index:5;
+    width:32px;height:32px;border-radius:50%;
+    background:rgba(255,255,255,0.92);border:2px solid var(--primary);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;line-height:1;cursor:pointer;
+    box-shadow:0 2px 6px rgba(30,90,60,0.25);
+    transition:transform .15s ease,background .15s ease,border-color .15s ease;
+  }
+  .card-complete-btn:hover{transform:scale(1.18);}
+  .card-complete-btn.done{
+    background:var(--primary);border-color:var(--primary-dark);color:#fff;
+  }
 
   .back-btn{
     background:#fff;border:1px solid var(--accent);color:var(--primary-dark);
@@ -1449,25 +1463,49 @@ function setActiveSide(idx){
   }
 }
 
+// ── 미션 완료 표시 저장 (학생별 로컬 저장, study_home과 동일한 이름 규칙 공유)
+function _turtleStudentName(){
+  try { return sessionStorage.getItem('__currentStudent__') || ''; } catch(e){ return ''; }
+}
+function _turtleDoneKey(){
+  var n = _turtleStudentName();
+  return (n ? n + '::' : '') + 'turtle_missions_done';
+}
+function getTurtleDone(){
+  try { return JSON.parse(localStorage.getItem(_turtleDoneKey()) || '[]'); }
+  catch(e){ return []; }
+}
+function setTurtleDone(list){
+  try { localStorage.setItem(_turtleDoneKey(), JSON.stringify(list)); }
+  catch(e){}
+}
+
 function showHome(){
   setActiveSide(null);
   localStorage.removeItem('turtle_open_lesson');
   document.getElementById('sidebar').style.display = 'none';
   document.getElementById('main').style.maxWidth = 'min(1200px, calc(100vw - 32px))';
   document.getElementById('main').style.margin = '0 auto';
+  const doneList = getTurtleDone();
   let html = '<h2 style="margin-top:0;">🐢 단계별로 하나씩 코딩해볼까요?</h2>';
-  html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요.</div>';
+  html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요. 카드 오른쪽 위 버튼을 누르면 미션 완료!</div>';
   html += '<div class="grid">';
   UNITS.forEach(function(u, i){
+    const key = 'u' + i;
+    const isDone = doneList.indexOf(key) > -1;
     html += '<div class="card" onclick="openLesson(' + i + ')">'
+      + '<span class="card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
       + '<div class="card-icon">' + u.icon + '</div>'
       + '<div class="card-body">'
       + '<div class="card-title">' + escapeHtml(u.title) + '</div>'
       + '<div class="card-sub">' + (SESSION_LABELS[u.session] || (u.session+'차시')) + '</div>'
       + '</div></div>';
   });
-  WORKSHEETS.forEach(function(w){
+  WORKSHEETS.forEach(function(w, i){
+    const key = 'w' + i;
+    const isDone = doneList.indexOf(key) > -1;
     html += '<div class="card" onclick="window.open(\'' + w.file + '\',\'_blank\')">'
+      + '<span class="card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
       + '<div class="card-icon">' + w.icon + '</div>'
       + '<div class="card-body">'
       + '<div class="card-title">' + escapeHtml(w.title) + '</div>'
@@ -1477,6 +1515,70 @@ function showHome(){
   html += '</div>';
   main.innerHTML = html;
   main.scrollTop = 0;
+  bindCompleteButtons();
+}
+
+// ── 카드 완료 버튼 바인딩 + 처리
+function bindCompleteButtons(){
+  document.querySelectorAll('.card-complete-btn').forEach(function(btn){
+    btn.onclick = function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      completeMission(this);
+    };
+  });
+}
+
+function completeMission(btnEl){
+  const key = btnEl.dataset.key;
+  const isUnit = key.charAt(0) === 'u';
+  const idx = parseInt(key.slice(1), 10);
+  const title = isUnit ? ((UNITS[idx] || {}).title || '') : ((WORKSHEETS[idx] || {}).title || '');
+
+  const doneList = getTurtleDone();
+  const already = doneList.indexOf(key) > -1;
+  if (!already){
+    doneList.push(key);
+    setTurtleDone(doneList);
+    btnEl.classList.add('done');
+    btnEl.textContent = '✓';
+  }
+
+  burstConfettiLocal(btnEl);
+
+  if (!already){
+    try {
+      if (window.parent && window.parent !== window){
+        window.parent.postMessage({ type:'turtle-mission-complete', title: title }, '*');
+      }
+    } catch(e){}
+  }
+}
+
+// ── 작은 폭죽 애니메이션 (버튼 클릭 위치에서 터짐)
+function burstConfettiLocal(originEl){
+  if (!originEl || !originEl.getBoundingClientRect) return;
+  const rect = originEl.getBoundingClientRect();
+  const colors = ['#FF6B6B','#FCC419','#4DABF7','#38D9A9','#9775FA','#FF922B'];
+  for (let k = 0; k < 16; k++){
+    const p = document.createElement('div');
+    const col = colors[k % colors.length];
+    p.style.cssText = 'position:fixed;left:' + (rect.left + rect.width / 2) + 'px;top:' + (rect.top + rect.height / 2) + 'px;'
+      + 'width:8px;height:8px;border-radius:2px;background:' + col + ';pointer-events:none;z-index:9999;';
+    document.body.appendChild(p);
+    const ang = Math.random() * Math.PI * 2;
+    const dist = 40 + Math.random() * 70;
+    const dx = Math.cos(ang) * dist;
+    const dy = Math.sin(ang) * dist - 20;
+    const dur = 600 + Math.random() * 400;
+    if (p.animate){
+      p.animate([
+        { transform:'translate(0,0) rotate(0deg)', opacity:1 },
+        { transform:'translate(' + dx + 'px,' + dy + 'px) rotate(' + (Math.random() * 360) + 'deg)', opacity:0 }
+      ], { duration: dur, easing:'cubic-bezier(.2,.8,.3,1)' });
+    }
+    setTimeout((function(el){ return function(){ el.remove(); }; })(p), dur + 60);
+  }
 }
 
 function openLesson(i){
