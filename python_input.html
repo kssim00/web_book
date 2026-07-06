@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson Content</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+        body { font-family: 'Pretendard Variable', Pretendard, sans-serif; background: #F8F9FA; margin: 0; padding: 0; display: flex; letter-spacing: -0.02em; }
+        .toc-sidebar { width: 280px; background: white; border-right: 1px solid #e5e7eb; padding: 24px 20px; height: 100vh; position: sticky; top: 0; overflow-y: auto; flex-shrink: 0; box-shadow: 2px 0 10px rgba(0,0,0,0.02); overflow: visible; }
+        .toc-title { font-size: 22px; font-weight: 800; color: #1f2937; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .toc-sidebar-toggle { position: absolute; top: 50%; right: -20px; transform: translateY(-50%); width: 20px; height: 64px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e5e7eb; border-left: none; border-radius: 0 8px 8px 0; cursor: pointer; color: #9ca3af; box-shadow: 2px 0 5px rgba(0,0,0,0.04); transition: all 0.2s; z-index: 10; }
+        .toc-sidebar-toggle:hover { color: #2AC1A5; background: #f9fafb; }
+        .toc-sidebar.collapsed .toc-list { display: none; }
+        .toc-sidebar.collapsed .toc-title { display: none; }
+        .toc-sidebar.collapsed { width: 0; padding: 0; border-right: none; overflow: visible; }
+        .toc-sidebar.collapsed .toc-sidebar-toggle { border-left: 1px solid #e5e7eb; border-radius: 8px; right: -41px; }
+        .toc-list { list-style: none; padding: 0; margin: 0; }
+        .toc-list li { margin-bottom: 4px; }
+        .toc-list button { text-align: left; width: 100%; background: none; border: none; font-size: 18px; font-weight: 500; color: #4b5563; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-family: inherit; line-height: 1.4; word-break: break-word; }
+        .toc-list button:hover { background: #f9fafb; color: #2AC1A5; }
+        .main-wrapper { flex: 1; min-width: 0; }
+        .navbar { background: #fff; padding: 20px 40px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .navbar img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .academy-name { font-weight: 800; font-size: 18px; color: #0F172A; }
+        .export-container { max-width: 850px; width: 100%; margin: 40px auto; padding: 0 20px; box-sizing: border-box; }
+        .chapter-card { background: #fff; border-radius: 12px; padding: 60px 70px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); margin-bottom: 60px; transition: box-shadow 0.2s, transform 0.2s; }
+        .chapter-card:hover { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        .chapter-label { color: #2d79f0; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+        .h1-title { font-size: 32px; font-weight: 800; color: #0A2540; line-height: 1.3; border-bottom: 2px solid #E5E7EB; padding-bottom: 20px; margin-bottom: 40px; }
+        .h1-title * { font-size: 32px !important; }
+        .h2-title { font-size: 26px; font-weight: 700; color: #111827; border-left: 5px solid #2d79f0; padding-left: 15px; margin: 60px 0 30px 0; line-height: 1.4; }
+        .h2-title * { font-size: 26px !important; }
+        .h3-title { font-size: 21px; font-weight: 800; color: #1e293b; margin: 50px 0 20px 0; line-height: 1.4; }
+        .h3-title * { font-size: 21px !important; }
+        .desc-text { margin: 0 0 20px 0; font-size: 18px; color: #374151; line-height: 1.75; }
+        .desc-text * { font-size: 18px !important; }
+        .spacer-line { height: 40px; }
+        .point-box { margin: 30px 0; }
+        .point-tag { display: inline-flex; align-items: center; background: #FFE9E9; color: #FF6B6B; padding: 3px 12px; border-radius: 25px; font-weight: 800; font-size: 13px; border: 1.5px solid #FFD2D2; margin-bottom: 12px; }
+        .point-desc { font-size: 18px; line-height: 1.7; }
+        .point-desc * { font-size: 18px !important; }
+        .tip-box-v1 { border-radius: 12px; padding: 30px; border-left: 5px solid #007AFF; margin: 30px 0; }
+        .tip-box-v1.tip-default { background-color: #F0F7FF !important; border-left-color: #007AFF !important; }
+        .tip-box-v1.tip-green { background-color: #E6F7ED !important; border-left-color: #0CA678 !important; }
+        .tip-box-v1.tip-purple { background-color: #F3F0FF !important; border-left-color: #7950F2 !important; }
+        .tip-box-v1.tip-yellow { background-color: #FFF9DB !important; border-left-color: #FCC419 !important; }
+        .tip-box-v1.tip-red { background-color: #FFF0F0 !important; border-left-color: #E03131 !important; }
+        .tip-box-v1.tip-default .tip-title { color: #007AFF !important; }
+        .tip-box-v1.tip-green .tip-title { color: #0CA678 !important; }
+        .tip-box-v1.tip-purple .tip-title { color: #7950F2 !important; }
+        .tip-box-v1.tip-yellow .tip-title { color: #FCC419 !important; }
+        .tip-box-v1.tip-red .tip-title { color: #E03131 !important; }
+        .tip-title { font-size: 18px !important; margin-bottom: 12px !important; }
+        .tip-title * { font-size: 18px !important; }
+        .tip-box-v1 .outline-none { font-size: 18px !important; line-height: 1.7 !important; }
+        .tip-box-v1 .outline-none * { font-size: 18px !important; }
+        .mission-tag-circle { color: #fff; padding: 6px 16px; border-radius: 8px; font-weight: 900; font-size: 14px; text-transform: uppercase; background: #2d79f0; }
+        .mission-tag-wrapper { display: flex; align-items: center; gap: 24px; margin-bottom: 32px; }
+        .mission-coding-title { font-size: 22px !important; font-weight: 700 !important; color: #1A1A1A !important; line-height: 1.6 !important; }
+        .mission-coding-title * { font-size: 22px !important; }
+        .mission-coding-body { font-size: 18px !important; color: #4A4A4A !important; line-height: 1.7 !important; }
+        .mission-coding-body * { font-size: 18px !important; }
+        .box-yellow { background: #FFF9DB; border: 2px solid #FFEC99; color: #000; border-radius: 10px; padding: 20px 35px; margin: 40px 0; }
+        .box-yellow.bg-white { background: #fff !important; border: 2px solid #212529 !important; border-radius: 12px !important; padding: 30px 40px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; color: #000 !important; }
+        .box-yellow.border-blue-600 { border-color: #2563eb !important; }
+        .box-yellow.border-green-600 { border-color: #16a34a !important; }
+        .box-yellow.bg-blue-50 { background-color: #eff6ff !important; }
+        .box-yellow.bg-green-50 { background-color: #f0fdf4 !important; }
+        .box-yellow.border-purple-600 { border-color: #9333ea !important; }
+        .box-yellow.bg-purple-50 { background-color: #faf5ff !important; }
+        .box-yellow.border-yellow-500 { border-color: #eab308 !important; }
+        .box-yellow.bg-yellow-50 { background-color: #fefce8 !important; }
+        .box-yellow.border-gray-800 { border-color: #1f2937 !important; }
+        .box-yellow .mission-tag-circle.bg-blue-600 { background-color: #2563eb !important; }
+        .box-yellow .mission-tag-circle.bg-green-600 { background-color: #16a34a !important; }
+        .box-yellow .mission-tag-circle.bg-purple-600 { background-color: #9333ea !important; }
+        .box-yellow .mission-tag-circle.bg-yellow-500 { background-color: #eab308 !important; }
+        .box-yellow .mission-tag-circle.bg-\[\#212529\] { background-color: #212529 !important; }
+        .box-yellow .mission-tag-circle.bg-gray-800 { background-color: #1f2937 !important; }
+        .box-yellow .bg-blue-600 { background-color: #2563eb !important; }
+        .box-yellow .bg-green-600 { background-color: #16a34a !important; }
+        .box-yellow .bg-purple-600 { background-color: #9333ea !important; }
+        .box-yellow .bg-yellow-500 { background-color: #eab308 !important; }
+        .box-yellow .bg-\[\#212529\] { background-color: #212529 !important; }
+        .box-yellow .text-blue-700 { color: #1d4ed8 !important; }
+        .box-yellow .text-green-700 { color: #15803d !important; }
+        .box-yellow .text-purple-700 { color: #7e22ce !important; }
+        .box-yellow .text-yellow-700 { color: #a16207 !important; }
+        .box-yellow .text-\[\#212529\] { color: #212529 !important; }
+        
+        .code-box-set.border-l-\[\#2AC1A5\] { border-left-color: #2AC1A5 !important; }
+        .code-box-set.border-l-blue-500 { border-left-color: #3b82f6 !important; }
+        .code-box-set.border-l-green-500 { border-left-color: #22c55e !important; }
+        .code-box-set.border-l-purple-500 { border-left-color: #a855f7 !important; }
+        .code-box-set.border-l-yellow-500 { border-left-color: #eab308 !important; }
+        .code-box-set { margin: 25px 0; }
+        .quiz-set-item .code-box-set { margin: 10px 0 -10px 0; }
+        
+        .subjective-input { width: 100%; background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 12px; padding: 12px 16px; font-weight: bold; color: #334155; outline: none; transition: all 0.2s; margin-bottom: 15px; box-sizing: border-box; }
+        .subjective-input:focus { border-color: #2AC1A5; background: #fff; }
+        
+        .image-module { display: flex; flex-direction: column; margin: 32px 0; padding: 0; width: 100%; }
+        .image-module.items-center { align-items: center; }
+        .image-module.items-start { align-items: flex-start; }
+        .image-module.items-end { align-items: flex-end; }
+        .image-module img { max-width: 100%; height: auto; }
+        .image-caption { width: 100%; text-align: center; color: #666; font-size: 14px; margin-top: 10px; font-style: italic; }
+        
+        /* Custom Dark Theme */
+        .code-theme-dark-modern { background-color: #1E1E1E !important; color: #D4D4D4 !important; border-color: #333 !important; border-left-color: #2AC1A5 !important; font-family: 'JetBrains Mono', monospace !important; font-size: 18px !important; font-variant-ligatures: none !important; }
+        .code-theme-dark-modern .token.keyword, .code-theme-dark-modern .token.atrule, .code-theme-dark-modern .token.attr-value { color: #C586C0 !important; }
+        .code-theme-dark-modern .token.string, .code-theme-dark-modern .token.url { color: #CE9178 !important; }
+        .code-theme-dark-modern .token.comment, .code-theme-dark-modern .token.prolog, .code-theme-dark-modern .token.doctype, .code-theme-dark-modern .token.cdata { color: #6A9955 !important; font-style: italic !important; }
+        .code-theme-dark-modern .token.function, .code-theme-dark-modern .token.builtin, .code-theme-dark-modern .token.property, .code-theme-dark-modern .token.attr-name { color: #dcdcaa !important; }
+        .code-theme-dark-modern .token.class-name { color: #4EC9B0 !important; }
+        .code-theme-dark-modern .token.number, .code-theme-dark-modern .token.boolean, .code-theme-dark-modern .token.constant, .code-theme-dark-modern .token.symbol, .code-theme-dark-modern .token.inserted { color: #B5CEA8 !important; }
+        .code-theme-dark-modern .token.variable, .code-theme-dark-modern .token.namespace, .code-theme-dark-modern .token.parameter, .code-theme-dark-modern .token.regex, .code-theme-dark-modern .token.important { color: #9CDCFE !important; }
+        .code-theme-dark-modern .token.operator, .code-theme-dark-modern .token.punctuation, .code-theme-dark-modern .token.entity { color: #D4D4D4 !important; }
+        .code-theme-dark-modern .token.punctuation.bracket-level-0 { color: #FFD700 !important; }
+        .code-theme-dark-modern .token.punctuation.bracket-level-1 { color: #DA70D6 !important; }
+        .code-theme-dark-modern .token.punctuation.bracket-level-2 { color: #179FFF !important; }
+        .code-theme-dark-modern .token.punctuation.bracket-level-3 { color: #FFD700 !important; }
+        .code-theme-dark-modern .token.bold { font-weight: bold; }
+        .code-theme-dark-modern .token.italic { font-style: italic; }
+
+        /* GitHub Light Theme */
+        .code-theme-light-modern { background-color: #ffffff !important; color: #24292e !important; border-color: #e1e4e8 !important; border-left-color: #2AC1A5 !important; font-family: 'JetBrains Mono', monospace !important; font-size: 18px !important; font-variant-ligatures: none !important; }
+        .code-theme-light-modern .token.keyword { color: #d73a49 !important; }
+        .code-theme-light-modern .token.string { color: #032f62 !important; }
+        .code-theme-light-modern .token.comment { color: #6a737d !important; font-style: italic !important; }
+        .code-theme-light-modern .token.function { color: #6f42c1 !important; }
+        .code-theme-light-modern .token.number { color: #005cc5 !important; }
+        .code-theme-light-modern .token.operator { color: #d73a49 !important; }
+        .code-theme-light-modern .token.punctuation { color: #24292e !important; }
+        .code-theme-light-modern .token.class-name { color: #6f42c1 !important; }
+        .code-theme-light-modern .token.builtin { color: #005cc5 !important; }
+        .code-theme-light-modern .token.variable { color: #e36209 !important; }
+        .code-theme-light-modern .token.constant { color: #005cc5 !important; }
+        
+        .box-green { background: #F0F7F2; border: 1px solid #BDDECE; color: #000; border-radius: 12px; padding: 30px 35px; margin: 40px 0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .io-example-box { background: #f2f2f4; border-radius: 16px; padding: 20px 24px; margin-top: 0; border: none; }
+        .io-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: #4A4A4A; background: #e5e7eb; padding: 4px 12px; border-radius: 6px; margin-bottom: 10px; letter-spacing: 0.01em; }
+        .io-label-input { color: #4A4A4A; background: #e5e7eb; border: 1px solid #d1d5db; }
+        .io-label-output { color: #4A4A4A; background: #e5e7eb; border: 1px solid #d1d5db; }
+        .io-separator { border-top: 1px solid #e0e0e4; margin: 16px 0; }
+        .io-content { font-size: 18px; color: #4A4A4A !important; font-weight: 400; line-height: 1.7; margin-top: 0; font-family: inherit; }
+        .quiz-container { display: flex; flex-direction: column; gap: 24px; }
+        .quiz-set-item { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); transition: all 0.2s; }
+        .quiz-set-item:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        .quiz-set-item .mb-\[15px\] { margin-bottom: 4px; font-size: 18px !important; font-weight: 700 !important; }
+        .quiz-set-item .mb-4 { margin-bottom: 0px; }
+        .mb-10 { margin-bottom: 20px; }
+        .text-[22px] { font-size: 18px !important; }
+        .leading-[1.8] { line-height: 1.75 !important; }
+        
+        /* Comparison Styles */
+        .comparison-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 40px 0; }
+        .comparison-card { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .comparison-header { padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+        .comparison-color-bar { height: 10px; width: 100%; }
+        .comparison-title { font-weight: 800; font-size: 26px; color: #000 !important; }
+        .comparison-title * { font-size: 26px !important; }
+        .comparison-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .comparison-desc { color: #000; line-height: 1.7; font-size: 18px; }
+        .comparison-desc * { font-size: 18px !important; }
+        .comparison-code-box { background: transparent; border: none; border-radius: 0px; padding: 0px; font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; font-size: 18px; font-weight: bold !important; font-variant-ligatures: none !important; white-space: pre-wrap; color: #000; }
+        .comparison-result-box { background: #f1f3f5; border: 1.5px dashed #dee2e6; border-radius: 12px; padding: 12px 16px; font-family: monospace; font-size: 18px; font-weight: bold; color: #495057; }
+        .comparison-result-box * { font-size: 18px !important; }
+        
+        .red-bolt { color: #E03131; font-weight: 800; }
+        .blue-bolt { color: #007AFF; font-weight: 800; }
+        
+        /* Quiz Styles */
+        .select-item { border: none; background: transparent; padding: 6px 0; margin-top: 4px; font-size: 18px; color: #333; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+        .select-item * { font-size: 18px !important; }
+        .select-item:hover { color: #2AC1A5; }
+        .select-item.selected { color: #2AC1A5; font-weight: bold; }
+        .select-item.correct { color: #2AC1A5 !important; font-weight: bold; }
+        .select-item.incorrect { color: #f87171 !important; }
+        .radio-circle { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .select-item.selected .radio-circle { border-color: #2AC1A5; background-color: #2AC1A5; }
+        .radio-inner { width: 6px; height: 6px; border-radius: 50%; background-color: #fff; display: none; }
+        .select-item.selected .radio-inner { display: block; }
+        .feedback-msg { font-weight: bold; margin-top: 12px; padding-left: 8px; }
+        .feedback-msg.correct { color: #2AC1A5; }
+        .feedback-msg.incorrect { color: #f87171; }
+        .score-display { text-align: center; margin-bottom: 4px; padding: 12px; background: #f8f9fa; border-radius: 12px; width: 100%; box-sizing: border-box; border: 1px solid #eee; margin-top: 20px; }
+        .score-title { display: none; }
+        .score-value { font-size: 20px; color: #212529; font-weight: 900; }
+        .score-msg { margin-top: 6px; font-size: 15px; color: #2AC1A5; font-weight: 600; }
+        .grade-btn { width: 100%; max-width: 448px; background: #212529; color: white; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 18px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px auto 0; transition: all 0.2s; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .grade-btn:hover { background: #000; transform: translateY(-2px); box-shadow: 0 12px 20px -4px rgba(0,0,0,0.2); }
+        
+        /* Hint Styles */
+        .hint-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: #f1f5f9;
+          color: #475569;
+          padding: 6px 16px;
+          border-radius: 100px;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: 1px solid #e2e8f0;
+          margin-top: 15px;
+        }
+        .hint-btn:hover { background: #e2e8f0; color: #1e293b; }
+        .hint-box {
+          background: #f8fafc;
+          color: #334155;
+          padding: 20px;
+          border-radius: 16px;
+          margin-top: 10px;
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          font-size: 15px;
+          font-weight: 500;
+          line-height: 1.6;
+          border: 1px solid #e2e8f0;
+          animation: slideDown 0.3s ease-out;
+        }
+        .hint-icon {
+          color: #fbbf24;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Tailwind-like utility classes for export */
+        .text-\[20px\] { font-size: 20px !important; }
+        .text-\[22px\] { font-size: 22px !important; }
+        .text-\[24px\] { font-size: 24px !important; }
+        .text-\[28px\] { font-size: 28px !important; }
+        .text-\[34px\] { font-size: 34px !important; }
+        .leading-\[1\.8\] { line-height: 1.8 !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .gap-6 { gap: 24px; }
+        .gap-2 { gap: 8px; }
+        .gap-1.5 { gap: 6px; }
+        .mb-8 { margin-bottom: 12px; }
+        .mb-6 { margin-bottom: 24px; }
+        .mb-4 { margin-bottom: 16px; }
+        .mt-6 { margin-top: 24px; }
+        .flex-1 { flex: 1 1 0%; }
+        .uppercase { text-transform: uppercase; }
+        .rounded-xl { border-radius: 12px; }
+        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .font-black { font-weight: 900; }
+        .font-extrabold { font-weight: 800; }
+        .text-sm { font-size: 14px; }
+        .text-lg { font-size: 18px; }
+        .text-2xl { font-size: 24px; }
+        .leading-relaxed { line-height: 1.625; }
+        
+        /* Mission Coding Specific */
+        .mission-header { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+        .mission-badge { background: #212529; color: white; padding: 6px 16px; border-radius: 8px; font-weight: 900; font-size: 14px; text-transform: uppercase; }
+        .mission-title-text { font-weight: 800; font-size: 18px; color: #212529; flex: 1; }
+        .mission-title-text * { font-size: 18px !important; }
+        .mission-title { font-size: 22px !important; font-weight: 800 !important; color: #111827 !important; }
+        .mission-title * { font-size: 22px !important; }
+        .mission-coding-title { font-size: 22px !important; font-weight: 700 !important; color: #1A1A1A !important; line-height: 1.6 !important; }
+        .mission-coding-title * { font-size: 22px !important; }
+        .mission-coding-body { font-size: 18px !important; color: #4A4A4A !important; line-height: 1.7 !important; }
+        .mission-coding-body * { font-size: 18px !important; }
+        
+
+        
+        .code-input-area { background: #fdfdfd; border: 1px solid #E1E8ED; border-left: 6px solid #2AC1A5; padding: 20px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: bold !important; font-variant-ligatures: none !important; margin-bottom: 30px; white-space: pre-wrap; }
+        .result-area { background: #F1F3F5; border: 1px solid #E9ECEF; padding: 18px 25px; border-radius: 12px; font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; font-size: 17.5px; margin-top: 15px; white-space: pre-wrap; }
+        .code-input-area * { font-weight: bold !important; }
+        .run-code-btn { transition: all 0.2s; }
+        .run-code-btn:hover { background: #1f9d86 !important; transform: translateY(-2px); }
+        .run-code-btn:active { transform: translateY(0); }
+    </style>
+</head>
+<body>
+    
+      <div class="toc-sidebar" id="tocSidebar">
+        <button class="toc-sidebar-toggle" id="tocToggleBtn" onclick="toggleToc()" title="목차 접기/펼치기">
+          <div id="tocChevron" style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-right:7px solid #9ca3af;transition:all 0.2s;"></div>
+        </button>
+        <h3 class="toc-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #2AC1A5;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          목차
+        </h3>
+        <ul class="toc-list">
+          
+            <li>
+              <button onclick="document.querySelector('[data-module-id=\'jr9dl2k8t\']')?.scrollIntoView({ behavior: 'smooth', block: 'center' })">
+                1) input() 사용하기
+              </button>
+            </li>
+          
+            <li>
+              <button onclick="document.querySelector('[data-module-id=\'sjx6s04cl\']')?.scrollIntoView({ behavior: 'smooth', block: 'center' })">
+                🏆 실전 핵심 퀴즈
+              </button>
+            </li>
+          
+            <li>
+              <button onclick="document.querySelector('[data-module-id=\'a6ks3dnkl\']')?.scrollIntoView({ behavior: 'smooth', block: 'center' })">
+                💻 실전 코딩 미션
+              </button>
+            </li>
+          
+        </ul>
+      </div>
+    
+    <div class="main-wrapper">
+        <div class="export-container">
+            <div class="chapter-card bg-card-bg rounded-[20px] p-[60px_70px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] mb-[60px] relative border-2 border-transparent transition-all duration-300 group/card" style="opacity: 1; transform: none;"><div data-module-id="1" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="mb-10 border-b-2 border-[#eee] pb-5"><div class="chapter-label text-[#2d79f0] font-extrabold text-lg mb-2 outline-none" data-placeholder="챕터 정보를 입력하세요 (예: CHAPTER 1: 입력과 출력)">CHAPTER 02. 입출력과 자료형</div><h1 class="h1-title text-[30px] font-extrabold text-[#0A2540] leading-[1.3] m-0 outline-none" data-placeholder="대주제를 입력하세요">3. 입력 input()</h1></div></div><div data-module-id="5s0orivf6" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><p class="desc-text text-[18px] text-[#4b5563] leading-[1.6] m-[0_0_20px_0] min-h-[24px]" data-placeholder="설명을 입력하세요">input() 명령어는 사용자로부터 <b>데이터를 입력 </b>받을 수 있다.
+<div>입력 받은 모든 데이터는 기본적으로 <b>문자열(str)</b>임을 주의해야 한다.</div></p></div></div><div class="chapter-card bg-card-bg rounded-[20px] p-[60px_70px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] mb-[60px] relative border-2 border-transparent transition-all duration-300 group/card" style="opacity: 1; transform: none;"><div data-module-id="jr9dl2k8t" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><h2 class="h2-title text-[24px] font-bold text-[#111827] leading-[1.4] border-l-[5px] border-l-[#2d79f0] pl-[15px] m-[60px_0_30px_0]" data-placeholder="중주제를 입력하세요">1) input() 사용하기</h2></div><div data-module-id="duebnmvcm" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><p class="desc-text text-[18px] text-[#4b5563] leading-[1.6] m-[0_0_20px_0] min-h-[24px]" data-placeholder="설명을 입력하세요">사용자에게 입력 받을 메세지를 넣고, 그 대답을 변수에 저장합니다.</p></div><div data-module-id="gqq3zlchb" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><h3 class="h3-title text-[19px] font-extrabold text-[#1e293b] leading-[1.4] m-[50px_0_20px_0]" data-placeholder="소주제를 입력하세요">1. 입력받고 출력하기</h3></div><div data-module-id="khfur8hl7" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><p class="desc-text text-[18px] text-[#4b5563] leading-[1.6] m-[0_0_20px_0] min-h-[24px]" data-placeholder="설명을 입력하세요">사용자가 입력한 값을 name 변수에 저장합니다.</p></div><div data-module-id="8z3q2z58v" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="code-box-set relative group/code" data-type="code-set"><div class="code-input-area code-theme-dark-modern" id="code-input-0"><span class="token parameter variable">name</span> <span class="token operator">=</span> <span class="token function-call function">input</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"이름을 입력하세요: "</span><span class="token punctuation bracket-level-0">)</span> <span class="token comment"># 사용자의 입력을 기다립니다.</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token variable">name</span><span class="token punctuation">,</span> <span class="token string">"님, 반가워요!"</span><span class="token punctuation bracket-level-0">)</span></div><button class="run-code-btn" onclick="runPythonCode(0)" style="background: rgb(233, 236, 239); color: rgb(51, 51, 51); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; margin-top: 10px; transition: 0.2s;">결과확인</button><div class="result-area block" id="result-area-0" style="display: none;"></div></div></div><div data-module-id="t93no4ser" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><h3 class="h3-title text-[19px] font-extrabold text-[#1e293b] leading-[1.4] m-[50px_0_20px_0]" data-placeholder="소주제를 입력하세요">2. 안내 메시지 없이 입력받기</h3></div><div data-module-id="22ieuwykh" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><p class="desc-text text-[18px] text-[#4b5563] leading-[1.6] m-[0_0_20px_0] min-h-[24px]" data-placeholder="설명을 입력하세요">괄호 안에 글자(<span class="blue-bolt">안내 메세지</span>)를 넣어 친절하게 안내를 할 수 있습니다. 하지만 괄호 안을 비워두면 아무런 메시지 없이 <b>커서만 깜빡이며 입력을 기다리게</b> 됩니다.</p></div><div data-module-id="4uj87nxo5" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="code-box-set relative group/code" data-type="code-set"><div class="code-input-area code-theme-dark-modern" id="code-input-1"><span class="token comment"># 예시 1: 친절한 프로그램</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"--- 프로그램 A ---"</span><span class="token punctuation bracket-level-0">)</span>
+<span class="token parameter variable">food</span> <span class="token operator">=</span> <span class="token function-call function">input</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"오늘 점심 뭐 먹었나요? "</span><span class="token punctuation bracket-level-0">)</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token variable">food</span><span class="token punctuation">,</span> <span class="token string">"맛있었겠네요!"</span><span class="token punctuation bracket-level-0">)</span>
+
+<span class="token comment"># 예시 2: 불친절한 프로그램</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"--- 프로그램 B ---"</span><span class="token punctuation bracket-level-0">)</span>
+<span class="token parameter variable">color</span> <span class="token operator">=</span> <span class="token function-call function">input</span><span class="token punctuation bracket-level-0">(</span><span class="token punctuation bracket-level-0">)</span> <span class="token comment"># 아무 창도 뜨지 않지만 입력을 기다리고 있어요!</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token variable">color</span><span class="token punctuation">,</span> <span class="token string">"색을 좋아하시는군요."</span><span class="token punctuation bracket-level-0">)</span></div><button class="run-code-btn" onclick="runPythonCode(1)" style="background: rgb(233, 236, 239); color: rgb(51, 51, 51); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; margin-top: 10px; transition: 0.2s;">결과확인</button><div class="result-area hidden" id="result-area-1" style="display: none;"></div></div></div><div data-module-id="aofzwlu54" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><h3 class="h3-title text-[19px] font-extrabold text-[#1e293b] leading-[1.4] m-[50px_0_20px_0]" data-placeholder="소주제를 입력하세요">2) input()의 반환값은 '문자'다!</h3></div><div data-module-id="p3mrj4h3n" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><p class="desc-text text-[18px] text-[#4b5563] leading-[1.6] m-[0_0_20px_0] min-h-[24px]" data-placeholder="설명을 입력하세요">input()으로 들어온 것이 숫자인지 글자인지 구분하지 못하고 모두&nbsp;<span class="red-bolt">문자열로 취급</span>합니다.</p></div><div data-module-id="g5gtzmmj1" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="code-box-set relative group/code" data-type="code-only"><div class="code-input-area code-theme-dark-modern"><span class="token parameter variable">age</span> <span class="token operator">=</span> <span class="token function-call function">input</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"나이를 입력하세요: "</span><span class="token punctuation bracket-level-0">)</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token variable">age</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation bracket-level-0">)</span>  <span class="token comment"># ❌ 에러 발생! (문자와 숫자는 더할 수 없어요)</span></div></div></div><div data-module-id="9a2zj4s3f" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><p class="desc-text text-[18px] text-[#4b5563] leading-[1.6] m-[0_0_20px_0] min-h-[24px]" data-placeholder="설명을 입력하세요">input()으로 숫자를 입력하면 정수형(int)으로 변환해야 계산할 수 있습니다.</p></div><div data-module-id="h2y4xztdm" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="code-box-set relative group/code" data-type="code-set"><div class="code-input-area code-theme-dark-modern" id="code-input-2"><span class="token comment"># 정수로 바꾸기</span>
+<span class="token parameter variable">age</span> <span class="token operator">=</span> <span class="token function-call function">int</span><span class="token punctuation bracket-level-0">(</span> <span class="token function-call function">input</span><span class="token punctuation bracket-level-1">(</span><span class="token string">"나이를 입력하세요: "</span><span class="token punctuation bracket-level-1">)</span> <span class="token punctuation bracket-level-0">)</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"내년에는"</span><span class="token punctuation">,</span> <span class="token variable">age</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"살이 되네요!"</span><span class="token punctuation bracket-level-0">)</span>
+
+
+<span class="token comment"># 실수를 입력받을 때</span>
+<span class="token parameter variable">height</span> <span class="token operator">=</span> <span class="token function-call function">float</span><span class="token punctuation bracket-level-0">(</span><span class="token function-call function">input</span><span class="token punctuation bracket-level-1">(</span><span class="token string">"키를 입력하세요: "</span><span class="token punctuation bracket-level-1">)</span><span class="token punctuation bracket-level-0">)</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"당신의 키는"</span><span class="token punctuation">,</span> <span class="token variable">height</span><span class="token punctuation">,</span> <span class="token string">"cm입니다."</span><span class="token punctuation bracket-level-0">)</span></div><button class="run-code-btn" onclick="runPythonCode(2)" style="background: rgb(233, 236, 239); color: rgb(51, 51, 51); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; margin-top: 10px; transition: 0.2s;">결과확인</button><div class="result-area hidden" id="result-area-2" style="display: none;"></div></div></div><div data-module-id="59mhcsb77" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="box-yellow rounded-xl p-[30px_40px] m-[40px_0] shadow-sm border-2 relative group/coding bg-white border-gray-800"><div class="mission-tag-wrapper flex items-center gap-6 mb-8"><div class="mission-tag-circle text-white p-[6px_16px] rounded-[8px] font-black text-sm uppercase bg-[#212529]">MISSION</div><div class="mission-coding-title font-bold text-[22px] flex-1 outline-none text-[#212529]" data-placeholder="미션 제목을 입력하세요">편의점 계산기 만들기</div></div><div class="flex flex-col gap-4"><div class="relative min-h-[50px] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors mcblock-wrap" style="position: relative;"><div class="mission-coding-body text-[#4A4A4A] text-[18px] leading-[1.7] outline-none" data-placeholder="미션 내용을 입력하세요">사용자로부터 물건의 가격과 개수를 입력받아 총 금액을 계산하는 프로그램을 만드세요.<div><b>[조건]</b></div><div>1. 가격은 <b>price</b>, 개수는 <b>count</b> 변수에 저장하세요.</div><div>2. 입력받을 때 반드시 숫자로 형변환을 해야 합니다.</div><div><br></div><div><b>[ 출력결과 ]</b></div><div>총 금액은 5000원입니다.</div></div></div></div></div></div></div><div class="chapter-card bg-card-bg rounded-[20px] p-[60px_70px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] mb-[60px] relative border-2 border-transparent transition-all duration-300 group/card" style="opacity: 1; transform: none;"><div data-module-id="sjx6s04cl" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><h2 class="h2-title text-[24px] font-bold text-[#111827] leading-[1.4] border-l-[5px] border-l-[#2d79f0] pl-[15px] m-[60px_0_30px_0]" data-placeholder="중주제를 입력하세요">🏆 실전 핵심 퀴즈</h2></div><div data-module-id="chu9hcz4l" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="box-green bg-mission-green-bg border border-mission-green-border text-black rounded-xl p-[20px_35px] m-[40px_0]" data-results-shown="false"><div class="mission-tag-wrapper flex items-center gap-2.5 mb-10"><div class="mission-tag-circle bg-mission-tag-color text-white p-[6px_16px] rounded-[8px] font-black text-sm uppercase">QUIZ</div><div class="mission-title font-extrabold text-[22px] text-mission-green-text" data-placeholder="퀴즈 제목을 입력하세요">실전핵심퀴즈 (정답을 골라보세요)</div></div><div class="quiz-container space-y-8"><div class="quiz-set-item relative bg-white rounded-xl p-6 shadow-sm border group/quiz transition-all border-black/5" data-correct="1"><div class="mb-[15px] font-bold text-[22px] leading-[1.8] text-black outline-none" data-placeholder="문제를 입력하세요">다음 코드를 실행하고 사용자가 숫자 10, 20를 입력했을 때, 출력 결과로 알맞은 것은?</div><div class="mb-4"><div class="code-box-set relative group/code" data-type="code-only"><div class="code-input-area code-theme-dark-modern"><span class="token parameter variable">a</span> <span class="token operator">=</span> <span class="token function-call function">input</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"입력 a: "</span><span class="token punctuation bracket-level-0">)</span>
+<span class="token parameter variable">b</span> <span class="token operator">=</span> <span class="token function-call function">input</span><span class="token punctuation bracket-level-0">(</span><span class="token string">"입력 b: "</span><span class="token punctuation bracket-level-0">)</span>
+<span class="token function-call function">print</span><span class="token punctuation bracket-level-0">(</span><span class="token variable">a</span> <span class="token operator">+</span> <span class="token variable">b</span><span class="token punctuation bracket-level-0">)</span></div></div></div><div class="flex gap-1.5 flex-col mb-4"><div class="flex flex-col gap-1 w-full"><div class="select-item flex items-center gap-3 bg-transparent p-[8px_0] cursor-pointer text-[15px] text-[#333] transition-all duration-200 relative group/opt" onclick="selectOption(this)" style=""><div class="radio-circle"><div class="radio-inner"></div></div><div class="flex-1 outline-none" data-placeholder="선택지를 입력하세요">30</div></div></div><div class="flex flex-col gap-1 w-full"><div class="select-item flex items-center gap-3 bg-transparent p-[8px_0] cursor-pointer text-[15px] transition-all duration-200 relative group/opt" onclick="selectOption(this)" style=""><div class="radio-circle"><div class="radio-inner"></div></div><div class="flex-1 outline-none" data-placeholder="선택지를 입력하세요">1020</div></div></div><div class="flex flex-col gap-1 w-full"><div class="select-item flex items-center gap-3 bg-transparent p-[8px_0] cursor-pointer text-[15px] text-[#333] transition-all duration-200 relative group/opt" onclick="selectOption(this)" style=""><div class="radio-circle"><div class="radio-inner"></div></div><div class="flex-1 outline-none" data-placeholder="선택지를 입력하세요">2010</div></div></div><div class="flex flex-col gap-1 w-full"><div class="select-item flex items-center gap-3 bg-transparent p-[8px_0] cursor-pointer text-[15px] text-[#333] transition-all duration-200 relative group/opt" onclick="selectOption(this)" style=""><div class="radio-circle"><div class="radio-inner"></div></div><div class="flex-1 outline-none" data-placeholder="선택지를 입력하세요">에러 발생</div></div></div></div><div class="mt-6"><div class="flex flex-col gap-2"><div class="flex items-center justify-between"><button class="hint-btn" onclick="toggleHint(this)">힌트 <svg class="chevron-icon transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div></div></div></div><div class="quiz-set-item relative bg-white rounded-xl p-6 shadow-sm border group/quiz transition-all border-black/5" data-correct="3"><div class="mb-[15px] font-bold text-[22px] leading-[1.8] text-black outline-none" data-placeholder="문제를 입력하세요">input() 함수에 대한 설명으로 틀린 것은 무엇인가요</div><div class="flex gap-1.5 flex-col mb-4"><div class="flex flex-col gap-1 w-full"><div class="select-item flex items-center gap-3 bg-transparent p-[8px_0] cursor-pointer text-[15px] text-[#333] transition-all duration-200 relative group/opt" onclick="selectOption(this)" style=""><div class="radio-circle"><div class="radio-inner"></div></div><div class="flex-1 outline-none" data-placeholder="선택지를 입력하세요">안내 메시지 없이 입력을 받고 싶을 때는 input() 처럼 괄호 안을 비워두면 된다.</div></div></div><div class="flex flex-col gap-1 w-full"><div class="select-item flex items-center gap-3 bg-transparent p-[8px_0] cursor-pointer text-[15px] text-[#333] transition-all duration-200 relative group/opt" onclick="selectOption(this)" style=""><div class="radio-circle"><div class="radio-inner"></div></div><div class="flex-1 outline-none" data-placeholder="선택지를 입력하세요">input() 함수 괄호 안에 넣은 문자열은 사용자에게 보여주는 안내 메시지 역할을 한다.</div></div></div><div class="flex flex-col gap-1 w-full"><div class="select-item flex items-center gap-3 bg-transparent p-[8px_0] cursor-pointer text-[15px] text-[#333] transition-all duration-200 relative group/opt" onclick="selectOption(this)" style=""><div class="radio-circle"><div class="radio-inner"></div></div><div class="flex-1 outline-none" data-placeholder="선택지를 입력하세요">input()으로 입력받은 값은 사용자가 숫자를 입력하더라도 기본적으로 문자열(str)로 저장된다.</div></div></div><div class="flex flex-col gap-1 w-full"><div class="select-item flex items-center gap-3 bg-transparent p-[8px_0] cursor-pointer text-[15px] transition-all duration-200 relative group/opt" onclick="selectOption(this)" style=""><div class="radio-circle"><div class="radio-inner"></div></div><div class="flex-1 outline-none" data-placeholder="선택지를 입력하세요">input()으로 받은 숫자를 바로 더하기 연산(+) 하면 수학적인 계산 결과가 출력된다.</div></div></div></div></div></div><div class="flex flex-col items-center gap-6 mt-10"><button class="grade-btn" onclick="checkQuiz(this)" style="">💯 채점하기</button></div></div></div></div><div class="chapter-card bg-card-bg rounded-[20px] p-[60px_70px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] mb-[60px] relative border-2 border-transparent transition-all duration-300 group/card" style="opacity: 1; transform: none;"><div data-module-id="a6ks3dnkl" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><h2 class="h2-title text-[24px] font-bold text-[#111827] leading-[1.4] border-l-[5px] border-l-[#2d79f0] pl-[15px] m-[60px_0_30px_0]" data-placeholder="중주제를 입력하세요">💻 실전 코딩 미션</h2></div><div data-module-id="92gvkm3cn" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="box-yellow rounded-xl p-[30px_40px] m-[40px_0] shadow-sm border-2 relative group/coding bg-white border-gray-800"><div class="mission-tag-wrapper flex items-center gap-6 mb-8"><div class="mission-tag-circle text-white p-[6px_16px] rounded-[8px] font-black text-sm uppercase bg-[#212529]">MISSION</div><div class="mission-coding-title font-bold text-[22px] flex-1 outline-none text-[#212529]" data-placeholder="미션 제목을 입력하세요">자기소개 명함 만들기</div></div><div class="flex flex-col gap-4"><div class="relative min-h-[50px] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors mcblock-wrap" style="position: relative;"><div class="mission-coding-body text-[#4A4A4A] text-[18px] leading-[1.7] outline-none" data-placeholder="미션 내용을 입력하세요">사용자로부터 이름과 취미를 입력받아 멋진 문장으로 출력하는 프로그램을 만드세요.<div><br></div><div><b>[조건]</b></div><div>이름을 입력받아 name 변수에 저장하세요.</div><div>취미를 입력받아 hobby 변수에 저장하세요.</div><div>input 명령어에 안내 메세지를 넣어주세요.</div></div></div><div class="io-example-box"><div class="flex items-center justify-between"><span class="io-label io-label-output">▶ 출력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="출력 예시를 입력하세요">안녕하세요! 취미가 코딩인 홍길동입니다.</div></div></div></div></div><div data-module-id="16vgsblfi" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="box-yellow rounded-xl p-[30px_40px] m-[40px_0] shadow-sm border-2 relative group/coding bg-white border-gray-800"><div class="mission-tag-wrapper flex items-center gap-6 mb-8"><div class="mission-tag-circle text-white p-[6px_16px] rounded-[8px] font-black text-sm uppercase bg-[#212529]">MISSION</div><div class="mission-coding-title font-bold text-[22px] flex-1 outline-none text-[#212529]" data-placeholder="미션 제목을 입력하세요">초간단 나이 계산기</div></div><div class="flex flex-col gap-4"><div class="relative min-h-[50px] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors mcblock-wrap" style="position: relative;"><div class="mission-coding-body text-[#4A4A4A] text-[18px] leading-[1.7] outline-none" data-placeholder="미션 내용을 입력하세요">올해 연도와 태어난 연도를 입력받아 현재 나이를 계산하는 프로그램을 만드세요.<div><br></div><div><b>[계산 공식]</b></div><div>나이 계산식: 올해 연도 - 태어난 연도 + 1</div><div><br></div><div><b>[조건]</b></div><div>올해 연도는 this_year, 태어난 연도는 birth_year 변수를 사용하세요.</div></div></div><div class="io-example-box"><div class="flex items-center justify-between"><span class="io-label io-label-output">▶ 출력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="출력 예시를 입력하세요">당신의 나이는 16살이군요!</div></div></div></div></div><div data-module-id="mwl7a6qep" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="box-yellow rounded-xl p-[30px_40px] m-[40px_0] shadow-sm border-2 relative group/coding bg-white border-gray-800"><div class="mission-tag-wrapper flex items-center gap-6 mb-8"><div class="mission-tag-circle text-white p-[6px_16px] rounded-[8px] font-black text-sm uppercase bg-[#212529]">MISSION</div><div class="mission-coding-title font-bold text-[22px] flex-1 outline-none text-[#212529]" data-placeholder="미션 제목을 입력하세요">나만의 할인 계산기 만들기</div></div><div class="flex flex-col gap-4"><div class="relative min-h-[50px] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors mcblock-wrap" style="position: relative;"><div class="mission-coding-body text-[#4A4A4A] text-[18px] leading-[1.7] outline-none" data-placeholder="미션 내용을 입력하세요">물건의 정가와 할인율을 입력하면, 할인이 적용된 최종 가격을 알려주는 프로그램을 만들어 보세요.<div><br><div><b>[계산 공식]</b></div><div>할인금액 = 정가 × (할인율 ÷ 100)</div><div>최종가격 = 정가 - 할인금액</div><div><br></div><div><b>[조건]</b></div><div>정가는 변수 <b>price</b> 정수로 저장하세요.</div><div>할인율은 변수 <b>discount_rate</b>에 실수로 저장하세요.</div><div>최종 가격은 변수 <b>final_price</b>에 저장하여 출력하세요.</div></div></div></div><div class="io-example-box"><div><div class="flex items-center justify-between"><span class="io-label io-label-input">⌨ 입력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="입력 예시를 입력하세요">물건의 정가를 입력하세요: 10000<div>할인율을 입력하세요(% 제외): 10</div></div></div><div class="io-separator"></div><div><div class="flex items-center justify-between"><span class="io-label io-label-output">▶ 출력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="출력 예시를 입력하세요">정가: 10000 원<div>할인율: 10.0 %</div><div>최종 할인 적용가는 9000.0 원입니다.</div></div></div></div></div></div></div><div data-module-id="fyk5ykmy7" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="box-yellow rounded-xl p-[30px_40px] m-[40px_0] shadow-sm border-2 relative group/coding bg-white border-gray-800"><div class="mission-tag-wrapper flex items-center gap-6 mb-8"><div class="mission-tag-circle text-white p-[6px_16px] rounded-[8px] font-black text-sm uppercase bg-[#212529]">MISSION</div><div class="mission-coding-title font-bold text-[22px] flex-1 outline-none text-[#212529]" data-placeholder="미션 제목을 입력하세요">계산기</div></div><div class="flex flex-col gap-4"><div class="relative min-h-[50px] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors mcblock-wrap" style="position: relative;"><div class="mission-coding-body text-[#4A4A4A] text-[18px] leading-[1.7] outline-none" data-placeholder="미션 내용을 입력하세요">두 수를 입력 받아, 다음 결과를 출력하는 코드를 작성하세요.</div></div><div class="io-example-box"><div><div class="flex items-center justify-between"><span class="io-label io-label-input">⌨ 입력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="입력 예시를 입력하세요">20<div>6</div></div></div><div class="io-separator"></div><div><div class="flex items-center justify-between"><span class="io-label io-label-output">▶ 출력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="출력 예시를 입력하세요">합 : 26<div>차 : 14</div><div>곱 : 120</div><div>몫 : 3.3333333333333335</div><div>나머지 : 2</div></div></div></div></div></div></div><div data-module-id="q97n1uvd7" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="box-yellow rounded-xl p-[30px_40px] m-[40px_0] shadow-sm border-2 relative group/coding bg-white border-gray-800"><div class="mission-tag-wrapper flex items-center gap-6 mb-8"><div class="mission-tag-circle text-white p-[6px_16px] rounded-[8px] font-black text-sm uppercase bg-[#212529]">MISSION</div><div class="mission-coding-title font-bold text-[22px] flex-1 outline-none text-[#212529]" data-placeholder="미션 제목을 입력하세요">키 비교하기</div></div><div class="flex flex-col gap-4"><div class="relative min-h-[50px] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors mcblock-wrap" style="position: relative;"><div class="mission-coding-body text-[#4A4A4A] text-[18px] leading-[1.7] outline-none" data-placeholder="미션 내용을 입력하세요"><div>키를 입력 받고,&nbsp;<span style="color: rgb(0, 0, 0);">키가 160 이상인지 확인하여 출력하세요.</span></div></div></div><div class="io-example-box"><div><div class="flex items-center justify-between"><span class="io-label io-label-input">⌨ 입력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="입력 예시를 입력하세요">165</div></div><div class="io-separator"></div><div><div class="flex items-center justify-between"><span class="io-label io-label-output">▶ 출력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="출력 예시를 입력하세요">True</div></div></div><div class="io-example-box"><div><div class="flex items-center justify-between"><span class="io-label io-label-input">⌨ 입력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="입력 예시를 입력하세요">130</div></div><div class="io-separator"></div><div><div class="flex items-center justify-between"><span class="io-label io-label-output">▶ 출력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="출력 예시를 입력하세요">False</div></div></div></div></div></div><div data-module-id="28c0s4fpj" class="module-wrapper group relative mb-[20px] p-[10px] rounded-lg transition-all duration-200 border-2 border-transparent cursor-pointer hover:bg-black/5 hover:outline hover:outline-dashed hover:outline-gray-300"><div class="box-yellow rounded-xl p-[30px_40px] m-[40px_0] shadow-sm border-2 relative group/coding bg-white border-gray-800"><div class="mission-tag-wrapper flex items-center gap-6 mb-8"><div class="mission-tag-circle text-white p-[6px_16px] rounded-[8px] font-black text-sm uppercase bg-[#212529]">MISSION</div><div class="mission-coding-title font-bold text-[22px] flex-1 outline-none text-[#212529]" data-placeholder="미션 제목을 입력하세요">놀이공원 입장 가능 여부</div></div><div class="flex flex-col gap-4"><div class="relative min-h-[50px] rounded-lg px-2 py-1 -mx-2 -my-1 transition-colors mcblock-wrap" style="position: relative;"><div class="mission-coding-body text-[#4A4A4A] text-[18px] leading-[1.7] outline-none" data-placeholder="미션 내용을 입력하세요">나이가 13세 이상이면서 티켓이 있는지 확인하여 출력하세요.</div></div><div class="relative group/codeblock"><div class="code-box-set relative group/code border-l-[#2AC1A5]" data-type="mission-coding"><div class="code-input-area code-theme-dark-modern"><span class="token parameter variable">age</span> <span class="token operator">=</span> <span class="token number">15</span>
+<span class="token parameter variable">parent</span> <span class="token operator">=</span> <span class="token class-name class-name">True</span></div></div></div><div class="io-example-box"><div class="flex items-center justify-between"><span class="io-label io-label-output">▶ 출력</span></div><div class="io-content outline-none text-[#4A4A4A]" data-placeholder="출력 예시를 입력하세요">True</div></div></div></div></div></div>
+        </div>
+    </div>
+    <script id="editor-project-state" type="application/json" data-state="JTdCJTIyY2FyZHMlMjIlM0ElNUIlN0IlMjJpZCUyMiUzQSUyMmNhcmQtMSUyMiUyQyUyMm1vZHVsZXMlMjIlM0ElNUIlN0IlMjJpZCUyMiUzQSUyMjElMjIlMkMlMjJ0eXBlJTIyJTNBJTIyaDElMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyMy4lMjAlRUMlOUUlODUlRUIlQTAlQTUlMjBpbnB1dCgpJTIyJTJDJTIyc3ViQ29udGVudCUyMiUzQSUyMkNIQVBURVIlMjAwMi4lMjAlRUMlOUUlODUlRUMlQjYlOUMlRUIlQTAlQTUlRUElQjMlQkMlMjAlRUMlOUUlOTAlRUIlQTMlOEMlRUQlOTglOTUlMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMjVzMG9yaXZmNiUyMiUyQyUyMnR5cGUlMjIlM0ElMjJ0ZXh0JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMmlucHV0KCklMjAlRUIlQUElODUlRUIlQTAlQjklRUMlOTYlQjQlRUIlOEElOTQlMjAlRUMlODIlQUMlRUMlOUElQTklRUMlOUUlOTAlRUIlQTElOUMlRUIlQjYlODAlRUQlODQlQjAlMjAlM0NiJTNFJUVCJThEJUIwJUVDJTlEJUI0JUVEJTg0JUIwJUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JTIwJTNDJTJGYiUzRSVFQiVCMCU5QiVFQyU5RCU4NCUyMCVFQyU4OCU5OCUyMCVFQyU5RSU4OCVFQiU4QiVBNC4lNUNuJTNDZGl2JTNFJUVDJTlFJTg1JUVCJUEwJUE1JTIwJUVCJUIwJTlCJUVDJTlEJTgwJTIwJUVCJUFBJUE4JUVCJTkzJUEwJTIwJUVCJThEJUIwJUVDJTlEJUI0JUVEJTg0JUIwJUVCJThBJTk0JTIwJUVBJUI4JUIwJUVCJUIzJUI4JUVDJUEwJTgxJUVDJTlDJUJDJUVCJUExJTlDJTIwJTNDYiUzRSVFQiVBQyVCOCVFQyU5RSU5MCVFQyU5NyVCNChzdHIpJTNDJTJGYiUzRSVFQyU5RSU4NCVFQyU5RCU4NCUyMCVFQyVBMyVCQyVFQyU5RCU5OCVFRCU5NSVCNCVFQyU5NSVCQyUyMCVFRCU5NSU5QyVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTdEJTVEJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJjYXJkLTE3NzY3MzM0ODE0MjglMjIlMkMlMjJtb2R1bGVzJTIyJTNBJTVCJTdCJTIyaWQlMjIlM0ElMjJqcjlkbDJrOHQlMjIlMkMlMjJ0eXBlJTIyJTNBJTIyaDIlMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyMSklMjBpbnB1dCgpJTIwJUVDJTgyJUFDJUVDJTlBJUE5JUVEJTk1JTk4JUVBJUI4JUIwJTIyJTJDJTIyc3ViQ29udGVudCUyMiUzQSUyMiUyMiUyQyUyMnNob3dSZXN1bHQlMjIlM0FmYWxzZSU3RCUyQyU3QiUyMmlkJTIyJTNBJTIyZHVlYm5tdmNtJTIyJTJDJTIydHlwZSUyMiUzQSUyMnRleHQlMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyJUVDJTgyJUFDJUVDJTlBJUE5JUVDJTlFJTkwJUVDJTk3JTkwJUVBJUIyJThDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JTIwJUVCJUIwJTlCJUVDJTlEJTg0JTIwJUVCJUE5JTk0JUVDJTg0JUI4JUVDJUE3JTgwJUVCJUE1JUJDJTIwJUVCJTg0JUEzJUVBJUIzJUEwJTJDJTIwJUVBJUI3JUI4JTIwJUVCJThDJTgwJUVCJThCJUI1JUVDJTlEJTg0JTIwJUVCJUIzJTgwJUVDJTg4JTk4JUVDJTk3JTkwJTIwJUVDJUEwJTgwJUVDJTlFJUE1JUVEJTk1JUE5JUVCJThCJTg4JUVCJThCJUE0LiUyMiUyQyUyMnN1YkNvbnRlbnQlMjIlM0ElMjIlMjIlMkMlMjJzaG93UmVzdWx0JTIyJTNBZmFsc2UlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmdxcTN6bGNoYiUyMiUyQyUyMnR5cGUlMjIlM0ElMjJoMyUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIxLiUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFQiVCMCU5QiVFQSVCMyVBMCUyMCVFQyVCNiU5QyVFQiVBMCVBNSVFRCU5NSU5OCVFQSVCOCVCMCUyMiUyQyUyMnN1YkNvbnRlbnQlMjIlM0ElMjIlMjIlMkMlMjJzaG93UmVzdWx0JTIyJTNBZmFsc2UlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmtoZnVyOGhsNyUyMiUyQyUyMnR5cGUlMjIlM0ElMjJ0ZXh0JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMiVFQyU4MiVBQyVFQyU5QSVBOSVFQyU5RSU5MCVFQSVCMCU4MCUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFRCU5NSU5QyUyMCVFQSVCMCU5MiVFQyU5RCU4NCUyMG5hbWUlMjAlRUIlQjMlODAlRUMlODglOTglRUMlOTclOTAlMjAlRUMlQTAlODAlRUMlOUUlQTUlRUQlOTUlQTklRUIlOEIlODglRUIlOEIlQTQuJTIyJTJDJTIyc3ViQ29udGVudCUyMiUzQSUyMiUyMiUyQyUyMnNob3dSZXN1bHQlMjIlM0FmYWxzZSU3RCUyQyU3QiUyMmlkJTIyJTNBJTIyOHozcTJ6NTh2JTIyJTJDJTIydHlwZSUyMiUzQSUyMmNvZGUtc2V0JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMm5hbWUlMjAlM0QlMjBpbnB1dCglNUMlMjIlRUMlOUQlQjQlRUIlQTYlODQlRUMlOUQlODQlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUQlOTUlOTglRUMlODQlQjglRUMlOUElOTQlM0ElMjAlNUMlMjIpJTIwJTIzJTIwJUVDJTgyJUFDJUVDJTlBJUE5JUVDJTlFJTkwJUVDJTlEJTk4JTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVDJTlEJTg0JTIwJUVBJUI4JUIwJUVCJThCJUE0JUVCJUE2JUJEJUVCJThCJTg4JUVCJThCJUE0LiU1Q25wcmludChuYW1lJTJDJTIwJTVDJTIyJUVCJThCJTk4JTJDJTIwJUVCJUIwJTk4JUVBJUIwJTgwJUVDJTlCJThDJUVDJTlBJTk0ISU1QyUyMiklMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQXRydWUlMkMlMjJyZXN1bHRDb250ZW50JTIyJTNBJTIyJUVCJThCJTk4JTJDJTIwJUVCJUIwJTk4JUVBJUIwJTgwJUVDJTlCJThDJUVDJTlBJTk0ISUyMiUyQyUyMmNvZGVUaGVtZSUyMiUzQSUyMmRhcmstbW9kZXJuJTIyJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJ0OTNubzRzZXIlMjIlMkMlMjJ0eXBlJTIyJTNBJTIyaDMlMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyMi4lMjAlRUMlOTUlODglRUIlODIlQjQlMjAlRUIlQTklOTQlRUMlOEIlOUMlRUMlQTclODAlMjAlRUMlOTclODYlRUMlOUQlQjQlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUIlQjAlOUIlRUElQjglQjAlMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjIyMmlldXd5a2glMjIlMkMlMjJ0eXBlJTIyJTNBJTIydGV4dCUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUElQjQlODQlRUQlOTglQjglMjAlRUMlOTUlODglRUMlOTclOTAlMjAlRUElQjglODAlRUMlOUUlOTAoJTNDc3BhbiUyMGNsYXNzJTNEJTVDJTIyYmx1ZS1ib2x0JTVDJTIyJTNFJUVDJTk1JTg4JUVCJTgyJUI0JTIwJUVCJUE5JTk0JUVDJTg0JUI4JUVDJUE3JTgwJTNDJTJGc3BhbiUzRSklRUIlQTUlQkMlMjAlRUIlODQlQTMlRUMlOTYlQjQlMjAlRUMlQjklOUMlRUMlQTAlODglRUQlOTUlOTglRUElQjIlOEMlMjAlRUMlOTUlODglRUIlODIlQjQlRUIlQTUlQkMlMjAlRUQlOTUlQTAlMjAlRUMlODglOTglMjAlRUMlOUUlODglRUMlOEElQjUlRUIlOEIlODglRUIlOEIlQTQuJTIwJUVEJTk1JTk4JUVDJUE3JTgwJUVCJUE3JThDJTIwJUVBJUI0JTg0JUVEJTk4JUI4JTIwJUVDJTk1JTg4JUVDJTlEJTg0JTIwJUVCJUI5JTg0JUVDJTlCJThDJUVCJTkxJTkwJUVCJUE5JUI0JTIwJUVDJTk1JTg0JUVCJUFDJUI0JUVCJTlGJUIwJTIwJUVCJUE5JTk0JUVDJThCJTlDJUVDJUE3JTgwJTIwJUVDJTk3JTg2JUVDJTlEJUI0JTIwJTNDYiUzRSVFQyVCQiVBNCVFQyU4NCU5QyVFQiVBNyU4QyUyMCVFQSVCOSU5QyVFQiVCOSVBMSVFQyU5RCVCNCVFQiVBOSVCMCUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFQyU5RCU4NCUyMCVFQSVCOCVCMCVFQiU4QiVBNCVFQiVBNiVBQyVFQSVCMiU4QyUzQyUyRmIlM0UlMjAlRUIlOTAlQTklRUIlOEIlODglRUIlOEIlQTQuJTIyJTJDJTIyc3ViQ29udGVudCUyMiUzQSUyMiUyMiUyQyUyMnNob3dSZXN1bHQlMjIlM0FmYWxzZSU3RCUyQyU3QiUyMmlkJTIyJTNBJTIyNHVqODdueG81JTIyJTJDJTIydHlwZSUyMiUzQSUyMmNvZGUtc2V0JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMiUyMyUyMCVFQyU5OCU4OCVFQyU4QiU5QyUyMDElM0ElMjAlRUMlQjklOUMlRUMlQTAlODglRUQlOTUlOUMlMjAlRUQlOTQlODQlRUIlQTElOUMlRUElQjclQjglRUIlOUUlQTglNUNucHJpbnQoJTVDJTIyLS0tJTIwJUVEJTk0JTg0JUVCJUExJTlDJUVBJUI3JUI4JUVCJTlFJUE4JTIwQSUyMC0tLSU1QyUyMiklNUNuZm9vZCUyMCUzRCUyMGlucHV0KCU1QyUyMiVFQyU5OCVBNCVFQiU4QSU5OCUyMCVFQyVBMCU5MCVFQyU4QiVBQyUyMCVFQiVBRCU5MCUyMCVFQiVBOCVCOSVFQyU5NyU4OCVFQiU4MiU5OCVFQyU5QSU5NCUzRiUyMCU1QyUyMiklNUNucHJpbnQoZm9vZCUyQyUyMCU1QyUyMiVFQiVBNyU5QiVFQyU5RSU4OCVFQyU5NyU4OCVFQSVCMiVBMCVFQiU4NCVBNCVFQyU5QSU5NCElNUMlMjIpJTVDbiU1Q24lMjMlMjAlRUMlOTglODglRUMlOEIlOUMlMjAyJTNBJTIwJUVCJUI2JTg4JUVDJUI5JTlDJUVDJUEwJTg4JUVEJTk1JTlDJTIwJUVEJTk0JTg0JUVCJUExJTlDJUVBJUI3JUI4JUVCJTlFJUE4JTVDbnByaW50KCU1QyUyMi0tLSUyMCVFRCU5NCU4NCVFQiVBMSU5QyVFQSVCNyVCOCVFQiU5RSVBOCUyMEIlMjAtLS0lNUMlMjIpJTVDbmNvbG9yJTIwJTNEJTIwaW5wdXQoKSUyMCUyMyUyMCVFQyU5NSU4NCVFQiVBQyVCNCUyMCVFQyVCMCVCRCVFQiU4RiU4NCUyMCVFQiU5QyVBOCVFQyVBNyU4MCUyMCVFQyU5NSU4QSVFQyVBNyU4MCVFQiVBNyU4QyUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFQyU5RCU4NCUyMCVFQSVCOCVCMCVFQiU4QiVBNCVFQiVBNiVBQyVFQSVCMyVBMCUyMCVFQyU5RSU4OCVFQyU5NiVCNCVFQyU5QSU5NCElNUNucHJpbnQoY29sb3IlMkMlMjAlNUMlMjIlRUMlODMlODklRUMlOUQlODQlMjAlRUMlQTIlOEIlRUMlOTUlODQlRUQlOTUlOTglRUMlOEIlOUMlRUIlOEElOTQlRUElQjUlQjAlRUMlOUElOTQuJTVDJTIyKSUyMiUyQyUyMnN1YkNvbnRlbnQlMjIlM0ElMjIlMjIlMkMlMjJzaG93UmVzdWx0JTIyJTNBZmFsc2UlMkMlMjJyZXN1bHRDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyY29kZVRoZW1lJTIyJTNBJTIyZGFyay1tb2Rlcm4lMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmFvZnp3bHU1NCUyMiUyQyUyMnR5cGUlMjIlM0ElMjJoMyUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIyKSUyMGlucHV0KCklRUMlOUQlOTglMjAlRUIlQjAlOTglRUQlOTklOTglRUElQjAlOTIlRUMlOUQlODAlMjAnJUVCJUFDJUI4JUVDJTlFJTkwJyVFQiU4QiVBNCElMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJwM21yajRoM24lMjIlMkMlMjJ0eXBlJTIyJTNBJTIydGV4dCUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjJpbnB1dCgpJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVCJTkzJUE0JUVDJTk2JUI0JUVDJTk4JUE4JTIwJUVBJUIyJTgzJUVDJTlEJUI0JTIwJUVDJTg4JUFCJUVDJTlFJTkwJUVDJTlEJUI4JUVDJUE3JTgwJTIwJUVBJUI4JTgwJUVDJTlFJTkwJUVDJTlEJUI4JUVDJUE3JTgwJTIwJUVBJUI1JUFDJUVCJUI2JTg0JUVEJTk1JTk4JUVDJUE3JTgwJTIwJUVCJUFBJUJCJUVEJTk1JTk4JUVBJUIzJUEwJTIwJUVCJUFBJUE4JUVCJTkxJTkwJTI2bmJzcCUzQiUzQ3NwYW4lMjBjbGFzcyUzRCU1QyUyMnJlZC1ib2x0JTVDJTIyJTNFJUVCJUFDJUI4JUVDJTlFJTkwJUVDJTk3JUI0JUVCJUExJTlDJTIwJUVDJUI3JUE4JUVBJUI4JTg5JTNDJTJGc3BhbiUzRSVFRCU5NSVBOSVFQiU4QiU4OCVFQiU4QiVBNC4lMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJnNWd0em1tajElMjIlMkMlMjJ0eXBlJTIyJTNBJTIyY29kZS1vbmx5JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMmFnZSUyMCUzRCUyMGlucHV0KCU1QyUyMiVFQiU4MiU5OCVFQyU5RCVCNCVFQiVBNSVCQyUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NCUzQSUyMCU1QyUyMiklNUNucHJpbnQoYWdlJTIwJTJCJTIwMSklMjAlMjAlMjMlMjAlRTIlOUQlOEMlMjAlRUMlOTclOTAlRUIlOUYlQUMlMjAlRUIlQjAlOUMlRUMlODMlOUQhJTIwKCVFQiVBQyVCOCVFQyU5RSU5MCVFQyU5OSU4MCUyMCVFQyU4OCVBQiVFQyU5RSU5MCVFQiU4QSU5NCUyMCVFQiU4RCU5NCVFRCU5NSVBMCUyMCVFQyU4OCU5OCUyMCVFQyU5NyU4NiVFQyU5NiVCNCVFQyU5QSU5NCklMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTJDJTIyY29kZVRoZW1lJTIyJTNBJTIyZGFyay1tb2Rlcm4lMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMjlhMnpqNHMzZiUyMiUyQyUyMnR5cGUlMjIlM0ElMjJ0ZXh0JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMmlucHV0KCklRUMlOUMlQkMlRUIlQTElOUMlMjAlRUMlODglQUIlRUMlOUUlOTAlRUIlQTUlQkMlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUQlOTUlOTglRUIlQTklQjQlMjAlRUMlQTAlOTUlRUMlODglOTglRUQlOTglOTUoaW50KSVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQiVCMyU4MCVFRCU5OSU5OCVFRCU5NSVCNCVFQyU5NSVCQyUyMCVFQSVCMyU4NCVFQyU4MiVCMCVFRCU5NSVBMCUyMCVFQyU4OCU5OCUyMCVFQyU5RSU4OCVFQyU4QSVCNSVFQiU4QiU4OCVFQiU4QiVBNC4lMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJoMnk0eHp0ZG0lMjIlMkMlMjJ0eXBlJTIyJTNBJTIyY29kZS1zZXQlMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyJTIzJTIwJUVDJUEwJTk1JUVDJTg4JTk4JUVCJUExJTlDJTIwJUVCJUIwJTk0JUVBJUJFJUI4JUVBJUI4JUIwJTVDbmFnZSUyMCUzRCUyMGludCglMjBpbnB1dCglNUMlMjIlRUIlODIlOTglRUMlOUQlQjQlRUIlQTUlQkMlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUQlOTUlOTglRUMlODQlQjglRUMlOUElOTQlM0ElMjAlNUMlMjIpJTIwKSU1Q25wcmludCglNUMlMjIlRUIlODIlQjQlRUIlODUlODQlRUMlOTclOTAlRUIlOEElOTQlNUMlMjIlMkMlMjBhZ2UlMjAlMkIlMjAxJTJDJTIwJTVDJTIyJUVDJTgyJUI0JUVDJTlEJUI0JTIwJUVCJTkwJTk4JUVCJTg0JUE0JUVDJTlBJTk0ISU1QyUyMiklNUNuJTVDbiU1Q24lMjMlMjAlRUMlOEIlQTQlRUMlODglOTglRUIlQTUlQkMlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUIlQjAlOUIlRUMlOUQlODQlMjAlRUIlOTUlOEMlNUNuaGVpZ2h0JTIwJTNEJTIwZmxvYXQoaW5wdXQoJTVDJTIyJUVEJTgyJUE0JUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0JTNBJTIwJTVDJTIyKSklNUNucHJpbnQoJTVDJTIyJUVCJThCJUI5JUVDJThCJUEwJUVDJTlEJTk4JTIwJUVEJTgyJUE0JUVCJThBJTk0JTVDJTIyJTJDJTIwaGVpZ2h0JTJDJTIwJTVDJTIyY20lRUMlOUUlODUlRUIlOEIlODglRUIlOEIlQTQuJTVDJTIyKSUyMiUyQyUyMnN1YkNvbnRlbnQlMjIlM0ElMjIlMjIlMkMlMjJzaG93UmVzdWx0JTIyJTNBZmFsc2UlMkMlMjJyZXN1bHRDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyY29kZVRoZW1lJTIyJTNBJTIyZGFyay1tb2Rlcm4lMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMjU5bWhjc2I3NyUyMiUyQyUyMnR5cGUlMjIlM0ElMjJtaXNzaW9uLWNvZGluZyUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUQlOEUlQjglRUMlOUQlOTglRUMlQTAlOTAlMjAlRUElQjMlODQlRUMlODIlQjAlRUElQjglQjAlMjAlRUIlQTclOEMlRUIlOTMlQTQlRUElQjglQjAlMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJUVDJTgyJUFDJUVDJTlBJUE5JUVDJTlFJTkwJUVCJUExJTlDJUVCJUI2JTgwJUVEJTg0JUIwJTIwJUVCJUFDJUJDJUVBJUIxJUI0JUVDJTlEJTk4JTIwJUVBJUIwJTgwJUVBJUIyJUE5JUVBJUIzJUJDJTIwJUVBJUIwJTlDJUVDJTg4JTk4JUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVCJUIwJTlCJUVDJTk1JTg0JTIwJUVDJUI0JTlEJTIwJUVBJUI4JTg4JUVDJTk1JUExJUVDJTlEJTg0JTIwJUVBJUIzJTg0JUVDJTgyJUIwJUVEJTk1JTk4JUVCJThBJTk0JTIwJUVEJTk0JTg0JUVCJUExJTlDJUVBJUI3JUI4JUVCJTlFJUE4JUVDJTlEJTg0JTIwJUVCJUE3JThDJUVCJTkzJTlDJUVDJTg0JUI4JUVDJTlBJTk0LiUzQ2RpdiUzRSUzQ2IlM0UlNUIlRUMlQTElQjAlRUElQjElQjQlNUQlM0MlMkZiJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFMS4lMjAlRUElQjAlODAlRUElQjIlQTklRUMlOUQlODAlMjAlM0NiJTNFcHJpY2UlM0MlMkZiJTNFJTJDJTIwJUVBJUIwJTlDJUVDJTg4JTk4JUVCJThBJTk0JTIwJTNDYiUzRWNvdW50JTNDJTJGYiUzRSUyMCVFQiVCMyU4MCVFQyU4OCU5OCVFQyU5NyU5MCUyMCVFQyVBMCU4MCVFQyU5RSVBNSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UyLiUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFQiVCMCU5QiVFQyU5RCU4NCUyMCVFQiU5NSU4QyUyMCVFQiVCMCU5OCVFQiU5MyU5QyVFQyU4QiU5QyUyMCVFQyU4OCVBQiVFQyU5RSU5MCVFQiVBMSU5QyUyMCVFRCU5OCU5NSVFQiVCMyU4MCVFRCU5OSU5OCVFQyU5RCU4NCUyMCVFRCU5NSVCNCVFQyU5NSVCQyUyMCVFRCU5NSVBOSVFQiU4QiU4OCVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSUzQ2IlM0UlNUIlMjAlRUMlQjYlOUMlRUIlQTAlQTUlRUElQjIlQjAlRUElQjMlQkMlMjAlNUQlM0MlMkZiJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVDJUI0JTlEJTIwJUVBJUI4JTg4JUVDJTk1JUExJUVDJTlEJTgwJTIwNTAwMCVFQyU5QiU5MCVFQyU5RSU4NSVFQiU4QiU4OCVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlMjIlMkMlMjJxdWl6SXRlbXMlMjIlM0ElNUIlNUQlMkMlMjJzaG93UmVzdWx0JTIyJTNBZmFsc2UlMkMlMjJjb2RlVGhlbWUlMjIlM0ElMjJkYXJrLW1vZGVybiUyMiUyQyUyMmNvbG9yU2V0JTIyJTNBJTIyZGVmYXVsdCUyMiUyQyUyMmNvZGVCbG9ja3MlMjIlM0ElNUIlNUQlN0QlNUQlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmNhcmQtMTc3NjczNDg0NjI2MSUyMiUyQyUyMm1vZHVsZXMlMjIlM0ElNUIlN0IlMjJpZCUyMiUzQSUyMnNqeDZzMDRjbCUyMiUyQyUyMnR5cGUlMjIlM0ElMjJoMiUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRjAlOUYlOEYlODYlMjAlRUMlOEIlQTQlRUMlQTAlODQlMjAlRUQlOTUlQjUlRUMlOEIlQUMlMjAlRUQlODAlQjQlRUMlQTYlODglMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJjaHU5aGN6NGwlMjIlMkMlMjJ0eXBlJTIyJTNBJTIybWlzc2lvbi1xdWl6JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMiVFQyU4QiVBNCVFQyVBMCU4NCVFRCU5NSVCNSVFQyU4QiVBQyVFRCU4MCVCNCVFQyVBNiU4OCUyMCglRUMlQTAlOTUlRUIlOEIlQjUlRUMlOUQlODQlMjAlRUElQjMlQTglRUIlOUQlQkMlRUIlQjMlQjQlRUMlODQlQjglRUMlOUElOTQpJTIyJTJDJTIyc3ViQ29udGVudCUyMiUzQSUyMiUyMiUyQyUyMnF1aXpJdGVtcyUyMiUzQSU1QiU3QiUyMmlkJTIyJTNBJTIya2NvdHNoMzRlJTIyJTJDJTIydHlwZSUyMiUzQSUyMm11bHRpcGxlJTIyJTJDJTIycXVlc3Rpb24lMjIlM0ElMjIlRUIlOEIlQTQlRUMlOUQlOEMlMjAlRUMlQkQlOTQlRUIlOTMlOUMlRUIlQTUlQkMlMjAlRUMlOEIlQTQlRUQlOTYlODklRUQlOTUlOTglRUElQjMlQTAlMjAlRUMlODIlQUMlRUMlOUElQTklRUMlOUUlOTAlRUElQjAlODAlMjAlRUMlODglQUIlRUMlOUUlOTAlMjAxMCUyQyUyMDIwJUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVEJTk2JTg4JUVDJTlEJTg0JTIwJUVCJTk1JThDJTJDJTIwJUVDJUI2JTlDJUVCJUEwJUE1JTIwJUVBJUIyJUIwJUVBJUIzJUJDJUVCJUExJTlDJTIwJUVDJTk1JThDJUVCJUE3JTlFJUVDJTlEJTgwJTIwJUVBJUIyJTgzJUVDJTlEJTgwJTNGJTIyJTJDJTIyY29kZSUyMiUzQSUyMmElMjAlM0QlMjBpbnB1dCglNUMlMjIlRUMlOUUlODUlRUIlQTAlQTUlMjBhJTNBJTIwJTVDJTIyKSU1Q25iJTIwJTNEJTIwaW5wdXQoJTVDJTIyJUVDJTlFJTg1JUVCJUEwJUE1JTIwYiUzQSUyMCU1QyUyMiklNUNucHJpbnQoYSUyMCUyQiUyMGIpJTIyJTJDJTIyb3B0aW9ucyUyMiUzQSU1QiUyMjMwJTIyJTJDJTIyMTAyMCUyMiUyQyUyMjIwMTAlMjIlMkMlMjIlRUMlOTclOTAlRUIlOUYlQUMlMjAlRUIlQjAlOUMlRUMlODMlOUQlMjIlNUQlMkMlMjJsYXlvdXQlMjIlM0ElMjJjb21wb3NpdGlvbiUyMiUyQyUyMmNvZGVUaGVtZSUyMiUzQSUyMmRhcmstbW9kZXJuJTIyJTJDJTIyc2hvd0NvZGUlMjIlM0F0cnVlJTJDJTIyc2hvd09wdGlvbnMlMjIlM0F0cnVlJTJDJTIyc2hvd1N1YmplY3RpdmUlMjIlM0FmYWxzZSUyQyUyMnNob3dIaW50JTIyJTNBdHJ1ZSUyQyUyMnNlbGVjdGVkSW5kZXglMjIlM0ExJTJDJTIyY29ycmVjdEluZGV4JTIyJTNBMSUyQyUyMmhpbnQlMjIlM0ElMjIlRUMlODglQUIlRUMlOUUlOTAlRUMlOUQlOTglMjAlMkIlMjAlRUMlOTclQjAlRUMlODIlQjAlRUMlOUQlODAlMjAlRUIlOEQlQTclRUMlODUlODglMjAlRUElQjIlQjAlRUElQjMlQkMlMkMlMjAlM0NiJTNFJUVCJUFDJUI4JUVDJTlFJTkwJUVDJTk3JUI0JUVDJTlEJTk4JTIwJTJCJTIwJUVDJTk3JUIwJUVDJTgyJUIwJUVDJTlEJTgwJTIwJUVCJUFDJUI4JUVDJTlFJTkwJUVDJTk3JUI0JTIwJUVEJTk1JUE5JUVDJUI5JTk4JUVBJUI4JUIwJTNDJTJGYiUzRSVFQSVCMCU4MCUyMCVFQiU5MCU5QyVFQiU4QiVBNC4lMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMjZpN3Z1aWI3NiUyMiUyQyUyMnR5cGUlMjIlM0ElMjJtdWx0aXBsZSUyMiUyQyUyMnF1ZXN0aW9uJTIyJTNBJTIyaW5wdXQoKSUyMCVFRCU5NSVBOCVFQyU4OCU5OCVFQyU5NyU5MCUyMCVFQiU4QyU4MCVFRCU5NSU5QyUyMCVFQyU4NCVBNCVFQiVBQSU4NSVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFRCU4QiU4MCVFQiVBNiVCMCUyMCVFQSVCMiU4MyVFQyU5RCU4MCUyMCVFQiVBQyVCNCVFQyU5NyU4NyVFQyU5RCVCOCVFQSVCMCU4MCVFQyU5QSU5NCUyMiUyQyUyMmNvZGUlMjIlM0ElMjJwcmludCglNUMlMjJIZWxsbyUyMFdvcmxkJTVDJTIyKSUyMiUyQyUyMm9wdGlvbnMlMjIlM0ElNUIlMjIlRUMlOTUlODglRUIlODIlQjQlMjAlRUIlQTklOTQlRUMlOEIlOUMlRUMlQTclODAlMjAlRUMlOTclODYlRUMlOUQlQjQlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUMlOUQlODQlMjAlRUIlQjAlOUIlRUElQjMlQTAlMjAlRUMlOEIlQjYlRUMlOUQlODQlMjAlRUIlOTUlOEMlRUIlOEElOTQlMjBpbnB1dCgpJTIwJUVDJUIyJTk4JUVCJTlGJUJDJTIwJUVBJUI0JTg0JUVEJTk4JUI4JTIwJUVDJTk1JTg4JUVDJTlEJTg0JTIwJUVCJUI5JTg0JUVDJTlCJThDJUVCJTkxJTkwJUVCJUE5JUI0JTIwJUVCJTkwJTlDJUVCJThCJUE0LiUyMiUyQyUyMmlucHV0KCklMjAlRUQlOTUlQTglRUMlODglOTglMjAlRUElQjQlODQlRUQlOTglQjglMjAlRUMlOTUlODglRUMlOTclOTAlMjAlRUIlODQlQTMlRUMlOUQlODAlMjAlRUIlQUMlQjglRUMlOUUlOTAlRUMlOTclQjQlRUMlOUQlODAlMjAlRUMlODIlQUMlRUMlOUElQTklRUMlOUUlOTAlRUMlOTclOTAlRUElQjIlOEMlMjAlRUIlQjMlQjQlRUMlOTclQUMlRUMlQTMlQkMlRUIlOEElOTQlMjAlRUMlOTUlODglRUIlODIlQjQlMjAlRUIlQTklOTQlRUMlOEIlOUMlRUMlQTclODAlMjAlRUMlOTclQUQlRUQlOTUlQTAlRUMlOUQlODQlMjAlRUQlOTUlOUMlRUIlOEIlQTQuJTIyJTJDJTIyaW5wdXQoKSVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFQiVCMCU5QiVFQyU5RCU4MCUyMCVFQSVCMCU5MiVFQyU5RCU4MCUyMCVFQyU4MiVBQyVFQyU5QSVBOSVFQyU5RSU5MCVFQSVCMCU4MCUyMCVFQyU4OCVBQiVFQyU5RSU5MCVFQiVBNSVCQyUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFRCU5NSU5OCVFQiU4RCU5NCVFQiU5RCVCQyVFQiU4RiU4NCUyMCVFQSVCOCVCMCVFQiVCMyVCOCVFQyVBMCU4MSVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQiVBQyVCOCVFQyU5RSU5MCVFQyU5NyVCNChzdHIpJUVCJUExJTlDJTIwJUVDJUEwJTgwJUVDJTlFJUE1JUVCJTkwJTlDJUVCJThCJUE0LiUyMiUyQyUyMmlucHV0KCklRUMlOUMlQkMlRUIlQTElOUMlMjAlRUIlQjAlOUIlRUMlOUQlODAlMjAlRUMlODglQUIlRUMlOUUlOTAlRUIlQTUlQkMlMjAlRUIlQjAlOTQlRUIlQTElOUMlMjAlRUIlOEQlOTQlRUQlOTUlOTglRUElQjglQjAlMjAlRUMlOTclQjAlRUMlODIlQjAoJTJCKSUyMCVFRCU5NSU5OCVFQiVBOSVCNCUyMCVFQyU4OCU5OCVFRCU5NSU5OSVFQyVBMCU4MSVFQyU5RCVCOCUyMCVFQSVCMyU4NCVFQyU4MiVCMCUyMCVFQSVCMiVCMCVFQSVCMyVCQyVFQSVCMCU4MCUyMCVFQyVCNiU5QyVFQiVBMCVBNSVFQiU5MCU5QyVFQiU4QiVBNC4lMjIlNUQlMkMlMjJsYXlvdXQlMjIlM0ElMjJjb21wb3NpdGlvbiUyMiUyQyUyMmNvZGVUaGVtZSUyMiUzQSUyMmRhcmstbW9kZXJuJTIyJTJDJTIyc2hvd0NvZGUlMjIlM0FmYWxzZSUyQyUyMnNob3dPcHRpb25zJTIyJTNBdHJ1ZSUyQyUyMnNob3dTdWJqZWN0aXZlJTIyJTNBZmFsc2UlMkMlMjJzaG93SGludCUyMiUzQWZhbHNlJTJDJTIyc2VsZWN0ZWRJbmRleCUyMiUzQTMlMkMlMjJjb3JyZWN0SW5kZXglMjIlM0EzJTdEJTVEJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTdEJTVEJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJjYXJkLTE3NzY3MzU2NDQ3NjAlMjIlMkMlMjJtb2R1bGVzJTIyJTNBJTVCJTdCJTIyaWQlMjIlM0ElMjJhNmtzM2Rua2wlMjIlMkMlMjJ0eXBlJTIyJTNBJTIyaDIlMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyJUYwJTlGJTkyJUJCJTIwJUVDJThCJUE0JUVDJUEwJTg0JTIwJUVDJUJEJTk0JUVCJTk0JUE5JTIwJUVCJUFGJUI4JUVDJTg1JTk4JTIyJTJDJTIyc3ViQ29udGVudCUyMiUzQSUyMiUyMiUyQyUyMnNob3dSZXN1bHQlMjIlM0FmYWxzZSU3RCUyQyU3QiUyMmlkJTIyJTNBJTIyOTJndmttM2NuJTIyJTJDJTIydHlwZSUyMiUzQSUyMm1pc3Npb24tY29kaW5nJTIyJTJDJTIyY29udGVudCUyMiUzQSUyMiVFQyU5RSU5MCVFQSVCOCVCMCVFQyU4NiU4QyVFQSVCMCU5QyUyMCVFQiVBQSU4NSVFRCU5NSVBOCUyMCVFQiVBNyU4QyVFQiU5MyVBNCVFQSVCOCVCMCUyMiUyQyUyMnN1YkNvbnRlbnQlMjIlM0ElMjIlRUMlODIlQUMlRUMlOUElQTklRUMlOUUlOTAlRUIlQTElOUMlRUIlQjYlODAlRUQlODQlQjAlMjAlRUMlOUQlQjQlRUIlQTYlODQlRUElQjMlQkMlMjAlRUMlQjclQTglRUIlQUYlQjglRUIlQTUlQkMlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUIlQjAlOUIlRUMlOTUlODQlMjAlRUIlQTklOEIlRUMlQTclODQlMjAlRUIlQUMlQjglRUMlOUUlQTUlRUMlOUMlQkMlRUIlQTElOUMlMjAlRUMlQjYlOUMlRUIlQTAlQTUlRUQlOTUlOTglRUIlOEElOTQlMjAlRUQlOTQlODQlRUIlQTElOUMlRUElQjclQjglRUIlOUUlQTglRUMlOUQlODQlMjAlRUIlQTclOEMlRUIlOTMlOUMlRUMlODQlQjglRUMlOUElOTQuJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiJTNFJTVCJUVDJUExJUIwJUVBJUIxJUI0JTVEJTNDJTJGYiUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFQyU5RCVCNCVFQiVBNiU4NCVFQyU5RCU4NCUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFQiVCMCU5QiVFQyU5NSU4NCUyMG5hbWUlMjAlRUIlQjMlODAlRUMlODglOTglRUMlOTclOTAlMjAlRUMlQTAlODAlRUMlOUUlQTUlRUQlOTUlOTglRUMlODQlQjglRUMlOUElOTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVDJUI3JUE4JUVCJUFGJUI4JUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVCJUIwJTlCJUVDJTk1JTg0JTIwaG9iYnklMjAlRUIlQjMlODAlRUMlODglOTglRUMlOTclOTAlMjAlRUMlQTAlODAlRUMlOUUlQTUlRUQlOTUlOTglRUMlODQlQjglRUMlOUElOTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFaW5wdXQlMjAlRUIlQUElODUlRUIlQTAlQjklRUMlOTYlQjQlRUMlOTclOTAlMjAlRUMlOTUlODglRUIlODIlQjQlMjAlRUIlQTklOTQlRUMlODQlQjglRUMlQTclODAlRUIlQTUlQkMlMjAlRUIlODQlQTMlRUMlOTYlQjQlRUMlQTMlQkMlRUMlODQlQjglRUMlOUElOTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiJTNFJTVCJUVDJUI2JTlDJUVCJUEwJUE1JTIwJUVBJUIyJUIwJUVBJUIzJUJDJTVEJTNDJTJGYiUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFQyU5NSU4OCVFQiU4NSU5NSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NCElMjAlRUMlQjclQTglRUIlQUYlQjglRUElQjAlODAlMjAlRUMlQkQlOTQlRUIlOTQlQTklRUMlOUQlQjglMjAlRUQlOTklOEQlRUElQjglQjglRUIlOEYlOTklRUMlOUUlODUlRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTIyJTJDJTIycXVpekl0ZW1zJTIyJTNBJTVCJTVEJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTJDJTIyY29kZVRoZW1lJTIyJTNBJTIyZGFyay1tb2Rlcm4lMjIlMkMlMjJjb2RlQmxvY2tzJTIyJTNBJTVCJTVEJTJDJTIyYmxvY2tzJTIyJTNBJTVCJTdCJTIyaWQlMjIlM0ElMjJscCUyMiUyQyUyMnR5cGUlMjIlM0ElMjJwcm9ibGVtJTIyJTJDJTIyY29udGVudCUyMiUzQSUyMiVFQyU4MiVBQyVFQyU5QSVBOSVFQyU5RSU5MCVFQiVBMSU5QyVFQiVCNiU4MCVFRCU4NCVCMCUyMCVFQyU5RCVCNCVFQiVBNiU4NCVFQSVCMyVCQyUyMCVFQyVCNyVBOCVFQiVBRiVCOCVFQiVBNSVCQyUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFQiVCMCU5QiVFQyU5NSU4NCUyMCVFQiVBOSU4QiVFQyVBNyU4NCUyMCVFQiVBQyVCOCVFQyU5RSVBNSVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQyVCNiU5QyVFQiVBMCVBNSVFRCU5NSU5OCVFQiU4QSU5NCUyMCVFRCU5NCU4NCVFQiVBMSU5QyVFQSVCNyVCOCVFQiU5RSVBOCVFQyU5RCU4NCUyMCVFQiVBNyU4QyVFQiU5MyU5QyVFQyU4NCVCOCVFQyU5QSU5NC4lM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSUzQ2IlM0UlNUIlRUMlQTElQjAlRUElQjElQjQlNUQlM0MlMkZiJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVDJTlEJUI0JUVCJUE2JTg0JUVDJTlEJTg0JTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVCJUIwJTlCJUVDJTk1JTg0JTIwbmFtZSUyMCVFQiVCMyU4MCVFQyU4OCU5OCVFQyU5NyU5MCUyMCVFQyVBMCU4MCVFQyU5RSVBNSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUMlQjclQTglRUIlQUYlQjglRUIlQTUlQkMlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUIlQjAlOUIlRUMlOTUlODQlMjBob2JieSUyMCVFQiVCMyU4MCVFQyU4OCU5OCVFQyU5NyU5MCUyMCVFQyVBMCU4MCVFQyU5RSVBNSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NC4lM0MlMkZkaXYlM0UlM0NkaXYlM0VpbnB1dCUyMCVFQiVBQSU4NSVFQiVBMCVCOSVFQyU5NiVCNCVFQyU5NyU5MCUyMCVFQyU5NSU4OCVFQiU4MiVCNCUyMCVFQiVBOSU5NCVFQyU4NCVCOCVFQyVBNyU4MCVFQiVBNSVCQyUyMCVFQiU4NCVBMyVFQyU5NiVCNCVFQyVBMyVCQyVFQyU4NCVCOCVFQyU5QSU5NC4lM0MlMkZkaXYlM0UlMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMnduNGNnb3pibCUyMiUyQyUyMnR5cGUlMjIlM0ElMjJvdXRwdXQlMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyJUVDJTk1JTg4JUVCJTg1JTk1JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0ISUyMCVFQyVCNyVBOCVFQiVBRiVCOCVFQSVCMCU4MCUyMCVFQyVCRCU5NCVFQiU5NCVBOSVFQyU5RCVCOCUyMCVFRCU5OSU4RCVFQSVCOCVCOCVFQiU4RiU5OSVFQyU5RSU4NSVFQiU4QiU4OCVFQiU4QiVBNC4lMjIlN0QlNUQlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMjE2dmdzYmxmaSUyMiUyQyUyMnR5cGUlMjIlM0ElMjJtaXNzaW9uLWNvZGluZyUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUMlQjQlODglRUElQjAlODQlRUIlOEIlQTglMjAlRUIlODIlOTglRUMlOUQlQjQlMjAlRUElQjMlODQlRUMlODIlQjAlRUElQjglQjAlMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJUVDJTk4JUFDJUVEJTk1JUI0JTIwJUVDJTk3JUIwJUVCJThGJTg0JUVDJTk5JTgwJTIwJUVEJTgzJTlDJUVDJTk2JUI0JUVCJTgyJTlDJTIwJUVDJTk3JUIwJUVCJThGJTg0JUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVCJUIwJTlCJUVDJTk1JTg0JTIwJUVEJTk4JTg0JUVDJTlFJUFDJTIwJUVCJTgyJTk4JUVDJTlEJUI0JUVCJUE1JUJDJTIwJUVBJUIzJTg0JUVDJTgyJUIwJUVEJTk1JTk4JUVCJThBJTk0JTIwJUVEJTk0JTg0JUVCJUExJTlDJUVBJUI3JUI4JUVCJTlFJUE4JUVDJTlEJTg0JTIwJUVCJUE3JThDJUVCJTkzJTlDJUVDJTg0JUI4JUVDJTlBJTk0LiUzQ2RpdiUzRSUzQ2JyJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYiUzRSU1QiVFQSVCMyU4NCVFQyU4MiVCMCUyMCVFQSVCMyVCNSVFQyU4QiU5RCU1RCUzQyUyRmIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUIlODIlOTglRUMlOUQlQjQlMjAlRUElQjMlODQlRUMlODIlQjAlRUMlOEIlOUQlM0ElMjAlRUMlOTglQUMlRUQlOTUlQjQlMjAlRUMlOTclQjAlRUIlOEYlODQlMjAtJTIwJUVEJTgzJTlDJUVDJTk2JUI0JUVCJTgyJTlDJTIwJUVDJTk3JUIwJUVCJThGJTg0JTIwJTJCJTIwMSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSUzQ2JyJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYiUzRSU1QiVFQyVBMSVCMCVFQSVCMSVCNCU1RCUzQyUyRmIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUMlOTglQUMlRUQlOTUlQjQlMjAlRUMlOTclQjAlRUIlOEYlODQlRUIlOEElOTQlMjB0aGlzX3llYXIlMkMlMjAlRUQlODMlOUMlRUMlOTYlQjQlRUIlODIlOUMlMjAlRUMlOTclQjAlRUIlOEYlODQlRUIlOEElOTQlMjBiaXJ0aF95ZWFyJTIwJUVCJUIzJTgwJUVDJTg4JTk4JUVCJUE1JUJDJTIwJUVDJTgyJUFDJUVDJTlBJUE5JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0LiUzQyUyRmRpdiUzRSUzQ2RpdiUzRSUzQ2JyJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYiUzRSU1QiVFQyVCNiU5QyVFQiVBMCVBNSUyMCVFQSVCMiVCMCVFQSVCMyVCQyU1RCUzQyUyRmIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUIlOEIlQjklRUMlOEIlQTAlRUMlOUQlOTglMjAlRUIlODIlOTglRUMlOUQlQjQlRUIlOEElOTQlMjAxNiVFQyU4MiVCNCVFQyU5RCVCNCVFQSVCNSVCMCVFQyU5QSU5NCElM0MlMkZkaXYlM0UlMjIlMkMlMjJxdWl6SXRlbXMlMjIlM0ElNUIlNUQlMkMlMjJzaG93UmVzdWx0JTIyJTNBZmFsc2UlMkMlMjJjb2RlVGhlbWUlMjIlM0ElMjJkYXJrLW1vZGVybiUyMiUyQyUyMmNvZGVCbG9ja3MlMjIlM0ElNUIlNUQlMkMlMjJibG9ja3MlMjIlM0ElNUIlN0IlMjJpZCUyMiUzQSUyMmxwJTIyJTJDJTIydHlwZSUyMiUzQSUyMnByb2JsZW0lMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyJUVDJTk4JUFDJUVEJTk1JUI0JTIwJUVDJTk3JUIwJUVCJThGJTg0JUVDJTk5JTgwJTIwJUVEJTgzJTlDJUVDJTk2JUI0JUVCJTgyJTlDJTIwJUVDJTk3JUIwJUVCJThGJTg0JUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVCJUIwJTlCJUVDJTk1JTg0JTIwJUVEJTk4JTg0JUVDJTlFJUFDJTIwJUVCJTgyJTk4JUVDJTlEJUI0JUVCJUE1JUJDJTIwJUVBJUIzJTg0JUVDJTgyJUIwJUVEJTk1JTk4JUVCJThBJTk0JTIwJUVEJTk0JTg0JUVCJUExJTlDJUVBJUI3JUI4JUVCJTlFJUE4JUVDJTlEJTg0JTIwJUVCJUE3JThDJUVCJTkzJTlDJUVDJTg0JUI4JUVDJTlBJTk0LiUzQ2RpdiUzRSUzQ2JyJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYiUzRSU1QiVFQSVCMyU4NCVFQyU4MiVCMCUyMCVFQSVCMyVCNSVFQyU4QiU5RCU1RCUzQyUyRmIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUIlODIlOTglRUMlOUQlQjQlMjAlRUElQjMlODQlRUMlODIlQjAlRUMlOEIlOUQlM0ElMjAlRUMlOTglQUMlRUQlOTUlQjQlMjAlRUMlOTclQjAlRUIlOEYlODQlMjAtJTIwJUVEJTgzJTlDJUVDJTk2JUI0JUVCJTgyJTlDJTIwJUVDJTk3JUIwJUVCJThGJTg0JTIwJTJCJTIwMSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSUzQ2JyJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYiUzRSU1QiVFQyVBMSVCMCVFQSVCMSVCNCU1RCUzQyUyRmIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUMlOTglQUMlRUQlOTUlQjQlMjAlRUMlOTclQjAlRUIlOEYlODQlRUIlOEElOTQlMjB0aGlzX3llYXIlMkMlMjAlRUQlODMlOUMlRUMlOTYlQjQlRUIlODIlOUMlMjAlRUMlOTclQjAlRUIlOEYlODQlRUIlOEElOTQlMjBiaXJ0aF95ZWFyJTIwJUVCJUIzJTgwJUVDJTg4JTk4JUVCJUE1JUJDJTIwJUVDJTgyJUFDJUVDJTlBJUE5JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0LiUzQyUyRmRpdiUzRSUyMiU3RCUyQyU3QiUyMmlkJTIyJTNBJTIybXE2MXhpM2V0JTIyJTJDJTIydHlwZSUyMiUzQSUyMm91dHB1dCUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUIlOEIlQjklRUMlOEIlQTAlRUMlOUQlOTglMjAlRUIlODIlOTglRUMlOUQlQjQlRUIlOEElOTQlMjAxNiVFQyU4MiVCNCVFQyU5RCVCNCVFQSVCNSVCMCVFQyU5QSU5NCElMjIlN0QlNUQlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMm13bDdhNnFlcCUyMiUyQyUyMnR5cGUlMjIlM0ElMjJtaXNzaW9uLWNvZGluZyUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUIlODIlOTglRUIlQTclOEMlRUMlOUQlOTglMjAlRUQlOTUlQTAlRUMlOUQlQjglMjAlRUElQjMlODQlRUMlODIlQjAlRUElQjglQjAlMjAlRUIlQTclOEMlRUIlOTMlQTQlRUElQjglQjAlMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJUVCJUFDJUJDJUVBJUIxJUI0JUVDJTlEJTk4JTIwJUVDJUEwJTk1JUVBJUIwJTgwJUVDJTk5JTgwJTIwJUVEJTk1JUEwJUVDJTlEJUI4JUVDJTlDJUE4JUVDJTlEJTg0JTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVEJTk1JTk4JUVCJUE5JUI0JTJDJTIwJUVEJTk1JUEwJUVDJTlEJUI4JUVDJTlEJUI0JTIwJUVDJUEwJTgxJUVDJTlBJUE5JUVCJTkwJTlDJTIwJUVDJUI1JTlDJUVDJUEyJTg1JTIwJUVBJUIwJTgwJUVBJUIyJUE5JUVDJTlEJTg0JTIwJUVDJTk1JThDJUVCJUEwJUE0JUVDJUEzJUJDJUVCJThBJTk0JTIwJUVEJTk0JTg0JUVCJUExJTlDJUVBJUI3JUI4JUVCJTlFJUE4JUVDJTlEJTg0JTIwJUVCJUE3JThDJUVCJTkzJUE0JUVDJTk2JUI0JTIwJUVCJUIzJUI0JUVDJTg0JUI4JUVDJTlBJTk0LiUzQ2RpdiUzRSUzQ2JyJTNFJTNDZGl2JTNFJTNDYiUzRSU1QiVFQSVCMyU4NCVFQyU4MiVCMCUyMCVFQSVCMyVCNSVFQyU4QiU5RCU1RCUzQyUyRmIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUQlOTUlQTAlRUMlOUQlQjglRUElQjglODglRUMlOTUlQTElMjAlM0QlMjAlRUMlQTAlOTUlRUElQjAlODAlMjAlQzMlOTclMjAoJUVEJTk1JUEwJUVDJTlEJUI4JUVDJTlDJUE4JTIwJUMzJUI3JTIwMTAwKSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFQyVCNSU5QyVFQyVBMiU4NSVFQSVCMCU4MCVFQSVCMiVBOSUyMCUzRCUyMCVFQyVBMCU5NSVFQSVCMCU4MCUyMC0lMjAlRUQlOTUlQTAlRUMlOUQlQjglRUElQjglODglRUMlOTUlQTElM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSUzQ2IlM0UlNUIlRUMlQTElQjAlRUElQjElQjQlNUQlM0MlMkZiJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVDJUEwJTk1JUVBJUIwJTgwJUVCJThBJTk0JTIwJUVCJUIzJTgwJUVDJTg4JTk4JTIwJTNDYiUzRXByaWNlJTNDJTJGYiUzRSUyMCVFQyVBMCU5NSVFQyU4OCU5OCVFQiVBMSU5QyUyMCVFQyVBMCU4MCVFQyU5RSVBNSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUQlOTUlQTAlRUMlOUQlQjglRUMlOUMlQTglRUMlOUQlODAlMjAlRUIlQjMlODAlRUMlODglOTglMjAlM0NiJTNFZGlzY291bnRfcmF0ZSUzQyUyRmIlM0UlRUMlOTclOTAlMjAlRUMlOEIlQTQlRUMlODglOTglRUIlQTElOUMlMjAlRUMlQTAlODAlRUMlOUUlQTUlRUQlOTUlOTglRUMlODQlQjglRUMlOUElOTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVDJUI1JTlDJUVDJUEyJTg1JTIwJUVBJUIwJTgwJUVBJUIyJUE5JUVDJTlEJTgwJTIwJUVCJUIzJTgwJUVDJTg4JTk4JTIwJTNDYiUzRWZpbmFsX3ByaWNlJTNDJTJGYiUzRSVFQyU5NyU5MCUyMCVFQyVBMCU4MCVFQyU5RSVBNSVFRCU5NSU5OCVFQyU5NyVBQyUyMCVFQyVCNiU5QyVFQiVBMCVBNSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NC4lM0MlMkZkaXYlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSUzQ2IlM0UlNUIlRUMlOUUlODUlRUIlQTAlQTUlNUQlM0MlMkZiJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVCJUFDJUJDJUVBJUIxJUI0JUVDJTlEJTk4JTIwJUVDJUEwJTk1JUVBJUIwJTgwJUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0JTNBJTIwMTAwMDAlNUNuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVEJTk1JUEwJUVDJTlEJUI4JUVDJTlDJUE4JUVDJTlEJTg0JTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0KCUyNSUyMCVFQyVBMCU5QyVFQyU5OSVCOCklM0ElMjAxMCU1Q24lM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiJTNFJTVCJUVDJUI2JTlDJUVCJUEwJUE1JTIwJUVBJUIyJUIwJUVBJUIzJUJDJTVEJTNDJTJGYiUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFQyVBMCU5NSVFQSVCMCU4MCUzQSUyMDEwMDAwJTIwJUVDJTlCJTkwJTVDbiUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFRCU5NSVBMCVFQyU5RCVCOCVFQyU5QyVBOCUzQSUyMDEwLjAlMjAlMjUlNUNuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVDJUI1JTlDJUVDJUEyJTg1JTIwJUVEJTk1JUEwJUVDJTlEJUI4JTIwJUVDJUEwJTgxJUVDJTlBJUE5JUVBJUIwJTgwJUVCJThBJTk0JTIwOTAwMC4wJTIwJUVDJTlCJTkwJUVDJTlFJTg1JUVCJThCJTg4JUVCJThCJUE0LiUzQyUyRmRpdiUzRSUyMiUyQyUyMnF1aXpJdGVtcyUyMiUzQSU1QiU1RCUyQyUyMnNob3dSZXN1bHQlMjIlM0FmYWxzZSUyQyUyMmNvZGVUaGVtZSUyMiUzQSUyMmRhcmstbW9kZXJuJTIyJTJDJTIyY29kZUJsb2NrcyUyMiUzQSU1QiU1RCUyQyUyMmJsb2NrcyUyMiUzQSU1QiU3QiUyMmlkJTIyJTNBJTIybHAlMjIlMkMlMjJ0eXBlJTIyJTNBJTIycHJvYmxlbSUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUIlQUMlQkMlRUElQjElQjQlRUMlOUQlOTglMjAlRUMlQTAlOTUlRUElQjAlODAlRUMlOTklODAlMjAlRUQlOTUlQTAlRUMlOUQlQjglRUMlOUMlQTglRUMlOUQlODQlMjAlRUMlOUUlODUlRUIlQTAlQTUlRUQlOTUlOTglRUIlQTklQjQlMkMlMjAlRUQlOTUlQTAlRUMlOUQlQjglRUMlOUQlQjQlMjAlRUMlQTAlODElRUMlOUElQTklRUIlOTAlOUMlMjAlRUMlQjUlOUMlRUMlQTIlODUlMjAlRUElQjAlODAlRUElQjIlQTklRUMlOUQlODQlMjAlRUMlOTUlOEMlRUIlQTAlQTQlRUMlQTMlQkMlRUIlOEElOTQlMjAlRUQlOTQlODQlRUIlQTElOUMlRUElQjclQjglRUIlOUUlQTglRUMlOUQlODQlMjAlRUIlQTclOEMlRUIlOTMlQTQlRUMlOTYlQjQlMjAlRUIlQjMlQjQlRUMlODQlQjglRUMlOUElOTQuJTNDZGl2JTNFJTNDYnIlM0UlM0NkaXYlM0UlM0NiJTNFJTVCJUVBJUIzJTg0JUVDJTgyJUIwJTIwJUVBJUIzJUI1JUVDJThCJTlEJTVEJTNDJTJGYiUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFRCU5NSVBMCVFQyU5RCVCOCVFQSVCOCU4OCVFQyU5NSVBMSUyMCUzRCUyMCVFQyVBMCU5NSVFQSVCMCU4MCUyMCVDMyU5NyUyMCglRUQlOTUlQTAlRUMlOUQlQjglRUMlOUMlQTglMjAlQzMlQjclMjAxMDApJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVDJUI1JTlDJUVDJUEyJTg1JUVBJUIwJTgwJUVBJUIyJUE5JTIwJTNEJTIwJUVDJUEwJTk1JUVBJUIwJTgwJTIwLSUyMCVFRCU5NSVBMCVFQyU5RCVCOCVFQSVCOCU4OCVFQyU5NSVBMSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSUzQ2JyJTNFJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYiUzRSU1QiVFQyVBMSVCMCVFQSVCMSVCNCU1RCUzQyUyRmIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUMlQTAlOTUlRUElQjAlODAlRUIlOEElOTQlMjAlRUIlQjMlODAlRUMlODglOTglMjAlM0NiJTNFcHJpY2UlM0MlMkZiJTNFJTIwJUVDJUEwJTk1JUVDJTg4JTk4JUVCJUExJTlDJTIwJUVDJUEwJTgwJUVDJTlFJUE1JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0LiUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFRCU5NSVBMCVFQyU5RCVCOCVFQyU5QyVBOCVFQyU5RCU4MCUyMCVFQiVCMyU4MCVFQyU4OCU5OCUyMCUzQ2IlM0VkaXNjb3VudF9yYXRlJTNDJTJGYiUzRSVFQyU5NyU5MCUyMCVFQyU4QiVBNCVFQyU4OCU5OCVFQiVBMSU5QyUyMCVFQyVBMCU4MCVFQyU5RSVBNSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUMlQjUlOUMlRUMlQTIlODUlMjAlRUElQjAlODAlRUElQjIlQTklRUMlOUQlODAlMjAlRUIlQjMlODAlRUMlODglOTglMjAlM0NiJTNFZmluYWxfcHJpY2UlM0MlMkZiJTNFJUVDJTk3JTkwJTIwJUVDJUEwJTgwJUVDJTlFJUE1JUVEJTk1JTk4JUVDJTk3JUFDJTIwJUVDJUI2JTlDJUVCJUEwJUE1JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0LiUzQyUyRmRpdiUzRSUzQyUyRmRpdiUzRSUyMiU3RCUyQyU3QiUyMmlkJTIyJTNBJTIycXA0d2JmY29xJTIyJTJDJTIydHlwZSUyMiUzQSUyMmlucHV0JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMiVFQiVBQyVCQyVFQSVCMSVCNCVFQyU5RCU5OCUyMCVFQyVBMCU5NSVFQSVCMCU4MCVFQiVBNSVCQyUyMCVFQyU5RSU4NSVFQiVBMCVBNSVFRCU5NSU5OCVFQyU4NCVCOCVFQyU5QSU5NCUzQSUyMDEwMDAwJTNDZGl2JTNFJUVEJTk1JUEwJUVDJTlEJUI4JUVDJTlDJUE4JUVDJTlEJTg0JTIwJUVDJTlFJTg1JUVCJUEwJUE1JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0KCUyNSUyMCVFQyVBMCU5QyVFQyU5OSVCOCklM0ElMjAxMCUzQyUyRmRpdiUzRSUyMiU3RCUyQyU3QiUyMmlkJTIyJTNBJTIycDhvY2o2ZjJsJTIyJTJDJTIydHlwZSUyMiUzQSUyMm91dHB1dCUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUMlQTAlOTUlRUElQjAlODAlM0ElMjAxMDAwMCUyMCVFQyU5QiU5MCUzQ2RpdiUzRSVFRCU5NSVBMCVFQyU5RCVCOCVFQyU5QyVBOCUzQSUyMDEwLjAlMjAlMjUlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRUMlQjUlOUMlRUMlQTIlODUlMjAlRUQlOTUlQTAlRUMlOUQlQjglMjAlRUMlQTAlODElRUMlOUElQTklRUElQjAlODAlRUIlOEElOTQlMjA5MDAwLjAlMjAlRUMlOUIlOTAlRUMlOUUlODUlRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTIyJTdEJTVEJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJmeWs1eWtteTclMjIlMkMlMjJ0eXBlJTIyJTNBJTIybWlzc2lvbi1jb2RpbmclMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyJUVBJUIzJTg0JUVDJTgyJUIwJUVBJUI4JUIwJTIyJTJDJTIyc3ViQ29udGVudCUyMiUzQSUyMiUyMiUyQyUyMnF1aXpJdGVtcyUyMiUzQSU1QiU1RCUyQyUyMnNob3dSZXN1bHQlMjIlM0FmYWxzZSUyQyUyMmJsb2NrcyUyMiUzQSU1QiU3QiUyMmlkJTIyJTNBJTIyZHAlMjIlMkMlMjJ0eXBlJTIyJTNBJTIycHJvYmxlbSUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUIlOTElOTAlMjAlRUMlODglOTglRUIlQTUlQkMlMjAlRUMlOUUlODUlRUIlQTAlQTUlMjAlRUIlQjAlOUIlRUMlOTUlODQlMkMlMjAlRUIlOEIlQTQlRUMlOUQlOEMlMjAlRUElQjIlQjAlRUElQjMlQkMlRUIlQTUlQkMlMjAlRUMlQjYlOUMlRUIlQTAlQTUlRUQlOTUlOTglRUIlOEElOTQlMjAlRUMlQkQlOTQlRUIlOTMlOUMlRUIlQTUlQkMlMjAlRUMlOUUlOTElRUMlODQlQjElRUQlOTUlOTglRUMlODQlQjglRUMlOUElOTQuJTIyJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJkaSUyMiUyQyUyMnR5cGUlMjIlM0ElMjJpbnB1dCUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIyMCUzQ2RpdiUzRTYlM0MlMkZkaXYlM0UlMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmRvJTIyJTJDJTIydHlwZSUyMiUzQSUyMm91dHB1dCUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUQlOTUlQTklMjAlM0ElMjAyNiUzQ2RpdiUzRSVFQyVCMCVBOCUyMCUzQSUyMDE0JTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVBJUIzJUIxJTIwJTNBJTIwMTIwJTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVCJUFBJUFCJTIwJTNBJTIwMy4zMzMzMzMzMzMzMzMzMzM1JTNDJTJGZGl2JTNFJTNDZGl2JTNFJUVCJTgyJTk4JUVCJUE4JUI4JUVDJUE3JTgwJTIwJTNBJTIwMiUzQyUyRmRpdiUzRSUyMiU3RCU1RCU3RCUyQyU3QiUyMmlkJTIyJTNBJTIycTk3bjF1dmQ3JTIyJTJDJTIydHlwZSUyMiUzQSUyMm1pc3Npb24tY29kaW5nJTIyJTJDJTIyY29udGVudCUyMiUzQSUyMiVFRCU4MiVBNCUyMCVFQiVCOSU4NCVFQSVCNSU5MCVFRCU5NSU5OCVFQSVCOCVCMCUyMiUyQyUyMnN1YkNvbnRlbnQlMjIlM0ElMjIlMjIlMkMlMjJxdWl6SXRlbXMlMjIlM0ElNUIlNUQlMkMlMjJzaG93UmVzdWx0JTIyJTNBZmFsc2UlMkMlMjJibG9ja3MlMjIlM0ElNUIlN0IlMjJpZCUyMiUzQSUyMmRwJTIyJTJDJTIydHlwZSUyMiUzQSUyMnByb2JsZW0lMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyJTNDZGl2JTNFJUVEJTgyJUE0JUVCJUE1JUJDJTIwJUVDJTlFJTg1JUVCJUEwJUE1JTIwJUVCJUIwJTlCJUVBJUIzJUEwJTJDJTI2bmJzcCUzQiUzQ3NwYW4lMjBzdHlsZSUzRCU1QyUyMmNvbG9yJTNBJTIwcmdiKDAlMkMlMjAwJTJDJTIwMCklM0IlNUMlMjIlM0UlRUQlODIlQTQlRUElQjAlODAlMjAxNjAlMjAlRUMlOUQlQjQlRUMlODMlODElRUMlOUQlQjglRUMlQTclODAlMjAlRUQlOTklOTUlRUMlOUQlQjglRUQlOTUlOTglRUMlOTclQUMlMjAlRUMlQjYlOUMlRUIlQTAlQTUlRUQlOTUlOTglRUMlODQlQjglRUMlOUElOTQuJTNDJTJGc3BhbiUzRSUzQyUyRmRpdiUzRSUyMiU3RCUyQyU3QiUyMmlkJTIyJTNBJTIyZG8lMjIlMkMlMjJ0eXBlJTIyJTNBJTIyb3V0cHV0JTIyJTJDJTIyY29udGVudCUyMiUzQSUyMlRydWUlMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMnZpZm5vZjJkZyUyMiUyQyUyMnR5cGUlMjIlM0ElMjJpbnB1dCUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIxNjUlMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmNsemY1c3A1cSUyMiUyQyUyMnR5cGUlMjIlM0ElMjJpbnB1dCUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIxMzAlMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmx0eWJka2UwZSUyMiUyQyUyMnR5cGUlMjIlM0ElMjJvdXRwdXQlMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyRmFsc2UlMjIlN0QlNUQlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMjI4YzBzNGZwaiUyMiUyQyUyMnR5cGUlMjIlM0ElMjJtaXNzaW9uLWNvZGluZyUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjIlRUIlODYlODAlRUMlOUQlQjQlRUElQjMlQjUlRUMlOUIlOTAlMjAlRUMlOUUlODUlRUMlOUUlQTUlMjAlRUElQjAlODAlRUIlOEElQTUlMjAlRUMlOTclQUMlRUIlQjYlODAlMjIlMkMlMjJzdWJDb250ZW50JTIyJTNBJTIyJTIyJTJDJTIycXVpekl0ZW1zJTIyJTNBJTVCJTVEJTJDJTIyc2hvd1Jlc3VsdCUyMiUzQWZhbHNlJTJDJTIyYmxvY2tzJTIyJTNBJTVCJTdCJTIyaWQlMjIlM0ElMjJkcCUyMiUyQyUyMnR5cGUlMjIlM0ElMjJwcm9ibGVtJTIyJTJDJTIyY29udGVudCUyMiUzQSUyMiVFQiU4MiU5OCVFQyU5RCVCNCVFQSVCMCU4MCUyMDEzJUVDJTg0JUI4JTIwJUVDJTlEJUI0JUVDJTgzJTgxJUVDJTlEJUI0JUVCJUE5JUI0JUVDJTg0JTlDJTIwJUVEJThCJUIwJUVDJUJDJTkzJUVDJTlEJUI0JTIwJUVDJTlFJTg4JUVCJThBJTk0JUVDJUE3JTgwJTIwJUVEJTk5JTk1JUVDJTlEJUI4JUVEJTk1JTk4JUVDJTk3JUFDJTIwJUVDJUI2JTlDJUVCJUEwJUE1JUVEJTk1JTk4JUVDJTg0JUI4JUVDJTlBJTk0LiUyMiU3RCUyQyU3QiUyMmlkJTIyJTNBJTIyZGMlMjIlMkMlMjJ0eXBlJTIyJTNBJTIyY29kZSUyMiUyQyUyMmNvbnRlbnQlMjIlM0ElMjJhZ2UlMjAlM0QlMjAxNSU1Q25wYXJlbnQlMjAlM0QlMjBUcnVlJTIyJTJDJTIyY29kZVRoZW1lJTIyJTNBJTIyZGFyay1tb2Rlcm4lMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMnE1b3E1dDVzeSUyMiUyQyUyMnR5cGUlMjIlM0ElMjJvdXRwdXQlMjIlMkMlMjJjb250ZW50JTIyJTNBJTIyVHJ1ZSUyMiU3RCU1RCU3RCU1RCU3RCU1RCUyQyUyMmN1cnJpY3VsdW1zJTIyJTNBJTVCJTdCJTIyaWQlMjIlM0ElMjJzY3JhdGNoLWpyJTIyJTJDJTIydGl0bGUlMjIlM0ElMjIlRUMlOEElQTQlRUQlODElQUMlRUIlOUUlOTglRUMlQjklOTglMjAlRUMlQTMlQkMlRUIlOEIlODglRUMlOTYlQjQlMjIlMkMlMjJzdGF0dXMlMjIlM0ElMjJjb21pbmctc29vbiUyMiUyQyUyMmRlc2NyaXB0aW9uJTIyJTNBJTIyNX43JUVDJTg0JUI4JUVCJUE1JUJDJTIwJUVDJTlDJTg0JUVEJTk1JTlDJTIwJUVDJTk1JTg0JUVDJTlEJUI0JUVDJUJEJTk4JTIwJUVBJUI4JUIwJUVCJUIwJTk4JTIwJUVCJUI4JTk0JUVCJUExJTlEJTIwJUVDJUJEJTk0JUVCJTk0JUE5JUVDJTlDJUJDJUVCJUExJTlDJTIwJUVDJUIwJUJEJUVDJTlEJTk4JUVCJUEwJUE1JUVDJTlEJTg0JTIwJUVEJTgyJUE0JUVDJTlCJThDJUVDJTlBJTk0LiUyMiUyQyUyMmNvbG9yJTIyJTNBJTIyJTIzRkY2QjZCJTIyJTJDJTIyY2hhcHRlcnMlMjIlM0ElNUIlNUQlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmVudHJ5JTIyJTJDJTIydGl0bGUlMjIlM0ElMjIlRUMlOTclOTQlRUQlOEElQjglRUIlQTYlQUMlMjIlMkMlMjJzdGF0dXMlMjIlM0ElMjJjb21pbmctc29vbiUyMiUyQyUyMmRlc2NyaXB0aW9uJTIyJTNBJTIyJUVBJUI1JUFEJUVCJTgyJUI0JTIwJUVDJUI0JTg4JUVDJUE0JTkxJUVCJTkzJUIxJTIwJUVBJUI1JTkwJUVDJTlDJUExJUVBJUIzJUJDJUVDJUEwJTk1JUVDJTk3JTkwJTIwJUVCJUE3JTlFJUVDJUI2JTk4JTIwJUVCJUI4JTk0JUVCJUExJTlEJTIwJUVDJUJEJTk0JUVCJTk0JUE5JUVDJTlDJUJDJUVCJUExJTlDJTIwJUVCJTg1JUJDJUVCJUE2JUFDJUVCJUEwJUE1JUVDJTlEJTg0JTIwJUVCJUIwJUIwJUVDJTlCJThDJUVDJTlBJTk0LiUyMiUyQyUyMmNvbG9yJTIyJTNBJTIyJTIzRkNDNDE5JTIyJTJDJTIyY2hhcHRlcnMlMjIlM0ElNUIlNUQlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMnNjcmF0Y2glMjIlMkMlMjJ0aXRsZSUyMiUzQSUyMiVFQyU4QSVBNCVFRCU4MSVBQyVFQiU5RSU5OCVFQyVCOSU5OCUyMiUyQyUyMnN0YXR1cyUyMiUzQSUyMmNvbWluZy1zb29uJTIyJTJDJTIyZGVzY3JpcHRpb24lMjIlM0ElMjIlRUMlQTAlODQlMjAlRUMlODQlQjglRUElQjMlODQlMjAlRUMlQjklOUMlRUElQjUlQUMlRUIlOTMlQTQlRUElQjMlQkMlMjAlRUElQjMlQjUlRUMlOUMlQTAlRUQlOTUlOTglRUIlQTklQjAlMjAlRUIlQjAlQjAlRUMlOUElQjAlRUIlOEElOTQlMjAlRUElQjglODAlRUIlQTElOUMlRUIlQjIlOEMlMjAlRUIlQjglOTQlRUIlQTElOUQlMjAlRUMlQkQlOTQlRUIlOTQlQTklMjAlRUElQjMlQkMlRUMlQTAlOTUlRUMlOUUlODUlRUIlOEIlODglRUIlOEIlQTQuJTIyJTJDJTIyY29sb3IlMjIlM0ElMjIlMjM0REFCRjclMjIlMkMlMjJjaGFwdGVycyUyMiUzQSU1QiU1RCU3RCUyQyU3QiUyMmlkJTIyJTNBJTIycHl0aG9uJTIyJTJDJTIydGl0bGUlMjIlM0ElMjIlRUQlOEMlOEMlRUMlOUQlQjQlRUMlOEQlQUMlMjAlRUElQjglQjAlRUMlQjQlODglMjIlMkMlMjJzdGF0dXMlMjIlM0ElMjJyZWFkeSUyMiUyQyUyMmRlc2NyaXB0aW9uJTIyJTNBJTIyJUVEJTg1JThEJUVDJThBJUE0JUVEJThBJUI4JTIwJUVDJUJEJTk0JUVCJTk0JUE5JUVDJTlEJTk4JTIwJUVDJThCJTlDJUVDJTlFJTkxISUyMCVFQSVCMCU4MCVFQyU5RSVBNSUyMCVFQyU5RCVCOCVFQSVCOCVCMCUyMCVFQyU5RSU4OCVFQiU4QSU5NCUyMCVFQyU5NiVCOCVFQyU5NiVCNCVFQiVBMSU5QyUyMCVFQyU4QiVBNCVFQyVBMCU4NCUyMCVFQyVCRCU5NCVFQiU5NCVBOSVFQyU5RCU4NCUyMCVFQiVCMCVCMCVFQyU5QiU4QyVFQyU5QSU5NC4lMjIlMkMlMjJjb2xvciUyMiUzQSUyMiUyMzJBQzFBNSUyMiUyQyUyMmNoYXB0ZXJzJTIyJTNBJTVCJTdCJTIyaWQlMjIlM0ElMjJjaDElMjIlMkMlMjJ0aXRsZSUyMiUzQSUyMkNIQVBURVIlMjAwMSUzQSUyMCVFQyU4QiU5QyVFQyU5RSU5MSVFRCU5NSU5OCVFQSVCOCVCMCUyMiUyQyUyMmxlc3NvbnMlMjIlM0ElNUIlN0IlMjJpZCUyMiUzQSUyMmwxLTElMjIlMkMlMjJ0aXRsZSUyMiUzQSUyMjEtMS4lMjAlRUQlODQlQjAlRUQlOEIlODAlMjAlRUElQjclQjglRUIlOUUlOTglRUQlOTQlQkQlMjAtJTIwMSUyMiUyQyUyMnVybCUyMiUzQSUyMiUyMyUyMiU3RCUyQyU3QiUyMmlkJTIyJTNBJTIybDEtMiUyMiUyQyUyMnRpdGxlJTIyJTNBJTIyMS0yLiUyMCVFRCU4NCVCMCVFRCU4QiU4MCUyMCVFQSVCNyVCOCVFQiU5RSU5OCVFRCU5NCVCRCUyMC0lMjAyJTIyJTJDJTIydXJsJTIyJTNBJTIyJTIzJTIyJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjI2bWU3ZXU4anklMjIlMkMlMjJ0aXRsZSUyMiUzQSUyMjEtMy4lMjAlRUQlODQlQjAlRUQlOEIlODAlMjAlRUElQjIlOEMlRUMlOUUlODQlMjIlMkMlMjJ1cmwlMjIlM0ElMjIlMjMlMjIlN0QlNUQlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmNoMiUyMiUyQyUyMnRpdGxlJTIyJTNBJTIyQ0hBUFRFUiUyMDAyJTNBJTIwJUVDJTlFJTg1JUVDJUI2JTlDJUVCJUEwJUE1JUVBJUIzJUJDJTIwJUVDJTlFJTkwJUVCJUEzJThDJUVEJTk4JTk1JTIyJTJDJTIybGVzc29ucyUyMiUzQSU1QiU3QiUyMmlkJTIyJTNBJTIybDItMSUyMiUyQyUyMnRpdGxlJTIyJTNBJTIyMi0xLiUyMCVFQyVCNiU5QyVFQiVBMCVBNSUyMHByaW50KCklMjIlMkMlMjJ1cmwlMjIlM0ElMjJodHRwcyUzQSUyRiUyRnBlb255NzEyMy1zb3VyY2UuZ2l0aHViLmlvJTJGY29kaW5nJTJGMDZfUHl0aG9uJTJGMDEtMDFfcHJpbnQuaHRtbCUyMiU3RCUyQyU3QiUyMmlkJTIyJTNBJTIybDItMiUyMiUyQyUyMnRpdGxlJTIyJTNBJTIyMi0yLiUyMCVFQiVCMyU4MCVFQyU4OCU5OCVFQyU5OSU4MCUyMCVFQyU5RSU5MCVFQiVBMyU4QyVFRCU5OCU5NSUyMiUyQyUyMnVybCUyMiUzQSUyMiUyMyUyMiU3RCUyQyU3QiUyMmlkJTIyJTNBJTIybDItMyUyMiUyQyUyMnRpdGxlJTIyJTNBJTIyMi0zLiUyMCVFQyU5RSU4NSVFQiVBMCVBNSUyMGlucHV0KCklMjIlMkMlMjJ1cmwlMjIlM0ElMjIlMjMlMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMmtjeWZpZGcydyUyMiUyQyUyMnRpdGxlJTIyJTNBJTIyMi00LiUyMCVFQyU5NyVCMCVFQyU4MiVCMCVFQyU5RSU5MCUyMiUyQyUyMnVybCUyMiUzQSUyMiUyMyUyMiU3RCU1RCU3RCUyQyU3QiUyMmlkJTIyJTNBJTIyY2gzJTIyJTJDJTIydGl0bGUlMjIlM0ElMjJDSEFQVEVSJTIwMDMlM0ElMjAlRUMlQTElQjAlRUElQjElQjQlRUIlQUMlQjglMjIlMkMlMjJsZXNzb25zJTIyJTNBJTVCJTdCJTIyaWQlMjIlM0ElMjJsMy0xJTIyJTJDJTIydGl0bGUlMjIlM0ElMjIzLTEuJTIwJUVDJUExJUIwJUVBJUIxJUI0JUVCJUFDJUI4JTIwKGlmLWVsc2UpJTIyJTJDJTIydXJsJTIyJTNBJTIyJTIzJTIyJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJsMy0yJTIyJTJDJTIydGl0bGUlMjIlM0ElMjIzLTIuJTIwJUVDJUExJUIwJUVBJUIxJUI0JUVCJUFDJUI4JTIwKGlmLWVsaWYpJTIyJTJDJTIydXJsJTIyJTNBJTIyJTIzJTIyJTdEJTVEJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJibms1OW9jaWQlMjIlMkMlMjJ0aXRsZSUyMiUzQSUyMkNIQVBURVIlMjAwNCUzQSUyMCVFQiVCMCU5OCVFQiVCMyVCNSVFQiVBQyVCOCUyMiUyQyUyMmxlc3NvbnMlMjIlM0ElNUIlN0IlMjJpZCUyMiUzQSUyMnluemxjczl4aSUyMiUyQyUyMnRpdGxlJTIyJTNBJTIyNC0xLiUyMCVFQiVCMCU5OCVFQiVCMyVCNSVFQiVBQyVCOCUyMCh3aGlsZSklMjIlMkMlMjJ1cmwlMjIlM0ElMjIlMjIlN0QlMkMlN0IlMjJpZCUyMiUzQSUyMnN5dXVxZzQzNiUyMiUyQyUyMnRpdGxlJTIyJTNBJTIyNC0yLiUyMCVFQiVCMCU5OCVFQiVCMyVCNSVFQiVBQyVCOCUyMChmb3IpJTIyJTJDJTIydXJsJTIyJTNBJTIyaHR0cHMlM0ElMkYlMkZwZW9ueTcxMjMtc291cmNlLmdpdGh1Yi5pbyUyRmNvZGluZyUyRjA2X1B5dGhvbiUyRjA0LTAxX2Zvci5odG1sJTIyJTdEJTVEJTdEJTVEJTdEJTJDJTdCJTIyaWQlMjIlM0ElMjJjZXJ0aWZpY2F0aW9uJTIyJTJDJTIydGl0bGUlMjIlM0ElMjIlRUMlOUUlOTAlRUElQjIlQTklRUMlQTYlOUQlMjAlRUElQjMlQkMlRUMlQTAlOTUlMjIlMkMlMjJzdGF0dXMlMjIlM0ElMjJjb21pbmctc29vbiUyMiUyQyUyMmRlc2NyaXB0aW9uJTIyJTNBJTIyU1clMjAlRUMlQkQlOTQlRUIlOTQlQTklMjAlRUMlOUUlOTAlRUElQjIlQTklRUMlQTYlOUQlMjAlRUMlQjclQTglRUIlOTMlOUQlRUMlOUQlODQlMjAlRUMlOUMlODQlRUQlOTUlOUMlMjAlRUMlOEIlQTQlRUMlQTAlODQlMjAlRUIlOEMlODAlRUIlQjklODQlMjAlRUElQjMlQkMlRUMlQTAlOTUlRUMlOUUlODUlRUIlOEIlODglRUIlOEIlQTQuJTIyJTJDJTIyY29sb3IlMjIlM0ElMjIlMjNCRTRCREIlMjIlMkMlMjJjaGFwdGVycyUyMiUzQSU1QiU1RCU3RCU1RCUyQyUyMmFjYWRlbXlOYW1lJTIyJTNBJTIyQ09ERSUzQU4lMjIlMkMlMjJhY2FkZW15TG9nbyUyMiUzQSUyMmh0dHBzJTNBJTJGJTJGcGljc3VtLnBob3RvcyUyRnNlZWQlMkZjb2RpbmclMkYxMDAlMkYxMDAlMjIlN0Q="></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script>
+        // Enhance Python grammar for better highlighting
+        if (Prism.languages.python) {
+            Prism.languages.insertBefore('python', 'keyword', {
+                'function-call': {
+                    pattern: /\b[a-z_]\w*(?=\s*\()/i,
+                    alias: 'function'
+                },
+                'namespace': {
+                    pattern: /\b[a-z_]\w*(?=\s*\.)/i
+                },
+                'parameter': {
+                    pattern: /\b[a-z_]\w*(?=\s*(?:\*\*|\*|\/\/|\/|\+|-|%|&|\||\^|<<|>>)?=)/i,
+                    alias: 'variable'
+                },
+                'class-name': {
+                    pattern: /\b[A-Z]\w*\b/,
+                    alias: 'class-name'
+                }
+            });
+
+            Prism.languages.insertBefore('python', 'operator', {
+                'variable': {
+                    pattern: /\b[a-z_]\w*\b/i
+                }
+            });
+
+            Prism.languages.insertBefore('python', 'punctuation', {
+                'operator': {
+                    pattern: /\b(?:and|or|not)\b|[-+*/%=<>!&|^~]=?|<<=?|>>=?|\*\*=?|\/\/=?/
+                }
+            });
+        }
+
+        // Rainbow Brackets Hook
+        let bracketStack = [];
+        Prism.hooks.add('before-highlight', (env) => {
+            bracketStack = [];
+        });
+
+        Prism.hooks.add('wrap', (env) => {
+            if (env.type === 'punctuation') {
+                const char = env.content;
+                if (char === '(' || char === '[' || char === '{') {
+                    const level = bracketStack.length % 4;
+                    env.classes.push('bracket-level-' + level);
+                    bracketStack.push(char);
+                } else if (char === ')' || char === ']' || char === '}') {
+                    const last = bracketStack.pop();
+                    const level = bracketStack.length % 4;
+                    env.classes.push('bracket-level-' + level);
+                }
+            }
+        });
+
+        let pyodideInstance = null;
+        let pyodideLoadingPromise = null;
+
+        async function getPyodide() {
+            if (pyodideInstance) return pyodideInstance;
+            if (pyodideLoadingPromise) return pyodideLoadingPromise;
+
+            pyodideLoadingPromise = (async () => {
+                if (typeof window.loadPyodide === 'undefined') {
+                    pyodideLoadingPromise = null;
+                    throw new Error("Pyodide not loaded");
+                }
+                const pyodide = await window.loadPyodide({ 
+                    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.1/full/", 
+                    fullStdLib: false 
+                });
+                pyodideInstance = pyodide;
+                return pyodide;
+            })();
+            return pyodideLoadingPromise;
+        }
+
+        async function runPythonCode(idx) {
+            const runBtn = document.querySelectorAll('.run-code-btn')[idx];
+            const resultArea = document.getElementById('result-area-' + idx);
+            const codeInput = document.getElementById('code-input-' + idx);
+            
+            if (!resultArea || !codeInput) return;
+
+            const box = runBtn.closest('.code-box-set');
+            const isCodeSet = box && box.getAttribute('data-type') === 'code-set';
+
+            // Toggle logic
+            const currentBtnText = runBtn.innerText.trim();
+            if (currentBtnText === '결과 숨기기' || currentBtnText === '실행 중... ⏳') {
+                resultArea.style.display = 'none';
+                runBtn.innerHTML = isCodeSet ? '결과확인' : '결과확인 ⚡';
+                return;
+            }
+            
+            const originalBtnText = runBtn.innerHTML;
+            runBtn.innerHTML = '실행 중... ⏳';
+            
+            resultArea.style.display = 'block';
+            resultArea.innerHTML = '결과를 불러오는 중...';
+            
+            try {
+                const pyodide = await getPyodide();
+                
+                await pyodide.runPythonAsync(`
+import builtins
+import js
+def _input(prompt=""):
+    res = js.window.prompt(prompt)
+    return str(res) if res is not None else ""
+builtins.input = _input
+                `.trim());
+
+                let output = '';
+                if (pyodide && typeof pyodide.setStdout === 'function') {
+                    pyodide.setStdout({
+                        batched: (msg) => {
+                            output += msg + '\n';
+                            if (resultArea) resultArea.innerText = output;
+                        }
+                    });
+                }
+                
+                const code = codeInput.innerText;
+                const result = await pyodide.runPythonAsync(code);
+                
+                const finalOutput = output.trim();
+                if (finalOutput) {
+                    resultArea.innerText = finalOutput;
+                } else if (result !== undefined && result !== null && String(result) !== 'None') {
+                    resultArea.innerText = String(result);
+                } else {
+                    resultArea.innerText = '실행 완료';
+                }
+
+                // Update button text after successful run only if result area is still visible
+                if (resultArea.style.display !== 'none') {
+                    runBtn.innerHTML = '결과 숨기기';
+                }
+            } catch (err) {
+                if (resultArea.style.display !== 'none') {
+                    resultArea.innerHTML = '<span style="color: #ff6b6b;">에러 발생: ' + err.message + '</span>';
+                }
+                runBtn.innerHTML = originalBtnText;
+            } finally {
+                runBtn.disabled = false;
+            }
+        }
+
+        function selectOption(el) {
+            const box = el.closest('.box-green');
+            if (!box || box.getAttribute('data-results-shown') === 'true') return;
+
+            const item = el.closest('.quiz-set-item');
+            if (!item) return;
+            
+            const options = item.querySelectorAll('.select-item');
+            for (let i = 0; i < options.length; i++) {
+                options[i].classList.remove('selected');
+            }
+            el.classList.add('selected');
+        }
+
+        function toggleHint(btn) {
+            const container = btn.closest('.quiz-set-item') || btn.closest('.flex-col') || btn.parentElement.parentElement;
+            const box = container.querySelector('.hint-box');
+            const chevron = btn.querySelector('.chevron-icon');
+            if (box.style.display === 'none' || box.style.display === '') {
+                box.style.display = 'flex';
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            } else {
+                box.style.display = 'none';
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function checkQuiz(btn) {
+            const box = btn.closest('.box-green');
+            if (!box) return;
+            
+            if (box.getAttribute('data-results-shown') === 'true') {
+                // Reset quiz
+                box.setAttribute('data-results-shown', 'false');
+                btn.innerHTML = '💯 채점하기';
+                btn.style.backgroundColor = '#212529';
+                
+                const quizItems = box.querySelectorAll('.quiz-set-item');
+                for (let i = 0; i < quizItems.length; i++) {
+                    const item = quizItems[i];
+                    const options = item.querySelectorAll('.select-item');
+                    options.forEach(opt => opt.classList.remove('selected', 'correct', 'incorrect'));
+                    
+                    const subjectiveInput = item.querySelector('.subjective-input');
+                    if (subjectiveInput) {
+                        subjectiveInput.style.borderColor = '#f1f5f9';
+                        subjectiveInput.style.backgroundColor = '#f8fafc';
+                        subjectiveInput.contentEditable = 'true';
+                    }
+
+                    item.style.border = '1px solid rgba(0,0,0,0.05)';
+                    item.style.borderWidth = '1px';
+                    
+                    const feedback = item.querySelector('.feedback-msg');
+                    if (feedback) feedback.remove();
+                }
+                
+                const scoreDisplay = box.querySelector('.score-display');
+                if (scoreDisplay) scoreDisplay.remove();
+                
+                return;
+            }
+
+            const quizItems = box.querySelectorAll('.quiz-set-item');
+            let allAnswered = true;
+            
+            for (let i = 0; i < quizItems.length; i++) {
+                const item = quizItems[i];
+                const hasOptions = item.querySelector('.select-item');
+                const subjectiveInput = item.querySelector('.subjective-input');
+                
+                if (hasOptions && !item.querySelector('.select-item.selected')) {
+                    allAnswered = false;
+                    break;
+                }
+                if (subjectiveInput && !subjectiveInput.innerText.trim()) {
+                    allAnswered = false;
+                    break;
+                }
+            }
+            
+            if (!allAnswered) {
+                alert('모든 문제를 풀어주세요!');
+                return;
+            }
+            
+            box.setAttribute('data-results-shown', 'true');
+            btn.innerHTML = '다시 풀기';
+            btn.style.backgroundColor = '#666';
+
+            let correctCount = 0;
+
+            for (let i = 0; i < quizItems.length; i++) {
+                const item = quizItems[i];
+                
+                // Remove existing feedback if any
+                const oldFeedback = item.querySelector('.feedback-msg');
+                if (oldFeedback) oldFeedback.remove();
+
+                const feedback = document.createElement('div');
+                feedback.className = 'feedback-msg';
+                
+                const correctAttr = item.getAttribute('data-correct');
+                const correctIdx = (correctAttr !== null && correctAttr !== 'undefined' && correctAttr !== '') ? parseInt(correctAttr) : -1;
+                const correctAnswer = item.getAttribute('data-correct-answer');
+                const options = item.querySelectorAll('.select-item');
+                const subjectiveInput = item.querySelector('.subjective-input');
+                
+                let isCorrect = false;
+                let selectedIdx = -1;
+
+                if (options.length > 0) {
+                    for (let j = 0; j < options.length; j++) {
+                        const opt = options[j];
+                        if (opt.classList.contains('selected')) selectedIdx = j;
+                        
+                        if (j === correctIdx) {
+                            opt.classList.add('correct');
+                        }
+                        if (opt.classList.contains('selected') && j !== correctIdx) {
+                            opt.classList.add('incorrect');
+                        }
+                    }
+                    isCorrect = selectedIdx === correctIdx && correctIdx !== -1;
+                } else if (subjectiveInput) {
+                    const userAns = subjectiveInput.innerText.trim();
+                    isCorrect = userAns === correctAnswer;
+                    subjectiveInput.contentEditable = 'false';
+                    
+                    subjectiveInput.style.borderColor = isCorrect ? '#2AC1A5' : '#f87171';
+                    subjectiveInput.style.backgroundColor = isCorrect ? '#f0fdfa' : '#fef2f2';
+                }
+
+                if (isCorrect) {
+                    correctCount++;
+                    feedback.innerHTML = '✅ 정답!';
+                    feedback.classList.add('correct');
+                    item.style.border = '2px solid #2AC1A5';
+                } else {
+                    let displayCorrect = '';
+                    if (options.length > 0) {
+                        displayCorrect = (correctIdx !== -1 && options[correctIdx]) ? options[correctIdx].innerText.trim() : '미설정';
+                    } else {
+                        displayCorrect = correctAnswer || '미설정';
+                    }
+                    feedback.innerHTML = '❌ 오답 (정답: ' + displayCorrect + ')';
+                    feedback.classList.add('incorrect');
+                    item.style.border = '2px solid #f87171';
+                }
+                item.appendChild(feedback);
+            }
+
+            // Add score display
+            const scoreDisplay = document.createElement('div');
+            scoreDisplay.className = 'score-display';
+            scoreDisplay.style.marginTop = '20px';
+            scoreDisplay.style.textAlign = 'center';
+            const score = Math.round((correctCount / quizItems.length) * 100);
+            
+            let msg = '';
+            if (score === 100) {
+                msg = '완벽해요! 당신은 코딩 천재인가요? 🥳';
+            } else if (score >= 80) {
+                msg = '대단해요! 조금만 더 하면 만점이에요! 👍';
+            } else if (score >= 50) {
+                msg = '잘하고 있어요! 복습하면 더 완벽해질 거예요! 💪';
+            } else {
+                msg = '괜찮아요! 다시 한 번 도전해볼까요? ✨';
+            }
+
+            scoreDisplay.innerHTML = `
+                <p style="font-size: 20px; font-weight: 800; color: #333; margin-bottom: 5px;">총점: <span style="color: #f87171">${score}점</span> <span style="font-size: 14px; color: #666; font-weight: 500;">(${correctCount}/${quizItems.length}개)</span></p>
+                <p style="font-size: 14px; font-weight: 600; color: #666;">${msg}</p>
+            `;
+            btn.parentNode.insertBefore(scoreDisplay, btn);
+
+            if (score === 100) {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#2AC1A5', '#2d79f0', '#ff6b6b', '#fcc419']
+                });
+            }
+        }
+    </script>
+<script>
+    function toggleToc() {
+      var sidebar = document.getElementById('tocSidebar');
+      var chevron = document.getElementById('tocChevron');
+      var isCollapsed = sidebar.classList.toggle('collapsed');
+      if (isCollapsed) {
+        chevron.style.borderRight = 'none';
+        chevron.style.borderLeft = '7px solid #9ca3af';
+      } else {
+        chevron.style.borderLeft = 'none';
+        chevron.style.borderRight = '7px solid #9ca3af';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -956,6 +956,19 @@ body {
 .home-nav-btn:hover { background:rgba(74,158,255,0.2); }
 #app.panel-active .home-nav-btn { display:flex; }
 
+/* 미션 상세화면에서 갤러리로 돌아가는 버튼 — 스크롤해도 topbar에 항상 떠 있음 */
+.gallery-back-nav-btn {
+  display: none; align-items: center; gap:8px;
+  font-size: 15px; font-weight: 700; color: #fff;
+  background: var(--purple); border: none;
+  border-radius: 24px; padding: 10px 20px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; transition: filter 0.15s; white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(107,71,237,0.4);
+}
+.gallery-back-nav-btn:hover { filter: brightness(1.08); }
+.gallery-back-nav-arrow { display:inline-block; font-size:18px; animation: galleryBackNavWiggle 1.4s ease-in-out infinite; }
+@keyframes galleryBackNavWiggle { 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(-4px); } }
+
 @media(max-width:900px) {
   .cn-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1743,6 +1756,12 @@ body::before {
 .lesson-card.s5 .lesson-card-label { color: #FBB040; }
 .lesson-card.s5 .lesson-card-arrow { color: #FBB040; }
 
+.lesson-card.s4 { border-color: rgba(44,193,165,0.2); }
+.lesson-card.s4:hover { border-color: rgba(44,193,165,0.45); box-shadow: 0 10px 32px rgba(44,193,165,0.18); }
+.lesson-card.s4 .lesson-card-thumb { background: linear-gradient(145deg,#0d6b5a,#2CC1A5); }
+.lesson-card.s4 .lesson-card-label { color: #2CC1A5; }
+.lesson-card.s4 .lesson-card-arrow { color: #2CC1A5; }
+
 /* 패널 완료 버튼 */
 .panel-done-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -2051,7 +2070,7 @@ body::before { display: none !important; }
 .py-sec-title.func::before { background: #7C3AED !important; }
 
 /* 파이썬 갤러리 — 1200px 풀넓이 */
-.py-gallery, .py-sec-title, .py-today-bar, .py-done-btn {
+.py-gallery, .py-sec-title, .py-today-bar, .py-done-btn, .py-toc-header, .py-toc-grid {
   width: min(1200px, calc(100vw - 32px)) !important;
   position: relative !important;
   left: 50% !important;
@@ -2116,8 +2135,76 @@ body::before { display: none !important; }
 .py-today-bar-icon::after { background: #0078FF !important; }
 
 /* 파이썬 완료 버튼 */
-.py-done-btn { background: rgba(0,120,255,0.06) !important; border-color: rgba(0,120,255,0.2) !important; color: #0060CC !important; }
-.py-done-btn:hover { background: #0078FF !important; border-color: #0078FF !important; color: #fff !important; transform: translateY(-1px) !important; }
+.py-done-btn { background: rgba(42,193,165,0.08) !important; border-color: rgba(42,193,165,0.3) !important; color: #0F8A73 !important; }
+.py-done-btn:hover { background: #2AC1A5 !important; border-color: #2AC1A5 !important; color: #fff !important; transform: translateY(-1px) !important; }
+
+/* 파이썬 문법완성 목차 — 코든클래스 스타일 (coden-class.netlify.app 참조) */
+.py-toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  margin-bottom: 32px;
+  margin-top: 0;
+  border-bottom: 2px solid #E2E8F0;
+}
+.py-toc-title { font-size: 26px; font-weight: 900; color: #0F172A; }
+
+.py-toc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+  align-items: stretch;
+}
+.py-toc-chapter {
+  background: #FFFFFF; border-radius: 20px; padding: 28px;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+.py-toc-chapter-title {
+  font-size: 18px; font-weight: 800; color: #0F172A;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+}
+.py-toc-chapter-title::before {
+  content: ''; width: 4px; height: 18px; background: #2AC1A5; border-radius: 10px; flex-shrink: 0;
+}
+.py-toc-lessons { display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: flex-start; }
+.py-toc-lesson {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 20px; background: #F8FAFC; border-radius: 14px;
+  text-decoration: none; color: inherit; border: 1px solid #F1F5F9;
+  transition: 0.25s ease;
+}
+.py-toc-lesson:hover {
+  background: #FFFFFF; border-color: #2AC1A5; transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.py-toc-lesson-title { font-weight: 700; font-size: 15px; color: #334155; }
+.py-toc-lesson-icon {
+  width: 28px; height: 28px; background: #FFFFFF; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #94A3B8; font-size: 13px; border: 1px solid #E2E8F0;
+  transition: 0.25s ease; flex-shrink: 0;
+}
+.py-toc-lesson:hover .py-toc-lesson-icon { background: #2AC1A5; color: #fff; border-color: #2AC1A5; transform: rotate(-45deg); }
+.py-toc-lesson-icon { cursor: pointer; }
+.py-toc-lesson.py-done { background: #F0FBF6; border-color: rgba(34,197,94,0.35); }
+.py-toc-lesson.py-done .py-toc-lesson-title { color: #16A34A; }
+.py-toc-lesson.py-done .py-toc-lesson-icon { background: #22C55E; color: #fff; border-color: #22C55E; }
+.py-toc-lesson.py-done:hover .py-toc-lesson-icon { background: #16A34A; border-color: #16A34A; transform: none; }
+.py-toc-lesson-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.py-toc-ver-group { display: flex; gap: 6px; }
+.py-toc-ver {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #94A3B8;
+  background: #FFFFFF; border: 1px solid #E2E8F0;
+  text-decoration: none; transition: 0.2s ease; flex-shrink: 0;
+}
+.py-toc-ver:hover { background: #2AC1A5; color: #fff; border-color: #2AC1A5; }
+@media (max-width: 900px) { .py-toc-grid { grid-template-columns: 1fr; } }
 
 /* 파이썬 메모 */
 
@@ -2139,6 +2226,10 @@ body::before { display: none !important; }
 .lesson-card.s5:hover { border-color: rgba(245,158,11,0.28) !important; box-shadow: 0 8px 24px rgba(245,158,11,0.1) !important; }
 .lesson-card.s5 .lesson-card-label { color: #92400E !important; }
 .lesson-card.s5 .lesson-card-arrow { color: #D97706 !important; }
+.lesson-card.s4 { border-color: rgba(0,150,125,0.12) !important; }
+.lesson-card.s4:hover { border-color: rgba(0,150,125,0.28) !important; box-shadow: 0 8px 24px rgba(0,150,125,0.1) !important; }
+.lesson-card.s4 .lesson-card-label { color: #047857 !important; }
+.lesson-card.s4 .lesson-card-arrow { color: #00967D !important; }
 
 /* 패널 완료 버튼 */
 .panel-done-btn.s1 { background: #0078FF !important; border-color: transparent !important; color: #fff !important; box-shadow: 0 4px 14px rgba(0,120,255,0.25) !important; }
@@ -2497,6 +2588,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
     <div class="topbar-logo">코드앤 코딩 스튜디오</div>
     <div style="flex:1;"></div>
     <div class="topbar-right">
+      <button class="gallery-back-nav-btn" id="galleryBackNavBtn" onclick="goBackToGalleryFromTopbar()"><span class="gallery-back-nav-arrow">←</span> 미션 갤러리로</button>
       <button class="home-nav-btn" onclick="goHome()">← 홈으로</button>
       <span class="topbar-xp" id="entryXpBadge" style="display:none;">⭐ 0 XP</span>
       <span class="topbar-xp" id="scratchXpBadge" style="display:none;">⭐ 0 XP</span>
@@ -2802,6 +2894,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         allowtransparency="true"
         title="파이썬 터틀 웹교재">
       </iframe>
+
       <div class="lesson-done-row">
         <label class="done-toggle" id="done-p4" onclick="toggleDone('p4')">
           <div class="chk" id="chk-p4">✓</div>
@@ -2896,324 +2989,117 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <span class="py-hero-tag">COS Pro 1급</span>
             </div>
           </div>
-          <!-- 우측: 학습 스탯 -->
-          <div class="py-hero-stats">
-            <div class="py-hero-stats-row">
-              <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-total">14</div>
-                <div class="py-stat-label">총 챕터</div>
-              </div>
-              <div class="py-stat-div"></div>
-              <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-done">0</div>
-                <div class="py-stat-label">완료</div>
-              </div>
-              <div class="py-stat-div"></div>
-              <div class="py-stat">
-                <div class="py-stat-num" id="py-stat-pct">0%</div>
-                <div class="py-stat-label">달성률</div>
-              </div>
-            </div>
-            <div class="py-prog-label">학습 진도</div>
-            <div class="py-prog-bar">
-              <div class="py-prog-fill" id="py-prog-fill"></div>
-            </div>
-          </div>
         </div>
       </div>
 
-      <!-- ✦ 입출력과 자료형 (CH02) -->
-      <div class="py-sec-title io">입출력과 자료형</div>
-      <div class="py-gallery">
+      <div class="py-toc-grid">
 
-        <label class="py-gcard io" id="rc-p5-0">
-          <input type="radio" name="today-p5" value="0" onchange="selectToday('p5',0)">
-          <div class="py-gcard-thumb io">
-            <div class="py-thumb-code"><span class="py-tc-fn">print</span>(<span class="py-tc-str">"Hello World!"</span>)<br><span class="py-tc-fn">print</span>(<span class="py-tc-str">"반가워요"</span>)<br><span class="py-tc-cm"># 화면에 출력</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
+        <!-- CHAPTER: 입출력과 자료형 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">입출력과 자료형</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" data-lid="print" href="https://coden-class.netlify.app/06_python/02-01_print" target="_blank">
+              <span class="py-toc-lesson-title">출력 print()</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'print')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="var" href="https://coden-class.netlify.app/06_python/02-02_var" target="_blank">
+              <span class="py-toc-lesson-title">변수와 자료형</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'var')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="input" href="https://coden-class.netlify.app/06_python/02-03_input" target="_blank">
+              <span class="py-toc-lesson-title">입력 input()</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'input')">➜</span>
+            </a>
           </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">입출력</div>
-            <div class="py-gcard-name">출력 print()</div>
-            <div class="py-gcard-desc">괄호 안의 내용을 화면에 출력하는 기본 명령어</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/02-01_print" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard io" id="rc-p5-1">
-          <input type="radio" name="today-p5" value="1" onchange="selectToday('p5',1)">
-          <div class="py-gcard-thumb io">
-            <div class="py-thumb-code">x = <span class="py-tc-num">10</span><br>name = <span class="py-tc-str">"파이썬"</span><br><span class="py-tc-fn">print</span>(x, name)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">입출력</div>
-            <div class="py-gcard-name">변수와 자료형</div>
-            <div class="py-gcard-desc">값을 저장하는 변수와 데이터 형태(자료형) 이해</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/02-02_var" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard io" id="rc-p5-2">
-          <input type="radio" name="today-p5" value="2" onchange="selectToday('p5',2)">
-          <div class="py-gcard-thumb io">
-            <div class="py-thumb-code">name = <span class="py-tc-fn">input</span>(<span class="py-tc-str">"이름: "</span>)<br><span class="py-tc-fn">print</span>(name, <span class="py-tc-str">"님!"</span>)<br><span class="py-tc-cm"># 사용자 입력</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">입출력</div>
-            <div class="py-gcard-name">입력 input()</div>
-            <div class="py-gcard-desc">사용자로부터 데이터를 입력받는 함수</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/02-03_input" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 문자열과 리스트 (CH03) -->
-      <div class="py-sec-title str">문자열과 리스트</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard str" id="rc-p5-3">
-          <input type="radio" name="today-p5" value="3" onchange="selectToday('p5',3)">
-          <div class="py-gcard-thumb str">
-            <div class="py-thumb-code">s = <span class="py-tc-str">"Hello World"</span><br><span class="py-tc-fn">print</span>(s[<span class="py-tc-num">0</span>:<span class="py-tc-num">5</span>])<br><span class="py-tc-cm"># → Hello</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">문자열</div>
-            <div class="py-gcard-name">문자열 (string)</div>
-            <div class="py-gcard-desc">인덱싱·슬라이싱·메서드로 문자열 자유롭게 다루기</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/03-01_string" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard str" id="rc-p5-4">
-          <input type="radio" name="today-p5" value="4" onchange="selectToday('p5',4)">
-          <div class="py-gcard-thumb str">
-            <div class="py-thumb-code">nums = [<span class="py-tc-num">1</span>,<span class="py-tc-num">2</span>,<span class="py-tc-num">3</span>]<br>nums.append(<span class="py-tc-num">4</span>)<br><span class="py-tc-fn">print</span>(nums)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">문자열</div>
-            <div class="py-gcard-name">리스트 (list)</div>
-            <div class="py-gcard-desc">여러 데이터를 하나의 이름으로 묶어 관리하는 자료형</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://coden-class.netlify.app/06_python/03-02_list" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 조건문 -->
-      <div class="py-sec-title ctrl">조건문</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard ctrl" id="rc-p5-5">
-          <input type="radio" name="today-p5" value="5" onchange="selectToday('p5',5)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code">score = <span class="py-tc-num">85</span><br><span class="py-tc-kw">if</span> score &gt;= <span class="py-tc-num">90</span>:<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(<span class="py-tc-str">"A"</span>)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">조건문 (if)</div>
-            <div class="py-gcard-desc">조건에 따라 실행할 코드를 다르게 선택하는 if · elif · else</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_if.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 반복문 -->
-      <div class="py-sec-title ctrl">반복문</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard ctrl" id="rc-p5-6">
-          <input type="radio" name="today-p5" value="6" onchange="selectToday('p5',6)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code"><span class="py-tc-kw">while</span> x &gt; 0:<br>&nbsp;&nbsp;x -= <span class="py-tc-num">1</span><br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(x)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">반복문 (while)</div>
-            <div class="py-gcard-desc">조건이 참인 동안 반복 실행하는 기본 반복 구조</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_while.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard ctrl" id="rc-p5-7">
-          <input type="radio" name="today-p5" value="7" onchange="selectToday('p5',7)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">5</span>):<br>&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">반복문 (for)</div>
-            <div class="py-gcard-desc">순서대로 반복하는 가장 많이 쓰이는 반복문</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_for.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard ctrl" id="rc-p5-8">
-          <input type="radio" name="today-p5" value="8" onchange="selectToday('p5',8)">
-          <div class="py-gcard-thumb ctrl">
-            <div class="py-thumb-code"><span class="py-tc-kw">for</span> i <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;<span class="py-tc-kw">for</span> j <span class="py-tc-kw">in</span> <span class="py-tc-fn">range</span>(<span class="py-tc-num">3</span>):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="py-tc-fn">print</span>(i, j)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">제어문</div>
-            <div class="py-gcard-name">중첩 반복문</div>
-            <div class="py-gcard-desc">반복문 안의 반복문, 복잡한 패턴 만들기</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_nested_loop.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 자료형 -->
-      <div class="py-sec-title data">자료형</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard data" id="rc-p5-9">
-          <input type="radio" name="today-p5" value="9" onchange="selectToday('p5',9)">
-          <div class="py-gcard-thumb data">
-            <div class="py-thumb-code">s = <span class="py-tc-str">"안녕하세요"</span><br><span class="py-tc-fn">print</span>(<span class="py-tc-fn">len</span>(s))<br><span class="py-tc-cm"># → 5</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">자료형</div>
-            <div class="py-gcard-name">유니코드 &amp; 문자열</div>
-            <div class="py-gcard-desc">문자를 다루는 string 자료형</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_unicode.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard data" id="rc-p5-10">
-          <input type="radio" name="today-p5" value="10" onchange="selectToday('p5',10)">
-          <div class="py-gcard-thumb data">
-            <div class="py-thumb-code">t = (<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>)<br><span class="py-tc-fn">print</span>(t[<span class="py-tc-num">0</span>])<br><span class="py-tc-cm"># → 1</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">자료형</div>
-            <div class="py-gcard-name">튜플 (tuple)</div>
-            <div class="py-gcard-desc">변경 불가능한 순서있는 데이터 묶음</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_tuple.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard data" id="rc-p5-11">
-          <input type="radio" name="today-p5" value="11" onchange="selectToday('p5',11)">
-          <div class="py-gcard-thumb data">
-            <div class="py-thumb-code">s = {<span class="py-tc-num">1</span>, <span class="py-tc-num">2</span>, <span class="py-tc-num">3</span>}<br>s.add(<span class="py-tc-num">4</span>)<br><span class="py-tc-cm"># 중복 없음</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">자료형</div>
-            <div class="py-gcard-name">집합 (set)</div>
-            <div class="py-gcard-desc">중복 없는 데이터 모음, 교집합·합집합 연산</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_set.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-        <label class="py-gcard data" id="rc-p5-12">
-          <input type="radio" name="today-p5" value="12" onchange="selectToday('p5',12)">
-          <div class="py-gcard-thumb data">
-            <div class="py-thumb-code">d = {<span class="py-tc-str">"name"</span>:<span class="py-tc-str">"코딩"</span>}<br>d[<span class="py-tc-str">"age"</span>] = <span class="py-tc-num">10</span><br><span class="py-tc-cm"># key: value</span></div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">자료형</div>
-            <div class="py-gcard-name">딕셔너리 (dict)</div>
-            <div class="py-gcard-desc">키-값 쌍으로 저장하는 강력한 자료형</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_dict.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 함수 -->
-      <div class="py-sec-title func">함수</div>
-      <div class="py-gallery">
-
-        <label class="py-gcard func" id="rc-p5-13">
-          <input type="radio" name="today-p5" value="13" onchange="selectToday('p5',13)">
-          <div class="py-gcard-thumb func">
-            <div class="py-thumb-code"><span class="py-tc-kw">def</span> <span class="py-tc-fn">greet</span>(name):<br>&nbsp;&nbsp;<span class="py-tc-kw">return</span> <span class="py-tc-str">"Hi, "</span> + name<br><span class="py-tc-fn">greet</span>(<span class="py-tc-str">"코딩"</span>)</div>
-            <span class="py-gcard-badge">오늘 선택</span>
-          </div>
-          <div class="py-gcard-body">
-            <div class="py-gcard-cat">함수</div>
-            <div class="py-gcard-name">함수 (function)</div>
-            <div class="py-gcard-desc">코드를 재사용 가능한 블록으로 묶는 핵심 개념</div>
-          </div>
-          <div class="py-gcard-foot">
-            <a href="https://kssim00.github.io/web_book/python_function.html" target="_blank" class="py-gcard-open" onclick="event.stopPropagation()">열기 ↗</a>
-            <span class="py-gcard-select-dot"></span>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- ✦ 오늘 선택 배너 -->
-      <div class="py-today-bar" id="today-p5-wrap">
-        <div class="py-today-bar-icon"></div>
-        <div>
-          <div class="py-today-bar-label">오늘 선택한 챕터</div>
-          <div class="py-today-bar-name" id="today-p5-name"></div>
         </div>
-        <div class="py-today-bar-arrow">›</div>
-      </div>
 
-      <!-- 시뮬레이션 모드 배너 -->
-      <div class="sim-banner" id="sim-p5-banner" style="display:none">
-        <span>👁 시뮬레이션 중 — 다음 수업 날 이렇게 보여요</span>
-        <button class="sim-reset-btn" onclick="resetSimulation('p5')">돌아가기</button>
-      </div>
+        <!-- CHAPTER: 문자열과 리스트 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">문자열과 리스트</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" data-lid="string" href="https://coden-class.netlify.app/06_python/03-01_string" target="_blank">
+              <span class="py-toc-lesson-title">문자열 (string)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'string')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="list" href="https://coden-class.netlify.app/06_python/03-02_list" target="_blank">
+              <span class="py-toc-lesson-title">리스트 (list)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'list')">➜</span>
+            </a>
+          </div>
+        </div>
 
-      <!-- ✦ 완료 버튼 -->
-      <button class="py-done-btn" onclick="openCompleteModal(5)">✅ 수업 완료 보고</button>
+        <!-- CHAPTER: 조건문 · 반복문 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">조건문 · 반복문</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" data-lid="if" href="python_if.html" data-pybook="python_if.html" target="_blank">
+              <span class="py-toc-lesson-title">조건문 (if)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'if')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="while" href="python_while.html" data-pybook="python_while.html" target="_blank">
+              <span class="py-toc-lesson-title">반복문 (while)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'while')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="for" href="python_for.html" data-pybook="python_for.html" target="_blank">
+              <span class="py-toc-lesson-title">반복문 (for)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'for')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="nested" href="python_nested_loop.html" data-pybook="python_nested_loop.html" target="_blank">
+              <span class="py-toc-lesson-title">중첩 반복문</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'nested')">➜</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- CHAPTER: 자료형 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">자료형</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" data-lid="unicode" href="python_unicode.html" data-pybook="python_unicode.html" target="_blank">
+              <span class="py-toc-lesson-title">유니코드 &amp; 문자열</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'unicode')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="tuple" href="python_tuple.html" data-pybook="python_tuple.html" target="_blank">
+              <span class="py-toc-lesson-title">튜플 (tuple)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'tuple')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="set" href="python_set.html" data-pybook="python_set.html" target="_blank">
+              <span class="py-toc-lesson-title">집합 (set)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'set')">➜</span>
+            </a>
+            <div class="py-toc-lesson" data-lid="dict">
+              <span class="py-toc-lesson-title">딕셔너리 (dict)</span>
+              <div class="py-toc-lesson-right">
+                <div class="py-toc-ver-group">
+                  <a class="py-toc-ver" href="python_dict.html" data-pybook="python_dict.html" target="_blank" title="버전 1">1</a>
+                  <a class="py-toc-ver" href="python_dict2.html" data-pybook="python_dict2.html" target="_blank" title="버전 2">2</a>
+                </div>
+                <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'dict')">➜</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHAPTER: 함수와 클래스 -->
+        <div class="py-toc-chapter">
+          <div class="py-toc-chapter-title">함수와 클래스</div>
+          <div class="py-toc-lessons">
+            <a class="py-toc-lesson" data-lid="function" href="python_function.html" data-pybook="python_function.html" target="_blank">
+              <span class="py-toc-lesson-title">함수 (function)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'function')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="class" href="python_class.html" data-pybook="python_class.html" target="_blank">
+              <span class="py-toc-lesson-title">클래스 (class)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'class')">➜</span>
+            </a>
+            <a class="py-toc-lesson" data-lid="class2" href="python_class2.html" data-pybook="python_class2.html" target="_blank">
+              <span class="py-toc-lesson-title">클래스 두 번째 이야기 (class 2)</span>
+              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'class2')">➜</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
 
     </div>
 
@@ -3508,7 +3394,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             <div class="cn-card" onclick="window.open('앱인벤터_웹교재.html','_blank')" style="--cn-color:#8B5CF6">
               <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#8B5CF6">STEP 04</div>
-              <div class="cn-title">📱 앱인벤터</div>
+              <div class="cn-title">앱인벤터</div>
               <div class="cn-desc">블록 코딩으로<br>나만의 앱을 만들어요!</div>
               <div class="cn-footer" style="color:#8B5CF6">학습 시작하기 →</div>
             </div>
@@ -3517,7 +3403,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             <div class="cn-card" onclick="selectStep(4)" style="--cn-color:#10B981">
               <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#10B981">STEP 05</div>
-              <div class="cn-title">🐢 파이썬 터틀</div>
+              <div class="cn-title">파이썬 터틀</div>
               <div class="cn-desc">코드로 그림 그리기!<br>파이썬 첫 그래픽 체험</div>
               <div class="cn-footer" style="color:#10B981">학습 시작하기 →</div>
             </div>
@@ -3526,7 +3412,11 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             <div class="cn-card" onclick="selectStep(5)" style="--cn-color:#2563EB">
               <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#2563EB">STEP 06</div>
+<<<<<<< HEAD
               <div class="cn-title">💻 파이썬 문법완성</div>
+=======
+              <div class="cn-title">파이썬 문법완성</div>
+>>>>>>> b2e6fc0482c166717e00aba33add77de5d2ee9b5
               <div class="cn-desc">COS Pro 완벽 대비!<br>파이썬으로 실력을 한 단계 높여봐요.</div>
               <div class="cn-footer" style="color:#2563EB">학습 시작하기 →</div>
             </div>
@@ -3535,7 +3425,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#0891B2">
               <span class="cn-badge soon">준비 중</span>
               <div class="cn-step" style="color:#0891B2">STEP 07</div>
-              <div class="cn-title">🎮 파이썬 실전 프로젝트</div>
+              <div class="cn-title">파이썬 실전 프로젝트</div>
               <div class="cn-desc">Pygame · Ursina로<br>나만의 게임을 직접 만들어요!</div>
             </div>
 
@@ -3543,7 +3433,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             <div class="cn-card" onclick="selectStep(7)" style="--cn-color:#F97316">
               <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#F97316">STEP 08</div>
-              <div class="cn-title">🖨️ 3D 모델링</div>
+              <div class="cn-title">3D 모델링</div>
               <div class="cn-desc">틴커캐드로 설계하고<br>3D 프린터로 출력!</div>
               <div class="cn-footer" style="color:#F97316">학습 시작하기 →</div>
             </div>
@@ -3796,7 +3686,7 @@ function calcProgress() {
     const pyKey = 'py-chapters-' + name;
     let pyDone = [];
     try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(e) {}
-    const pyTotal = 13;
+    const pyTotal = document.querySelectorAll('.py-toc-lesson').length || 13;
     const pyPct = Math.round(pyDone.length / pyTotal * 100);
     document.getElementById('totalProgressBar').style.width = pyPct + '%';
     document.getElementById('totalProgressPct').textContent = pyDone.length;
@@ -4350,6 +4240,13 @@ let currentStep = 0;
 // 갤러리 로드 상태 추적 (frame.src는 한국어가 URL인코딩되어 indexOf 검사가 항상 실패함)
 let _entryGalleryName = null;
 let _scratchGalleryName = null;
+// 미션 상세화면이 열려있는 갤러리(entry/scratch) — topbar의 "미션 갤러리로" 버튼 제어용
+let _activeGallerySubject = null;
+function goBackToGalleryFromTopbar() {
+  const frameId = _activeGallerySubject === 'scratch' ? 'scratchGalleryFrame' : 'entryGalleryFrame';
+  const frame = document.getElementById(frameId);
+  if (frame && frame.contentWindow) frame.contentWindow.postMessage({ type: 'gallery-go-back' }, '*');
+}
 function selectStep(n) {
   hideAllPanels();
   document.getElementById('panel'+n).classList.add('visible');
@@ -4430,6 +4327,9 @@ function hideAllPanels() {
   if (navBtn) navBtn.style.display = 'none';
   document.getElementById('entryXpBadge').style.display = 'none';
   document.getElementById('scratchXpBadge').style.display = 'none';
+  const galleryBackBtn = document.getElementById('galleryBackNavBtn');
+  if (galleryBackBtn) galleryBackBtn.style.display = 'none';
+  _activeGallerySubject = null;
 }
 
 // ── 갤러리 메시지 수신 (XP + 높이 자동 조절)
@@ -4467,6 +4367,23 @@ window.addEventListener('message', function(e) {
       setTimeout(() => { topBadge.style.transform = 'scale(1)'; }, 300);
     }
     calcProgress();
+  }
+  // 갤러리 카드를 눌러 상세화면을 열 때 항상 맨 위가 보이도록 스크롤
+  if (e.data.type === 'gallery-scroll-top') {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  // 미션 상세화면 열림/닫힘에 따라 topbar의 "미션 갤러리로" 버튼 표시/숨김
+  if (e.data.type === 'gallery-detail-state') {
+    const btn = document.getElementById('galleryBackNavBtn');
+    if (btn) {
+      if (e.data.open) {
+        _activeGallerySubject = e.data.subject || null;
+        btn.style.display = 'flex';
+      } else if (_activeGallerySubject === e.data.subject) {
+        _activeGallerySubject = null;
+        btn.style.display = 'none';
+      }
+    }
   }
   // 엔트리 iframe 높이 자동 조절
   if (e.data.type === 'entry-height') {
@@ -4804,27 +4721,30 @@ function applyTodaySelect(panel, idx, isDoneMode) {
   if (panel === 'p5') updatePyHeroStats();
 }
 
-/* 파이썬 완료된 챕터 카드 복원 */
+/* 파이썬 완료된 레슨 카드(목차) 복원 */
 function restorePyDoneCards() {
   const name = getStore('studentName', '');
   const pyKey = 'py-chapters-' + name;
   let pyDone = [];
   try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(e) {}
-  const cards = document.querySelectorAll('[id^="rc-p5-"]');
-  cards.forEach((c, i) => {
-    if (pyDone.includes(i)) {
-      c.classList.add('done-last');
-      c.classList.remove('selected-today');
+  document.querySelectorAll('.py-toc-lesson').forEach(function(row) {
+    const lid = row.getAttribute('data-lid');
+    const icon = row.querySelector('.py-toc-lesson-icon');
+    if (pyDone.includes(lid)) {
+      row.classList.add('py-done');
+      if (icon) icon.textContent = '✓';
+    } else {
+      row.classList.remove('py-done');
+      if (icon) icon.textContent = '➜';
     }
   });
   updatePyHeroStats();
 }
 
-/* 파이썬 히어로 스탯 업데이트 */
+/* 파이썬 진행률(히어로 스탯 + 홈 진행바) 업데이트 */
 function updatePyHeroStats() {
-  const cards = document.querySelectorAll('[id^="rc-p5-"]');
-  const total = cards.length;
-  const done  = document.querySelectorAll('[id^="rc-p5-"].done-last').length;
+  const total = document.querySelectorAll('.py-toc-lesson').length;
+  const done  = document.querySelectorAll('.py-toc-lesson.py-done').length;
   const pct   = total > 0 ? Math.round(done / total * 100) : 0;
   const numEl = document.getElementById('py-stat-done');
   const pctEl = document.getElementById('py-stat-pct');
@@ -4832,6 +4752,29 @@ function updatePyHeroStats() {
   if (numEl)  numEl.textContent  = done;
   if (pctEl)  pctEl.textContent  = pct + '%';
   if (fillEl) fillEl.style.width = pct + '%';
+  calcProgress();
+}
+
+/* 파이썬 목차 레슨 완료 체크 토글 (아이콘 클릭 시 링크 이동 대신 완료 처리) */
+function togglePyLessonDone(e, iconEl, lid) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  const name = getStore('studentName', '');
+  const pyKey = 'py-chapters-' + name;
+  let pyDone = [];
+  try { pyDone = JSON.parse(localStorage.getItem(pyKey) || '[]'); } catch(err) {}
+  const idx = pyDone.indexOf(lid);
+  const row = iconEl.closest('.py-toc-lesson');
+  if (idx >= 0) {
+    pyDone.splice(idx, 1);
+    if (row) row.classList.remove('py-done');
+    iconEl.textContent = '➜';
+  } else {
+    pyDone.push(lid);
+    if (row) row.classList.add('py-done');
+    iconEl.textContent = '✓';
+  }
+  localStorage.setItem(pyKey, JSON.stringify(pyDone));
+  updatePyHeroStats();
 }
 function simulateNextVisit(panel) {
   simMode = true;
