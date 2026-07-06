@@ -13,6 +13,7 @@
     --text:#27392f;
     --muted:#7c948a;
     --accent:#d9f0e3;
+    --game-accent:#a8e6c1;
     --shadow:0 4px 16px rgba(30,90,60,0.10);
   }
   *{box-sizing:border-box;}
@@ -73,6 +74,10 @@
   .card .card-body{padding:13px 15px;}
   .card .card-title{font-weight:bold;font-size:15px;color:var(--text);}
   .card .card-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+  .card.card-game .card-icon{
+    background:linear-gradient(135deg,var(--game-accent),#fff);
+  }
+  .card.card-game .card-sub{color:var(--primary-dark);}
   .card-complete-btn{
     position:absolute;top:8px;right:8px;z-index:5;
     width:32px;height:32px;border-radius:50%;
@@ -293,9 +298,10 @@
 
 <script>
 const WORKSHEETS = [
-  { file:"turtle_arrow_game.html", icon:"🏹", title:"화살 쏘기 게임" },
-  { file:"turtle_paint.html", icon:"🎨", title:"나만의 그림판" },
-  { file:"python_turtle_cannon_game_worksheet_mission.html", icon:"💣", title:"대포 쏘기 게임" }
+  { file:"turtle_game_arrow.html", icon:"🏹", title:"화살 쏘기 게임" },
+  { file:"turtle_tool_paint.html", icon:"🎨", title:"나만의 그림판" },
+  { file:"turtle_game_cannon.html", icon:"💣", title:"대포 쏘기 게임" },
+  { file:"turtle_game_catch.html", icon:"🎯", title:"터틀 잡기 게임" }
 ];
 
 const SESSION_LABELS = {
@@ -1493,7 +1499,8 @@ function showHome(){
   UNITS.forEach(function(u, i){
     const key = 'u' + i;
     const isDone = doneList.indexOf(key) > -1;
-    html += '<div class="card" onclick="openLesson(' + i + ')">'
+    const isGame = u.session === 8;
+    html += '<div class="card' + (isGame ? ' card-game' : '') + '" onclick="openLesson(' + i + ')">'
       + '<span class="card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
       + '<div class="card-icon">' + u.icon + '</div>'
       + '<div class="card-body">'
@@ -1504,7 +1511,7 @@ function showHome(){
   WORKSHEETS.forEach(function(w, i){
     const key = 'w' + i;
     const isDone = doneList.indexOf(key) > -1;
-    html += '<div class="card" onclick="window.open(\'' + w.file + '\',\'_blank\')">'
+    html += '<div class="card card-game" onclick="window.open(\'' + w.file + '\',\'_blank\')">'
       + '<span class="card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
       + '<div class="card-icon">' + w.icon + '</div>'
       + '<div class="card-body">'
