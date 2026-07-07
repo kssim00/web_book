@@ -171,6 +171,16 @@ pre{margin:0; font-family:'SF Mono','Consolas','Menlo',monospace; font-size:1.02
 .summary-card code{font-family:'SF Mono',monospace; font-weight:700; color:var(--accent); font-size:1.05rem;}
 .summary-card p{margin:8px 0 0; font-size:0.96rem; color:var(--sub);}
 
+.practice-links{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+.practice-link-card{
+  display:block; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:20px;
+  box-shadow:0 6px 18px rgba(20,20,30,0.05); text-decoration:none; color:inherit; transition:0.2s;
+}
+.practice-link-card:hover{border-color:var(--accent); box-shadow:0 10px 24px rgba(91,86,224,0.15); transform:translateY(-2px);}
+.practice-link-tag{display:inline-block; font-size:0.72rem; font-weight:800; color:#fff; background:var(--accent); padding:3px 10px; border-radius:50px; margin-bottom:10px;}
+.practice-link-title{font-size:1.05rem; font-weight:800; margin:0 0 4px; color:var(--ink);}
+.practice-link-desc{font-size:0.88rem; color:var(--sub); margin:0;}
+
 footer{
   max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center;
 }
@@ -198,6 +208,7 @@ footer{
   .hero h1{font-size:2.1rem;}
   h2.sec-title{font-size:1.7rem;}
   .summary-grid{grid-template-columns:1fr;}
+  .practice-links{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -222,6 +233,7 @@ footer{
     <a href="#s8"><span class="n">08</span>성적표 자동 계산</a>
     <a href="#s9"><span class="n">09</span>너의 차례</a>
     <a href="#s10"><span class="n">10</span>정리</a>
+    <a href="#s11"><span class="n">11</span>실습해보기</a>
   </nav>
   <div class="sidebar-bottom">
     <a class="edition-switch" href="python_class2.html">2편 심화편 →</a>
@@ -545,6 +557,24 @@ print(jihu.name, "총점:", jihu.total(), "평균:", round(jihu.ave(), 2))</code
       <div class="summary-card"><code>__init__</code><p>객체가 생길 때 특성값을 넣어준다</p></div>
       <div class="summary-card"><code>self</code><p>"이 객체 자신"을 가리킨다</p></div>
       <div class="summary-card"><code>객체.메서드()</code><p>그 객체의 메서드를 실행한다</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="s11">
+    <div class="eyebrow">PRACTICE</div>
+    <h2 class="sec-title"><span class="sec-num">11</span>배운 클래스로 실습해보기</h2>
+    <p class="desc">지금 배운 <code>class</code>·<code>__init__</code>·<code>self</code>·메서드를 그대로 활용하는 turtle 프로젝트예요. 코드를 따라 만들면서 감을 익혀보세요.</p>
+    <div class="practice-links">
+      <a class="practice-link-card" href="turtle_race.html" target="_blank">
+        <span class="practice-link-tag">실습 1</span>
+        <p class="practice-link-title">터틀레이스 만들기 →</p>
+        <p class="practice-link-desc">거북이 경주 게임을 단계별로 완성하고, 마지막 STEP에서 class로 정리해봐요.</p>
+      </a>
+      <a class="practice-link-card" href="turtle_snow.html" target="_blank">
+        <span class="practice-link-tag">실습 2</span>
+        <p class="practice-link-title">크리스마스 눈송이 만들기 →</p>
+        <p class="practice-link-desc">Snow 클래스로 눈송이 100개를 한 번에 만들고 움직여봐요.</p>
+      </a>
     </div>
   </section>
 
