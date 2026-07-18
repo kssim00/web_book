@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>파이썬 터틀 웹교재</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
     --primary:#2f9e6e;
@@ -19,7 +21,7 @@
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",sans-serif;
+    font-family:'Noto Sans KR',"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",sans-serif;
     background:var(--bg);
     color:var(--text);
   }
@@ -274,9 +276,10 @@
 
   /* 커리큘럼 목차 (파이썬 목차와 동일한 스타일) */
   .py-toc-grid{
-    display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
     gap:16px;align-items:start;
   }
+  @media (max-width:820px){ .py-toc-grid{grid-template-columns:1fr;} }
   .py-toc-chapter{
     background:#fff;border-radius:18px;padding:20px;
     box-shadow:0 8px 20px -6px rgba(0,0,0,0.06);
@@ -295,8 +298,8 @@
     cursor:pointer;text-decoration:none;color:inherit;transition:.2s ease;
   }
   .py-toc-lesson:hover{background:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(0,0,0,0.05);}
-  .py-toc-lesson-title{font-size:13px;font-weight:bold;color:#334155;}
-  .py-toc-lesson-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .py-toc-lesson-left{display:flex;align-items:center;gap:10px;min-width:0;}
+  .py-toc-lesson-title{font-size:13px;font-weight:bold;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .py-toc-lesson-icon{
     width:24px;height:24px;background:#fff;border-radius:50%;
     display:flex;align-items:center;justify-content:center;font-size:11px;
@@ -305,7 +308,7 @@
   .py-toc-lesson:hover .py-toc-lesson-icon{background:var(--primary);color:#fff;border-color:var(--primary);transform:rotate(-45deg);}
   .py-toc-lesson.py-done{background:#F0FBF6;border-color:rgba(34,197,94,0.35);}
   .py-toc-lesson.py-done .py-toc-lesson-title{color:#16A34A;}
-  .toc-complete{position:static !important;width:24px;height:24px;font-size:11px;flex-shrink:0;}
+  .toc-complete{position:static !important;width:22px;height:22px;font-size:11px;flex-shrink:0;}
 
   /* 라이트박스 */
   #lightbox{
@@ -357,11 +360,9 @@ const WORKSHEETS = [
 
 // 커리큘럼 목차용 카테고리 묶음 (session 번호 기준)
 const CURRICULUM_GROUPS = [
-  { title:"시작하기", sessions:[0] },
-  { title:"화면과 그리기", sessions:[1,2,3] },
+  { title:"화면과 그리기", sessions:[0,1,2,3] },
   { title:"좌표와 텍스트", sessions:[4,5] },
-  { title:"이벤트와 애니메이션", sessions:[6,7] },
-  { title:"미니 프로젝트", sessions:[8] }
+  { title:"이벤트와 애니메이션", sessions:[6,7,8] }
 ];
 
 const SESSION_LABELS = {
@@ -1578,11 +1579,12 @@ function showHome(){
           const key = 'u' + i;
           const isDone = doneList.indexOf(key) > -1;
           html += '<div class="py-toc-lesson' + (isDone ? ' py-done' : '') + '" onclick="openLesson(' + i + ')">'
-            + '<span class="py-toc-lesson-title">' + u.icon + ' ' + escapeHtml(u.title) + '</span>'
-            + '<span class="py-toc-lesson-right">'
+            + '<span class="py-toc-lesson-left">'
             + '<span class="card-complete-btn toc-complete' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
+            + '<span class="py-toc-lesson-title">' + escapeHtml(u.title) + '</span>'
+            + '</span>'
             + '<span class="py-toc-lesson-icon">➜</span>'
-            + '</span></div>';
+            + '</div>';
         });
       });
       html += '</div></div>';
