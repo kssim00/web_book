@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코드로 만드는 추상 화가 터틀! (실습형)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FDF6E9;
+    --paper:#FFFCF5;
+    --ink:#2B3A55;
+    --coral:#E8604C;
+    --coral-soft:#FBE0DB;
+    --gold:#F4B942;
+    --gold-soft:#FDF0D3;
+    --green:#4F9D69;
+    --green-soft:#E1F1E6;
+    --peach:#FFAB76;
+    --peach-soft:#FFE8D6;
+    --card:#FFFFFF;
+    --line:#E9DFC9;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg);
+    background-image:
+      radial-gradient(circle at 90% 5%, rgba(244,185,66,0.15), transparent 40%),
+      radial-gradient(circle at 5% 80%, rgba(232,96,76,0.10), transparent 40%);
+    color:var(--ink); font-family:'Gowun Dodum', sans-serif; line-height:1.7;
+  }
+  h1,h2,h3, .display{ font-family:'Jua', sans-serif; font-weight:400; }
+  code, .code-font{ font-family:'JetBrains Mono','Gowun Dodum',monospace; }
+  a{color:inherit;}
+
+  .shell{ display:grid; grid-template-columns:158px 1fr; max-width:1180px; margin:0 auto; }
+  @media (max-width:820px){ .shell{grid-template-columns:1fr;} }
+
+  .index-tabs{
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    padding:24px 0 24px 12px; display:flex; flex-direction:column; gap:6px;
+  }
+  @media (max-width:820px){
+    .index-tabs{ position:sticky; top:0; z-index:50; height:auto; flex-direction:row;
+      overflow-x:auto; padding:10px 14px; background:var(--paper); border-bottom:3px solid var(--ink); gap:8px; }
+  }
+  .tab{
+    display:flex; align-items:center; gap:8px; background:var(--peach-soft);
+    border:2px solid var(--ink); border-right:none; border-radius:14px 0 0 14px;
+    padding:10px 12px; font-size:12.5px; font-weight:700; text-decoration:none;
+    color:var(--ink); white-space:nowrap; transition:transform .15s ease, background .15s ease;
+  }
+  .tab:hover{ transform:translateX(-4px); background:var(--gold); }
+  .tab .num{
+    font-family:'Jua',sans-serif; background:var(--ink); color:var(--paper); border-radius:50%;
+    width:22px;height:22px; display:flex;align-items:center;justify-content:center; font-size:12px; flex-shrink:0;
+  }
+  @media (max-width:820px){ .tab{ border-radius:14px; border-right:2px solid var(--ink); } }
+
+  .main{ padding:0 20px 80px; }
+
+  .hero{ padding:56px 12px 40px; text-align:center; }
+  .hero .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; background:var(--coral); color:#fff;
+    font-family:'Jua',sans-serif; padding:6px 16px; border-radius:999px; font-size:14px; margin-bottom:18px;
+  }
+  .hero h1{ font-size:clamp(28px,6vw,50px); margin:0 0 12px; color:var(--ink); }
+  .hero h1 span{ color:var(--coral); }
+  .hero p.sub{ font-size:18px; color:#5b6a86; max-width:580px; margin:0 auto 10px; }
+  .hero .swap{ font-size:13.5px; color:#8a97ad; }
+  .hero .swap a{ color:var(--coral); font-weight:700; text-decoration:underline; }
+
+  section.chapter{
+    scroll-margin-top:20px; background:var(--paper); border:3px solid var(--ink); border-radius:22px;
+    padding:34px clamp(18px,4vw,44px); margin:0 0 34px; position:relative; box-shadow:6px 6px 0 rgba(43,58,85,0.08);
+  }
+  .chapter-head{ display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+  .chapter-head .badge{
+    font-family:'Jua',sans-serif; background:var(--ink); color:var(--paper); width:40px;height:40px;
+    border-radius:12px; display:flex;align-items:center;justify-content:center; font-size:18px; flex-shrink:0;
+  }
+  .chapter-head h2{ margin:0; font-size:23px; }
+  .chapter p.lead{ color:#5b6a86; margin-top:4px; }
+
+  .mission-tag{
+    display:inline-block; background:var(--coral); color:#fff; font-family:'Jua',sans-serif;
+    font-size:12px; padding:4px 12px; border-radius:999px; margin-bottom:10px;
+  }
+
+  .goal{ color:#5b6a86; margin:6px 0 4px; font-size:15px; }
+  .goal b{ color:var(--ink); font-family:'Jua',sans-serif; font-weight:400; }
+
+  .code-box{
+    background:var(--ink); color:#f4f1e6; border-radius:14px; padding:18px 20px;
+    font-family:'JetBrains Mono','Gowun Dodum',monospace; font-size:13.5px; overflow-x:auto;
+    white-space:pre; line-height:1.85; margin-top:18px;
+  }
+  .code-box .cm{ color:#8fa3c9; } .code-box .kw{ color:#F4B942; }
+  .code-box .key{ color:#F58C7E; } .code-box .str{ color:#8FD19E; } .code-box .fn{ color:#9ECBFF; }
+  .code-box .blank{ color:#6b7690; font-style:italic; }
+
+  .shot-row{ display:flex; gap:18px; align-items:flex-start; margin-top:18px; flex-wrap:wrap; }
+  .shot-row img{ width:220px; border:2.5px solid var(--ink); border-radius:14px; box-shadow:4px 4px 0 rgba(43,58,85,0.10); }
+  .shot-cap{ font-size:13px; color:#5b6a86; margin-top:6px; max-width:340px; text-align:center; }
+
+  .hero-shots{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:22px auto 4px; }
+  .concept-art{ width:340px; border:2.5px solid var(--ink); border-radius:14px; box-shadow:4px 4px 0 rgba(43,58,85,0.10); overflow:hidden; line-height:0; background:var(--peach-soft); }
+  .concept-art svg{ display:block; width:100%; height:auto; }
+
+  .note{ margin-top:16px; background:var(--coral-soft); border-left:5px solid var(--coral); border-radius:10px; padding:12px 16px; font-size:14.5px; }
+  .note b{ color:var(--coral); }
+  .note.peach{ background:var(--peach-soft); border-left-color:var(--peach); }
+  .note.peach b{ color:#C97236; }
+  .note.green{ background:var(--green-soft); border-left-color:var(--green); }
+  .note.green b{ color:var(--green); }
+
+  .newfn{ margin-top:16px; background:#EAF2FB; border:2px dashed #3E7BFF; border-radius:12px; padding:14px 18px; font-size:14.5px; }
+  .newfn .fn-lbl{ font-family:'Jua',sans-serif; color:#2455B8; font-size:14px; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .newfn code{ background:#fff; border:1px solid #cddcf5; border-radius:6px; padding:1px 7px; color:#2455B8; }
+  .newfn .fn-line{ margin:0; }
+  .newfn .fn-line + .fn-line{ margin-top:8px; }
+
+  .fn-table{ width:100%; border-collapse:collapse; margin-top:16px; font-size:13.5px; }
+  .fn-table th, .fn-table td{ border:1.5px solid var(--line); padding:8px 10px; text-align:left; }
+  .fn-table th{ background:var(--gold-soft); font-family:'Jua',sans-serif; font-weight:400; }
+  .fn-table td code{ font-family:'JetBrains Mono',monospace; font-size:12.5px; background:var(--paper); border:1px solid var(--line); border-radius:5px; padding:1px 6px; }
+
+  .step-list{ margin-top:16px; display:grid; gap:10px; }
+  .step-item{
+    display:flex; gap:12px; align-items:flex-start; background:var(--card); border:1.5px solid var(--line);
+    border-radius:12px; padding:12px 14px;
+  }
+  .step-item .n{
+    font-family:'Jua',sans-serif; background:var(--gold); color:var(--ink); border-radius:50%;
+    width:26px;height:26px; display:flex;align-items:center;justify-content:center; font-size:13px; flex-shrink:0;
+  }
+
+  /* direct-setup mission box */
+  .mission{
+    margin-top:18px; border:2.5px dashed var(--coral); background:#fff;
+    border-radius:16px; padding:16px 20px 14px;
+  }
+  .mission.try{ border-color:var(--green); }
+  .mission h4{ margin:0 0 4px; font-family:'Jua',sans-serif; font-size:15.5px; color:var(--coral); }
+  .mission.try h4{ color:var(--green); }
+  .mission .hintline{ margin:12px 0 2px; font-size:13px; color:#8a93a5; }
+  .chip{
+    display:inline-block; font-family:'JetBrains Mono',monospace; font-size:12px;
+    background:var(--gold-soft); border:1.5px solid var(--gold); border-radius:8px;
+    padding:1px 9px; margin:2px 2px; color:var(--ink);
+  }
+
+  /* mission hint box */
+  .hintbox{ border-left:4px solid var(--green); background:var(--green-soft); border-radius:0 12px 12px 0; padding:15px 18px; margin:16px 0; }
+  .hintbox .h-lbl{ font-family:'Jua',sans-serif; color:#2f7d55; font-size:1rem; margin-bottom:7px; }
+  .hintbox ul{ margin:0 0 0 19px; padding:0; color:var(--ink); font-size:.96rem; }
+  .hintbox li{ margin:7px 0; }
+  .hintbox li b{ color:var(--coral); font-family:'Jua',sans-serif; font-weight:400; }
+
+  details{ margin-top:14px; border:2px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
+  details summary{ cursor:pointer; list-style:none; padding:13px 18px; font-family:'Jua',sans-serif; font-size:1rem; color:#fff; background:var(--ink); display:flex; justify-content:space-between; align-items:center; }
+  details summary::-webkit-details-marker{ display:none; }
+  details summary .ic{ font-family:'JetBrains Mono',monospace; font-size:.74rem; opacity:.85; }
+  details summary::after{ content:"열기 ▾"; font-family:'JetBrains Mono',monospace; font-size:.74rem; }
+  details[open] summary::after{ content:"닫기 ▴"; }
+  details .reveal{ padding:14px 18px 16px; color:#5b6a86; font-size:.95rem; }
+
+  .map{ list-style:none; display:grid; gap:9px; margin:0; padding:0; }
+  .map li{ display:flex; flex-wrap:wrap; gap:8px 10px; align-items:baseline; }
+  .map .con{ color:var(--ink); font-weight:700; min-width:150px; }
+  .map .arr{ color:var(--coral); font-weight:700; }
+  .map code{ font-family:'JetBrains Mono',monospace; font-size:.86rem; background:var(--gold-soft); border:1px solid var(--line); border-radius:6px; padding:2px 9px; color:#7a4a00; }
+  .map code .b{ color:#C97236; font-style:normal; }
+  .tip{ margin-top:12px; padding-top:11px; border-top:1px dashed var(--line); color:#5b6a86; font-size:.9rem; }
+  .tip b{ color:var(--ink); font-family:'Jua',sans-serif; font-weight:400; }
+
+  /* mini game */
+  .game-wrap{
+    margin-top:20px; border:3px solid var(--ink); border-radius:16px; overflow:hidden;
+    box-shadow:5px 5px 0 rgba(43,58,85,0.10); max-width:460px; background:var(--peach);
+  }
+  .game-topbar{
+    display:flex; justify-content:space-between; align-items:center; padding:10px 16px;
+    background:var(--card); border-bottom:3px solid var(--ink); font-family:'Jua',sans-serif; font-size:14px;
+  }
+  #paintCanvas{ display:block; touch-action:none; background:#FFFFF0; width:100%; cursor:pointer; }
+  .game-caption{ font-size:13px; color:#5b6a86; margin-top:10px; }
+  .pg-reset2{
+    margin-top:10px; background:none; border:2px solid var(--line); color:#5b6a86; border-radius:999px;
+    padding:6px 14px; font-size:12.5px; cursor:pointer; font-family:'Gowun Dodum',sans-serif;
+  }
+
+  .quiz-q{ background:var(--card); border:2px solid var(--line); border-radius:16px; padding:18px 20px; margin-bottom:16px; }
+  .quiz-q .qtext{ font-weight:700; margin-bottom:12px; }
+  .quiz-opts{ display:grid; gap:8px; }
+  .quiz-opt{
+    text-align:left; background:var(--paper); border:2px solid var(--line); border-radius:10px; padding:10px 14px;
+    cursor:pointer; font-family:'Gowun Dodum',sans-serif; font-size:14.5px;
+  }
+  .quiz-opt:hover{ border-color:var(--coral); }
+  .quiz-opt.correct{ background:var(--green-soft); border-color:var(--green); }
+  .quiz-opt.wrong{ background:var(--coral-soft); border-color:var(--coral); }
+  .quiz-fb{ margin-top:8px; font-size:13.5px; display:none; }
+  .quiz-fb.show{ display:block; }
+  .score-bar{ position:sticky; bottom:16px; display:flex; justify-content:center; margin-top:10px; }
+  .score-pill{
+    background:var(--ink); color:var(--gold); font-family:'Jua',sans-serif; padding:10px 22px;
+    border-radius:999px; font-size:14px; box-shadow:0 4px 14px rgba(0,0,0,0.2);
+  }
+
+  footer{ text-align:center; padding:30px 20px 50px; color:#9aa5bb; font-size:13px; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="index-tabs">
+    <a class="tab" href="#c1"><span class="num">1</span>오늘의 미션</a>
+    <a class="tab" href="#c2"><span class="num">2</span>터틀 설정</a>
+    <a class="tab" href="#c3"><span class="num">3</span>계속 전진하기</a>
+    <a class="tab" href="#c4"><span class="num">4</span>방향키로 조종</a>
+    <a class="tab" href="#c5"><span class="num">5</span>벽에 닿으면 종료</a>
+    <a class="tab" href="#c6"><span class="num">6</span>물감 만들기</a>
+    <a class="tab" href="#c7"><span class="num">7</span>물감 먹으면 처리</a>
+    <a class="tab" href="#c8"><span class="num">8</span>속도&amp;펜 굵기 UP</a>
+    <a class="tab" href="#c9"><span class="num">9</span>게임 종료 처리</a>
+    <a class="tab" href="#c10"><span class="num">10</span>퀴즈</a>
+  </nav>
+
+  <div class="main">
+    <header class="hero">
+      <span class="eyebrow">🎨 파이썬 터틀 학습지 · 실습형</span>
+      <h1>코드로 만드는 <span>추상 화가 터틀!</span></h1>
+      <p class="sub">방향키로 터틀을 조종하면서, 화면 위에 무작위로 나타나는 물감을 먹으면 속도가 빨라지고 색과 굵기가 바뀌는 나만의 몬드리안풍 추상화를 파이썬으로 직접 그려봐요.</p>
+      <p class="swap">도망 게임에서 배운 것들을 활용해서, 새로 나오는 부분(while, random 등)은 이미 채워져 있어요. 이번엔 한 단계씩 실행해보면서 결과를 눈으로 확인할 수 있도록, <b>기능을 하나씩 쌓아가는 순서</b>로 배워요.</p>
+
+      <div class="hero-shots">
+        <div class="concept-art">
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="400" height="400" fill="#FFFFF0"/>
+            <line x1="200" y1="200" x2="200" y2="90"  stroke="#E8604C" stroke-width="4"  stroke-linecap="round"/>
+            <line x1="200" y1="90"  x2="320" y2="90"  stroke="#4F9D69" stroke-width="5"  stroke-linecap="round"/>
+            <line x1="320" y1="90"  x2="320" y2="230" stroke="#F4B942" stroke-width="6"  stroke-linecap="round"/>
+            <line x1="320" y1="230" x2="130" y2="230" stroke="#FFAB76" stroke-width="7"  stroke-linecap="round"/>
+            <line x1="130" y1="230" x2="130" y2="60"  stroke="#8B5E3C" stroke-width="8"  stroke-linecap="round"/>
+            <line x1="130" y1="60"  x2="60"  y2="60"  stroke="#5DADE2" stroke-width="9"  stroke-linecap="round"/>
+            <line x1="60"  y1="60"  x2="60"  y2="320" stroke="#AF7AC5" stroke-width="10" stroke-linecap="round"/>
+            <line x1="60"  y1="320" x2="280" y2="320" stroke="#E8604C" stroke-width="11" stroke-linecap="round"/>
+            <line x1="280" y1="320" x2="280" y2="150" stroke="#4F9D69" stroke-width="12" stroke-linecap="round"/>
+            <polygon points="280,132 271,150 289,150" fill="#2B3A55"/>
+            <text x="200" y="372" text-anchor="middle" font-family="'Jua', sans-serif" font-size="24" fill="#2B3A55">오늘의 작품 완성!!</text>
+          </svg>
+        </div>
+      </div>
+      <p class="shot-cap" style="margin:8px auto 0;">🖼 오늘 완성하게 될 작품 미리보기 — 이 그림을 직접 코드로 그려볼 거예요!</p>
+    </header>
+
+    <!-- 1 -->
+    <section class="chapter" id="c1">
+      <div class="chapter-head"><div class="badge">1</div><h2>오늘의 미션</h2></div>
+      <p class="lead">오늘은 화면 위를 <b>계속 스스로 움직이는</b> 터틀이 방향키로 조종되면서, 무작위로 나타나는 <b>물감</b>을 먹을 때마다 색과 굵기가 바뀌는 그림을 그리는 <b>추상화 그리기 게임</b>을 만들어볼 거예요. 오늘은 특별히, 기능을 하나 만들 때마다 <b>바로 실행해서 결과를 눈으로 확인</b>하면서 한 단계씩 쌓아 올라가요.</p>
+      <div class="step-list">
+        <div class="step-item"><div class="n">1</div><div>터틀이 화면 위에서 <b>스스로 계속 앞으로</b> 나아가요.</div></div>
+        <div class="step-item"><div class="n">2</div><div>방향키(↑↓←→)를 누르면 터틀이 <b>바라보는 방향</b>만 바뀌어요.</div></div>
+        <div class="step-item"><div class="n">3</div><div>화면 가장자리(벽)에 닿으면 게임이 끝나고 <b>"오늘의 작품 완성!!"</b>이 나타나요.</div></div>
+        <div class="step-item"><div class="n">4</div><div>화면 위 아무 곳에나 <b>물감(paint)</b>이 무작위로 나타나요.</div></div>
+        <div class="step-item"><div class="n">5</div><div>물감에 닿으면 <b>색이 바뀌고</b>, 물감이 다시 무작위 위치로 옮겨가요.</div></div>
+        <div class="step-item"><div class="n">6</div><div>마지막으로, 물감을 먹을수록 <b>속도가 점점 빨라지고</b> 펜이 <b>점점 굵어져요</b>.</div></div>
+      </div>
+      <div class="note peach"><b>미리 알아두기</b> — 이 게임에는 "조건이 참인 동안 계속 반복하기(<code>while</code>)", "무작위로 값 고르기(<code>random</code>)", "여러 조건을 한 번에 확인하기(<code>or</code>)" 같은 새로운 도구가 필요해요. 새로 나오는 문법은 필요한 단계에서 이미 코드로 완성해 뒀으니, 여러분은 <b>도망 게임에서 배운 것들을 적용하는 데</b> 집중하면 돼요! 🎨</div>
+
+      <p class="lead" style="margin-top:22px;">🎮 <b>미리 체험해보기</b> — 코딩을 시작하기 전에, 오늘 완성할 게임을 먼저 플레이해보세요. 방향키로 터틀을 조종해서 물감을 먹으며 나만의 추상화를 그려보세요!</p>
+      <div class="game-wrap">
+        <div class="game-topbar"><span>🎨 추상 화가 터틀</span><span id="paintMsg">그림을 그려보세요!</span></div>
+        <canvas id="paintCanvas" width="460" height="460" tabindex="0"></canvas>
+      </div>
+      <button class="pg-reset2" id="paintResetBtn">다시 시작</button>
+      <div class="game-caption">캔버스를 한 번 클릭해서 포커스를 준 다음, 방향키(↑↓←→)로 방향을 바꿔보세요. 터틀은 항상 스스로 앞으로 나아가요. (이 미리보기는 오늘 배울 최종 완성본의 느낌만 보여줘요 — 실제로는 여러분이 직접 파이썬 코드로 이 게임을 만들어요!)</div>
+    </section>
+
+    <!-- 2 : MISSION -->
+    <section class="chapter" id="c2">
+      <div class="chapter-head"><div class="badge">2</div><h2>화면과 터틀 기본 설정</h2></div>
+      <span class="mission-tag">🎯 미션 · 직접 코딩</span>
+      <p class="goal"><b>목표:</b> 아이보리색 배경의 그래픽 창을 만들고, 터틀 모양과 펜 굵기를 정합니다.</p>
+      <div class="mission">
+        <h4>✏️ 세팅은 직접! — 지난 시간에 배운 것들로 만들어 보세요</h4>
+        <div class="step-list">
+          <div class="step-item"><div class="n">1</div><div>가로 500, 세로 500짜리 화면 만들기, 제목은 <b>"추상 화가 터틀 몬드리안"</b></div></div>
+          <div class="step-item"><div class="n">2</div><div>배경색을 <b>ivory</b>로 바꾸기</div></div>
+          <div class="step-item"><div class="n">3</div><div>터틀 모양을 <b>"turtle"</b>로 정하기</div></div>
+          <div class="step-item"><div class="n">4</div><div>펜 굵기를 <b>5</b>로 정하기</div></div>
+        </div>
+        <p class="hintline">🔑 힌트 — 이 함수들을 하나씩 쓰면 됩니다 :
+          <span class="chip">t.setup( , )</span><span class="chip">t.title(" ")</span>
+          <span class="chip">t.bgcolor(" ")</span><span class="chip">t.shape("turtle")</span>
+          <span class="chip">t.pensize( )</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- 3 : MISSION (NEW - just the forward loop, no paint yet) -->
+    <section class="chapter" id="c3">
+      <div class="chapter-head"><div class="badge">3</div><h2>계속 앞으로 전진하기</h2></div>
+      <span class="mission-tag">🎯 미션 · 직접 코딩</span>
+      <p class="goal"><b>목표:</b> <code>while</code> 반복문으로 터틀이 화면 위에서 끊임없이 앞으로 나아가게 만듭니다. 지금 만든 반복문은 앞으로 여러 단계에 걸쳐 계속 내용이 추가될 거예요.</p>
+      <div class="newfn"><div class="fn-lbl">🆕 새로 배우는 문법 · while True: 와 무한 반복</div><div class="fn-line"><code>while 조건:</code>은 조건이 <b>참인 동안 계속</b> 안의 코드를 반복해요.</div><div class="fn-line"><code>while True:</code>는 조건이 항상 참이라서, 사실상 "멈추지 않고 계속" 반복하라는 뜻이에요. (멈추려면 나중에 배울 <code>break</code>가 필요해요.)</div><div class="fn-line">도망 게임은 <code>screen.ontimer()</code>로 "0.1초 후 다시 실행"하는 방식이었다면, 이번엔 <code>while</code>로 "계속 반복"하는 다른 방식을 써요.</div></div>
+      <div class="code-box">speed = <span class="fn">3</span>          <span class="cm"># 터틀이 앞으로 나아가는 속도</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+
+    <span class="blank"># 여기에 코드를 작성하세요 (현재 방향으로 speed만큼 전진)</span></div>
+      <div class="hintbox">
+        <div class="h-lbl">생각해 보기</div>
+        <ul>
+          <li>이번엔 딱 한 줄이면 돼요 — 도망 게임에서 배운 <code>forward()</code>와 똑같아요.</li>
+          <li><code>while True:</code> 아래는 반드시 들여쓰기를 맞춰야 안쪽 코드로 인식돼요.</li>
+          <li>지금 당장은 방향키가 없어서 터틀이 한쪽으로만 계속 가겠지만, 다음 단계에서 방향을 바꾸는 기능을 추가할 거예요. 지금은 "계속 전진"이 잘 되는지만 확인해보세요.</li>
+        </ul>
+      </div>
+      <details>
+        <summary><span><span class="ic">💡</span> 메서드 힌트 보기</span></summary>
+        <div class="reveal">
+          <ul class="map">
+            <li><span class="con">앞으로 이동</span><span class="arr">→</span><code>t.forward(<span class="b">speed</span>)</code></li>
+          </ul>
+          <p class="tip"><b>기억하기</b> · 이 <code>while</code> 반복문은 오늘 만들 게임 전체의 뼈대예요. 다음 단계부터는 이 반복문을 지우지 않고, 안쪽에 코드를 한 줄씩 더해가요.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 4 : MISSION -->
+    <section class="chapter" id="c4">
+      <div class="chapter-head"><div class="badge">4</div><h2>방향키로 터틀 조종하기</h2></div>
+      <span class="mission-tag">🎯 미션 · 직접 코딩</span>
+      <p class="goal"><b>목표:</b> 방향키 4개에 각각 함수를 연결해서, 누른 방향으로 터틀의 <b>머리 방향만</b> 바꿉니다.</p>
+      <p class="lead">도망 게임과 다른 점 하나 — 여기서는 방향키를 눌러도 <b>그 자리에서 바로 이동하지 않아요</b>. 방향만 바뀌고, 실제로 앞으로 가는 건 <b>3단계에서 만든 반복문</b>이 항상 자동으로 계속 해줘요.</p>
+      <div class="code-box"><span class="kw">def</span> move_up():
+    t.setheading(<span class="fn">90</span>)   <span class="cm"># 위쪽(90도)을 바라보기</span>
+
+<span class="blank"># 여기에 move_down(), move_right(), move_left() 함수를 move_up()처럼 만드세요
+# (아래=270도, 오른쪽=0도, 왼쪽=180도)</span>
+
+
+<span class="cm"># 키보드 이벤트 연결</span>
+t.onkeypress(move_up, <span class="str">"Up"</span>)
+<span class="blank"># 여기에 move_down, move_right, move_left도 각각의 방향키와 연결하세요</span>
+
+t.listen()    <span class="cm"># 키보드 입력을 받기 시작해요</span></div>
+      <div class="hintbox">
+        <div class="h-lbl">생각해 보기</div>
+        <ul>
+          <li><code>move_up()</code>과 <b>완전히 같은 모양</b>으로, 각도만 바꿔서 <b>move_down(270도)</b>, <b>move_right(0도)</b>, <b>move_left(180도)</b>를 만들어요.</li>
+          <li>이 함수들은 <code>forward()</code>를 <b>부르지 않아요</b> — 방향만 바꾸고, 실제로 앞으로 가는 건 항상 자동으로 실행되는 반복문(3단계)이 담당해요.</li>
+          <li>함수 4개를 다 만들었다면, 각 방향키와 연결하는 <code>onkeypress()</code> 줄도 4개 필요해요.</li>
+          <li>맨 마지막 <code>t.listen()</code>은 한 번만 있으면 돼요.</li>
+        </ul>
+      </div>
+      <details>
+        <summary><span><span class="ic">💡</span> 메서드 힌트 보기</span></summary>
+        <div class="reveal">
+          <ul class="map">
+            <li><span class="con">방향 딱 정하기</span><span class="arr">→</span><code>setheading(<span class="b">각도</span>)</code></li>
+            <li><span class="con">키와 함수 연결</span><span class="arr">→</span><code>onkeypress(<span class="b">함수이름, "Down"</span>)</code></li>
+          </ul>
+          <p class="tip"><b>팁</b> · 방향 키 이름은 <code>"Up"</code>, <code>"Down"</code>, <code>"Right"</code>, <code>"Left"</code>예요. <code>onkeypress()</code>에 함수 이름을 넣을 때는 괄호를 붙이지 않아요.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 5 : MISSION (fully given, review chapter - wall collision only, no paint yet) -->
+    <section class="chapter" id="c5">
+      <div class="chapter-head"><div class="badge">5</div><h2>벽에 닿으면 게임 끝내기</h2></div>
+      <span class="mission-tag">🎯 미션 · 코드 읽고 이해하기</span>
+      <p class="goal"><b>목표:</b> 터틀이 화면 가장자리(벽)에 닿으면 <code>while</code> 반복문을 멈추고 게임을 끝냅니다. 3단계에서 만든 반복문 안에 이어서 코드를 씁니다.</p>
+      <div class="newfn"><div class="fn-lbl">🆕 새로 배우는 함수 · xcor(), ycor(), or로 조건 잇기, break</div><div class="fn-line"><code>t.xcor()</code>과 <code>t.ycor()</code>은 지금 터틀의 <b>x좌표, y좌표</b>를 숫자로 알려줘요.</div><div class="fn-line"><code>조건A or 조건B</code>는 "둘 중 <b>하나라도</b> 참이면" 전체가 참이 돼요. 네 방향(오른쪽·왼쪽·위·아래) 벽 중 <b>아무거나</b> 닿아도 게임이 끝나야 하니까, 네 조건을 <code>or</code>로 모두 연결해요.</div><div class="fn-line"><code>break</code>는 반복문(<code>while</code>)을 그 자리에서 바로 멈추고 빠져나가는 명령이에요. <code>while True:</code>는 원래 영원히 반복되지만, <code>break</code>를 만나면 그 즉시 멈춰요.</div><div class="fn-line">이 세 가지는 오늘 처음 배우는 문법이라 코드에 <b>이미 완성되어 있어요</b>. 코드를 천천히 읽으면서 "왜 이렇게 쓰는지" 이해해보세요!</div></div>
+      <div class="code-box">speed = <span class="fn">3</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+
+    <span class="cm"># (아래 전진 코드는 3단계에서 이미 완성했어요)</span>
+    t.forward(speed)
+
+    <span class="cm"># 벽에 닿으면 게임 종료</span>
+    <span class="kw">if</span> (t.xcor() > <span class="fn">230</span> <span class="kw">or</span> t.xcor() < -<span class="fn">230</span> <span class="kw">or</span>
+        t.ycor() > <span class="fn">230</span> <span class="kw">or</span> t.ycor() < -<span class="fn">230</span>):
+        <span class="kw">break</span></div>
+      <div class="hintbox">
+        <div class="h-lbl">생각해 보기</div>
+        <ul>
+          <li>이번 단계는 <b>빈칸이 없어요!</b> 대신 코드를 천천히 읽고, <code>or</code>로 연결된 네 조건이 각각 어떤 벽(오른쪽·왼쪽·위·아래)을 확인하는지 짚어보세요.</li>
+          <li>지금 실행해보면, 방향키로 조종하다가 벽에 닿는 순간 프로그램이 멈추는 걸 바로 확인할 수 있어요. (아직 물감은 없지만, "벽에 닿으면 끝난다"는 동작 자체는 이미 완성이에요!)</li>
+          <li>숫자 <b>230</b>을 <b>100</b>으로 바꾸면 어떻게 될까요? 게임이 더 빨리 끝날까요, 천천히 끝날까요? 직접 바꿔서 실험해보세요.</li>
+        </ul>
+      </div>
+      <details>
+        <summary><span><span class="ic">💡</span> 메서드 힌트 보기</span></summary>
+        <div class="reveal">
+          <ul class="map">
+            <li><span class="con">x좌표 구하기</span><span class="arr">→</span><code>t.xcor()</code></li>
+            <li><span class="con">y좌표 구하기</span><span class="arr">→</span><code>t.ycor()</code></li>
+            <li><span class="con">여러 조건 중 하나라도</span><span class="arr">→</span><code>조건A <span class="b">or</span> 조건B</code></li>
+            <li><span class="con">반복문 즉시 멈추기</span><span class="arr">→</span><code>break</code></li>
+          </ul>
+          <p class="tip"><b>xcor()/ycor()가 하는 일</b> · 터틀이 지금 있는 위치의 x, y 좌표를 각각 숫자로 알려줘요. 이 값이 -230보다 작거나 230보다 크면 화면 밖(벽)으로 나가려는 거예요.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 6 : MISSION (물감 만들기, moved here) -->
+    <section class="chapter" id="c6">
+      <div class="chapter-head"><div class="badge">6</div><h2>물감 터틀 만들고 무작위로 움직이기</h2></div>
+      <span class="mission-tag">🎯 미션 · 직접 코딩</span>
+      <p class="goal"><b>목표:</b> <code>paint</code>라는 이름의 동그란 거북이를 만들어 펜을 들게 하고, 색상 목록에서 무작위로 색을 골라 물감을 화면 아무 곳에나 이동시키는 함수를 완성합니다.</p>
+      <div class="newfn"><div class="fn-lbl">🆕 새로 배우는 함수 · random.choice(), random.randint()</div><div class="fn-line"><code>random.choice(리스트)</code>는 리스트 안에 있는 값 중 <b>하나를 무작위로</b> 골라줘요. <code>random.choice(color_list)</code>라고 쓰면 색상 목록에서 색 하나를 무작위로 뽑아요.</div><div class="fn-line"><code>random.randint(최소, 최대)</code>는 그 범위 안(양 끝 포함)에서 <b>무작위 정수 하나</b>를 돌려줘요. <code>random.randint(-230, 230)</code>이면 -230부터 230 사이의 아무 정수예요.</div><div class="fn-line">이 두 함수를 조합하면, "화면 안 아무 곳"에 물감을 놓거나 "색상 목록 중 아무 색"을 고를 수 있어요.</div></div>
+      <div class="code-box"><span class="blank"># 맨 위 첫 줄에 코드를 추가하세요 (import random)</span>
+
+color_list = [
+    <span class="str">"red"</span>, <span class="str">"green"</span>, <span class="str">"orange"</span>,
+    <span class="str">"pink"</span>, <span class="str">"brown"</span>,
+    <span class="str">"skyblue"</span>, <span class="str">"violet"</span>
+]
+
+color = <span class="str">"black"</span>     <span class="cm"># 현재 사용할 펜 색</span>
+
+<span class="cm"># -----------------------</span>
+<span class="cm"># 물감 객체 만들기</span>
+<span class="cm"># -----------------------</span>
+<span class="blank"># 여기에 코드를 작성하세요 (paint라는 이름으로 거북이를 만들고, 모양은 "circle", 펜은 들기)</span>
+
+<span class="cm"># -----------------------</span>
+<span class="cm"># 물감을 새로운 위치로 이동</span>
+<span class="cm"># -----------------------</span>
+<span class="kw">def</span> paint_move():
+    <span class="kw">global</span> color      <span class="cm"># 함수 밖의 color 변수를 사용</span>
+
+    <span class="cm"># 색상 목록에서 색을 하나 랜덤으로 선택 (새로 배우는 random.choice())</span>
+    color = random.choice(color_list)
+
+    <span class="blank">    # 여기에 코드를 작성하세요
+    # (물감의 색을 color로 바꾸고, 물감을 (random.randint(-230,230), random.randint(-230,230))로 이동)</span>
+
+paint_move()         <span class="cm"># 처음 물감 위치 정하기</span></div>
+      <div class="hintbox">
+        <div class="h-lbl">생각해 보기</div>
+        <ul>
+          <li>오늘 처음으로 <code>random</code> 모듈을 쓰기 때문에, 파일 <b>맨 위 첫 줄</b>에 <code>import random</code>을 추가해야 해요. (<code>import turtle as t</code> 바로 위나 아래 줄이면 돼요.)</li>
+          <li><code>paint = t.Turtle()</code>로 새 거북이를 만들고, 모양은 <b>"circle"</b>, 그리고 펜은 <b>들어요</b>(<code>up()</code>) — 도망 게임의 enemy를 만들 때와 순서가 같아요.</li>
+          <li>물감 색을 바꾸는 명령(<code>color()</code>)과 위치를 옮기는 명령(<code>goto()</code>)도 도망 게임에서 이미 배운 것들이에요.</li>
+          <li>좌표 자리에 <code>random.randint(-230, 230)</code>을 <b>x, y 각각에 한 번씩</b> 넣으면 화면 안 무작위 위치가 돼요.</li>
+          <li>이 단계까지 실행해보면, 물감이 화면에 나타나긴 하지만 아직 터틀이 물감을 "먹는" 반응은 없어요. 그건 다음 단계에서 만들어요.</li>
+        </ul>
+      </div>
+      <details>
+        <summary><span><span class="ic">💡</span> 메서드 힌트 보기</span></summary>
+        <div class="reveal">
+          <ul class="map">
+            <li><span class="con">새 거북이 만들기</span><span class="arr">→</span><code>t.Turtle()</code></li>
+            <li><span class="con">모양 정하기</span><span class="arr">→</span><code>shape(<span class="b">"circle"</span>)</code></li>
+            <li><span class="con">펜 들기</span><span class="arr">→</span><code>up()</code></li>
+            <li><span class="con">색 바꾸기</span><span class="arr">→</span><code>color(<span class="b">색이름</span>)</code></li>
+            <li><span class="con">이동하기</span><span class="arr">→</span><code>goto(<span class="b">x, y</span>)</code></li>
+            <li><span class="con">무작위 값 고르기</span><span class="arr">→</span><code>random.choice(<span class="b">리스트</span>)</code> / <code>random.randint(<span class="b">최소, 최대</span>)</code></li>
+          </ul>
+          <p class="tip"><b>기억하기</b> · <code>global color</code>가 맨 위에 있어서, 함수 안에서 <code>color = random.choice(color_list)</code>처럼 바깥 변수 값을 바꿔도 잘 동작해요. 도망 게임의 <code>global playing</code>과 같은 이유예요.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 7 : MISSION (물감 먹으면 처리 - speed/pensize 제외) -->
+    <section class="chapter" id="c7">
+      <div class="chapter-head"><div class="badge">7</div><h2>물감 먹으면 처리하기</h2></div>
+      <span class="mission-tag">🎯 미션 · 직접 코딩</span>
+      <p class="goal"><b>목표:</b> 터틀과 물감 사이의 거리를 계산해서 가까워지면 물감을 먹은 것으로 처리합니다. 펜 색을 물감 색으로 바꾸고, 물감을 새로운 자리로 옮겨요. <b>3단계에서 만든 반복문</b> 안, 전진 코드와 벽 검사 코드 <b>사이</b>에 이어서 씁니다.</p>
+      <div class="code-box">speed = <span class="fn">3</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    t.forward(speed)    <span class="cm"># (이미 완성)</span>
+
+    <span class="cm"># 터틀과 물감 사이의 거리가 20보다 작으면 물감을 먹은 것</span>
+    <span class="kw">if</span> t.distance(paint) < <span class="fn">20</span>:
+
+        <span class="blank">        # 여기에 코드를 작성하세요 (펜 색을 color로 바꾸기)</span>
+
+        <span class="blank">        # 여기에 코드를 작성하세요 (물감을 새로운 위치로 이동시키는 함수 호출)</span>
+
+    <span class="cm"># 벽에 닿으면 게임 종료 (이미 완성)</span>
+    <span class="kw">if</span> (t.xcor() > <span class="fn">230</span> <span class="kw">or</span> t.xcor() < -<span class="fn">230</span> <span class="kw">or</span>
+        t.ycor() > <span class="fn">230</span> <span class="kw">or</span> t.ycor() < -<span class="fn">230</span>):
+        <span class="kw">break</span></div>
+      <div class="hintbox">
+        <div class="h-lbl">생각해 보기</div>
+        <ul>
+          <li><code>if t.distance(paint) &lt; 20:</code>은 이미 완성되어 있어요. 그 안의 빈 곳엔 <b>색 바꾸기</b>(<code>color()</code>)와, 물감을 다시 배치하는 <b>함수 호출</b>(<code>paint_move()</code>)만 채우면 돼요.</li>
+          <li><code>t.color(color)</code>의 <code>color</code>는 6단계에서 <code>paint_move()</code>가 랜덤으로 골라둔 바로 그 색이에요. 함수 이름 <code>color</code>가 아니라 <b>변수</b> <code>color</code>를 그대로 넣는 거예요.</li>
+          <li>지금 실행해보면, 물감에 닿을 때마다 펜 색이 바뀌고 물감이 다른 자리로 옮겨가는 걸 확인할 수 있어요. 속도가 빨라지거나 펜이 굵어지는 건 <b>마지막 단계</b>에서 추가해요.</li>
+        </ul>
+      </div>
+      <details>
+        <summary><span><span class="ic">💡</span> 메서드 힌트 보기</span></summary>
+        <div class="reveal">
+          <ul class="map">
+            <li><span class="con">거리 구하기</span><span class="arr">→</span><code>t.distance(<span class="b">paint</span>)</code></li>
+            <li><span class="con">색 바꾸기</span><span class="arr">→</span><code>t.color(<span class="b">color</span>)</code></li>
+            <li><span class="con">함수 호출하기</span><span class="arr">→</span><code>paint_move()</code></li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- 8 : MISSION (마지막 기능 - 속도/펜 굵기 증가) -->
+    <section class="chapter" id="c8">
+      <div class="chapter-head"><div class="badge">8</div><h2>마지막 단계 · 속도 점점 빠르게, 펜 점점 굵게</h2></div>
+      <span class="mission-tag">🎯 미션 · 직접 코딩</span>
+      <p class="goal"><b>목표:</b> 물감을 먹을 때마다 <code>speed</code>를 조금씩 늘리고, 펜 굵기를 무작위로 바꿔서 그림이 점점 크고 대담해지게 만듭니다. 7단계에서 완성한 물감 처리 코드 안에 이어서 씁니다.</p>
+      <div class="newfn"><div class="fn-lbl">🆕 새로 배우는 문법 · 복합 대입 연산자(+=), pensize(random.randint())</div><div class="fn-line"><code>speed += 0.5</code>는 <code>speed = speed + 0.5</code>와 같아요. 지금 값에 0.5를 더해서 다시 저장하는 <b>복합 대입 연산자</b>예요.</div><div class="fn-line"><code>t.pensize(굵기)</code>는 펜 굵기를 정해요. 굵기 자리에 <code>random.randint(3, 10)</code>을 넣으면 3~10 사이 무작위 굵기가 돼요.</div></div>
+      <div class="code-box">speed = <span class="fn">3</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    t.forward(speed)
+
+    <span class="kw">if</span> t.distance(paint) < <span class="fn">20</span>:
+        t.color(color)          <span class="cm"># (7단계에서 이미 완성)</span>
+
+        <span class="blank">        # 여기에 코드를 작성하세요 (speed에 0.5를 더해서 다시 저장하기)</span>
+
+        <span class="blank">        # 여기에 코드를 작성하세요 (펜 굵기를 3~10 사이 무작위 정수로 바꾸기)</span>
+
+        paint_move()             <span class="cm"># (7단계에서 이미 완성)</span>
+
+    <span class="kw">if</span> (t.xcor() > <span class="fn">230</span> <span class="kw">or</span> t.xcor() < -<span class="fn">230</span> <span class="kw">or</span>
+        t.ycor() > <span class="fn">230</span> <span class="kw">or</span> t.ycor() < -<span class="fn">230</span>):
+        <span class="kw">break</span></div>
+      <div class="hintbox">
+        <div class="h-lbl">생각해 보기</div>
+        <ul>
+          <li><code>speed += 0.5</code> 한 줄이면 속도가 물감을 먹을 때마다 0.5씩 계속 늘어나요.</li>
+          <li><code>t.pensize(random.randint(3, 10))</code>처럼 <code>pensize()</code> 안에 바로 <code>random.randint()</code>를 넣을 수 있어요.</li>
+          <li>이제 실행해보면, 물감을 많이 먹을수록 터틀이 점점 빨라지고 그림선도 점점 굵어지는 걸 확인할 수 있어요 — 오늘 만든 게임의 핵심 재미 포인트예요!</li>
+        </ul>
+      </div>
+      <details>
+        <summary><span><span class="ic">💡</span> 메서드 힌트 보기</span></summary>
+        <div class="reveal">
+          <ul class="map">
+            <li><span class="con">값 더해서 저장</span><span class="arr">→</span><code>speed <span class="b">+=</span> 0.5</code></li>
+            <li><span class="con">펜 굵기 바꾸기</span><span class="arr">→</span><code>pensize(<span class="b">random.randint(3, 10)</span>)</code></li>
+          </ul>
+          <p class="tip"><b>기억하기</b> · <code>+=</code>는 "지금 값 + 오른쪽 값"을 다시 왼쪽 변수에 저장해요. <code>speed = speed + 0.5</code>라고 풀어 써도 똑같이 동작해요.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 9 : MISSION (게임 종료 처리 - 마지막 코딩 챕터로 이동) -->
+    <section class="chapter" id="c9">
+      <div class="chapter-head"><div class="badge">9</div><h2>게임 종료 처리하기</h2></div>
+      <span class="mission-tag">🎯 미션 · 직접 코딩</span>
+      <p class="goal"><b>목표:</b> 이제 게임의 모든 기능이 완성되었어요! 마지막으로 게임이 끝나면(벽에 닿아 <code>while</code> 반복문을 빠져나오면) 물감을 숨기고, 화면 아래쪽에 완성 메시지를 씁니다.</p>
+      <div class="newfn"><div class="fn-lbl">🆕 새로 배우는 함수 · t.done()</div><div class="fn-line"><code>t.done()</code>은 도망 게임의 <code>turtle.mainloop()</code>과 <b>같은 역할</b>을 해요 — 창을 닫지 않고 계속 열어둬요.</div><div class="fn-line">모듈 스타일(<code>import turtle as t</code>)에서는 <code>mainloop()</code> 대신 <code>done()</code>이라는 이름을 더 자주 써요. 맨 마지막 줄에 이미 완성해 뒀어요.</div></div>
+      <div class="code-box"><span class="cm"># -----------------------</span>
+<span class="cm"># 게임 종료 (while 반복문을 빠져나온 뒤 실행됨)</span>
+<span class="cm"># -----------------------</span>
+<span class="blank"># 여기에 코드를 작성하세요 (물감(paint) 숨기기)</span>
+
+<span class="blank"># 여기에 코드를 작성하세요
+# (펜을 들고 (0, -220)으로 이동한 뒤, "오늘의 작품 완성!!"을 가운데 정렬로 크게 쓰기)</span>
+
+t.done()   <span class="cm"># 창을 닫지 않고 계속 열어두기 (turtle.mainloop()과 같은 역할 · 이미 완성)</span></div>
+      <div class="hintbox">
+        <div class="h-lbl">생각해 보기</div>
+        <ul>
+          <li>물감을 숨기는 명령은 도망 게임의 <code>pen.ht()</code>와 같아요. <code>hideturtle()</code> 또는 줄임말 <code>ht()</code>를 쓰면 돼요.</li>
+          <li><b>펜 들기 → 이동하기 → 글씨 쓰기</b> 순서도 이미 배운 그대로예요. 글자는 <b>"오늘의 작품 완성!!"</b>, 위치는 <b>(0, -220)</b>, font는 <b>("나눔바른펜", 20, "normal")</b>을 쓰세요.</li>
+          <li>드디어 완성! 이제 방향키로 조종하며 물감을 먹고, 벽에 닿으면 완성 메시지가 뜨는 <b>나만의 추상화 게임</b>이 끝까지 동작해요.</li>
+        </ul>
+      </div>
+      <details>
+        <summary><span><span class="ic">💡</span> 메서드 힌트 보기</span></summary>
+        <div class="reveal">
+          <ul class="map">
+            <li><span class="con">거북이 숨기기</span><span class="arr">→</span><code>hideturtle()</code> / <code>ht()</code></li>
+            <li><span class="con">펜 들기</span><span class="arr">→</span><code>penup()</code> / <code>up()</code></li>
+            <li><span class="con">이동하기</span><span class="arr">→</span><code>goto(<span class="b">x, y</span>)</code></li>
+            <li><span class="con">글씨 쓰기</span><span class="arr">→</span><code>write(<span class="b">"글자", align="center", font=(...)</span>)</code></li>
+          </ul>
+          <p class="tip"><b>기억하기</b> · <code>t.penup()</code>으로 펜을 들지 않으면, 글씨를 쓸 위치로 이동하는 동안에도 선이 그려져서 그림을 망칠 수 있어요.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 10 -->
+    <section class="chapter" id="c10">
+      <div class="chapter-head"><div class="badge">10</div><h2>퀴즈로 확인하기</h2></div>
+      <p class="lead">퀴즈 풀기 전에, 오늘 배운 함수를 만든 순서대로 표로 한 번 정리해봐요.</p>
+      <table class="fn-table">
+        <tr><th>함수/문법</th><th>하는 일</th><th>사용법</th></tr>
+        <tr><td><code>while 조건:</code></td><td>조건이 참인 동안 계속 반복</td><td><code>while True:</code></td></tr>
+        <tr><td><code>setheading(각도)</code></td><td>터틀이 바라보는 방향을 딱 정하기</td><td><code>t.setheading(90)</code></td></tr>
+        <tr><td><code>xcor()</code> / <code>ycor()</code></td><td>지금 위치의 x, y 좌표 구하기</td><td><code>t.xcor()</code></td></tr>
+        <tr><td><code>조건A or 조건B</code></td><td>둘 중 하나라도 참이면 참</td><td><code>if a or b:</code></td></tr>
+        <tr><td><code>break</code></td><td>반복문을 즉시 멈추고 빠져나감</td><td><code>if 조건:<br>&nbsp;&nbsp;&nbsp;&nbsp;break</code></td></tr>
+        <tr><td><code>random.choice(리스트)</code></td><td>리스트에서 값 하나를 무작위로 선택</td><td><code>random.choice(color_list)</code></td></tr>
+        <tr><td><code>random.randint(최소,최대)</code></td><td>범위 안에서 무작위 정수 하나 반환</td><td><code>random.randint(-230, 230)</code></td></tr>
+        <tr><td><code>변수 += 값</code></td><td>변수에 값을 더해서 다시 저장</td><td><code>speed += 0.5</code></td></tr>
+        <tr><td><code>pensize(굵기)</code></td><td>펜의 굵기 정하기</td><td><code>t.pensize(random.randint(3,10))</code></td></tr>
+      </table>
+      <p class="lead" style="margin-top:18px;">이제 배운 내용을 퀴즈로 확인해봐요! 정답을 클릭해보세요.</p>
+      <div id="quizArea"></div>
+      <div class="score-bar"><div class="score-pill" id="scorePill">0 / 5 정답</div></div>
+    </section>
+
+    <footer>파이썬 터틀 웹교재 · 추상 화가 터틀 (실습형)</footer>
+  </div>
+</div>
+
+<script>
+  // ---------- Abstract Painter mini game ----------
+  var canvas = document.getElementById('paintCanvas');
+  var ctx = canvas.getContext('2d');
+  var msg = document.getElementById('paintMsg');
+
+  var HALF = 230; // world -> canvas (canvas is 460x460, world center is (0,0))
+  function toCanvas(x, y){ return { x: x + HALF, y: HALF - y }; }
+
+  var BOUND = 225;
+  var COLORS = ['#E8604C', '#4F9D69', '#F4B942', '#FFAB76', '#8B5E3C', '#5DADE2', '#AF7AC5'];
+
+  var pathCanvas = document.createElement('canvas');
+  pathCanvas.width = 460; pathCanvas.height = 460;
+  var pathCtx = pathCanvas.getContext('2d');
+
+  var tt, paint2, playing3, tickTimer3;
+
+  function rand(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  function placePaint(){
+    paint2 = { x: rand(-BOUND, BOUND), y: rand(-BOUND, BOUND) };
+  }
+
+  function resetPaint(){
+    tt = { x: 0, y: 0, heading: 0, speed: 3, color: '#2B3A55', width: 5 };
+    placePaint();
+    playing3 = true;
+    msg.textContent = '그림을 그려보세요!';
+    pathCtx.fillStyle = '#FFFFF0';
+    pathCtx.fillRect(0, 0, pathCanvas.width, pathCanvas.height);
+    if (tickTimer3) clearInterval(tickTimer3);
+    tickTimer3 = setInterval(tickPaint, 60);
+    render2();
+  }
+
+  function tickPaint(){
+    if (!playing3) return;
+
+    var rad = tt.heading * Math.PI / 180;
+    var nx = tt.x + tt.speed * Math.cos(rad);
+    var ny = tt.y + tt.speed * Math.sin(rad);
+
+    var p1 = toCanvas(tt.x, tt.y);
+    var p2 = toCanvas(nx, ny);
+    pathCtx.strokeStyle = tt.color;
+    pathCtx.lineWidth = tt.width;
+    pathCtx.lineCap = 'round';
+    pathCtx.beginPath();
+    pathCtx.moveTo(p1.x, p1.y);
+    pathCtx.lineTo(p2.x, p2.y);
+    pathCtx.stroke();
+
+    tt.x = nx; tt.y = ny;
+
+    var dist = Math.sqrt(Math.pow(tt.x - paint2.x, 2) + Math.pow(tt.y - paint2.y, 2));
+    if (dist < 20){
+      tt.speed += 0.5;
+      tt.color = COLORS[rand(0, COLORS.length - 1)];
+      tt.width = rand(3, 10);
+      placePaint();
+    }
+
+    if (tt.x > BOUND || tt.x < -BOUND || tt.y > BOUND || tt.y < -BOUND){
+      playing3 = false;
+      clearInterval(tickTimer3);
+      msg.textContent = '오늘의 작품 완성!!';
+    } else {
+      msg.textContent = '속도: ' + tt.speed.toFixed(1);
+    }
+    render2();
+  }
+
+  function drawDot(x, y, color){
+    var p = toCanvas(x, y);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function render2(){
+    ctx.drawImage(pathCanvas, 0, 0);
+    if (playing3){ drawDot(paint2.x, paint2.y, tt.color); }
+    drawDot(tt.x, tt.y, '#2B3A55');
+
+    if (!playing3){
+      ctx.font = "bold 24px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillStyle = '#2B3A55';
+      ctx.fillText('오늘의 작품 완성!!', canvas.width / 2, canvas.height / 2);
+    }
+  }
+
+  canvas.addEventListener('click', function(){ canvas.focus(); });
+  canvas.addEventListener('keydown', function(e){
+    if (!playing3) return;
+    if (e.key === 'ArrowUp'){ tt.heading = 90; e.preventDefault(); }
+    else if (e.key === 'ArrowDown'){ tt.heading = 270; e.preventDefault(); }
+    else if (e.key === 'ArrowRight'){ tt.heading = 0; e.preventDefault(); }
+    else if (e.key === 'ArrowLeft'){ tt.heading = 180; e.preventDefault(); }
+  });
+
+  document.getElementById('paintResetBtn').addEventListener('click', resetPaint);
+
+  resetPaint();
+
+  // ---------- Quiz (reordered to match the new build order) ----------
+  var questions = [
+    {
+      q: "while True: 가 하는 일은?",
+      opts: ["딱 한 번만 실행한다", "조건 없이 멈추지 않고 계속 반복한다 (break를 만날 때까지)", "1초마다 한 번 실행한다", "에러를 발생시킨다"],
+      correct: 1
+    },
+    {
+      q: "if (t.xcor() > 230 or t.xcor() < -230 or t.ycor() > 230 or t.ycor() < -230): 의 의미는?",
+      opts: ["네 조건이 모두 참이어야 실행된다", "네 조건 중 하나라도 참이면 실행된다 (벽 중 하나라도 닿으면)", "좌표가 230일 때만 실행된다", "조건과 상관없이 항상 실행된다"],
+      correct: 1
+    },
+    {
+      q: "random.choice(color_list)가 하는 일은?",
+      opts: ["리스트를 알파벳 순으로 정렬한다", "리스트에서 값 하나를 무작위로 골라준다", "리스트의 첫 번째 값만 돌려준다", "리스트를 전부 지운다"],
+      correct: 1
+    },
+    {
+      q: "random.randint(-230, 230)이 하는 일은?",
+      opts: ["-230부터 230 사이의 무작위 정수를 돌려준다", "항상 230을 돌려준다", "-230과 230만 번갈아 돌려준다", "소수점이 있는 무작위 수를 돌려준다"],
+      correct: 0
+    },
+    {
+      q: "speed += 0.5 가 하는 일은?",
+      opts: ["speed를 0.5로 고정한다", "speed에 0.5를 더해서 다시 저장한다", "speed를 0.5로 나눈다", "speed 변수를 삭제한다"],
+      correct: 1
+    }
+  ];
+  var score2 = 0;
+  var answered = new Array(questions.length).fill(false);
+
+  function renderQuiz(){
+    var area = document.getElementById('quizArea');
+    area.innerHTML = questions.map(function(item, qi){
+      var opts = item.opts.map(function(opt, oi){
+        return '<button class="quiz-opt" onclick="answerQuiz('+qi+','+oi+')">'+ (oi+1) +'. '+opt+'</button>';
+      }).join('');
+      return '<div class="quiz-q" id="q'+qi+'">'+
+             '<div class="qtext">Q'+(qi+1)+'. '+item.q+'</div>'+
+             '<div class="quiz-opts">'+opts+'</div>'+
+             '<div class="quiz-fb" id="fb'+qi+'"></div>'+
+             '</div>';
+    }).join('');
+  }
+
+  function answerQuiz(qi, oi){
+    if(answered[qi]) return;
+    answered[qi] = true;
+    var qBlock = document.getElementById('q'+qi);
+    var buttons = qBlock.querySelectorAll('.quiz-opt');
+    var correct = questions[qi].correct;
+    buttons.forEach(function(btn, idx){
+      btn.disabled = true;
+      if(idx === correct){ btn.classList.add('correct'); }
+      else if(idx === oi){ btn.classList.add('wrong'); }
+    });
+    var fb = document.getElementById('fb'+qi);
+    if(oi === correct){
+      score2++;
+      fb.textContent = '🎉 정답이에요! 정말 잘했어요!';
+      fb.style.color = '#4F9D69';
+    } else {
+      fb.textContent = '💡 아쉬워요! 정답은 "' + questions[qi].opts[correct] + '" 예요.';
+      fb.style.color = '#E8604C';
+    }
+    fb.classList.add('show');
+    updateScore();
+  }
+  function updateScore(){
+    document.getElementById('scorePill').textContent = score2 + ' / ' + questions.length + ' 정답';
+  }
+  renderQuiz();
+</script>
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click', function(e){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+});
+</script>
+</body>
+</html>

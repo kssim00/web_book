@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CODE:N - 터틀레이스 게임 만들기</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+:root{
+  --bg:#faf9f6;
+  --surface:#ffffff;
+  --ink:#1c1c22;
+  --sub:#6b6f76;
+  --line:#e9e6df;
+  --accent:#5b56e0;
+  --accent-soft:#efeeff;
+  --accent2:#ff6b57;
+  --code-bg:#1b1b23;
+  --code-ink:#e7e5f3;
+  --radius:18px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  line-height:1.6;
+  padding-left:252px;
+  transition:padding-left 0.28s ease;
+}
+body.nav-collapsed{padding-left:0;}
+a{color:inherit;}
+
+/* sidebar */
+.sidebar{
+  position:fixed; top:0; left:0; bottom:0; width:252px;
+  background:var(--surface); border-right:1px solid var(--line);
+  padding:26px 18px; display:flex; flex-direction:column;
+  z-index:60; overflow-y:auto;
+  transition:transform 0.28s ease;
+}
+body.nav-collapsed .sidebar{transform:translateX(-100%);}
+.sidebar-top{display:flex; align-items:center; gap:8px; margin-bottom:20px; flex-wrap:wrap;}
+.brand{
+  font-weight:800; font-size:0.8rem; letter-spacing:0.5px;
+  background:var(--ink); color:#fff; padding:5px 12px; border-radius:50px;
+}
+.edition-tag{
+  font-size:0.75rem; font-weight:700; color:var(--accent);
+  background:var(--accent-soft); padding:5px 11px; border-radius:50px;
+}
+.sidebar nav{display:flex; flex-direction:column; gap:2px; flex:1; margin-top:6px;}
+.sidebar nav a{
+  display:flex; align-items:baseline; gap:10px; padding:9px 10px; border-radius:10px;
+  font-size:0.85rem; color:var(--sub); text-decoration:none; font-weight:600;
+}
+.sidebar nav a span.n{font-size:0.7rem; font-weight:800; color:#c9c6bd; width:16px; flex-shrink:0;}
+.sidebar nav a:hover{background:var(--accent-soft); color:var(--accent);}
+.sidebar nav a.active{background:var(--accent); color:#fff;}
+.sidebar nav a.active span.n{color:rgba(255,255,255,0.7);}
+
+.nav-toggle{
+  position:fixed; top:50%; left:252px; z-index:70;
+  width:15px; height:52px; transform:translateY(-50%);
+  border-radius:0 8px 8px 0; border:none; border-left:none;
+  background:var(--line); color:var(--sub);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; padding:0; font-size:0.68rem; line-height:1;
+  opacity:0.55; transition:left 0.28s ease, opacity 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+.nav-toggle:hover{opacity:1; background:var(--accent-soft); color:var(--accent);}
+.nav-toggle::after{content:"‹";}
+body.nav-collapsed .nav-toggle{left:0;}
+body.nav-collapsed .nav-toggle::after{content:"›";}
+
+/* layout */
+main{max-width:780px; margin:0 auto; padding:0 24px;}
+.section{
+  padding:72px 0; border-top:1px solid var(--line);
+  scroll-margin-top:70px;
+}
+.section:first-of-type{border-top:none;}
+.hero{padding:64px 0 56px; border-top:none;}
+
+.eyebrow{
+  display:inline-block; font-size:0.8rem; font-weight:800; letter-spacing:0.6px;
+  color:var(--accent2); text-transform:uppercase; margin-bottom:10px;
+}
+.sec-num{font-size:0.8rem; font-weight:800; color:#c9c6bd; margin-right:8px;}
+h2.sec-title{
+  font-size:1.9rem; font-weight:800; margin:0 0 14px; letter-spacing:-0.5px;
+}
+.hero h1{
+  font-size:2.5rem; font-weight:800; margin:0 0 16px; letter-spacing:-1px; line-height:1.3;
+}
+.desc{font-size:1.05rem; color:var(--sub); margin:0 0 24px; max-width:600px;}
+.desc b{color:var(--ink); font-weight:700;}
+
+.code-card{
+  background:var(--code-bg); border-radius:var(--radius);
+  padding:22px 24px; margin:20px 0; overflow-x:auto;
+  box-shadow:0 14px 34px rgba(20,20,30,0.16);
+  transition:width 0.2s ease, margin 0.2s ease;
+}
+.code-dots{display:flex; gap:6px; margin-bottom:14px;}
+.code-dots span{width:9px; height:9px; border-radius:50%; background:#3a3a46;}
+pre{margin:0; font-family:'SF Mono','Consolas','Menlo',monospace; font-size:0.92rem; color:var(--code-ink); line-height:1.7;}
+.c-kw{color:#ff7f9c; font-weight:600;}
+.c-bi{color:#7fd8ff;}
+.c-str{color:#b9f18c;}
+.c-num{color:#ffc978;}
+.c-cm{color:#7a7d8c; font-style:italic;}
+
+.arrow-line{display:flex; align-items:center; gap:10px; margin:14px 0; font-size:0.95rem; color:var(--sub);}
+.arrow-line .arrow{color:var(--accent); font-weight:800;}
+.arrow-line b{color:var(--ink);}
+
+.callout{
+  background:var(--accent-soft); border-radius:14px; padding:16px 18px;
+  font-size:0.92rem; color:var(--ink); margin:16px 0;
+}
+.callout b{color:var(--accent);}
+
+.preview-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px; margin:24px 0 8px; box-shadow:0 6px 18px rgba(20,20,30,0.05);
+}
+.preview-head{display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.preview-tag{font-size:0.78rem; font-weight:800; color:#fff; background:var(--accent); padding:4px 10px; border-radius:50px;}
+.preview-head p{margin:0; font-size:0.95rem; color:var(--sub);}
+.preview-card canvas{width:100%; height:auto; border-radius:14px; display:block; background:#e9e5fb; margin:0 auto;}
+#raceCanvas{max-width:460px;}
+.preview-controls{display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; flex-wrap:wrap;}
+.preview-btn{
+  background:var(--accent); color:#fff; border:none; font-weight:700; font-size:0.92rem;
+  padding:10px 18px; border-radius:50px; cursor:pointer; transition:opacity 0.15s;
+}
+.preview-btn.ghost{background:var(--surface); color:var(--accent); border:1px solid var(--line);}
+.preview-btn:disabled{opacity:0.4; cursor:default;}
+.preview-result{font-weight:700; color:var(--accent); font-size:0.95rem;}
+.preview-note{font-size:0.86rem; color:var(--sub); margin:12px 0 0;}
+.preview-card.compact{padding:16px;}
+.preview-card.compact canvas{max-width:300px;}
+#pvRaceCanvas{max-width:300px;}
+
+.bet-dialog{
+  background:#f4f2ff; border:1px solid var(--line); border-radius:14px;
+  padding:20px; max-width:420px; margin:0 auto;
+}
+.bet-dialog-title{font-weight:800; font-size:0.95rem; margin-bottom:8px;}
+.bet-dialog-q{font-size:0.92rem; color:var(--ink); margin-bottom:12px;}
+.bet-dialog input{
+  width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--line);
+  font-size:0.95rem; margin-bottom:12px; box-sizing:border-box;
+}
+.bet-dialog .preview-btn{width:100%;}
+.bet-mock{text-align:center;}
+.bet-mock .preview-result{display:block; margin-top:14px;}
+
+.summary-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+.summary-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px;
+  box-shadow:0 6px 18px rgba(20,20,30,0.05);
+}
+.summary-card code{font-family:'SF Mono',monospace; font-weight:700; color:var(--accent); font-size:0.95rem;}
+.summary-card p{margin:8px 0 0; font-size:0.88rem; color:var(--sub);}
+
+footer{
+  max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center;
+}
+.copyright{color:#a8a49a; font-size:0.8rem;}
+
+@media (max-width:900px){
+  body{padding-left:0;}
+  .sidebar{transform:translateX(-100%); box-shadow:0 0 40px rgba(20,20,30,0.18);}
+  body.nav-open .sidebar{transform:translateX(0);}
+  .nav-toggle{left:0;}
+  .nav-toggle::after{content:"›";}
+  body.nav-open .nav-toggle{left:252px;}
+  body.nav-open .nav-toggle::after{content:"‹";}
+}
+@media (max-width:640px){
+  .hero h1{font-size:1.9rem;}
+  h2.sec-title{font-size:1.5rem;}
+  .summary-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기/닫기"></button>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="brand">CODE:N</span>
+    <span class="edition-tag">터틀레이스</span>
+  </div>
+  <nav>
+    <a href="#s0"><span class="n">00</span>무엇을 만들까?</a>
+    <a href="#s1"><span class="n">01</span>게임판 그리기</a>
+    <a href="#s2"><span class="n">02</span>레인 그리기</a>
+    <a href="#s3"><span class="n">03</span>출발선·도착선</a>
+    <a href="#s4"><span class="n">04</span>거북이 여러 마리 준비</a>
+    <a href="#s5"><span class="n">05</span>배팅 받기</a>
+    <a href="#s6"><span class="n">06</span>경주 진행시키기</a>
+    <a href="#s7"><span class="n">07</span>승자 발표</a>
+    <a href="#s8"><span class="n">08</span>클래스로 정리하기</a>
+    <a href="#s9"><span class="n">09</span>정리</a>
+  </nav>
+</aside>
+
+<main>
+
+  <section class="section hero" id="s0">
+    <div class="eyebrow">TURTLE PROJECT</div>
+    <h1>터틀레이스,<br>내 손으로 완성하기</h1>
+    <p class="desc">turtle 모듈로 배팅형 거북이 경주 게임을 만들어요. 트랙을 그리고, 거북이를 여러 마리 세우고, 랜덤으로 달리게 한 뒤 배팅 결과를 확인해요.</p>
+
+    <div class="preview-card">
+      <div class="preview-head">
+        <span class="preview-tag">미리보기</span>
+        <p>완성하면 이렇게 동작해요 — 버튼을 눌러 직접 확인해보세요.</p>
+      </div>
+      <canvas id="raceCanvas" width="700" height="420"></canvas>
+      <div class="preview-controls">
+        <button id="raceStart" class="preview-btn">▶ 경주 시작</button>
+        <button id="raceReset" class="preview-btn ghost" disabled>🔄 다시 보기</button>
+        <span id="raceResult" class="preview-result"></span>
+      </div>
+      <p class="preview-note">실제 게임에서는 경주 시작 전에 몇 번 거북이가 이길지 배팅도 해요!</p>
+    </div>
+  </section>
+
+  <section class="section" id="s1">
+    <div class="eyebrow">STEP 1</div>
+    <h2 class="sec-title"><span class="sec-num">01</span>게임판 그리기</h2>
+    <p class="desc">화면 크기를 정하고, 제목을 화면 위에 적어요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">import turtle as t
+import random as r
+
+t.screensize(600, 400, "lavender")  # 화면 크기와 배경색
+t.up()
+t.ht()                               # 거북이 모양 숨기기
+t.goto(-150, 220)
+t.write("터틀레이스게임", "center", font=("Arial", 28))  # 제목 쓰기</code></pre>
+    </div>
+    <div class="callout"><b>t.ht()</b>는 거북이 모양을 숨겨요. <b>t.write()</b>로 화면에 글자를 적을 수 있어요.</div>
+    <div class="preview-card compact">
+      <div class="preview-head"><span class="preview-tag">미리보기</span><p>여기까지 실행하면 이렇게 보여요.</p></div>
+      <canvas id="pvBoard" width="700" height="420"></canvas>
+    </div>
+  </section>
+
+  <section class="section" id="s2">
+    <div class="eyebrow">STEP 2</div>
+    <h2 class="sec-title"><span class="sec-num">02</span>레인 그리기</h2>
+    <p class="desc">반복문으로 가로줄을 여러 개 그어서 레인을 만들어요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">y = 130
+t.speed(0)          # 그리기 속도 최대
+for i in range(6):
+    t.up()
+    t.goto(-350, y)
+    t.down()
+    t.goto(350, y)   # 가로줄 긋기
+    y -= 80          # 다음 줄은 80만큼 아래로</code></pre>
+    </div>
+    <div class="callout">한 바퀴 돌 때마다 <b>y</b>가 80씩 줄어들어서 줄이 아래로 하나씩 그어져요.</div>
+    <div class="preview-card compact">
+      <div class="preview-head"><span class="preview-tag">미리보기</span><p>여기까지 실행하면 이렇게 보여요.</p></div>
+      <canvas id="pvLanes" width="700" height="420"></canvas>
+    </div>
+  </section>
+
+  <section class="section" id="s3">
+    <div class="eyebrow">STEP 3</div>
+    <h2 class="sec-title"><span class="sec-num">03</span>출발선·도착선 그리기</h2>
+    <p class="desc">왼쪽엔 하늘색 출발선, 오른쪽엔 주황색 도착선을 그려요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">t.up()
+t.pencolor("skyblue")
+t.pensize(3)
+t.goto(-300, 180)
+t.down()
+t.goto(-300, -300)  # 출발선
+
+t.up()
+t.pencolor("orange")
+t.pensize(3)
+t.goto(300, 180)
+t.down()
+t.goto(300, -300)   # 도착선</code></pre>
+    </div>
+    <div class="preview-card compact">
+      <div class="preview-head"><span class="preview-tag">미리보기</span><p>여기까지 실행하면 이렇게 보여요.</p></div>
+      <canvas id="pvLines" width="700" height="420"></canvas>
+    </div>
+  </section>
+
+  <section class="section" id="s4">
+    <div class="eyebrow">STEP 4</div>
+    <h2 class="sec-title"><span class="sec-num">04</span>거북이 여러 마리 준비하기</h2>
+    <p class="desc">반복문으로 거북이 객체를 여러 개 만들고, 색을 랜덤으로 정한 뒤 레인 번호를 옆에 적어요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">turtles = []
+sety = 180
+for i in range(7):
+    a = t.Turtle()
+    a.ht()
+    r1 = r.random()
+    g1 = r.random()
+    b1 = r.random()
+    a.color(r1, g1, b1)  # 랜덤 색
+    a.shape("turtle")
+    a.up()
+    a.st()
+    a.goto(-350, sety)
+    t.up()
+    t.goto(-370, sety)
+    t.write(i)            # 레인 번호 쓰기
+    sety -= 80
+    turtles.append(a)</code></pre>
+    </div>
+    <div class="callout">만든 거북이는 <b>turtles</b> 리스트에 하나씩 담아둬요. 이 리스트로 나중에 모든 거북이를 한 번에 움직여요.</div>
+    <div class="preview-card compact">
+      <div class="preview-head"><span class="preview-tag">미리보기</span><p>여기까지 실행하면 이렇게 보여요.</p></div>
+      <canvas id="pvTurtles" width="700" height="420"></canvas>
+    </div>
+  </section>
+
+  <section class="section" id="s5">
+    <div class="eyebrow">STEP 5</div>
+    <h2 class="sec-title"><span class="sec-num">05</span>배팅 받기</h2>
+    <p class="desc"><b>t.numinput()</b>으로 사용자에게 몇 번 거북이가 이길지 입력받아요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">import time
+import winsound
+
+user_choice = int(t.numinput("터틀레이스", "몇 번 거북이가 이길까?? 번호만 적어!"))
+t.up()
+t.goto(0, -290)
+t.color("black")
+t.write(f"{user_choice}번 터틀에 배팅하셨습니다.", False, "center", ("", 20))
+
+winsound.Beep(523, 300)  # 효과음
+time.sleep(1)</code></pre>
+    </div>
+    <div class="callout"><b>winsound.Beep()</b>은 삐- 소리를 내는 효과음이에요. 배팅이 끝났다는 걸 알려줘요.</div>
+    <div class="preview-card compact">
+      <div class="preview-head"><span class="preview-tag">미리보기</span><p>실행하면 이런 입력창이 떠요. 직접 번호를 넣고 확인을 눌러보세요.</p></div>
+      <div class="bet-mock">
+        <div class="bet-dialog">
+          <div class="bet-dialog-title">터틀레이스</div>
+          <div class="bet-dialog-q">몇 번 거북이가 이길까?? 번호만 적어!</div>
+          <input type="number" id="betInput" min="1" max="6" placeholder="1~6 중에 입력">
+          <button id="betOk" class="preview-btn">확인</button>
+        </div>
+        <p id="betResult" class="preview-result"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="s6">
+    <div class="eyebrow">STEP 6</div>
+    <h2 class="sec-title"><span class="sec-num">06</span>경주 진행시키기</h2>
+    <p class="desc">거북이들이 랜덤 거리만큼 전진해요. 한 마리라도 도착선을 넘으면 경주가 끝나요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">def racer():
+    game_over = True
+    while game_over:
+        for tu in turtles:
+            rspeed = r.randint(1, 20)  # 랜덤 속도
+            tu.fd(rspeed)
+            if tu.xcor() > 280:         # 도착선 통과 확인
+                game_over = False
+
+racer()</code></pre>
+    </div>
+    <div class="callout">매 반복마다 <b>r.randint(1, 20)</b>으로 랜덤 속도를 뽑아서 <b>fd()</b>로 전진시켜요. <b>xcor()</b>는 거북이의 현재 x좌표예요.</div>
+    <div class="preview-card">
+      <div class="preview-head">
+        <span class="preview-tag">미리보기</span>
+        <p>이 코드까지 실행하면 거북이들이 이렇게 움직여요.</p>
+      </div>
+      <canvas id="pvRaceCanvas" width="700" height="420"></canvas>
+      <div class="preview-controls">
+        <button id="pvRaceStart" class="preview-btn">▶ 경주 시작</button>
+        <button id="pvRaceReset" class="preview-btn ghost" disabled>🔄 다시 보기</button>
+        <span id="pvRaceResult" class="preview-result"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="s7">
+    <div class="eyebrow">STEP 7</div>
+    <h2 class="sec-title"><span class="sec-num">07</span>승자 발표</h2>
+    <p class="desc">x좌표가 가장 큰 거북이가 1등이에요. 배팅한 번호와 비교해서 성공·실패를 알려줘요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">max_xcor = 0
+winner = 0
+for i in range(len(turtles)):
+    if turtles[i].xcor() > max_xcor:
+        max_xcor = turtles[i].xcor()
+        winner = i  # 가장 멀리 간 거북이
+
+if user_choice == winner:
+    t.up()
+    t.goto(0, 0)
+    t.color("black")
+    t.write("성공!", False, "center", ("bold", 20))
+else:
+    t.write(f"실패! {winner}번 거북이 승!!")
+
+t.mainloop()</code></pre>
+    </div>
+    <div class="callout">위 STEP 6 미리보기에서 도착한 거북이 번호가 <b>winner</b>예요. 배팅 번호(<b>user_choice</b>)와 같으면 성공, 다르면 실패를 알려줘요.</div>
+  </section>
+
+  <section class="section" id="s8">
+    <div class="eyebrow">한 단계 더</div>
+    <h2 class="sec-title"><span class="sec-num">08</span>클래스로 정리하기</h2>
+    <p class="desc">거북이 하나마다 색 지정 → 모양 지정 → 위치 이동 코드가 반복돼요. 이걸 <b>클래스</b>로 묶으면 거북이 하나당 한 줄로 만들 수 있어요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">class Racer:
+    def __init__(self, y):
+        self.turtle = t.Turtle()
+        self.turtle.shape("turtle")
+        r1 = r.random()
+        g1 = r.random()
+        b1 = r.random()
+        self.turtle.color(r1, g1, b1)  # 랜덤 색
+        self.turtle.up()
+        self.turtle.goto(-330, y)
+
+    def race(self):
+        rspeed = r.randint(1, 20)
+        self.turtle.fd(rspeed)
+
+    def xcor(self):
+        return self.turtle.xcor()</code></pre>
+    </div>
+    <div class="callout">__init__ 안에 색·모양·위치 지정을 다 넣었기 때문에, 거북이를 만들 때는 <b>Racer(y좌표)</b> 한 줄이면 충분해요.</div>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">tt = [Racer(180), Racer(100), Racer(20), Racer(-60), Racer(-140), Racer(-220)]
+
+game_over = False
+while not game_over:
+    for i in range(6):
+        tt[i].race()
+        if tt[i].xcor() >= 300:  # 도착선 통과
+            game_over = True
+            break
+
+t.mainloop()</code></pre>
+    </div>
+    <div class="callout">동작 결과는 STEP 6~7과 완전히 같아요. 코드만 클래스로 깔끔하게 정리된 거예요.</div>
+  </section>
+
+  <section class="section" id="s9">
+    <div class="eyebrow">SUMMARY</div>
+    <h2 class="sec-title"><span class="sec-num">09</span>오늘 배운 것, 한눈에 정리!</h2>
+    <div class="summary-grid">
+      <div class="summary-card"><code>turtle.Turtle()</code><p>새 거북이 객체를 만든다</p></div>
+      <div class="summary-card"><code>xcor()</code><p>거북이의 현재 x좌표를 알려준다</p></div>
+      <div class="summary-card"><code>numinput()</code><p>숫자를 입력받는 창을 띄운다</p></div>
+      <div class="summary-card"><code>class Racer</code><p>반복되는 거북이 생성 코드를 하나로 묶는다</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="copyright">Copyright © 2026 CODE:N ACADEMY</div>
+</footer>
+
+<script>
+// syntax highlight
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function highlight(code){
+  code = esc(code);
+  // 한 번의 패스로 토큰을 판별해 치환한다 (여러 번 replace를 이어붙이면
+  // 앞서 삽입한 span의 class="c-xx" 속성 안의 "class"라는 글자를
+  // 키워드로 다시 인식해버려서 태그가 깨지는 문제가 생긴다)
+  var token = /(#.*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(\d+\.?\d*)\b|\b(class|def|return|for|in|if|elif|else|import|and|or|not|pass|while|break|as)\b|\b(print|self|super|len|sum|round|int|range)\b/g;
+  return code.replace(token, function(m, cm, str, num, kw, bi){
+    if (cm) return '<span class="c-cm">'+cm+'</span>';
+    if (str) return '<span class="c-str">'+str+'</span>';
+    if (num) return '<span class="c-num">'+num+'</span>';
+    if (kw) return '<span class="c-kw">'+kw+'</span>';
+    if (bi) return '<span class="c-bi">'+bi+'</span>';
+    return m;
+  });
+}
+document.querySelectorAll('code.py').forEach(function(el){
+  el.innerHTML = highlight(el.textContent);
+});
+
+// sidebar toggle (desktop: nav-collapsed hides it / mobile: nav-open shows it)
+var isMobile = window.matchMedia('(max-width:900px)').matches;
+if (isMobile) document.body.classList.remove('nav-collapsed');
+var navToggle = document.getElementById('navToggle');
+navToggle.addEventListener('click', function(){
+  if (window.matchMedia('(max-width:900px)').matches){
+    document.body.classList.toggle('nav-open');
+  } else {
+    document.body.classList.toggle('nav-collapsed');
+  }
+});
+
+// close mobile sidebar after choosing a section
+document.querySelectorAll('.sidebar nav a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.body.classList.remove('nav-open');
+  });
+});
+
+// scrollspy: highlight current section link
+var navLinks = document.querySelectorAll('.sidebar nav a');
+var sections = document.querySelectorAll('main .section');
+var observer = new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if (entry.isIntersecting){
+      navLinks.forEach(function(l){ l.classList.remove('active'); });
+      var link = document.querySelector('.sidebar nav a[href="#' + entry.target.id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(function(s){ observer.observe(s); });
+
+// 코드가 본문 너비(780px 기준)보다 길 때만, 사이드바 옆 여백을 활용해
+// 가로 스크롤 없이 한눈에 보이도록 코드 카드 너비를 넓힌다.
+// 코드가 짧으면 손대지 않고 기존 너비 그대로 둔다.
+function fitCodeCards(){
+  var cards = document.querySelectorAll('.code-card');
+  cards.forEach(function(card){
+    card.style.width = '';
+    card.style.marginLeft = '';
+    card.style.marginRight = '';
+  });
+  if (window.matchMedia('(max-width:900px)').matches) return; // 모바일에서는 기본 레이아웃 유지
+
+  var gutter = 20;
+  var sidebarW = document.body.classList.contains('nav-collapsed') ? 0 : 252;
+
+  cards.forEach(function(card){
+    var pre = card.querySelector('pre');
+    if (!pre) return;
+    var normalWidth = card.getBoundingClientRect().width;
+    var neededWidth = pre.scrollWidth + 50; // 코드 카드 좌우 패딩 보정
+    if (neededWidth <= normalWidth + 1) return; // 이미 다 보이면 그대로 둔다
+
+    var rect = card.getBoundingClientRect();
+    var leftAvail = Math.max(0, rect.left - sidebarW - gutter);
+    var rightAvail = Math.max(0, window.innerWidth - rect.right - gutter);
+    var diff = Math.min(neededWidth - normalWidth, leftAvail + rightAvail);
+    if (diff <= 0) return;
+
+    var rightUse = Math.min(diff / 2, rightAvail);
+    var leftUse = Math.min(diff - rightUse, leftAvail);
+    rightUse = Math.min(diff - leftUse, rightAvail);
+
+    card.style.width = (normalWidth + leftUse + rightUse) + 'px';
+    card.style.marginLeft = '-' + leftUse + 'px';
+    card.style.marginRight = '-' + rightUse + 'px';
+  });
+}
+window.addEventListener('load', fitCodeCards);
+window.addEventListener('resize', fitCodeCards);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitCodeCards);
+navToggle.addEventListener('click', function(){ setTimeout(fitCodeCards, 300); });
+
+// 터틀레이스 미리보기 시뮬레이션 (지금까지 만든 코드를 실행하면 어떻게 되는지 미리 보여줌)
+var TR_LANE_YS = [60,120,180,240,300,360];
+var TR_START_X = 80, TR_FINISH_X = 630;
+var TR_COLORS = ['#e05656','#4a7fd8','#7cb342','#e0a83a','#e0567f','#2c9e8f'];
+
+function trDrawTurtle(ctx, tt){
+  ctx.save();
+  ctx.translate(tt.x, tt.y);
+  ctx.fillStyle = tt.color;
+  ctx.beginPath(); ctx.ellipse(-8, 9, 4, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(8, 9, 4, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(-8, -9, 4, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(8, -9, 4, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, 0, 16, 12, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(17, 0, 6, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = '#1c1c22';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(tt.id, TR_START_X - 16, tt.y + 4);
+}
+
+// 정적 미리보기: 지금까지 그린 부분만 한 번 그려서 보여준다 (애니메이션 없음)
+function trPaintStatic(canvasId, opts){
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#e9e5fb';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#1c1c22';
+  ctx.font = 'bold 22px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('터틀레이스게임', W/2, 34);
+  if (opts.lanes){
+    ctx.strokeStyle = 'rgba(28,28,34,0.15)';
+    ctx.lineWidth = 1;
+    TR_LANE_YS.forEach(function(y){
+      ctx.beginPath(); ctx.moveTo(30, y + 20); ctx.lineTo(W - 30, y + 20); ctx.stroke();
+    });
+  }
+  if (opts.lines){
+    ctx.strokeStyle = '#3aa0d8'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(TR_START_X - 20, 44); ctx.lineTo(TR_START_X - 20, H - 20); ctx.stroke();
+    ctx.strokeStyle = '#e8973a'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(TR_FINISH_X + 20, 44); ctx.lineTo(TR_FINISH_X + 20, H - 20); ctx.stroke();
+  }
+  if (opts.turtles){
+    TR_LANE_YS.forEach(function(y, i){
+      trDrawTurtle(ctx, { x: TR_START_X, y: y, color: TR_COLORS[i % TR_COLORS.length], id: i + 1 });
+    });
+  }
+}
+
+// 인터랙티브 경주 미리보기: 버튼을 누르면 실제로 달려서 도착선을 넘는 거북이가 승리한다
+function trInitRace(canvasId, startBtnId, resetBtnId, resultId){
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var turtles = [], animId = null, running = false, winner = null;
+  var btnStart = document.getElementById(startBtnId);
+  var btnReset = document.getElementById(resetBtnId);
+  var resultEl = document.getElementById(resultId);
+
+  function initTurtles(){
+    turtles = TR_LANE_YS.map(function(y, i){ return { y: y, x: TR_START_X, color: TR_COLORS[i % TR_COLORS.length], id: i + 1 }; });
+    winner = null;
+  }
+
+  function render(){
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#e9e5fb';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#1c1c22';
+    ctx.font = 'bold 22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('터틀레이스게임', W/2, 34);
+    ctx.strokeStyle = 'rgba(28,28,34,0.15)';
+    ctx.lineWidth = 1;
+    TR_LANE_YS.forEach(function(y){
+      ctx.beginPath(); ctx.moveTo(30, y + 20); ctx.lineTo(W - 30, y + 20); ctx.stroke();
+    });
+    ctx.strokeStyle = '#3aa0d8'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(TR_START_X - 20, 44); ctx.lineTo(TR_START_X - 20, H - 20); ctx.stroke();
+    ctx.strokeStyle = '#e8973a'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(TR_FINISH_X + 20, 44); ctx.lineTo(TR_FINISH_X + 20, H - 20); ctx.stroke();
+    turtles.forEach(function(tt){ trDrawTurtle(ctx, tt); });
+  }
+
+  function tick(){
+    turtles.forEach(function(tt){
+      if (winner !== null) return;
+      tt.x += 2 + Math.random() * 8;
+      if (tt.x >= TR_FINISH_X && winner === null) winner = tt.id;
+    });
+    render();
+    if (winner === null){
+      animId = requestAnimationFrame(tick);
+    } else {
+      running = false;
+      resultEl.textContent = winner + '번 거북이 승리! 🏆';
+      btnStart.disabled = true;
+      btnReset.disabled = false;
+    }
+  }
+
+  function startRace(){
+    if (running) return;
+    running = true;
+    resultEl.textContent = '';
+    btnStart.disabled = true;
+    tick();
+  }
+  function resetRace(){
+    if (animId) cancelAnimationFrame(animId);
+    running = false;
+    initTurtles();
+    render();
+    resultEl.textContent = '';
+    btnStart.disabled = false;
+    btnReset.disabled = true;
+  }
+
+  initTurtles();
+  render();
+  btnStart.addEventListener('click', startRace);
+  btnReset.addEventListener('click', resetRace);
+}
+
+// STEP별 미리보기 그리기
+trPaintStatic('pvBoard', {});
+trPaintStatic('pvLanes', { lanes: true });
+trPaintStatic('pvLines', { lanes: true, lines: true });
+trPaintStatic('pvTurtles', { lanes: true, lines: true, turtles: true });
+
+// 완성본(인트로)과 STEP 6(경주 진행) 인터랙티브 미리보기
+trInitRace('raceCanvas', 'raceStart', 'raceReset', 'raceResult');
+trInitRace('pvRaceCanvas', 'pvRaceStart', 'pvRaceReset', 'pvRaceResult');
+
+// STEP 5 배팅 입력창 미리보기 (숫자 입력 + 효과음)
+(function(){
+  var betInput = document.getElementById('betInput');
+  var betOk = document.getElementById('betOk');
+  var betResult = document.getElementById('betResult');
+  if (!betOk) return;
+  betOk.addEventListener('click', function(){
+    var v = parseInt(betInput.value, 10);
+    if (!v || v < 1 || v > 6){
+      betResult.textContent = '1~6 사이 번호를 입력해주세요.';
+      return;
+    }
+    betResult.textContent = v + '번 터틀에 배팅하셨습니다.';
+    try{
+      var actx = new (window.AudioContext || window.webkitAudioContext)();
+      var osc = actx.createOscillator();
+      var gain = actx.createGain();
+      osc.frequency.value = 523;
+      osc.connect(gain);
+      gain.connect(actx.destination);
+      gain.gain.setValueAtTime(0.2, actx.currentTime);
+      osc.start();
+      osc.stop(actx.currentTime + 0.3);
+    } catch(e){}
+  });
+})();
+</script>
+
+</body>
+</html>

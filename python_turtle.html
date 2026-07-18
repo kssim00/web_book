@@ -262,6 +262,51 @@
 
   .intro-banner{font-size:14px;color:var(--muted);margin-bottom:6px;}
 
+  /* 홈 탭 (커리큘럼 / 보너스 게임) */
+  .home-tabs{display:flex;gap:8px;margin:14px 0 22px;}
+  .home-tab{
+    background:#fff;color:var(--muted);padding:8px 16px;border-radius:20px;
+    font-size:13.5px;font-weight:bold;border:1px solid var(--accent);cursor:pointer;
+    transition:background .15s ease,color .15s ease;
+  }
+  .home-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+  .home-tab:not(.active):hover{background:var(--accent);}
+
+  /* 커리큘럼 목차 (파이썬 목차와 동일한 스타일) */
+  .py-toc-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    gap:16px;align-items:start;
+  }
+  .py-toc-chapter{
+    background:#fff;border-radius:18px;padding:20px;
+    box-shadow:0 8px 20px -6px rgba(0,0,0,0.06);
+  }
+  .py-toc-chapter-title{
+    font-size:15px;font-weight:bold;color:#0F172A;
+    display:flex;align-items:center;gap:9px;margin-bottom:12px;
+  }
+  .py-toc-chapter-title::before{
+    content:'';width:4px;height:15px;background:var(--primary);border-radius:10px;flex-shrink:0;
+  }
+  .py-toc-lessons{display:flex;flex-direction:column;gap:8px;}
+  .py-toc-lesson{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:12px 16px;background:#F8FAFC;border-radius:12px;border:1px solid #F1F5F9;
+    cursor:pointer;text-decoration:none;color:inherit;transition:.2s ease;
+  }
+  .py-toc-lesson:hover{background:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+  .py-toc-lesson-title{font-size:13px;font-weight:bold;color:#334155;}
+  .py-toc-lesson-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .py-toc-lesson-icon{
+    width:24px;height:24px;background:#fff;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:11px;
+    color:#94A3B8;border:1px solid #E2E8F0;flex-shrink:0;transition:.2s ease;
+  }
+  .py-toc-lesson:hover .py-toc-lesson-icon{background:var(--primary);color:#fff;border-color:var(--primary);transform:rotate(-45deg);}
+  .py-toc-lesson.py-done{background:#F0FBF6;border-color:rgba(34,197,94,0.35);}
+  .py-toc-lesson.py-done .py-toc-lesson-title{color:#16A34A;}
+  .toc-complete{position:static !important;width:24px;height:24px;font-size:11px;flex-shrink:0;}
+
   /* 라이트박스 */
   #lightbox{
     position:fixed;inset:0;background:rgba(15,25,18,0.88);display:none;
@@ -300,8 +345,23 @@
 const WORKSHEETS = [
   { file:"turtle_tool_paint.html", icon:"🎨", title:"나만의 그림판", tag:"마우스 드래그 · 펜 제어" },
   { file:"turtle_game_arrow.html", icon:"🏹", title:"화살 쏘기 게임", tag:"클릭 이벤트 · 좌표·거리 계산" },
+  { file:"turtle_game_maze.html", icon:"🌀", title:"미로 탈출 게임", tag:"2차원 좌표 · 리스트 · 함수 작성" },
   { file:"turtle_game_cannon.html", icon:"💣", title:"대포 쏘기 게임", tag:"키보드 이벤트 · 랜덤 · 거리 계산" },
-  { file:"turtle_game_catch.html", icon:"🎯", title:"터틀 잡기 게임", tag:"리스트 · 랜덤 · 함수 · 타이머" }
+  { file:"turtle_game_run.html", icon:"🏃", title:"도망 게임", tag:"전역변수(global) · 타이머 반복(ontimer)" },
+  { file:"turtle_game_abstract.html", icon:"🌈", title:"추상 화가 터틀", tag:"while 반복 · break · 랜덤 선택" },
+  { file:"turtle_game_pingpong.html", icon:"🏓", title:"핑퐁 게임", tag:"while 반복 · 속도(dx) · 충돌 판정" },
+  { file:"turtle_game_catch.html", icon:"🎯", title:"터틀 잡기 게임", tag:"리스트 · 랜덤 · 함수 · 타이머" },
+  { file:"turtle_game_race.html", icon:"🏁", title:"터틀 레이스 게임", tag:"리스트 · 랜덤 · while 반복 · 클래스(OOP)" },
+  { file:"turtle_tool_snow.html", icon:"🎄", title:"크리스마스 눈송이 애니메이션", tag:"클래스(OOP) · 랜덤 · while 반복 · 도형 그리기" }
+];
+
+// 커리큘럼 목차용 카테고리 묶음 (session 번호 기준)
+const CURRICULUM_GROUPS = [
+  { title:"시작하기", sessions:[0] },
+  { title:"화면과 그리기", sessions:[1,2,3] },
+  { title:"좌표와 텍스트", sessions:[4,5] },
+  { title:"이벤트와 애니메이션", sessions:[6,7] },
+  { title:"미니 프로젝트", sessions:[8] }
 ];
 
 const SESSION_LABELS = {
@@ -1486,6 +1546,13 @@ function setTurtleDone(list){
   catch(e){}
 }
 
+let _homeTab = 'curriculum';
+
+function switchHomeTab(tab){
+  _homeTab = tab;
+  showHome();
+}
+
 function showHome(){
   setActiveSide(null);
   localStorage.removeItem('turtle_open_lesson');
@@ -1493,33 +1560,51 @@ function showHome(){
   document.getElementById('main').style.maxWidth = 'min(1200px, calc(100vw - 32px))';
   document.getElementById('main').style.margin = '0 auto';
   const doneList = getTurtleDone();
+
   let html = '<h2 style="margin-top:0;">🐢 단계별로 하나씩 코딩해볼까요?</h2>';
-  html += '<div class="intro-banner">차시를 눌러서 코드를 따라 입력해보아요. 카드 오른쪽 위 버튼을 누르면 미션 완료!</div>';
-  html += '<div class="grid">';
-  UNITS.forEach(function(u, i){
-    const key = 'u' + i;
-    const isDone = doneList.indexOf(key) > -1;
-    const isGame = u.session === 8;
-    html += '<div class="card' + (isGame ? ' card-game' : '') + '" onclick="openLesson(' + i + ')">'
-      + '<span class="card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
-      + '<div class="card-icon">' + u.icon + '</div>'
-      + '<div class="card-body">'
-      + '<div class="card-title">' + escapeHtml(u.title) + '</div>'
-      + '<div class="card-sub">' + (SESSION_LABELS[u.session] || (u.session+'차시')) + '</div>'
-      + '</div></div>';
-  });
-  WORKSHEETS.forEach(function(w, i){
-    const key = 'w' + i;
-    const isDone = doneList.indexOf(key) > -1;
-    html += '<div class="card card-game" onclick="window.open(\'' + w.file + '\',\'_blank\')">'
-      + '<span class="card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
-      + '<div class="card-icon">' + w.icon + '</div>'
-      + '<div class="card-body">'
-      + '<div class="card-title">' + escapeHtml(w.title) + '</div>'
-      + '<div class="card-sub">' + escapeHtml(w.tag || '실습 워크시트') + '</div>'
-      + '</div></div>';
-  });
-  html += '</div>';
+  html += '<div class="home-tabs">'
+    + '<div class="home-tab' + (_homeTab === 'curriculum' ? ' active' : '') + '" onclick="switchHomeTab(\'curriculum\')">📖 커리큘럼</div>'
+    + '<div class="home-tab' + (_homeTab === 'game' ? ' active' : '') + '" onclick="switchHomeTab(\'game\')">🎮 보너스 게임</div>'
+    + '</div>';
+
+  if (_homeTab === 'curriculum'){
+    html += '<div class="intro-banner">차시를 누르면 바로 그 차시로 들어가요. 별 버튼을 누르면 미션 완료!</div>';
+    html += '<div class="py-toc-grid">';
+    CURRICULUM_GROUPS.forEach(function(group){
+      html += '<div class="py-toc-chapter"><div class="py-toc-chapter-title">' + escapeHtml(group.title) + '</div><div class="py-toc-lessons">';
+      group.sessions.forEach(function(sess){
+        UNITS.forEach(function(u, i){
+          if (u.session !== sess) return;
+          const key = 'u' + i;
+          const isDone = doneList.indexOf(key) > -1;
+          html += '<div class="py-toc-lesson' + (isDone ? ' py-done' : '') + '" onclick="openLesson(' + i + ')">'
+            + '<span class="py-toc-lesson-title">' + u.icon + ' ' + escapeHtml(u.title) + '</span>'
+            + '<span class="py-toc-lesson-right">'
+            + '<span class="card-complete-btn toc-complete' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
+            + '<span class="py-toc-lesson-icon">➜</span>'
+            + '</span></div>';
+        });
+      });
+      html += '</div></div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div class="intro-banner">보너스 게임이에요. 카드를 누르면 새 탭에서 게임이 열려요. 별 버튼을 누르면 미션 완료!</div>';
+    html += '<div class="grid">';
+    WORKSHEETS.forEach(function(w, i){
+      const key = 'w' + i;
+      const isDone = doneList.indexOf(key) > -1;
+      html += '<div class="card card-game" onclick="window.open(\'' + w.file + '\',\'_blank\')">'
+        + '<span class="card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
+        + '<div class="card-icon">' + w.icon + '</div>'
+        + '<div class="card-body">'
+        + '<div class="card-title">' + escapeHtml(w.title) + '</div>'
+        + '<div class="card-sub">' + escapeHtml(w.tag || '실습 워크시트') + '</div>'
+        + '</div></div>';
+    });
+    html += '</div>';
+  }
+
   main.innerHTML = html;
   main.scrollTop = 0;
   bindCompleteButtons();
