@@ -3277,15 +3277,16 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
   <path d="M185 15 L188 7 L191 15 L199 18 L191 21 L188 29 L185 21 L177 18 Z" fill="#FCD34D" opacity="0.85"/>
 </svg></div>
               <div>
-                <div class="panel-hero-lv">Level 6 · AI 마스터</div>
-                <div class="panel-hero-title">실전 AI (AICE · 바이브코딩)</div>
+                <div class="panel-hero-lv">Level 6 · 심화 특강</div>
+                <div class="panel-hero-title">기타·심화 특강 (AI · 마인크래프트)</div>
               </div>
             </div>
-            <div class="panel-hero-desc">KT 공식 AI 자격증! 데이터 분석부터 AI 모델까지 도전해요.</div>
+            <div class="panel-hero-desc">AI 자격증부터 마인크래프트 코딩까지! 다양한 심화 과정에 도전해요.</div>
             <div class="panel-hero-tags">
               <span class="panel-hero-tag">AICE Future</span>
               <span class="panel-hero-tag">AICE Junior</span>
               <span class="panel-hero-tag">바이브코딩</span>
+              <span class="panel-hero-tag">마인크래프트</span>
             </div>
           </div>
         </div>
@@ -3315,6 +3316,15 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             <div class="lesson-card-label">바이브코딩</div>
             <div class="lesson-card-title">바이브코딩 과정</div>
             <div class="lesson-card-sub">피지컬 컴퓨팅 + AI 연동 프로젝트</div>
+          </div>
+          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
+        </a>
+        <a href="마인크래프트_파이썬_코딩_학습지.html" target="_blank" class="lesson-card s5" data-key="p8-l4" onclick="return goLesson(this)">
+          <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:20px;">MC</div></div>
+          <div class="lesson-card-body">
+            <div class="lesson-card-label">마인크래프트</div>
+            <div class="lesson-card-title">마인크래프트 파이썬 코딩</div>
+            <div class="lesson-card-sub">마인크래프트 세계에서 파이썬으로 코딩하기</div>
           </div>
           <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
         </a>
@@ -3411,11 +3421,12 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             </div>
 
             <!-- STEP 07: 파이썬 실전 프로젝트 -->
-            <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#0891B2">
-              <span class="cn-badge soon">준비 중</span>
+            <div class="cn-card" onclick="window.open('python_ursina.html','_blank')" style="--cn-color:#0891B2">
+              <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#0891B2">STEP 07</div>
               <div class="cn-title">파이썬 실전 프로젝트</div>
-              <div class="cn-desc">Pygame · Ursina로<br>나만의 게임을 직접 만들어요!</div>
+              <div class="cn-desc">Ursina로<br>나만의 3D 게임을 직접 만들어요!</div>
+              <div class="cn-footer" style="color:#0891B2">학습 시작하기 →</div>
             </div>
 
             <!-- STEP 08: 3D 모델링 -->
@@ -3427,12 +3438,13 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <div class="cn-footer" style="color:#F97316">학습 시작하기 →</div>
             </div>
 
-            <!-- STEP 09: 자격증 과정 -->
-            <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#BE4BDB">
-              <span class="cn-badge soon">준비 중</span>
+            <!-- STEP 09: 기타·심화 특강 -->
+            <div class="cn-card" onclick="selectStep(8)" style="--cn-color:#BE4BDB">
+              <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#BE4BDB">STEP 09</div>
-              <div class="cn-title">자격증 과정</div>
-              <div class="cn-desc">최상급 자격증 완벽 대비!</div>
+              <div class="cn-title">기타·심화 특강</div>
+              <div class="cn-desc">AI 자격증부터 마인크래프트까지<br>다양한 심화 과정!</div>
+              <div class="cn-footer" style="color:#BE4BDB">학습 시작하기 →</div>
             </div>
 
             <!-- 커스텀 과목 카드 (관리자가 추가한 것) -->
