@@ -262,7 +262,12 @@
   }
   .mission-task-hint.show{display:block;}
 
-  .intro-banner{font-size:14px;color:var(--muted);margin-bottom:6px;}
+  .intro-banner{
+    display:flex;align-items:center;gap:10px;
+    font-size:13.5px;color:var(--primary-dark);font-weight:bold;
+    background:var(--accent);border-radius:14px;padding:12px 18px;margin-bottom:20px;
+  }
+  .intro-banner::before{content:'💡';font-size:15px;flex-shrink:0;}
 
   /* 홈 탭 (커리큘럼 / 보너스 게임) */
   .home-tabs{display:flex;gap:8px;margin:14px 0 22px;}
@@ -274,41 +279,43 @@
   .home-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
   .home-tab:not(.active):hover{background:var(--accent);}
 
-  /* 커리큘럼 목차 (파이썬 목차와 동일한 스타일) */
+  /* 커리큘럼 목차 (파이썬 목차와 동일한 스타일·간격) */
   .py-toc-grid{
     display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-    gap:16px;align-items:start;
+    gap:24px;align-items:stretch;
   }
   @media (max-width:820px){ .py-toc-grid{grid-template-columns:1fr;} }
   .py-toc-chapter{
-    background:#fff;border-radius:18px;padding:20px;
+    background:#fff;border-radius:20px;padding:28px;
     box-shadow:0 8px 20px -6px rgba(0,0,0,0.06);
+    display:flex;flex-direction:column;
   }
   .py-toc-chapter-title{
-    font-size:15px;font-weight:bold;color:#0F172A;
-    display:flex;align-items:center;gap:9px;margin-bottom:12px;
+    font-size:18px;font-weight:800;color:#0F172A;
+    display:flex;align-items:center;gap:10px;margin-bottom:18px;
   }
   .py-toc-chapter-title::before{
     content:'';width:4px;height:15px;background:var(--primary);border-radius:10px;flex-shrink:0;
   }
-  .py-toc-lessons{display:flex;flex-direction:column;gap:8px;}
+  .py-toc-lessons{display:flex;flex-direction:column;gap:10px;flex:1;}
   .py-toc-lesson{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
-    padding:12px 16px;background:#F8FAFC;border-radius:12px;border:1px solid #F1F5F9;
+    padding:15px 20px;background:#F8FAFC;border-radius:14px;border:1px solid #F1F5F9;
     cursor:pointer;text-decoration:none;color:inherit;transition:.2s ease;
   }
   .py-toc-lesson:hover{background:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(0,0,0,0.05);}
   .py-toc-lesson-left{display:flex;align-items:center;gap:10px;min-width:0;}
-  .py-toc-lesson-title{font-size:13px;font-weight:bold;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .py-toc-lesson-title{font-size:14px;font-weight:bold;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .py-toc-lesson-icon{
-    width:24px;height:24px;background:#fff;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;font-size:11px;
+    position:static !important;
+    width:26px;height:26px;background:#fff;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:12px;
     color:#94A3B8;border:1px solid #E2E8F0;flex-shrink:0;transition:.2s ease;
   }
-  .py-toc-lesson:hover .py-toc-lesson-icon{background:var(--primary);color:#fff;border-color:var(--primary);transform:rotate(-45deg);}
+  .py-toc-lesson-icon.done{background:var(--primary);color:#fff;border-color:var(--primary-dark);}
+  .py-toc-lesson:hover .py-toc-lesson-icon:not(.done){background:var(--primary);color:#fff;border-color:var(--primary);transform:rotate(-45deg);}
   .py-toc-lesson.py-done{background:#F0FBF6;border-color:rgba(34,197,94,0.35);}
   .py-toc-lesson.py-done .py-toc-lesson-title{color:#16A34A;}
-  .toc-complete{position:static !important;width:22px;height:22px;font-size:11px;flex-shrink:0;}
 
   /* 라이트박스 */
   #lightbox{
@@ -1569,7 +1576,7 @@ function showHome(){
     + '</div>';
 
   if (_homeTab === 'curriculum'){
-    html += '<div class="intro-banner">차시를 누르면 바로 그 차시로 들어가요. 별 버튼을 누르면 미션 완료!</div>';
+    html += '<div class="intro-banner">차시를 누르면 바로 그 차시로 들어가요. 화살표를 누르면 미션 완료!</div>';
     html += '<div class="py-toc-grid">';
     CURRICULUM_GROUPS.forEach(function(group){
       html += '<div class="py-toc-chapter"><div class="py-toc-chapter-title">' + escapeHtml(group.title) + '</div><div class="py-toc-lessons">';
@@ -1579,11 +1586,8 @@ function showHome(){
           const key = 'u' + i;
           const isDone = doneList.indexOf(key) > -1;
           html += '<div class="py-toc-lesson' + (isDone ? ' py-done' : '') + '" onclick="openLesson(' + i + ')">'
-            + '<span class="py-toc-lesson-left">'
-            + '<span class="card-complete-btn toc-complete' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '⭐') + '</span>'
             + '<span class="py-toc-lesson-title">' + escapeHtml(u.title) + '</span>'
-            + '</span>'
-            + '<span class="py-toc-lesson-icon">➜</span>'
+            + '<span class="py-toc-lesson-icon card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '➜') + '</span>'
             + '</div>';
         });
       });
@@ -1636,6 +1640,8 @@ function completeMission(btnEl){
     setTurtleDone(doneList);
     btnEl.classList.add('done');
     btnEl.textContent = '✓';
+    const row = btnEl.closest('.py-toc-lesson');
+    if (row) row.classList.add('py-done');
   }
 
   burstConfettiLocal(btnEl);
