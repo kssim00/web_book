@@ -57,7 +57,7 @@
 <header class="bar">
   <div class="bar-title">
     <span class="badge">URSINA ENGINE</span>
-    <span>학습지 모음 #02–#11</span>
+    <span>학습지 모음 #02–#13</span>
   </div>
   <nav class="tabs" aria-label="학습지 선택">
     <button class="tab active" data-idx="0" onclick="showLesson(0)"><span class="tab-num">#02</span><span class="tab-title">Shapes, Colors and Text</span></button>
@@ -70,9 +70,9 @@
     <button class="tab" data-idx="7" onclick="showLesson(7)"><span class="tab-num">#09</span><span class="tab-title">Entity Class and Object</span></button>
     <button class="tab" data-idx="8" onclick="showLesson(8)"><span class="tab-num">#10</span><span class="tab-title">Button and Mouse</span></button>
     <button class="tab" data-idx="9" onclick="showLesson(9)"><span class="tab-num">#11</span><span class="tab-title">Animating an Image Sequence</span></button>
-      <button class="tab" data-idx="10" onclick="showLesson(10)"><span class="tab-num">#12</span><span class="tab-title">Parent Objects and time.dt</span></button>
+    <button class="tab" data-idx="10" onclick="showLesson(10)"><span class="tab-num">#12</span><span class="tab-title">Parent Objects and time.dt</span></button>
     <button class="tab" data-idx="11" onclick="showLesson(11)"><span class="tab-num">#13</span><span class="tab-title">Circular Motion with Cos and Sin</span></button>
-</nav>
+  </nav>
 </header>
 <main>
 <iframe class="lesson active" id="lesson0" title="학습지 #02 — Shapes, Colors and Text" srcdoc="<!DOCTYPE html>
@@ -551,1219 +551,6 @@ app.run()</code></pre>
 <li><a href=&quot;https://www.ursinaengine.org/entity_basics.html&quot; rel=&quot;noopener&quot; target=&quot;_blank&quot;>Ursina Entity 기본 문서</a></li>
 </ul>
 </section>
-<iframe class="lesson" id="lesson10" title="학습지 #12 — Parent Objects and time.dt" srcdoc="<!DOCTYPE html>
-<html lang=&quot;ko&quot;>
-<head>
-<meta charset=&quot;UTF-8&quot;>
-<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
-<title>회전판 태양계 — parent, time.dt, 카메라의 비밀</title>
-<link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;>
-<link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin>
-<link href=&quot;https://fonts.googleapis.com/css2?family=Jua&amp;family=Gowun+Dodum&amp;family=Nanum+Gothic+Coding:wght@400;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
-<style>
-  :root{
-    --night:#0d1330;
-    --panel:#161e44;
-    --panel-2:#1d2757;
-    --line:#2c3870;
-    --ink:#eef0ff;
-    --muted:#a3abd6;
-    --sun:#ffc94d;
-    --green:#3fdca0;
-    --pink:#ff7fb2;
-    --violet:#9b95ff;
-    --blue:#6fb2ff;
-    --code-bg:#0a0f26;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{background:var(--night);color:var(--ink);font-family:'Gowun Dodum',sans-serif;font-size:19px;line-height:1.75;overflow-x:hidden}
-  #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
-  main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 24px 120px}
-  h1,h2,h3{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:.5px}
-
-  header{min-height:88vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:60px 0 40px}
-  .eyebrow{color:var(--sun);font-family:'Jua',sans-serif;font-size:20px;letter-spacing:3px;margin-bottom:14px}
-  h1{font-size:clamp(36px,5.6vw,60px);line-height:1.25}
-  h1 .hl{color:var(--sun)}
-  header p{color:var(--muted);margin-top:18px;font-size:20px;max-width:620px}
-  #heroPlate{margin-top:34px;filter:drop-shadow(0 0 30px rgba(255,201,77,.12))}
-  .scroll-hint{margin-top:30px;color:var(--muted);font-size:16px;animation:bob 2.2s ease-in-out infinite}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
-  @media (prefers-reduced-motion: reduce){.scroll-hint{animation:none}}
-
-  section{margin-top:110px}
-  .step-tag{display:inline-block;background:var(--panel-2);border:1px solid var(--line);color:var(--sun);font-family:'Jua',sans-serif;font-size:17px;padding:5px 16px;border-radius:999px;margin-bottom:14px}
-  h2{font-size:clamp(28px,4vw,40px);margin-bottom:10px}
-  .lead{color:var(--muted);font-size:20px;max-width:740px}
-  .lead b{color:var(--ink)}
-
-  .lab{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px;display:grid;gap:26px;grid-template-columns:minmax(0,1fr) 300px;align-items:start}
-  @media (max-width:820px){.lab{grid-template-columns:1fr}}
-  .lab canvas{width:100%;height:auto;display:block;border-radius:14px;background:var(--code-bg)}
-
-  .controls{display:flex;flex-direction:column;gap:18px}
-  .ctrl label{display:flex;justify-content:space-between;font-size:17px;color:var(--muted);margin-bottom:6px}
-  .ctrl label output{color:var(--ink);font-family:'Nanum Gothic Coding',monospace;font-size:16px}
-  input[type=range]{width:100%;accent-color:var(--sun);height:26px;cursor:pointer}
-  input[type=range]:focus-visible{outline:2px solid var(--sun);outline-offset:3px;border-radius:6px}
-
-  button.play{font-family:'Jua',sans-serif;font-size:19px;color:#1a1405;background:var(--sun);border:none;border-radius:12px;padding:12px 0;cursor:pointer;transition:transform .12s ease}
-  button.play:hover{transform:translateY(-2px)}
-  button.play:focus-visible{outline:3px solid #fff;outline-offset:2px}
-  button.ghost{font-family:'Jua',sans-serif;font-size:17px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}
-  button.ghost:hover{border-color:var(--sun);color:var(--sun)}
-  button.ghost.active{background:var(--sun);color:#1a1405;border-color:var(--sun)}
-  button.ghost:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
-
-  .readout{background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:'Nanum Gothic Coding',monospace;font-size:16px;line-height:2}
-  .readout .g{color:var(--green)} .readout .p{color:var(--pink)} .readout .y{color:var(--sun)} .readout .v{color:var(--violet)} .readout .b{color:var(--blue)} .readout .dim{color:#5a648f}
-
-  .tip{margin-top:22px;border-left:4px solid var(--sun);background:rgba(255,201,77,.06);padding:16px 20px;border-radius:0 14px 14px 0;font-size:18px}
-  .tip .who{color:var(--sun);font-family:'Jua',sans-serif;margin-right:8px}
-
-  pre.code{margin-top:22px;background:var(--code-bg);border:1px solid var(--line);border-radius:14px;padding:20px 24px;font-family:'Nanum Gothic Coding',monospace;font-size:16px;line-height:1.9;overflow-x:auto;color:#cdd4f6}
-  pre.code .kw{color:var(--violet)} pre.code .fn{color:var(--blue)} pre.code .num{color:var(--sun)} pre.code .cm{color:#5a648f} pre.code .g{color:var(--green)} pre.code .p{color:var(--pink)} pre.code .st{color:var(--sun)}
-
-  .compare{margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  @media (max-width:720px){.compare{grid-template-columns:1fr}}
-  .compare .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
-  .compare .card h3{font-size:22px;margin-bottom:10px}
-  .compare .card p{color:var(--muted);font-size:17.5px}
-  .compare .card.a h3{color:var(--green)}
-  .compare .card.b h3{color:var(--sun)}
-
-  .toggle-row{display:flex;align-items:center;gap:12px;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px;cursor:pointer;user-select:none}
-  .toggle-row input{width:22px;height:22px;accent-color:var(--sun);cursor:pointer;flex:none}
-  .toggle-row span{font-size:17px;line-height:1.4}
-
-  .cam-btns{display:flex;gap:10px}
-  .cam-btns button{flex:1}
-
-  /* ---------- missions ---------- */
-  .mission{margin-top:26px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 28px}
-  .mission .m-tag{display:inline-block;font-family:'Jua',sans-serif;color:#1a1405;background:var(--sun);border-radius:8px;padding:3px 12px;font-size:16px;margin-bottom:10px}
-  .mission.hard .m-tag{background:var(--pink)}
-  .mission h3{font-size:23px;margin-bottom:8px}
-  .mission p{color:var(--muted);font-size:18px}
-  .mission p b{color:var(--ink)}
-  details{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-  details summary{cursor:pointer;padding:12px 18px;font-family:'Jua',sans-serif;font-size:17px;color:var(--sun);background:var(--panel-2);list-style:none;user-select:none}
-  details summary::before{content:'▸ ';transition:transform .2s}
-  details[open] summary::before{content:'▾ '}
-  details .inner{padding:16px 20px;font-size:17.5px;color:var(--muted)}
-  details .inner b{color:var(--ink)}
-  details pre.code{margin-top:12px;font-size:15.5px}
-  details.answer summary{color:var(--green)}
-
-  footer{margin-top:120px;text-align:center;color:var(--muted);font-size:16px}
-  footer .star{color:var(--sun)}
-</style>
-</head>
-<body>
-<canvas id=&quot;stars&quot; aria-hidden=&quot;true&quot;></canvas>
-<main>
-
-<!-- ================= HERO ================= -->
-<header>
-  <div class=&quot;eyebrow&quot;>중학교 코딩 × 수학 수업 · 2교시</div>
-  <h1><span class=&quot;hl&quot;>회전판</span> 태양계</h1>
-  <p>이번엔 cos, sin 없이 태양계를 만들었어요. 비밀은 딱 세 가지 —
-  <b style=&quot;color:var(--green)&quot;>time.dt</b>, <b style=&quot;color:var(--sun)&quot;>parent</b>,
-  그리고 <b style=&quot;color:var(--blue)&quot;>input(key)</b>입니다.</p>
-  <canvas id=&quot;heroPlate&quot; width=&quot;640&quot; height=&quot;340&quot; aria-label=&quot;회전판 위에 붙은 행성들이 함께 도는 애니메이션&quot;></canvas>
-  <div class=&quot;scroll-hint&quot;>▼ 아래로 내려가며 하나씩 실험해 보세요</div>
-</header>
-
-<!-- ================= 0. 두 가지 방법 비교 ================= -->
-<section id=&quot;s0&quot;>
-  <span class=&quot;step-tag&quot;>먼저 확인!</span>
-  <h2>지난 시간과 뭐가 다를까?</h2>
-  <p class=&quot;lead&quot;>태양 주위를 돌게 만드는 방법은 한 가지가 아니에요. 지난 시간 코드와 이번 코드는 <b>완전히 다른 작전</b>을 씁니다.</p>
-  <div class=&quot;compare&quot;>
-    <div class=&quot;card a&quot;>
-      <h3>지난 시간: 그림자 작전</h3>
-      <p>cos, sin으로 행성의 위치(x, z)를 <b style=&quot;color:var(--ink)&quot;>매 순간 직접 계산</b>해서 옮겨 놓는 방법.
-      &quot;행성아, 지금 이 좌표로 가!&quot;라고 매번 명령해요.</p>
-    </div>
-    <div class=&quot;card b&quot;>
-      <h3>이번 시간: 회전판 작전</h3>
-      <p>행성들을 태양이라는 <b style=&quot;color:var(--ink)&quot;>보이지 않는 회전판에 붙여 놓고</b>, 판을 통째로 돌리는 방법.
-      행성 위치는 한 번만 정하면 끝!</p>
-    </div>
-  </div>
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>레코드판(턴테이블) 위에 지우개를 올려놓고 판을 돌리는 걸 상상하게 하세요. 지우개는 가만히 있는데 판이 돌아서 빙글빙글 도는 것처럼 보이죠 — 그게 이번 코드의 전부예요.</div>
-</section>
-
-<!-- ================= 1. time.dt ================= -->
-<section id=&quot;s1&quot;>
-  <span class=&quot;step-tag&quot;>비밀 1</span>
-  <h2>time.dt — 공평한 속도 만들기</h2>
-  <p class=&quot;lead&quot;>
-    update는 1초에 약 60번 실행되지만, <b>컴퓨터마다 그 횟수가 달라요.</b>
-    빠른 컴퓨터는 120번, 느린 컴퓨터는 30번… 그래서 &quot;프레임마다 3도씩 돌아라&quot;라고 하면
-    빠른 컴퓨터에서는 4배나 빨리 돌아버려요! <br><br>
-    <b style=&quot;color:var(--green)&quot;>time.dt</b>는 &quot;직전 프레임에서 지금까지 걸린 시간(초)&quot;이에요.
-    <b>rotation_y += time.dt × 100</b>은 &quot;몇 프레임이든 상관없이 <b style=&quot;color:var(--sun)&quot;>1초에 정확히 100도</b>&quot;라는 뜻이 됩니다.
-  </p>
-
-  <div class=&quot;lab&quot;>
-    <canvas id=&quot;cv1&quot; width=&quot;640&quot; height=&quot;360&quot; aria-label=&quot;프레임 기준 회전과 time.dt 기준 회전 속도 비교&quot;></canvas>
-    <div class=&quot;controls&quot;>
-      <div class=&quot;ctrl&quot;>
-        <label>컴퓨터 속도 (FPS) <output id=&quot;fpsOut&quot;>60</output></label>
-        <input type=&quot;range&quot; id=&quot;fps1&quot; min=&quot;15&quot; max=&quot;120&quot; value=&quot;60&quot; step=&quot;5&quot; aria-label=&quot;초당 프레임 수 조절&quot;>
-      </div>
-      <div class=&quot;readout&quot; id=&quot;ro1&quot;></div>
-    </div>
-  </div>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>FPS 슬라이더를 120에서 15로 쭉 내려 보세요. 왼쪽 바람개비는 느려지는데 오른쪽(time.dt)은 속도가 그대로! &quot;어느 컴퓨터에서든 게임 속도가 같아야 공평하다&quot;는 이유를 학생이 스스로 말하게 유도하면 좋아요.</div>
-
-  <pre class=&quot;code&quot;><span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>update</span>():
-    <span class=&quot;kw&quot;>for</span> entity <span class=&quot;kw&quot;>in</span> entites:              <span class=&quot;cm&quot;># 리스트 속 물체를 하나씩 꺼내서</span>
-        entity.rotation_y += <span class=&quot;g&quot;>time.dt</span> <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>100</span>   <span class=&quot;cm&quot;># 1초에 100도씩 회전!</span></pre>
-</section>
-
-<!-- ================= 2. parent ================= -->
-<section id=&quot;s2&quot;>
-  <span class=&quot;step-tag&quot;>비밀 2</span>
-  <h2>parent — 회전판에 붙이기</h2>
-  <p class=&quot;lead&quot;>
-    <b>parent=sun</b>은 &quot;지구야, 너는 태양의 자식이야&quot;라는 뜻이에요.
-    자식은 부모에게 <b>딱 붙어 다녀요.</b> 부모가 돌면 같이 돌고, 부모가 움직이면 같이 움직여요.
-    그래서 태양만 회전시켜도, 붙어 있는 지구와 달이 함께 빙글빙글 도는 거예요.
-    자식의 <b>position은 부모를 기준으로 잰 위치</b>라는 것도 중요해요!
-  </p>
-
-  <div class=&quot;lab&quot;>
-    <canvas id=&quot;cv2&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;태양 회전판에 붙은 지구와 달, 부모를 바꾸는 실험&quot;></canvas>
-    <div class=&quot;controls&quot;>
-      <label class=&quot;toggle-row&quot;>
-        <input type=&quot;checkbox&quot; id=&quot;showPlate&quot; checked>
-        <span>보이지 않는 회전판 보기</span>
-      </label>
-      <label class=&quot;toggle-row&quot;>
-        <input type=&quot;checkbox&quot; id=&quot;moonToEarth&quot;>
-        <span>달의 부모를 <b style=&quot;color:var(--green)&quot;>지구</b>로 바꾸기<br><small style=&quot;color:var(--muted)&quot;>moon = Entity(parent=earth, …)</small></span>
-      </label>
-      <label class=&quot;toggle-row&quot;>
-        <input type=&quot;checkbox&quot; id=&quot;earthSpin&quot;>
-        <span>지구도 스스로 돌리기<br><small style=&quot;color:var(--muted)&quot;>earth.rotation_y += time.dt*250</small></span>
-      </label>
-      <div class=&quot;readout&quot; id=&quot;ro2&quot;></div>
-    </div>
-  </div>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 포인트</span>원래 코드에서 달의 부모는 지구가 아니라 <b>태양</b>이에요. 그래서 달이 지구가 아닌 태양 주위를 돌죠! 위의 체크박스 두 개를 켜면 진짜 달처럼 지구 주위를 돌아요 — 이게 아래 미션 1, 2번입니다.</div>
-
-  <pre class=&quot;code&quot;>sun   = Entity(model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.yellow, scale=<span class=&quot;num&quot;>2</span>)
-earth = Entity(<span class=&quot;y&quot;>parent=sun</span>, model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.green, scale=<span class=&quot;num&quot;>.8</span>, position=(<span class=&quot;num&quot;>1</span>,<span class=&quot;num&quot;>0</span>,<span class=&quot;num&quot;>-1</span>))
-moon  = Entity(<span class=&quot;y&quot;>parent=sun</span>, model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.gray,  scale=<span class=&quot;num&quot;>.5</span>, position=(<span class=&quot;num&quot;>1.5</span>,<span class=&quot;num&quot;>0</span>,<span class=&quot;num&quot;>-1.5</span>))
-<span class=&quot;cm&quot;># 주의! 자식의 position과 scale은 &quot;부모 기준&quot;</span>
-<span class=&quot;cm&quot;># 태양의 scale이 2라서, 지구의 실제 크기와 거리도 2배가 된다!</span></pre>
-</section>
-
-<!-- ================= 3. input &amp; camera ================= -->
-<section id=&quot;s3&quot;>
-  <span class=&quot;step-tag&quot;>비밀 3</span>
-  <h2>input(key) — 키보드로 카메라 옮기기</h2>
-  <p class=&quot;lead&quot;>
-    update가 &quot;매 순간 자동으로&quot; 실행된다면, <b>input(key)는 키보드를 누르는 순간</b> 실행돼요.
-    어떤 키를 눌렀는지가 key에 담겨 오죠. 이 코드는 <b>1</b>을 누르면 정면에서,
-    <b>2</b>를 누르면 하늘에서 내려다보게 카메라를 순간이동시켜요.
-    <b style=&quot;color:var(--sun)&quot;>지금 키보드로 1, 2를 직접 눌러 보세요!</b>
-  </p>
-
-  <div class=&quot;lab&quot;>
-    <canvas id=&quot;cv3&quot; width=&quot;640&quot; height=&quot;480&quot; aria-label=&quot;카메라 시점을 정면과 위에서 보기로 전환하는 실험&quot;></canvas>
-    <div class=&quot;controls&quot;>
-      <div class=&quot;cam-btns&quot;>
-        <button class=&quot;ghost active&quot; id=&quot;camFront&quot;>1 정면에서</button>
-        <button class=&quot;ghost&quot; id=&quot;camTop&quot;>2 위에서</button>
-      </div>
-      <div class=&quot;readout&quot; id=&quot;ro3&quot;></div>
-    </div>
-  </div>
-
-  <pre class=&quot;code&quot;><span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>input</span>(key):
-    <span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'1'</span>:                    <span class=&quot;cm&quot;># 1을 누르면</span>
-        camera.position = (<span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>-20</span>)   <span class=&quot;cm&quot;># 정면 멀리서</span>
-        camera.rotation_x = <span class=&quot;num&quot;>0</span>            <span class=&quot;cm&quot;># 똑바로 본다</span>
-    <span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'2'</span>:                    <span class=&quot;cm&quot;># 2를 누르면</span>
-        camera.position = (<span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>20</span>, <span class=&quot;num&quot;>0</span>)     <span class=&quot;cm&quot;># 하늘 위로</span>
-        camera.rotation_x = <span class=&quot;num&quot;>90</span>           <span class=&quot;cm&quot;># 90도 숙여서 내려다본다</span></pre>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>정면(1)에서는 행성들이 좌우로 왔다갔다하는 것처럼만 보여요. 위(2)에서 보면 사실은 원을 그리며 돌고 있었다는 게 드러나죠. &quot;같은 세상도 카메라 위치에 따라 완전히 달라 보인다&quot;는 걸 느끼게 해 주세요.</div>
-</section>
-
-<!-- ================= 4. 전체 코드 ================= -->
-<section id=&quot;s4&quot;>
-  <span class=&quot;step-tag&quot;>전체 그림</span>
-  <h2>코드 전체를 다시 읽어 보자</h2>
-  <p class=&quot;lead&quot;>이제 모든 줄을 읽을 수 있어요. 리스트(entites)와 for문이 지난 시간 심화 질문 — &quot;반복되는 코드, 어떻게 줄일까?&quot; — 의 답이라는 것도 눈여겨보세요!</p>
-
-  <pre class=&quot;code&quot;><span class=&quot;kw&quot;>from</span> ursina <span class=&quot;kw&quot;>import</span> *
-<span class=&quot;kw&quot;>import</span> time
-app = Ursina()
-
-<span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>update</span>():                             <span class=&quot;cm&quot;># 매 순간 자동 실행</span>
-    <span class=&quot;kw&quot;>for</span> entity <span class=&quot;kw&quot;>in</span> entites:               <span class=&quot;cm&quot;># 리스트에서 하나씩 꺼내</span>
-        entity.rotation_y += <span class=&quot;g&quot;>time.dt</span><span class=&quot;kw&quot;>*</span><span class=&quot;num&quot;>100</span>  <span class=&quot;cm&quot;># 모두 1초에 100도 회전</span>
-
-<span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>input</span>(key):                           <span class=&quot;cm&quot;># 키를 누르는 순간 실행</span>
-    <span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'1'</span>: ...                   <span class=&quot;cm&quot;># 정면 카메라</span>
-    <span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'2'</span>: ...                   <span class=&quot;cm&quot;># 하늘 카메라</span>
-
-entites = []                              <span class=&quot;cm&quot;># 빈 리스트(바구니) 준비</span>
-sun   = Entity(model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, ..., scale=<span class=&quot;num&quot;>2</span>)
-earth = Entity(<span class=&quot;y&quot;>parent=sun</span>, ...)           <span class=&quot;cm&quot;># 태양 회전판에 붙이기</span>
-moon  = Entity(<span class=&quot;y&quot;>parent=sun</span>, ...)           <span class=&quot;cm&quot;># 달도 태양 회전판에!</span>
-
-entites.append(sun)                       <span class=&quot;cm&quot;># 바구니에 담기</span>
-entites.append(earth)
-entites.append(moon)
-
-app.run()</pre>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>재미있는 발견</span>변수 이름이 entites인데, 영어 철자는 원래 entities예요. 파이썬은 철자가 틀려도 <b>일관되게만 쓰면</b> 아무 문제 없이 돌아가요. 변수 이름은 우리가 붙이는 별명일 뿐이니까요! (그래도 고쳐 쓰는 습관이 좋겠죠?)</div>
-</section>
-
-<!-- ================= 5. 미션 ================= -->
-<section id=&quot;s5&quot;>
-  <span class=&quot;step-tag&quot;>스스로 해보기</span>
-  <h2>미션: 나만의 태양계 완성하기</h2>
-  <p class=&quot;lead&quot;>아래 미션을 순서대로 도전해 보세요. 막히면 <b>힌트</b>를, 다 풀었으면 <b>정답 코드</b>를 열어서 비교해 보세요. 미션 1~2는 위의 &quot;비밀 2&quot; 실험에서 미리 결과를 볼 수 있어요!</p>
-
-  <div class=&quot;mission&quot;>
-    <span class=&quot;m-tag&quot;>미션 1</span>
-    <h3>달을 지구의 위성으로 만들기</h3>
-    <p>지금 달의 부모는 태양이라서, 달이 <b>태양 주위</b>를 돌아요. 진짜 달처럼 <b>지구 주위</b>를 돌게 만들려면 코드의 어디를 바꿔야 할까요?</p>
-    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
-      달이 <b>누구의 회전판에 붙어 있는지</b>를 정하는 건 parent예요. 그리고 부모가 바뀌면 position의 기준도 바뀐다는 걸 잊지 마세요 — 이제 (0,0,0)은 태양이 아니라 <b>지구의 중심</b>이에요!
-    </div></details>
-    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
-      <pre class=&quot;code&quot;>moon = Entity(<span class=&quot;y&quot;>parent=earth</span>, model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.gray,
-              scale=<span class=&quot;num&quot;>.5</span>, position=(<span class=&quot;num&quot;>0.8</span>, <span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>-0.8</span>))</pre>
-      position이 이제 <b>지구에서부터의 거리</b>가 됐어요. 그런데 실행해 보면… 아직 달이 지구 주위를 &quot;돌지는&quot; 않죠? 지구가 스스로 돌지 않으니까요. 그게 바로 미션 2!
-    </div></details>
-  </div>
-
-  <div class=&quot;mission&quot;>
-    <span class=&quot;m-tag&quot;>미션 2</span>
-    <h3>지구를 스스로 돌게 하기 (자전)</h3>
-    <p>미션 1을 하고 나면 달이 지구에 <b>붙어만</b> 있어요. 지구 자신의 회전판을 돌려야 달이 지구 주위를 돕니다. update 함수에 한 줄을 추가해 보세요.</p>
-    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
-      태양을 돌릴 때 썼던 문장을 떠올려 보세요: <b>rotation_y += time.dt × 숫자</b>. 이번엔 주인공이 earth일 뿐이에요. 숫자를 크게 하면 달이 더 빨리 돌아요.
-    </div></details>
-    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
-      <pre class=&quot;code&quot;><span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>update</span>():
-    <span class=&quot;kw&quot;>for</span> entity <span class=&quot;kw&quot;>in</span> entites:
-        entity.rotation_y += time.dt<span class=&quot;kw&quot;>*</span><span class=&quot;num&quot;>100</span>
-    <span class=&quot;g&quot;>earth.rotation_y += time.dt*250</span>   <span class=&quot;cm&quot;># 지구의 회전판을 추가로 돌리기!</span></pre>
-      이제 지구는 태양 주위를 돌면서(공전) 스스로도 돌아요(자전). 그리고 지구에 붙은 달은 지구 주위를 돌죠. 진짜 태양계 완성!
-    </div></details>
-  </div>
-
-  <div class=&quot;mission&quot;>
-    <span class=&quot;m-tag&quot;>미션 3</span>
-    <h3>화성 추가하기</h3>
-    <p>빨간 화성을 하나 추가해 보세요. 단, <b>update 함수는 한 글자도 고치지 않고!</b> 어떻게 가능할까요?</p>
-    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
-      update는 entites <b>리스트에 담긴 모든 것</b>을 돌려요. 그러니까 화성을 만들고, 바구니(리스트)에 담기만 하면 자동으로 함께 돕니다. 이게 리스트 + for문의 힘!
-    </div></details>
-    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
-      <pre class=&quot;code&quot;>mars = Entity(parent=sun, model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.red,
-              scale=<span class=&quot;num&quot;>.6</span>, position=(<span class=&quot;num&quot;>-2</span>, <span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>2</span>))
-entites.append(<span class=&quot;g&quot;>mars</span>)   <span class=&quot;cm&quot;># 바구니에 담으면 끝!</span></pre>
-      행성이 100개여도 update는 그대로예요. 지난 시간 9개 행성 코드에서 비슷한 줄이 9번 반복됐던 것과 비교해 보세요 — 이게 &quot;반복문으로 코드 줄이기&quot;의 답이에요.
-    </div></details>
-  </div>
-
-  <div class=&quot;mission&quot;>
-    <span class=&quot;m-tag&quot;>미션 4</span>
-    <h3>3번 키: 비스듬히 보기 추가</h3>
-    <p>1번은 정면, 2번은 꼭대기. 그럼 <b>3번을 누르면 45도 비스듬히</b> 내려다보게 만들어 볼까요? 영화 같은 앵글이 나와요.</p>
-    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
-      input 함수에 if를 하나 더 추가하면 돼요. 비스듬히 보려면 카메라가 <b>위로도, 뒤로도</b> 물러나 있어야 해요. y와 z를 둘 다 써 보세요. rotation_x는 0(정면)과 90(수직) 사이의 값!
-    </div></details>
-    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
-      <pre class=&quot;code&quot;><span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'3'</span>:
-    camera.position = (<span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>14</span>, <span class=&quot;num&quot;>-14</span>)   <span class=&quot;cm&quot;># 위로 14, 뒤로 14</span>
-    camera.rotation_x = <span class=&quot;num&quot;>45</span>            <span class=&quot;cm&quot;># 45도 숙여서 본다</span></pre>
-      숫자를 바꿔 가며 나만의 베스트 앵글을 찾아보세요!
-    </div></details>
-  </div>
-
-  <div class=&quot;mission hard&quot;>
-    <span class=&quot;m-tag&quot;>도전 미션</span>
-    <h3>태양만 회전 멈추기</h3>
-    <p>지금은 태양 자신도 뱅글뱅글 돌아요(자세히 보면!). <b>태양은 가만히 있고 지구와 달만</b> 돌게 하려면? 방법은 두 가지 이상 있어요.</p>
-    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
-      방법 ① for문 안에서 &quot;이 entity가 태양이면 건너뛰기&quot; — if와 continue를 검색해 보세요.<br>
-      방법 ② 애초에 태양을 바구니에 담지 않으면? …그런데 그러면 지구와 달도 안 돌아요. 왜일까요? (지구와 달은 태양의 <b>회전판</b>에 붙어 있으니까!) 이 방법이 왜 실패하는지 설명할 수 있다면 parent를 완벽히 이해한 거예요.
-    </div></details>
-    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
-      <pre class=&quot;code&quot;><span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>update</span>():
-    <span class=&quot;kw&quot;>for</span> entity <span class=&quot;kw&quot;>in</span> entites:
-        <span class=&quot;kw&quot;>if</span> entity == sun:      <span class=&quot;cm&quot;># 태양이면</span>
-            <span class=&quot;kw&quot;>continue</span>           <span class=&quot;cm&quot;># 건너뛰기!</span>
-        entity.rotation_y += time.dt<span class=&quot;kw&quot;>*</span><span class=&quot;num&quot;>100</span></pre>
-      잠깐, 이러면 지구와 달도 태양 주위를 안 돌게 돼요! (태양 회전판이 멈췄으니까요.) 대신 지구와 달이 <b>제자리에서 자전만</b> 하죠. &quot;태양은 멈추고 행성은 공전&quot;을 만들려면 어떻게 해야 할까요? — 힌트: 보이지 않는 <b>빈 Entity를 회전판으로</b> 하나 만들어서 (pivot = Entity()) 행성들을 거기에 붙이면 됩니다. 여기까지 오면 여러분은 이미 게임 개발자!
-    </div></details>
-  </div>
-
-  <div class=&quot;mission&quot;>
-    <span class=&quot;m-tag&quot;>보너스</span>
-    <h3>속도 실험실</h3>
-    <p>코드 속 숫자들을 바꿔 보며 아래 질문에 답해 보세요.</p>
-    <details><summary>실험 목록 보기</summary><div class=&quot;inner&quot;>
-      ① time.dt*100의 100을 300으로 바꾸면?<br>
-      ② earth의 scale을 .8에서 .3으로 바꾸면 달의 크기는 왜 같이 작아질까? (미션 1을 한 경우)<br>
-      ③ moon의 position을 (3, 0, -3)으로 바꾸면 달의 속도가 빨라 보이는 이유는? — 힌트: 같은 시간에 더 <b>큰 원</b>을 그리니까!<br>
-      ④ rotation_y 대신 rotation_x를 돌리면 어떻게 될까? 상상해 보고 실행해서 확인!
-    </div></details>
-  </div>
-</section>
-
-<footer>
-  <span class=&quot;star&quot;>★</span> 오늘의 한 줄 요약 — 부모가 돌면 자식도 돈다. 세상은 회전판 위의 회전판! <span class=&quot;star&quot;>★</span>
-</footer>
-</main>
-
-<script>
-(function(){
-  &quot;use strict&quot;;
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ---------- starfield ---------- */
-  var sc=document.getElementById('stars'), sx=sc.getContext('2d');
-  function drawStars(){
-    sc.width=innerWidth; sc.height=innerHeight;
-    sx.clearRect(0,0,sc.width,sc.height);
-    for(var i=0;i<140;i++){
-      var x=Math.random()*sc.width,y=Math.random()*sc.height,r=Math.random()*1.3+.2;
-      sx.globalAlpha=Math.random()*.6+.15;
-      sx.fillStyle=Math.random()<.12?'#ffc94d':'#cdd4f6';
-      sx.beginPath();sx.arc(x,y,r,0,7);sx.fill();
-    }
-    sx.globalAlpha=1;
-  }
-  drawStars(); addEventListener('resize',drawStars);
-
-  var C={sun:'#ffc94d',green:'#3fdca0',pink:'#ff7fb2',violet:'#9b95ff',blue:'#6fb2ff',
-         grid:'#232d5c',axis:'#39457f',ink:'#eef0ff',muted:'#8a93c4',gray:'#b6bdd9',earth:'#57d68a'};
-  var TAU=Math.PI*2, D2R=Math.PI/180;
-
-  function ctx2(id){var cv=document.getElementById(id);return{cv:cv,x:cv.getContext('2d'),w:cv.width,h:cv.height};}
-  function clear(c){c.x.clearRect(0,0,c.w,c.h);}
-  function circle(c,x,y,r,fill,stroke,lw,dash){
-    c.x.beginPath();c.x.arc(x,y,r,0,TAU);
-    if(dash)c.x.setLineDash(dash);else c.x.setLineDash([]);
-    if(fill){c.x.fillStyle=fill;c.x.fill();}
-    if(stroke){c.x.strokeStyle=stroke;c.x.lineWidth=lw||1.5;c.x.stroke();}
-    c.x.setLineDash([]);
-  }
-  function line(c,x1,y1,x2,y2,color,lw,dash){
-    c.x.beginPath();
-    if(dash)c.x.setLineDash(dash);else c.x.setLineDash([]);
-    c.x.moveTo(x1,y1);c.x.lineTo(x2,y2);
-    c.x.strokeStyle=color;c.x.lineWidth=lw||1.5;c.x.lineCap='round';c.x.stroke();
-    c.x.setLineDash([]);
-  }
-  function label(c,txt,x,y,color,size,align){
-    c.x.fillStyle=color;c.x.font=(size||17)+&quot;px 'Gowun Dodum', sans-serif&quot;;
-    c.x.textAlign=align||'center';c.x.textBaseline='middle';c.x.fillText(txt,x,y);
-  }
-  function sunGlow(c,x,y,r){
-    var g=c.x.createRadialGradient(x,y,r*.3,x,y,r*3.2);
-    g.addColorStop(0,'rgba(255,201,77,.35)');g.addColorStop(1,'rgba(255,201,77,0)');
-    c.x.fillStyle=g;c.x.beginPath();c.x.arc(x,y,r*3.2,0,TAU);c.x.fill();
-    circle(c,x,y,r,C.sun);
-  }
-  function spokes(c,cx,cy,R,ang,color,n){
-    for(var i=0;i<(n||6);i++){
-      var a=ang+i*TAU/(n||6);
-      line(c,cx,cy,cx+Math.cos(a)*R,cy+Math.sin(a)*R,color,1,[3,7]);
-    }
-  }
-  function rot(px,py,a){return[px*Math.cos(a)-py*Math.sin(a),px*Math.sin(a)+py*Math.cos(a)];}
-
-  /* ---------- shared scene state (ursina units) ---------- */
-  /* world = parent-relative pos scaled by sun scale 2. earth rel(1,-1) → world 2 units */
-  var earthRel={x:1,z:-1}, moonRelSun={x:1.5,z:-1.5}, moonRelEarth={x:0.8,z:-0.8};
-
-  /* ---------- HERO : turntable ---------- */
-  var hero=ctx2('heroPlate'), hAng=0;
-  function heroDraw(){
-    clear(hero);
-    var cx=hero.w/2,cy=hero.h/2,U=64,squish=.55;
-    var plateR=Math.hypot(1.5,1.5)*U+26;
-    /* plate as ellipse */
-    hero.x.save();hero.x.translate(cx,cy);hero.x.scale(1,squish);
-    circle({x:hero.x,w:0,h:0},0,0,plateR,'rgba(155,149,255,.06)',C.axis,1.5);
-    for(var i=0;i<8;i++){
-      var a=hAng+i*TAU/8;
-      line({x:hero.x},0,0,Math.cos(a)*plateR,Math.sin(a)*plateR,'#2c3870',1,[3,8]);
-    }
-    hero.x.restore();
-    sunGlow(hero,cx,cy,15);
-    var bodies=[{p:earthRel,s:10,col:C.earth},{p:moonRelSun,s:6,col:C.gray}];
-    bodies.forEach(function(b){
-      var r=rot(b.p.x,b.p.z,hAng);
-      circle(hero,cx+r[0]*U,cy+r[1]*U*squish,b.s,b.col);
-    });
-    label(hero,'보이지 않는 회전판',cx,cy+plateR*squish+24,C.muted,15);
-  }
-  function heroLoop(){hAng+=0.012;heroDraw();requestAnimationFrame(heroLoop);}
-  if(reduced){heroDraw();}else{heroLoop();}
-
-  /* ---------- SECTION 1 : time.dt fairness ---------- */
-  var c1=ctx2('cv1'), fps1=document.getElementById('fps1'),
-      fpsOut=document.getElementById('fpsOut'), ro1=document.getElementById('ro1');
-  var angA=0, angB=0, acc=0, last=performance.now();
-
-  function pinwheel(c,cx,cy,R,ang,color){
-    circle(c,cx,cy,R+12,null,C.axis,1.5);
-    for(var i=0;i<3;i++){
-      var a=(ang*D2R)+i*TAU/3;
-      line(c,cx,cy,cx+Math.cos(a)*R,cy+Math.sin(a)*R,color,5);
-      circle(c,cx+Math.cos(a)*R,cy+Math.sin(a)*R,6,color);
-    }
-    circle(c,cx,cy,7,C.sun);
-  }
-  function draw1(){
-    clear(c1);
-    var q=c1.w/4, cy=c1.h/2-24;
-    pinwheel(c1,q,cy,74,angA,C.pink);
-    pinwheel(c1,q*3,cy,74,angB,C.green);
-    label(c1,'회전 += 3  (프레임마다)',q,cy+116,C.pink,16.5);
-    label(c1,'속도가 컴퓨터마다 달라짐!',q,cy+140,C.muted,14.5);
-    label(c1,'회전 += time.dt × 120',q*3,cy+116,C.green,16.5);
-    label(c1,'언제나 1초에 120도!',q*3,cy+140,C.muted,14.5);
-  }
-  function loop1(now){
-    var dt=Math.min((now-last)/1000,.1); last=now;
-    var F=+fps1.value, step=1/F;
-    acc+=dt;
-    while(acc>=step){
-      angA=(angA+3)%360;          /* frame-based */
-      angB=(angB+step*120)%360;   /* dt-based    */
-      acc-=step;
-    }
-    draw1();
-    ro1.innerHTML=
-      '<span class=&quot;dim&quot;># 지금 속도</span><br>'+
-      '<span class=&quot;p&quot;>왼쪽</span> = 3×'+F+' = <span class=&quot;p&quot;>'+(3*F)+'도/초</span><br>'+
-      '<span class=&quot;g&quot;>오른쪽</span> = <span class=&quot;g&quot;>120도/초</span> <span class=&quot;dim&quot;>고정!</span>';
-    if(!reduced) requestAnimationFrame(loop1);
-  }
-  fps1.addEventListener('input',function(){fpsOut.textContent=fps1.value;});
-  if(reduced){draw1();ro1.innerHTML='<span class=&quot;dim&quot;># 애니메이션이 꺼져 있어요</span>';}
-  else requestAnimationFrame(loop1);
-
-  /* ---------- SECTION 2 : parent turntable ---------- */
-  var c2=ctx2('cv2'),
-      showPlate=document.getElementById('showPlate'),
-      moonToEarth=document.getElementById('moonToEarth'),
-      earthSpin=document.getElementById('earthSpin'),
-      ro2=document.getElementById('ro2');
-  var sunAng=0, eAng=0, U2=88;
-
-  function draw2(){
-    clear(c2);
-    var cx=c2.w/2, cy=c2.h/2;
-    var plateR=Math.hypot(1.5,1.5)*U2+22;
-
-    if(showPlate.checked){
-      circle(c2,cx,cy,plateR,'rgba(155,149,255,.05)',C.axis,1.5,[6,6]);
-      spokes(c2,cx,cy,plateR,sunAng,'#2c3870',8);
-      label(c2,'태양의 회전판',cx,cy-plateR-16,C.muted,15);
-    }
-    sunGlow(c2,cx,cy,16);
-
-    var e=rot(earthRel.x,earthRel.z,sunAng);
-    var ex=cx+e[0]*U2, ey=cy+e[1]*U2;
-
-    var mx,my;
-    if(moonToEarth.checked){
-      var mrel=rot(moonRelEarth.x,moonRelEarth.z,sunAng+eAng);
-      mx=ex+mrel[0]*U2*.9; my=ey+mrel[1]*U2*.9;
-      if(showPlate.checked){
-        var mr=Math.hypot(moonRelEarth.x,moonRelEarth.z)*U2*.9;
-        circle(c2,ex,ey,mr+10,'rgba(63,220,160,.05)','#2a5c4a',1.2,[5,6]);
-        spokes(c2,ex,ey,mr+10,sunAng+eAng,'#234d40',6);
-        label(c2,'지구의 회전판',ex,ey-mr-24,'#57a98a',14);
-      }
-      line(c2,ex,ey,mx,my,'#3a6b58',1.2,[4,5]);
-    }else{
-      var m=rot(moonRelSun.x,moonRelSun.z,sunAng);
-      mx=cx+m[0]*U2; my=cy+m[1]*U2;
-      line(c2,cx,cy,mx,my,'#3a4477',1.2,[4,5]);
-    }
-    line(c2,cx,cy,ex,ey,'#3a4477',1.2,[4,5]);
-
-    circle(c2,ex,ey,13,C.earth);
-    label(c2,'지구',ex,ey-28,C.earth,15);
-    circle(c2,mx,my,8,C.gray);
-    label(c2,'달',mx,my-22,C.gray,15);
-
-    ro2.innerHTML=
-      '<span class=&quot;dim&quot;># 지금 코드 상태</span><br>'+
-      'moon(parent=<span class=&quot;'+(moonToEarth.checked?'g&quot;>earth':'y&quot;>sun')+'</span>)<br>'+
-      (earthSpin.checked
-        ? '<span class=&quot;g&quot;>earth.rotation_y</span> <span class=&quot;dim&quot;>돌아가는 중</span>'
-        : '<span class=&quot;dim&quot;>earth 자전: 꺼짐</span>');
-  }
-  function loop2(){
-    sunAng+=0.011;
-    if(earthSpin.checked) eAng+=0.028;
-    draw2();
-    if(!reduced) requestAnimationFrame(loop2);
-  }
-  [showPlate,moonToEarth,earthSpin].forEach(function(el){el.addEventListener('change',draw2);});
-  if(reduced){draw2();}else loop2();
-
-  /* ---------- SECTION 3 : camera views ---------- */
-  var c3=ctx2('cv3'), ro3=document.getElementById('ro3'),
-      bF=document.getElementById('camFront'), bT=document.getElementById('camTop');
-  var view='front', ang3=0, U3=70;
-
-  function setView(v){
-    view=v;
-    bF.classList.toggle('active',v==='front');
-    bT.classList.toggle('active',v==='top');
-    ro3.innerHTML = v==='front'
-      ? '<span class=&quot;dim&quot;># key == </span><span class=&quot;y&quot;>\'1\'</span><br>camera.position=(0,0,<span class=&quot;y&quot;>-20</span>)<br>camera.rotation_x=<span class=&quot;y&quot;>0</span>'
-      : '<span class=&quot;dim&quot;># key == </span><span class=&quot;y&quot;>\'2\'</span><br>camera.position=(0,<span class=&quot;y&quot;>20</span>,0)<br>camera.rotation_x=<span class=&quot;y&quot;>90</span>';
-    draw3();
-  }
-  function bodies3(){
-    var e=rot(earthRel.x,earthRel.z,ang3);
-    var m=rot(moonRelSun.x,moonRelSun.z,ang3);
-    return[
-      {x:0,   z:0,   s:17,col:C.sun, sun:true, name:'태양'},
-      {x:e[0],z:e[1],s:11,col:C.earth,name:'지구'},
-      {x:m[0],z:m[1],s:7, col:C.gray, name:'달'}
-    ];
-  }
-  function draw3(){
-    clear(c3);
-    var cx=c3.w/2, cy=c3.h/2, bs=bodies3();
-    if(view==='top'){
-      label(c3,'하늘에서 내려다본 모습 — 원운동이 보인다!',cx,36,C.muted,16);
-      circle(c3,cx,cy,Math.hypot(1,1)*U3,null,C.grid,1.2);
-      circle(c3,cx,cy,Math.hypot(1.5,1.5)*U3,null,C.grid,1.2);
-      bs.forEach(function(b){
-        var px=cx+b.x*U3, py=cy+b.z*U3;
-        if(b.sun){sunGlow(c3,px,py,b.s);}else circle(c3,px,py,b.s,b.col);
-        label(c3,b.name,px,py-b.s-14,b.col,14.5);
-      });
-    }else{
-      label(c3,'정면에서 본 모습 — 좌우로만 왔다갔다?',cx,36,C.muted,16);
-      line(c3,cx-Math.hypot(1.5,1.5)*U3-20,cy,cx+Math.hypot(1.5,1.5)*U3+20,cy,C.grid,1.2);
-      /* far objects first (z large = far in this fake view) */
-      bs.slice().sort(function(a,b){return b.z-a.z;}).forEach(function(b){
-        var depth=1-(b.z/4);           /* z:-2.1..2.1 → scale cue */
-        var px=cx+b.x*U3, py=cy, s=b.s*(0.75+depth*.25);
-        if(b.sun){sunGlow(c3,px,py,s);}else circle(c3,px,py,s,b.col);
-        label(c3,b.name,px,py-s-14,b.col,14.5);
-      });
-      label(c3,'(사실은 앞뒤로도 움직이는 중!)',cx,c3.h-34,C.muted,14.5);
-    }
-  }
-  function loop3(){ang3+=0.012;draw3();if(!reduced)requestAnimationFrame(loop3);}
-  bF.addEventListener('click',function(){setView('front');});
-  bT.addEventListener('click',function(){setView('top');});
-  addEventListener('keydown',function(ev){
-    if(ev.key==='1')setView('front');
-    if(ev.key==='2')setView('top');
-  });
-  setView('front');
-  if(!reduced)loop3();
-})();
-</script>
-</body>
-</html>
-"></iframe>
-<iframe class="lesson" id="lesson11" title="학습지 #13 — Circular Motion with Cos and Sin" srcdoc="<!DOCTYPE html>
-<html lang=&quot;ko&quot;>
-<head>
-<meta charset=&quot;UTF-8&quot;>
-<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
-<title>빙글빙글 태양계의 비밀 — cos, sin으로 원운동 만들기</title>
-<link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;>
-<link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin>
-<link href=&quot;https://fonts.googleapis.com/css2?family=Jua&amp;family=Gowun+Dodum&amp;family=Nanum+Gothic+Coding:wght@400;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
-<style>
-  :root{
-    --night:#0d1330;
-    --panel:#161e44;
-    --panel-2:#1d2757;
-    --line:#2c3870;
-    --ink:#eef0ff;
-    --muted:#a3abd6;
-    --sun:#ffc94d;
-    --cosg:#3fdca0;
-    --sinp:#ff7fb2;
-    --violet:#9b95ff;
-    --blue:#6fb2ff;
-    --code-bg:#0a0f26;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{
-    background:var(--night);
-    color:var(--ink);
-    font-family:'Gowun Dodum',sans-serif;
-    font-size:19px;
-    line-height:1.75;
-    overflow-x:hidden;
-  }
-  #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
-  main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 24px 120px}
-
-  h1,h2,h3{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:.5px}
-
-  /* ---------- hero ---------- */
-  header{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:60px 0 40px}
-  .eyebrow{color:var(--sun);font-family:'Jua',sans-serif;font-size:20px;letter-spacing:3px;margin-bottom:14px}
-  h1{font-size:clamp(38px,6vw,64px);line-height:1.25}
-  h1 .hl{color:var(--sun)}
-  header p{color:var(--muted);margin-top:18px;font-size:20px;max-width:560px}
-  #heroOrbit{margin-top:36px;filter:drop-shadow(0 0 30px rgba(255,201,77,.12))}
-  .scroll-hint{margin-top:34px;color:var(--muted);font-size:16px;animation:bob 2.2s ease-in-out infinite}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
-  @media (prefers-reduced-motion: reduce){.scroll-hint{animation:none}}
-
-  /* ---------- sections ---------- */
-  section{margin-top:110px}
-  .step-tag{display:inline-block;background:var(--panel-2);border:1px solid var(--line);color:var(--sun);font-family:'Jua',sans-serif;font-size:17px;padding:5px 16px;border-radius:999px;margin-bottom:14px}
-  h2{font-size:clamp(28px,4vw,40px);margin-bottom:10px}
-  .lead{color:var(--muted);font-size:20px;max-width:720px}
-  .lead b{color:var(--ink)}
-
-  .lab{
-    margin-top:28px;background:var(--panel);border:1px solid var(--line);
-    border-radius:20px;padding:28px;display:grid;gap:26px;
-    grid-template-columns:minmax(0,1fr) 300px;align-items:start;
-  }
-  @media (max-width:820px){.lab{grid-template-columns:1fr}}
-  .lab canvas{width:100%;height:auto;display:block;border-radius:14px;background:var(--code-bg)}
-
-  .controls{display:flex;flex-direction:column;gap:18px}
-  .ctrl label{display:flex;justify-content:space-between;font-size:17px;color:var(--muted);margin-bottom:6px}
-  .ctrl label output{color:var(--ink);font-family:'Nanum Gothic Coding',monospace;font-size:16px}
-  input[type=range]{width:100%;accent-color:var(--sun);height:26px;cursor:pointer}
-  input[type=range]:focus-visible{outline:2px solid var(--sun);outline-offset:3px;border-radius:6px}
-
-  button.play{
-    font-family:'Jua',sans-serif;font-size:19px;color:#1a1405;background:var(--sun);
-    border:none;border-radius:12px;padding:12px 0;cursor:pointer;transition:transform .12s ease;
-  }
-  button.play:hover{transform:translateY(-2px)}
-  button.play:focus-visible{outline:3px solid #fff;outline-offset:2px}
-  button.ghost{
-    font-family:'Jua',sans-serif;font-size:17px;color:var(--ink);background:transparent;
-    border:1px solid var(--line);border-radius:12px;padding:10px 0;cursor:pointer;
-  }
-  button.ghost:hover{border-color:var(--sun);color:var(--sun)}
-  button.ghost:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
-
-  .readout{background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:'Nanum Gothic Coding',monospace;font-size:16.5px;line-height:2}
-  .readout .g{color:var(--cosg)} .readout .p{color:var(--sinp)} .readout .y{color:var(--sun)} .readout .v{color:var(--violet)} .readout .b{color:var(--blue)}
-  .readout .dim{color:#5a648f}
-
-  .tip{
-    margin-top:22px;border-left:4px solid var(--sun);background:rgba(255,201,77,.06);
-    padding:16px 20px;border-radius:0 14px 14px 0;font-size:18px;color:var(--ink)
-  }
-  .tip .who{color:var(--sun);font-family:'Jua',sans-serif;margin-right:8px}
-
-  pre.code{
-    margin-top:22px;background:var(--code-bg);border:1px solid var(--line);border-radius:14px;
-    padding:20px 24px;font-family:'Nanum Gothic Coding',monospace;font-size:16.5px;line-height:1.9;
-    overflow-x:auto;color:#cdd4f6;
-  }
-  pre.code .kw{color:var(--violet)} pre.code .fn{color:var(--blue)} pre.code .num{color:var(--sun)} pre.code .cm{color:#5a648f} pre.code .g{color:var(--cosg)} pre.code .p{color:var(--sinp)}
-
-  .big-formula{
-    margin-top:22px;text-align:center;font-family:'Jua',sans-serif;font-size:clamp(22px,3.4vw,32px);
-    background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 18px;
-  }
-  .big-formula .y{color:var(--sun)} .big-formula .v{color:var(--violet)}
-
-  .presets{display:flex;gap:10px;flex-wrap:wrap}
-  .presets button{flex:1 1 auto;padding:8px 0;font-size:16px}
-
-  .toggle-row{display:flex;align-items:center;gap:12px;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px;cursor:pointer;user-select:none}
-  .toggle-row input{width:22px;height:22px;accent-color:var(--sun);cursor:pointer}
-  .toggle-row span{font-size:18px}
-
-  footer{margin-top:120px;text-align:center;color:var(--muted);font-size:16px}
-  footer .star{color:var(--sun)}
-</style>
-</head>
-<body>
-<canvas id=&quot;stars&quot; aria-hidden=&quot;true&quot;></canvas>
-<main>
-
-<!-- ================= HERO ================= -->
-<header>
-  <div class=&quot;eyebrow&quot;>중학교 코딩 × 수학 수업</div>
-  <h1>빙글빙글 <span class=&quot;hl&quot;>태양계</span>의 비밀</h1>
-  <p>cos과 sin, 단 두 개의 계산기로 행성을 태양 주위에 돌게 만들 수 있어요.<br>오늘 그 비밀을 하나씩 풀어봅시다.</p>
-  <canvas id=&quot;heroOrbit&quot; width=&quot;640&quot; height=&quot;360&quot; aria-label=&quot;행성들이 태양 주위를 도는 애니메이션&quot;></canvas>
-  <div class=&quot;scroll-hint&quot;>▼ 아래로 내려가며 하나씩 실험해 보세요</div>
-</header>
-
-<!-- ================= 1. 그림자 자판기 ================= -->
-<section id=&quot;s1&quot;>
-  <span class=&quot;step-tag&quot;>비밀 1</span>
-  <h2>cos과 sin은 &quot;그림자 자판기&quot;</h2>
-  <p class=&quot;lead&quot;>
-    관람차에 탄 사람을 위에서 해가 비추면, 그림자는 땅에서 <b>왔다갔다</b>만 해요.
-    옆에서 비추면 그림자는 <b>위아래로</b>만 움직이죠.
-    원 위의 점의 위치는 이렇게 <b style=&quot;color:var(--cosg)&quot;>가로 그림자</b>와
-    <b style=&quot;color:var(--sinp)&quot;>세로 그림자</b> 두 개로 쪼갤 수 있어요.
-    각도를 넣으면 그림자 길이를 뱉어주는 자판기 — 그게 cos과 sin입니다.
-  </p>
-
-  <div class=&quot;lab&quot;>
-    <canvas id=&quot;cv1&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;단위원 위의 점과 가로, 세로 그림자를 보여주는 그림&quot;></canvas>
-    <div class=&quot;controls&quot;>
-      <div class=&quot;ctrl&quot;>
-        <label>각도 t <output id=&quot;deg1&quot;>40°</output></label>
-        <input type=&quot;range&quot; id=&quot;t1&quot; min=&quot;0&quot; max=&quot;360&quot; value=&quot;40&quot; step=&quot;1&quot; aria-label=&quot;각도 t 조절&quot;>
-      </div>
-      <button class=&quot;play&quot; id=&quot;play1&quot;>▶ 자동으로 돌리기</button>
-      <div class=&quot;readout&quot; id=&quot;ro1&quot;></div>
-      <div class=&quot;readout&quot; style=&quot;line-height:1.7&quot;>
-        <span class=&quot;dim&quot;># cos, sin의 답은</span><br>
-        <span class=&quot;dim&quot;># 언제나 -1 ~ 1 사이!</span>
-      </div>
-    </div>
-  </div>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>슬라이더를 0° → 90° → 180° → 270°로 맞춰 보세요. 초록 막대(가로 그림자)와 분홍 막대(세로 그림자)가 번갈아 길어졌다 사라지는 걸 학생이 직접 발견하게 하는 게 포인트!</div>
-</section>
-
-<!-- ================= 2. radius 풍선 ================= -->
-<section id=&quot;s2&quot;>
-  <span class=&quot;step-tag&quot;>비밀 2</span>
-  <h2>radius를 곱하면 원이 커진다 (풍선 불기)</h2>
-  <p class=&quot;lead&quot;>
-    cos, sin이 주는 답은 <b>반지름 1짜리 기본 원</b> 위의 위치예요.
-    풍선에 그린 원을 후~ 불면 커지듯이, 여기에 radius를 곱하면
-    원 전체가 그만큼 커집니다. 수성은 ×1, 명왕성은 ×4!
-  </p>
-
-  <div class=&quot;lab&quot;>
-    <canvas id=&quot;cv2&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;반지름을 바꾸면 궤도가 커지는 것을 보여주는 그림&quot;></canvas>
-    <div class=&quot;controls&quot;>
-      <div class=&quot;ctrl&quot;>
-        <label>radius (원의 크기) <output id=&quot;rOut&quot;>2.0</output></label>
-        <input type=&quot;range&quot; id=&quot;r2&quot; min=&quot;1&quot; max=&quot;4&quot; value=&quot;2&quot; step=&quot;0.1&quot; aria-label=&quot;반지름 조절&quot;>
-      </div>
-      <div class=&quot;ctrl&quot;>
-        <label>각도 t <output id=&quot;deg2&quot;>40°</output></label>
-        <input type=&quot;range&quot; id=&quot;t2&quot; min=&quot;0&quot; max=&quot;360&quot; value=&quot;40&quot; step=&quot;1&quot; aria-label=&quot;각도 t 조절&quot;>
-      </div>
-      <div class=&quot;readout&quot; id=&quot;ro2&quot;></div>
-    </div>
-  </div>
-
-  <pre class=&quot;code&quot;><span class=&quot;cm&quot;># 코드에서는 이렇게!</span>
-planet.x = <span class=&quot;fn&quot;>np.cos</span>(t) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>radius</span>   <span class=&quot;cm&quot;># 가로 그림자 × 원의 크기</span>
-planet.z = <span class=&quot;fn&quot;>np.sin</span>(t) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>radius</span>   <span class=&quot;cm&quot;># 세로 그림자 × 원의 크기</span></pre>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>회색 점선 원(반지름 1짜리 기본 원)은 그대로 두고 파란 궤도만 커지죠? &quot;cos, sin의 답은 그대로인데 곱하는 수만 바뀐다&quot;는 걸 눈으로 확인시켜 주세요.</div>
-</section>
-
-<!-- ================= 3. 라디안 번역기 ================= -->
-<section id=&quot;s3&quot;>
-  <span class=&quot;step-tag&quot;>비밀 3</span>
-  <h2>np.pi × 40 / 180 — 각도 번역기</h2>
-  <p class=&quot;lead&quot;>
-    우리는 각도를 <b>도(°)</b>로 재지만, 컴퓨터의 np.cos, np.sin은
-    <b>라디안</b>이라는 단위를 써요. 키를 cm로 재든 인치로 재든 같은 키인 것처럼,
-    같은 각도를 다른 숫자로 부르는 것뿐! 한 바퀴 360° = 2π 라디안이에요.
-  </p>
-
-  <div class=&quot;big-formula&quot;>
-    360° = 2π &amp;nbsp;&amp;nbsp;→&amp;nbsp;&amp;nbsp; 180° = π &amp;nbsp;&amp;nbsp;→&amp;nbsp;&amp;nbsp;
-    <span class=&quot;y&quot;>40°</span> = π × <span class=&quot;y&quot;>40</span> / 180 ≈ <span class=&quot;v&quot;>0.698 라디안</span>
-  </div>
-
-  <div class=&quot;lab&quot;>
-    <canvas id=&quot;cv3&quot; width=&quot;640&quot; height=&quot;480&quot; aria-label=&quot;도 단위 각도를 라디안으로 번역해 보여주는 그림&quot;></canvas>
-    <div class=&quot;controls&quot;>
-      <div class=&quot;ctrl&quot;>
-        <label>도(°) 단위 각도 <output id=&quot;deg3&quot;>40°</output></label>
-        <input type=&quot;range&quot; id=&quot;t3&quot; min=&quot;0&quot; max=&quot;360&quot; value=&quot;40&quot; step=&quot;1&quot; aria-label=&quot;번역할 각도&quot;>
-      </div>
-      <div class=&quot;presets&quot;>
-        <button class=&quot;ghost&quot; data-deg=&quot;40&quot;>40°</button>
-        <button class=&quot;ghost&quot; data-deg=&quot;90&quot;>90°</button>
-        <button class=&quot;ghost&quot; data-deg=&quot;180&quot;>180°</button>
-        <button class=&quot;ghost&quot; data-deg=&quot;360&quot;>360°</button>
-      </div>
-      <div class=&quot;readout&quot; id=&quot;ro3&quot;></div>
-    </div>
-  </div>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>180°를 눌러 보세요 — 정확히 π(3.141…)가 나옵니다. &quot;180° = π&quot;만 기억하면 나머지 번역은 비례식으로 전부 해결돼요. (중1은 비례식을 배웠으니 여기서 연결!)</div>
-</section>
-
-<!-- ================= 4. angle 출발선 ================= -->
-<section id=&quot;s4&quot;>
-  <span class=&quot;step-tag&quot;>비밀 4</span>
-  <h2>+ angle — 출발선을 벌려 놓아라</h2>
-  <p class=&quot;lead&quot;>
-    행성이 여러 개인데 전부 같은 각도 t에서 출발하면? 한 줄로 겹쳐서 돌아요.
-    그래서 <b>360° ÷ 행성 수</b>만큼 출발선을 벌려 놓습니다.
-    운동장 트랙에서 출발선만 다르게 잡고 <b>같은 속도</b>로 달리면,
-    간격이 영원히 유지되는 것과 같아요.
-  </p>
-
-  <div class=&quot;lab&quot;>
-    <canvas id=&quot;cv4&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;세 행성이 120도 간격으로 도는 모습&quot;></canvas>
-    <div class=&quot;controls&quot;>
-      <label class=&quot;toggle-row&quot;>
-        <input type=&quot;checkbox&quot; id=&quot;angleOn&quot; checked>
-        <span>출발선 벌리기 <b style=&quot;color:var(--sun)&quot;>(+ angle)</b></span>
-      </label>
-      <button class=&quot;play&quot; id=&quot;play4&quot;>⏸ 멈추기</button>
-      <div class=&quot;readout&quot; id=&quot;ro4&quot;></div>
-    </div>
-  </div>
-
-  <pre class=&quot;code&quot;>angle = np.pi <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>120</span> / <span class=&quot;num&quot;>180</span>          <span class=&quot;cm&quot;># 행성 3개 → 360÷3 = 120°</span>
-
-planet1.x = <span class=&quot;fn&quot;>np.cos</span>(t) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>2</span>            <span class=&quot;cm&quot;># 출발선 그대로</span>
-planet2.x = <span class=&quot;fn&quot;>np.cos</span>(t <span class=&quot;kw&quot;>+ angle</span>) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>3</span>    <span class=&quot;cm&quot;># 120° 앞에서 출발</span>
-planet3.x = <span class=&quot;fn&quot;>np.cos</span>(t <span class=&quot;kw&quot;>+ angle*2</span>) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>4</span>  <span class=&quot;cm&quot;># 240° 앞에서 출발</span></pre>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>체크박스를 껐다 켜 보세요! 끄는 순간 행성 셋이 한 줄로 겹칩니다. 이 한 번의 클릭이 angle의 역할을 백 마디 설명보다 확실하게 보여줘요.</div>
-</section>
-
-<!-- ================= 5. 완성 ================= -->
-<section id=&quot;s5&quot;>
-  <span class=&quot;step-tag&quot;>완성!</span>
-  <h2>비밀 4개를 합치면 = 태양계</h2>
-  <p class=&quot;lead&quot;>
-    <b style=&quot;color:var(--cosg)&quot;>그림자 자판기(cos, sin)</b> +
-    <b style=&quot;color:var(--blue)&quot;>풍선 불기(radius)</b> +
-    <b style=&quot;color:var(--violet)&quot;>각도 번역(라디안)</b> +
-    <b style=&quot;color:var(--sun)&quot;>출발선 벌리기(angle)</b>.
-    이 네 가지가 여러분이 만든 코드의 전부입니다.
-    행성 9개 × 40° 간격, 진짜 태양계를 돌려 봅시다!
-  </p>
-
-  <div class=&quot;lab&quot;>
-    <canvas id=&quot;cv5&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;아홉 행성이 40도 간격으로 태양 주위를 도는 완성 시뮬레이션&quot;></canvas>
-    <div class=&quot;controls&quot;>
-      <div class=&quot;ctrl&quot;>
-        <label>속도 (t = t + ?) <output id=&quot;spdOut&quot;>0.02</output></label>
-        <input type=&quot;range&quot; id=&quot;spd5&quot; min=&quot;0.005&quot; max=&quot;0.1&quot; value=&quot;0.02&quot; step=&quot;0.005&quot; aria-label=&quot;회전 속도&quot;>
-      </div>
-      <button class=&quot;play&quot; id=&quot;play5&quot;>⏸ 멈추기</button>
-      <div class=&quot;readout&quot;>
-        <span class=&quot;dim&quot;># 오늘 배운 것</span><br>
-        <span class=&quot;g&quot;>cos, sin</span> <span class=&quot;dim&quot;>→ 그림자 자판기</span><br>
-        <span class=&quot;b&quot;>radius</span> <span class=&quot;dim&quot;>→ 원 키우기</span><br>
-        <span class=&quot;v&quot;>np.pi*40/180</span> <span class=&quot;dim&quot;>→ 각도 번역</span><br>
-        <span class=&quot;y&quot;>+ angle</span> <span class=&quot;dim&quot;>→ 출발선 벌리기</span>
-      </div>
-    </div>
-  </div>
-
-  <div class=&quot;tip&quot;><span class=&quot;who&quot;>심화 질문</span>① 지금은 모든 행성이 같은 속도로 돌아요. 진짜 태양계처럼 안쪽 행성을 더 빠르게 하려면 코드의 어디를 고쳐야 할까요? ② 비슷한 코드가 9번 반복되는데, 반복문으로 줄일 수 있을까요?</div>
-</section>
-
-<footer>
-  <span class=&quot;star&quot;>★</span> 오늘의 한 줄 요약 — 원운동 = 그림자 두 개(cos, sin)가 함께 춤추는 것 <span class=&quot;star&quot;>★</span>
-</footer>
-</main>
-
-<script>
-(function(){
-  &quot;use strict&quot;;
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ---------- starfield ---------- */
-  var sc = document.getElementById('stars'), sx = sc.getContext('2d');
-  function drawStars(){
-    sc.width = innerWidth; sc.height = innerHeight;
-    sx.clearRect(0,0,sc.width,sc.height);
-    for(var i=0;i<140;i++){
-      var x=Math.random()*sc.width, y=Math.random()*sc.height, r=Math.random()*1.3+.2;
-      sx.globalAlpha = Math.random()*.6+.15;
-      sx.fillStyle = Math.random()<.12 ? '#ffc94d' : '#cdd4f6';
-      sx.beginPath(); sx.arc(x,y,r,0,7); sx.fill();
-    }
-    sx.globalAlpha = 1;
-  }
-  drawStars(); addEventListener('resize', drawStars);
-
-  var C = { sun:'#ffc94d', cos:'#3fdca0', sin:'#ff7fb2', violet:'#9b95ff',
-            blue:'#6fb2ff', grid:'#232d5c', axis:'#39457f', ink:'#eef0ff', muted:'#8a93c4' };
-  var TAU = Math.PI*2;
-
-  function ctx2(id){
-    var cv = document.getElementById(id);
-    return { cv:cv, x:cv.getContext('2d'), w:cv.width, h:cv.height };
-  }
-  function clear(c){ c.x.clearRect(0,0,c.w,c.h); }
-  function circle(c,x,y,r,fill,stroke,lw,dash){
-    c.x.beginPath(); c.x.arc(x,y,r,0,TAU);
-    if(dash) c.x.setLineDash(dash); else c.x.setLineDash([]);
-    if(fill){ c.x.fillStyle=fill; c.x.fill(); }
-    if(stroke){ c.x.strokeStyle=stroke; c.x.lineWidth=lw||1.5; c.x.stroke(); }
-    c.x.setLineDash([]);
-  }
-  function line(c,x1,y1,x2,y2,color,lw,dash){
-    c.x.beginPath();
-    if(dash) c.x.setLineDash(dash); else c.x.setLineDash([]);
-    c.x.moveTo(x1,y1); c.x.lineTo(x2,y2);
-    c.x.strokeStyle=color; c.x.lineWidth=lw||1.5; c.x.lineCap='round'; c.x.stroke();
-    c.x.setLineDash([]);
-  }
-  function label(c,txt,x,y,color,size,align){
-    c.x.fillStyle=color; c.x.font=(size||17)+&quot;px 'Gowun Dodum', sans-serif&quot;;
-    c.x.textAlign=align||'center'; c.x.textBaseline='middle'; c.x.fillText(txt,x,y);
-  }
-  function sunGlow(c,x,y,r){
-    var g=c.x.createRadialGradient(x,y,r*.3,x,y,r*3.2);
-    g.addColorStop(0,'rgba(255,201,77,.35)'); g.addColorStop(1,'rgba(255,201,77,0)');
-    c.x.fillStyle=g; c.x.beginPath(); c.x.arc(x,y,r*3.2,0,TAU); c.x.fill();
-    circle(c,x,y,r,C.sun);
-  }
-  function fmt(n,d){ return n.toFixed(d===undefined?3:d); }
-
-  /* ---------- HERO : mini solar system ---------- */
-  var hero = ctx2('heroOrbit'), hT = -Math.PI;
-  var heroPlanets = [
-    {r:44,s:5,col:'#b6bdd9'},{r:70,s:6,col:'#ffa254'},{r:96,s:7,col:'#6fb2ff'},
-    {r:122,s:6,col:'#d98cff'},{r:150,s:9,col:'#ff6b6b'}
-  ];
-  function heroDraw(){
-    clear(hero);
-    var cx=hero.w/2, cy=hero.h/2;
-    heroPlanets.forEach(function(p){ circle(hero,cx,cy,p.r,null,C.grid,1); });
-    sunGlow(hero,cx,cy,16);
-    heroPlanets.forEach(function(p,i){
-      var a=hT+i*(TAU/heroPlanets.length)*0.9;
-      circle(hero,cx+Math.cos(a)*p.r,cy+Math.sin(a)*p.r*0.55,p.s,p.col);
-    });
-  }
-  function heroLoop(){ hT+=0.012; heroDraw(); requestAnimationFrame(heroLoop); }
-  if(reduced){ heroDraw(); } else { heroLoop(); }
-
-  /* ---------- SECTION 1 : shadow machine ---------- */
-  var c1=ctx2('cv1'), t1=document.getElementById('t1'),
-      deg1=document.getElementById('deg1'), ro1=document.getElementById('ro1'),
-      play1=document.getElementById('play1'), run1=false;
-
-  function draw1(){
-    clear(c1);
-    var cx=c1.w/2, cy=c1.h/2, R=210;
-    var deg=+t1.value, t=deg*Math.PI/180;
-    var px=cx+Math.cos(t)*R, py=cy-Math.sin(t)*R;
-
-    line(c1,40,cy,c1.w-40,cy,C.axis,1);
-    line(c1,cx,40,cx,c1.h-40,C.axis,1);
-    label(c1,'x 방향',c1.w-52,cy-18,C.muted,15);
-    label(c1,'z 방향',cx+34,52,C.muted,15);
-    circle(c1,cx,cy,R,null,C.axis,1.5);
-
-    /* angle arc */
-    c1.x.beginPath(); c1.x.arc(cx,cy,46,0,-t,true);
-    c1.x.strokeStyle=C.violet; c1.x.lineWidth=2.5; c1.x.stroke();
-    var mid=-t/2;
-    label(c1,'t',cx+Math.cos(mid)*66,cy+Math.sin(mid)*66,C.violet,19);
-
-    /* radius line */
-    line(c1,cx,cy,px,py,'#5a648f',1.5,[5,5]);
-
-    /* projection guides */
-    line(c1,px,py,px,cy,'#414d85',1,[4,5]);
-    line(c1,px,py,cx,py,'#414d85',1,[4,5]);
-
-    /* shadows */
-    line(c1,cx,cy,px,cy,C.cos,6);
-    circle(c1,px,cy,5,C.cos);
-    line(c1,cx,cy,cx,py,C.sin,6);
-    circle(c1,cx,py,5,C.sin);
-
-    label(c1,'가로 그림자 cos(t)',(cx+px)/2, cy+(Math.sin(t)>=0?26:-26), C.cos,16);
-    label(c1,'세로 그림자',cx+(Math.cos(t)>=0?-58:58),(cy+py)/2-12,C.sin,16);
-    label(c1,'sin(t)',cx+(Math.cos(t)>=0?-58:58),(cy+py)/2+11,C.sin,16);
-
-    sunGlow(c1,cx,cy,13);
-    circle(c1,px,py,11,C.blue,'#dbe8ff',1.5);
-    label(c1,'행성',px,py-26,C.blue,16);
-
-    deg1.textContent = deg+'°';
-    ro1.innerHTML =
-      '<span class=&quot;dim&quot;># 자판기의 답</span><br>'+
-      '<span class=&quot;g&quot;>np.cos('+deg+'°)</span> = <span class=&quot;g&quot;>'+fmt(Math.cos(t))+'</span><br>'+
-      '<span class=&quot;p&quot;>np.sin('+deg+'°)</span> = <span class=&quot;p&quot;>'+fmt(Math.sin(t))+'</span>';
-  }
-  t1.addEventListener('input',function(){ stop1(); draw1(); });
-  function loop1(){ if(!run1)return; t1.value=(+t1.value+0.7)%360; draw1(); requestAnimationFrame(loop1); }
-  function stop1(){ run1=false; play1.textContent='▶ 자동으로 돌리기'; }
-  play1.addEventListener('click',function(){
-    run1=!run1; play1.textContent=run1?'⏸ 멈추기':'▶ 자동으로 돌리기';
-    if(run1)loop1();
-  });
-  draw1();
-
-  /* ---------- SECTION 2 : radius balloon ---------- */
-  var c2=ctx2('cv2'), r2=document.getElementById('r2'), t2=document.getElementById('t2'),
-      rOut=document.getElementById('rOut'), deg2=document.getElementById('deg2'),
-      ro2=document.getElementById('ro2');
-  var UNIT=62; /* px per 1 radius */
-
-  function draw2(){
-    clear(c2);
-    var cx=c2.w/2, cy=c2.h/2, r=+r2.value, deg=+t2.value, t=deg*Math.PI/180;
-    line(c2,40,cy,c2.w-40,cy,C.axis,1);
-    line(c2,cx,40,cx,c2.h-40,C.axis,1);
-
-    /* base unit circle */
-    circle(c2,cx,cy,UNIT,null,'#4a5488',1.5,[6,6]);
-    label(c2,'기본 원 (반지름 1)',cx,cy-UNIT-18,C.muted,15);
-
-    /* scaled orbit */
-    circle(c2,cx,cy,UNIT*r,null,C.blue,2);
-
-    var px=cx+Math.cos(t)*UNIT*r, py=cy-Math.sin(t)*UNIT*r;
-    var ux=cx+Math.cos(t)*UNIT,  uy=cy-Math.sin(t)*UNIT;
-
-    line(c2,cx,cy,px,py,'#5a648f',1.5,[5,5]);
-    circle(c2,ux,uy,5,'#8a93c4');
-
-    line(c2,cx,cy,px,cy,C.cos,6);
-    label(c2,'cos(t) × '+fmt(r,1),(cx+px)/2, cy+(Math.sin(t)>=0?24:-24), C.cos,16);
-
-    sunGlow(c2,cx,cy,13);
-    circle(c2,px,py,11,C.blue,'#dbe8ff',1.5);
-    label(c2,'행성',px,py-26,C.blue,16);
-
-    rOut.textContent=fmt(r,1);
-    deg2.textContent=deg+'°';
-    ro2.innerHTML =
-      '<span class=&quot;dim&quot;># 풍선 불기!</span><br>'+
-      'planet.x = <span class=&quot;g&quot;>'+fmt(Math.cos(t))+'</span> <span class=&quot;dim&quot;>×</span> <span class=&quot;y&quot;>'+fmt(r,1)+'</span><br>'+
-      '&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; = <span class=&quot;b&quot;>'+fmt(Math.cos(t)*r)+'</span>';
-  }
-  r2.addEventListener('input',draw2);
-  t2.addEventListener('input',draw2);
-  draw2();
-
-  /* ---------- SECTION 3 : radian translator ---------- */
-  var c3=ctx2('cv3'), t3=document.getElementById('t3'),
-      deg3=document.getElementById('deg3'), ro3=document.getElementById('ro3');
-
-  function draw3(){
-    clear(c3);
-    var cx=c3.w/2, cy=c3.h/2+26, R=170;
-    var deg=+t3.value, rad=Math.PI*deg/180;
-
-    circle(c3,cx,cy,R,null,C.axis,1.5);
-    line(c3,cx,cy,cx+R,cy,'#5a648f',1.5);
-
-    if(deg>0){
-      c3.x.beginPath(); c3.x.moveTo(cx,cy);
-      c3.x.arc(cx,cy,R,0,-rad,true); c3.x.closePath();
-      c3.x.fillStyle='rgba(155,149,255,.16)'; c3.x.fill();
-      c3.x.beginPath(); c3.x.arc(cx,cy,R,0,-rad,true);
-      c3.x.strokeStyle=C.violet; c3.x.lineWidth=4; c3.x.lineCap='round'; c3.x.stroke();
-      line(c3,cx,cy,cx+Math.cos(rad)*R,cy-Math.sin(rad)*R,C.violet,2);
-    }
-    circle(c3,cx,cy,5,C.sun);
-
-    var mid=-rad/2, lr=R*.62;
-    if(deg>10) label(c3,deg+'°',cx+Math.cos(mid)*lr,cy+Math.sin(mid)*lr,C.ink,21);
-    label(c3,'한 바퀴 = 360° = 2π 라디안',cx,cy+R+42,C.muted,16);
-
-    deg3.textContent=deg+'°';
-    ro3.innerHTML =
-      '<span class=&quot;dim&quot;># 번역기</span><br>'+
-      'np.pi <span class=&quot;dim&quot;>×</span> <span class=&quot;y&quot;>'+deg+'</span> / <span class=&quot;dim&quot;>180</span><br>'+
-      '= <span class=&quot;v&quot;>'+fmt(rad)+' 라디안</span>'+
-      (deg===180?'<br><span class=&quot;dim&quot;># 정확히 π!</span>':'')+
-      (deg===360?'<br><span class=&quot;dim&quot;># 정확히 2π!</span>':'');
-  }
-  t3.addEventListener('input',draw3);
-  document.querySelectorAll('.presets button').forEach(function(b){
-    b.addEventListener('click',function(){ t3.value=b.dataset.deg; draw3(); });
-  });
-  draw3();
-
-  /* ---------- SECTION 4 : starting-line offset ---------- */
-  var c4=ctx2('cv4'), angleOn=document.getElementById('angleOn'),
-      play4=document.getElementById('play4'), ro4=document.getElementById('ro4');
-  var t4=-Math.PI, run4=!reduced;
-  var P4=[{r:1.6,col:C.blue,name:'1번'},{r:2.4,col:'#ff6b6b',name:'2번'},{r:3.2,col:C.cos,name:'3번'}];
-  var U4=82;
-
-  function draw4(){
-    clear(c4);
-    var cx=c4.w/2, cy=c4.h/2, on=angleOn.checked, ang=TAU/3;
-    P4.forEach(function(p){ circle(c4,cx,cy,p.r*U4,null,C.grid,1.2); });
-    sunGlow(c4,cx,cy,14);
-    P4.forEach(function(p,i){
-      var a=t4+(on?ang*i:0);
-      var px=cx+Math.cos(a)*p.r*U4, py=cy-Math.sin(a)*p.r*U4;
-      circle(c4,px,py,11,p.col);
-    });
-    ro4.innerHTML = on
-      ? '<span class=&quot;dim&quot;># 지금 상태</span><br>cos(t <span class=&quot;y&quot;>+ angle×?</span>)<br><span class=&quot;dim&quot;># 120°씩 벌어져 있다!</span>'
-      : '<span class=&quot;dim&quot;># 지금 상태</span><br>cos(t)  <span class=&quot;dim&quot;># 전부 똑같음</span><br><span class=&quot;p&quot;># 한 줄로 겹쳤다!</span>';
-  }
-  function loop4(){ if(!run4)return; t4+=0.014; draw4(); requestAnimationFrame(loop4); }
-  angleOn.addEventListener('change',draw4);
-  play4.addEventListener('click',function(){
-    run4=!run4; play4.textContent=run4?'⏸ 멈추기':'▶ 다시 돌리기';
-    if(run4)loop4();
-  });
-  if(run4){ loop4(); } else { play4.textContent='▶ 다시 돌리기'; draw4(); }
-
-  /* ---------- SECTION 5 : full solar system ---------- */
-  var c5=ctx2('cv5'), spd5=document.getElementById('spd5'),
-      spdOut=document.getElementById('spdOut'), play5=document.getElementById('play5');
-  var t5=-Math.PI, run5=!reduced;
-  var P5=[
-    {r:1.0,s:5, col:'#b6bdd9'},{r:1.4,s:6,col:'#ffa254'},{r:1.8,s:8,col:C.blue},
-    {r:2.2,s:6, col:'#d98cff'},{r:2.6,s:11,col:'#ff6b6b'},{r:3.0,s:9,col:'#f0f2ff'},
-    {r:3.4,s:9, col:'#7fe3ff'},{r:3.8,s:9,col:'#ffd76b'},{r:4.0,s:5,col:C.sin}
-  ];
-  var U5=66, ANG=TAU/9;
-
-  function draw5(){
-    clear(c5);
-    var cx=c5.w/2, cy=c5.h/2;
-    P5.forEach(function(p){ circle(c5,cx,cy,p.r*U5,null,C.grid,1); });
-    sunGlow(c5,cx,cy,15);
-    P5.forEach(function(p,i){
-      var a=t5+ANG*i;
-      circle(c5,cx+Math.cos(a)*p.r*U5,cy-Math.sin(a)*p.r*U5,p.s,p.col);
-    });
-  }
-  function loop5(){ if(!run5)return; t5+=+spd5.value; draw5(); requestAnimationFrame(loop5); }
-  spd5.addEventListener('input',function(){ spdOut.textContent=(+spd5.value).toFixed(3).replace(/0+$/,'').replace(/\.$/,'.0'); });
-  play5.addEventListener('click',function(){
-    run5=!run5; play5.textContent=run5?'⏸ 멈추기':'▶ 다시 돌리기';
-    if(run5)loop5();
-  });
-  if(run5){ loop5(); } else { play5.textContent='▶ 다시 돌리기'; draw5(); }
-})();
-</script>
-</body>
-</html>
-"></iframe>
 </main>
 </div>
 <footer>
@@ -6010,6 +4797,1219 @@ app.run()</code></pre>
   }
 </script>
 
+</body>
+</html>
+"></iframe>
+<iframe class="lesson" id="lesson10" title="학습지 #12 — Parent Objects and time.dt" srcdoc="<!DOCTYPE html>
+<html lang=&quot;ko&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<title>회전판 태양계 — parent, time.dt, 카메라의 비밀</title>
+<link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;>
+<link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin>
+<link href=&quot;https://fonts.googleapis.com/css2?family=Jua&amp;family=Gowun+Dodum&amp;family=Nanum+Gothic+Coding:wght@400;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
+<style>
+  :root{
+    --night:#0d1330;
+    --panel:#161e44;
+    --panel-2:#1d2757;
+    --line:#2c3870;
+    --ink:#eef0ff;
+    --muted:#a3abd6;
+    --sun:#ffc94d;
+    --green:#3fdca0;
+    --pink:#ff7fb2;
+    --violet:#9b95ff;
+    --blue:#6fb2ff;
+    --code-bg:#0a0f26;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--night);color:var(--ink);font-family:'Gowun Dodum',sans-serif;font-size:19px;line-height:1.75;overflow-x:hidden}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+  main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 24px 120px}
+  h1,h2,h3{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:.5px}
+
+  header{min-height:88vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:60px 0 40px}
+  .eyebrow{color:var(--sun);font-family:'Jua',sans-serif;font-size:20px;letter-spacing:3px;margin-bottom:14px}
+  h1{font-size:clamp(36px,5.6vw,60px);line-height:1.25}
+  h1 .hl{color:var(--sun)}
+  header p{color:var(--muted);margin-top:18px;font-size:20px;max-width:620px}
+  #heroPlate{margin-top:34px;filter:drop-shadow(0 0 30px rgba(255,201,77,.12))}
+  .scroll-hint{margin-top:30px;color:var(--muted);font-size:16px;animation:bob 2.2s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+  @media (prefers-reduced-motion: reduce){.scroll-hint{animation:none}}
+
+  section{margin-top:110px}
+  .step-tag{display:inline-block;background:var(--panel-2);border:1px solid var(--line);color:var(--sun);font-family:'Jua',sans-serif;font-size:17px;padding:5px 16px;border-radius:999px;margin-bottom:14px}
+  h2{font-size:clamp(28px,4vw,40px);margin-bottom:10px}
+  .lead{color:var(--muted);font-size:20px;max-width:740px}
+  .lead b{color:var(--ink)}
+
+  .lab{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px;display:grid;gap:26px;grid-template-columns:minmax(0,1fr) 300px;align-items:start}
+  @media (max-width:820px){.lab{grid-template-columns:1fr}}
+  .lab canvas{width:100%;height:auto;display:block;border-radius:14px;background:var(--code-bg)}
+
+  .controls{display:flex;flex-direction:column;gap:18px}
+  .ctrl label{display:flex;justify-content:space-between;font-size:17px;color:var(--muted);margin-bottom:6px}
+  .ctrl label output{color:var(--ink);font-family:'Nanum Gothic Coding',monospace;font-size:16px}
+  input[type=range]{width:100%;accent-color:var(--sun);height:26px;cursor:pointer}
+  input[type=range]:focus-visible{outline:2px solid var(--sun);outline-offset:3px;border-radius:6px}
+
+  button.play{font-family:'Jua',sans-serif;font-size:19px;color:#1a1405;background:var(--sun);border:none;border-radius:12px;padding:12px 0;cursor:pointer;transition:transform .12s ease}
+  button.play:hover{transform:translateY(-2px)}
+  button.play:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  button.ghost{font-family:'Jua',sans-serif;font-size:17px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}
+  button.ghost:hover{border-color:var(--sun);color:var(--sun)}
+  button.ghost.active{background:var(--sun);color:#1a1405;border-color:var(--sun)}
+  button.ghost:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+
+  .readout{background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:'Nanum Gothic Coding',monospace;font-size:16px;line-height:2}
+  .readout .g{color:var(--green)} .readout .p{color:var(--pink)} .readout .y{color:var(--sun)} .readout .v{color:var(--violet)} .readout .b{color:var(--blue)} .readout .dim{color:#5a648f}
+
+  .tip{margin-top:22px;border-left:4px solid var(--sun);background:rgba(255,201,77,.06);padding:16px 20px;border-radius:0 14px 14px 0;font-size:18px}
+  .tip .who{color:var(--sun);font-family:'Jua',sans-serif;margin-right:8px}
+
+  pre.code{margin-top:22px;background:var(--code-bg);border:1px solid var(--line);border-radius:14px;padding:20px 24px;font-family:'Nanum Gothic Coding',monospace;font-size:16px;line-height:1.9;overflow-x:auto;color:#cdd4f6}
+  pre.code .kw{color:var(--violet)} pre.code .fn{color:var(--blue)} pre.code .num{color:var(--sun)} pre.code .cm{color:#5a648f} pre.code .g{color:var(--green)} pre.code .p{color:var(--pink)} pre.code .st{color:var(--sun)}
+
+  .compare{margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media (max-width:720px){.compare{grid-template-columns:1fr}}
+  .compare .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+  .compare .card h3{font-size:22px;margin-bottom:10px}
+  .compare .card p{color:var(--muted);font-size:17.5px}
+  .compare .card.a h3{color:var(--green)}
+  .compare .card.b h3{color:var(--sun)}
+
+  .toggle-row{display:flex;align-items:center;gap:12px;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px;cursor:pointer;user-select:none}
+  .toggle-row input{width:22px;height:22px;accent-color:var(--sun);cursor:pointer;flex:none}
+  .toggle-row span{font-size:17px;line-height:1.4}
+
+  .cam-btns{display:flex;gap:10px}
+  .cam-btns button{flex:1}
+
+  /* ---------- missions ---------- */
+  .mission{margin-top:26px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 28px}
+  .mission .m-tag{display:inline-block;font-family:'Jua',sans-serif;color:#1a1405;background:var(--sun);border-radius:8px;padding:3px 12px;font-size:16px;margin-bottom:10px}
+  .mission.hard .m-tag{background:var(--pink)}
+  .mission h3{font-size:23px;margin-bottom:8px}
+  .mission p{color:var(--muted);font-size:18px}
+  .mission p b{color:var(--ink)}
+  details{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  details summary{cursor:pointer;padding:12px 18px;font-family:'Jua',sans-serif;font-size:17px;color:var(--sun);background:var(--panel-2);list-style:none;user-select:none}
+  details summary::before{content:'▸ ';transition:transform .2s}
+  details[open] summary::before{content:'▾ '}
+  details .inner{padding:16px 20px;font-size:17.5px;color:var(--muted)}
+  details .inner b{color:var(--ink)}
+  details pre.code{margin-top:12px;font-size:15.5px}
+  details.answer summary{color:var(--green)}
+
+  footer{margin-top:120px;text-align:center;color:var(--muted);font-size:16px}
+  footer .star{color:var(--sun)}
+</style>
+</head>
+<body>
+<canvas id=&quot;stars&quot; aria-hidden=&quot;true&quot;></canvas>
+<main>
+
+<!-- ================= HERO ================= -->
+<header>
+  <div class=&quot;eyebrow&quot;>중학교 코딩 × 수학 수업 · 2교시</div>
+  <h1><span class=&quot;hl&quot;>회전판</span> 태양계</h1>
+  <p>이번엔 cos, sin 없이 태양계를 만들었어요. 비밀은 딱 세 가지 —
+  <b style=&quot;color:var(--green)&quot;>time.dt</b>, <b style=&quot;color:var(--sun)&quot;>parent</b>,
+  그리고 <b style=&quot;color:var(--blue)&quot;>input(key)</b>입니다.</p>
+  <canvas id=&quot;heroPlate&quot; width=&quot;640&quot; height=&quot;340&quot; aria-label=&quot;회전판 위에 붙은 행성들이 함께 도는 애니메이션&quot;></canvas>
+  <div class=&quot;scroll-hint&quot;>▼ 아래로 내려가며 하나씩 실험해 보세요</div>
+</header>
+
+<!-- ================= 0. 두 가지 방법 비교 ================= -->
+<section id=&quot;s0&quot;>
+  <span class=&quot;step-tag&quot;>먼저 확인!</span>
+  <h2>지난 시간과 뭐가 다를까?</h2>
+  <p class=&quot;lead&quot;>태양 주위를 돌게 만드는 방법은 한 가지가 아니에요. 지난 시간 코드와 이번 코드는 <b>완전히 다른 작전</b>을 씁니다.</p>
+  <div class=&quot;compare&quot;>
+    <div class=&quot;card a&quot;>
+      <h3>지난 시간: 그림자 작전</h3>
+      <p>cos, sin으로 행성의 위치(x, z)를 <b style=&quot;color:var(--ink)&quot;>매 순간 직접 계산</b>해서 옮겨 놓는 방법.
+      &quot;행성아, 지금 이 좌표로 가!&quot;라고 매번 명령해요.</p>
+    </div>
+    <div class=&quot;card b&quot;>
+      <h3>이번 시간: 회전판 작전</h3>
+      <p>행성들을 태양이라는 <b style=&quot;color:var(--ink)&quot;>보이지 않는 회전판에 붙여 놓고</b>, 판을 통째로 돌리는 방법.
+      행성 위치는 한 번만 정하면 끝!</p>
+    </div>
+  </div>
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>레코드판(턴테이블) 위에 지우개를 올려놓고 판을 돌리는 걸 상상하게 하세요. 지우개는 가만히 있는데 판이 돌아서 빙글빙글 도는 것처럼 보이죠 — 그게 이번 코드의 전부예요.</div>
+</section>
+
+<!-- ================= 1. time.dt ================= -->
+<section id=&quot;s1&quot;>
+  <span class=&quot;step-tag&quot;>비밀 1</span>
+  <h2>time.dt — 공평한 속도 만들기</h2>
+  <p class=&quot;lead&quot;>
+    update는 1초에 약 60번 실행되지만, <b>컴퓨터마다 그 횟수가 달라요.</b>
+    빠른 컴퓨터는 120번, 느린 컴퓨터는 30번… 그래서 &quot;프레임마다 3도씩 돌아라&quot;라고 하면
+    빠른 컴퓨터에서는 4배나 빨리 돌아버려요! <br><br>
+    <b style=&quot;color:var(--green)&quot;>time.dt</b>는 &quot;직전 프레임에서 지금까지 걸린 시간(초)&quot;이에요.
+    <b>rotation_y += time.dt × 100</b>은 &quot;몇 프레임이든 상관없이 <b style=&quot;color:var(--sun)&quot;>1초에 정확히 100도</b>&quot;라는 뜻이 됩니다.
+  </p>
+
+  <div class=&quot;lab&quot;>
+    <canvas id=&quot;cv1&quot; width=&quot;640&quot; height=&quot;360&quot; aria-label=&quot;프레임 기준 회전과 time.dt 기준 회전 속도 비교&quot;></canvas>
+    <div class=&quot;controls&quot;>
+      <div class=&quot;ctrl&quot;>
+        <label>컴퓨터 속도 (FPS) <output id=&quot;fpsOut&quot;>60</output></label>
+        <input type=&quot;range&quot; id=&quot;fps1&quot; min=&quot;15&quot; max=&quot;120&quot; value=&quot;60&quot; step=&quot;5&quot; aria-label=&quot;초당 프레임 수 조절&quot;>
+      </div>
+      <div class=&quot;readout&quot; id=&quot;ro1&quot;></div>
+    </div>
+  </div>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>FPS 슬라이더를 120에서 15로 쭉 내려 보세요. 왼쪽 바람개비는 느려지는데 오른쪽(time.dt)은 속도가 그대로! &quot;어느 컴퓨터에서든 게임 속도가 같아야 공평하다&quot;는 이유를 학생이 스스로 말하게 유도하면 좋아요.</div>
+
+  <pre class=&quot;code&quot;><span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>update</span>():
+    <span class=&quot;kw&quot;>for</span> entity <span class=&quot;kw&quot;>in</span> entites:              <span class=&quot;cm&quot;># 리스트 속 물체를 하나씩 꺼내서</span>
+        entity.rotation_y += <span class=&quot;g&quot;>time.dt</span> <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>100</span>   <span class=&quot;cm&quot;># 1초에 100도씩 회전!</span></pre>
+</section>
+
+<!-- ================= 2. parent ================= -->
+<section id=&quot;s2&quot;>
+  <span class=&quot;step-tag&quot;>비밀 2</span>
+  <h2>parent — 회전판에 붙이기</h2>
+  <p class=&quot;lead&quot;>
+    <b>parent=sun</b>은 &quot;지구야, 너는 태양의 자식이야&quot;라는 뜻이에요.
+    자식은 부모에게 <b>딱 붙어 다녀요.</b> 부모가 돌면 같이 돌고, 부모가 움직이면 같이 움직여요.
+    그래서 태양만 회전시켜도, 붙어 있는 지구와 달이 함께 빙글빙글 도는 거예요.
+    자식의 <b>position은 부모를 기준으로 잰 위치</b>라는 것도 중요해요!
+  </p>
+
+  <div class=&quot;lab&quot;>
+    <canvas id=&quot;cv2&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;태양 회전판에 붙은 지구와 달, 부모를 바꾸는 실험&quot;></canvas>
+    <div class=&quot;controls&quot;>
+      <label class=&quot;toggle-row&quot;>
+        <input type=&quot;checkbox&quot; id=&quot;showPlate&quot; checked>
+        <span>보이지 않는 회전판 보기</span>
+      </label>
+      <label class=&quot;toggle-row&quot;>
+        <input type=&quot;checkbox&quot; id=&quot;moonToEarth&quot;>
+        <span>달의 부모를 <b style=&quot;color:var(--green)&quot;>지구</b>로 바꾸기<br><small style=&quot;color:var(--muted)&quot;>moon = Entity(parent=earth, …)</small></span>
+      </label>
+      <label class=&quot;toggle-row&quot;>
+        <input type=&quot;checkbox&quot; id=&quot;earthSpin&quot;>
+        <span>지구도 스스로 돌리기<br><small style=&quot;color:var(--muted)&quot;>earth.rotation_y += time.dt*250</small></span>
+      </label>
+      <div class=&quot;readout&quot; id=&quot;ro2&quot;></div>
+    </div>
+  </div>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 포인트</span>원래 코드에서 달의 부모는 지구가 아니라 <b>태양</b>이에요. 그래서 달이 지구가 아닌 태양 주위를 돌죠! 위의 체크박스 두 개를 켜면 진짜 달처럼 지구 주위를 돌아요 — 이게 아래 미션 1, 2번입니다.</div>
+
+  <pre class=&quot;code&quot;>sun   = Entity(model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.yellow, scale=<span class=&quot;num&quot;>2</span>)
+earth = Entity(<span class=&quot;y&quot;>parent=sun</span>, model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.green, scale=<span class=&quot;num&quot;>.8</span>, position=(<span class=&quot;num&quot;>1</span>,<span class=&quot;num&quot;>0</span>,<span class=&quot;num&quot;>-1</span>))
+moon  = Entity(<span class=&quot;y&quot;>parent=sun</span>, model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.gray,  scale=<span class=&quot;num&quot;>.5</span>, position=(<span class=&quot;num&quot;>1.5</span>,<span class=&quot;num&quot;>0</span>,<span class=&quot;num&quot;>-1.5</span>))
+<span class=&quot;cm&quot;># 주의! 자식의 position과 scale은 &quot;부모 기준&quot;</span>
+<span class=&quot;cm&quot;># 태양의 scale이 2라서, 지구의 실제 크기와 거리도 2배가 된다!</span></pre>
+</section>
+
+<!-- ================= 3. input &amp; camera ================= -->
+<section id=&quot;s3&quot;>
+  <span class=&quot;step-tag&quot;>비밀 3</span>
+  <h2>input(key) — 키보드로 카메라 옮기기</h2>
+  <p class=&quot;lead&quot;>
+    update가 &quot;매 순간 자동으로&quot; 실행된다면, <b>input(key)는 키보드를 누르는 순간</b> 실행돼요.
+    어떤 키를 눌렀는지가 key에 담겨 오죠. 이 코드는 <b>1</b>을 누르면 정면에서,
+    <b>2</b>를 누르면 하늘에서 내려다보게 카메라를 순간이동시켜요.
+    <b style=&quot;color:var(--sun)&quot;>지금 키보드로 1, 2를 직접 눌러 보세요!</b>
+  </p>
+
+  <div class=&quot;lab&quot;>
+    <canvas id=&quot;cv3&quot; width=&quot;640&quot; height=&quot;480&quot; aria-label=&quot;카메라 시점을 정면과 위에서 보기로 전환하는 실험&quot;></canvas>
+    <div class=&quot;controls&quot;>
+      <div class=&quot;cam-btns&quot;>
+        <button class=&quot;ghost active&quot; id=&quot;camFront&quot;>1 정면에서</button>
+        <button class=&quot;ghost&quot; id=&quot;camTop&quot;>2 위에서</button>
+      </div>
+      <div class=&quot;readout&quot; id=&quot;ro3&quot;></div>
+    </div>
+  </div>
+
+  <pre class=&quot;code&quot;><span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>input</span>(key):
+    <span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'1'</span>:                    <span class=&quot;cm&quot;># 1을 누르면</span>
+        camera.position = (<span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>-20</span>)   <span class=&quot;cm&quot;># 정면 멀리서</span>
+        camera.rotation_x = <span class=&quot;num&quot;>0</span>            <span class=&quot;cm&quot;># 똑바로 본다</span>
+    <span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'2'</span>:                    <span class=&quot;cm&quot;># 2를 누르면</span>
+        camera.position = (<span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>20</span>, <span class=&quot;num&quot;>0</span>)     <span class=&quot;cm&quot;># 하늘 위로</span>
+        camera.rotation_x = <span class=&quot;num&quot;>90</span>           <span class=&quot;cm&quot;># 90도 숙여서 내려다본다</span></pre>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>정면(1)에서는 행성들이 좌우로 왔다갔다하는 것처럼만 보여요. 위(2)에서 보면 사실은 원을 그리며 돌고 있었다는 게 드러나죠. &quot;같은 세상도 카메라 위치에 따라 완전히 달라 보인다&quot;는 걸 느끼게 해 주세요.</div>
+</section>
+
+<!-- ================= 4. 전체 코드 ================= -->
+<section id=&quot;s4&quot;>
+  <span class=&quot;step-tag&quot;>전체 그림</span>
+  <h2>코드 전체를 다시 읽어 보자</h2>
+  <p class=&quot;lead&quot;>이제 모든 줄을 읽을 수 있어요. 리스트(entites)와 for문이 지난 시간 심화 질문 — &quot;반복되는 코드, 어떻게 줄일까?&quot; — 의 답이라는 것도 눈여겨보세요!</p>
+
+  <pre class=&quot;code&quot;><span class=&quot;kw&quot;>from</span> ursina <span class=&quot;kw&quot;>import</span> *
+<span class=&quot;kw&quot;>import</span> time
+app = Ursina()
+
+<span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>update</span>():                             <span class=&quot;cm&quot;># 매 순간 자동 실행</span>
+    <span class=&quot;kw&quot;>for</span> entity <span class=&quot;kw&quot;>in</span> entites:               <span class=&quot;cm&quot;># 리스트에서 하나씩 꺼내</span>
+        entity.rotation_y += <span class=&quot;g&quot;>time.dt</span><span class=&quot;kw&quot;>*</span><span class=&quot;num&quot;>100</span>  <span class=&quot;cm&quot;># 모두 1초에 100도 회전</span>
+
+<span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>input</span>(key):                           <span class=&quot;cm&quot;># 키를 누르는 순간 실행</span>
+    <span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'1'</span>: ...                   <span class=&quot;cm&quot;># 정면 카메라</span>
+    <span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'2'</span>: ...                   <span class=&quot;cm&quot;># 하늘 카메라</span>
+
+entites = []                              <span class=&quot;cm&quot;># 빈 리스트(바구니) 준비</span>
+sun   = Entity(model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, ..., scale=<span class=&quot;num&quot;>2</span>)
+earth = Entity(<span class=&quot;y&quot;>parent=sun</span>, ...)           <span class=&quot;cm&quot;># 태양 회전판에 붙이기</span>
+moon  = Entity(<span class=&quot;y&quot;>parent=sun</span>, ...)           <span class=&quot;cm&quot;># 달도 태양 회전판에!</span>
+
+entites.append(sun)                       <span class=&quot;cm&quot;># 바구니에 담기</span>
+entites.append(earth)
+entites.append(moon)
+
+app.run()</pre>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>재미있는 발견</span>변수 이름이 entites인데, 영어 철자는 원래 entities예요. 파이썬은 철자가 틀려도 <b>일관되게만 쓰면</b> 아무 문제 없이 돌아가요. 변수 이름은 우리가 붙이는 별명일 뿐이니까요! (그래도 고쳐 쓰는 습관이 좋겠죠?)</div>
+</section>
+
+<!-- ================= 5. 미션 ================= -->
+<section id=&quot;s5&quot;>
+  <span class=&quot;step-tag&quot;>스스로 해보기</span>
+  <h2>미션: 나만의 태양계 완성하기</h2>
+  <p class=&quot;lead&quot;>아래 미션을 순서대로 도전해 보세요. 막히면 <b>힌트</b>를, 다 풀었으면 <b>정답 코드</b>를 열어서 비교해 보세요. 미션 1~2는 위의 &quot;비밀 2&quot; 실험에서 미리 결과를 볼 수 있어요!</p>
+
+  <div class=&quot;mission&quot;>
+    <span class=&quot;m-tag&quot;>미션 1</span>
+    <h3>달을 지구의 위성으로 만들기</h3>
+    <p>지금 달의 부모는 태양이라서, 달이 <b>태양 주위</b>를 돌아요. 진짜 달처럼 <b>지구 주위</b>를 돌게 만들려면 코드의 어디를 바꿔야 할까요?</p>
+    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
+      달이 <b>누구의 회전판에 붙어 있는지</b>를 정하는 건 parent예요. 그리고 부모가 바뀌면 position의 기준도 바뀐다는 걸 잊지 마세요 — 이제 (0,0,0)은 태양이 아니라 <b>지구의 중심</b>이에요!
+    </div></details>
+    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
+      <pre class=&quot;code&quot;>moon = Entity(<span class=&quot;y&quot;>parent=earth</span>, model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.gray,
+              scale=<span class=&quot;num&quot;>.5</span>, position=(<span class=&quot;num&quot;>0.8</span>, <span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>-0.8</span>))</pre>
+      position이 이제 <b>지구에서부터의 거리</b>가 됐어요. 그런데 실행해 보면… 아직 달이 지구 주위를 &quot;돌지는&quot; 않죠? 지구가 스스로 돌지 않으니까요. 그게 바로 미션 2!
+    </div></details>
+  </div>
+
+  <div class=&quot;mission&quot;>
+    <span class=&quot;m-tag&quot;>미션 2</span>
+    <h3>지구를 스스로 돌게 하기 (자전)</h3>
+    <p>미션 1을 하고 나면 달이 지구에 <b>붙어만</b> 있어요. 지구 자신의 회전판을 돌려야 달이 지구 주위를 돕니다. update 함수에 한 줄을 추가해 보세요.</p>
+    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
+      태양을 돌릴 때 썼던 문장을 떠올려 보세요: <b>rotation_y += time.dt × 숫자</b>. 이번엔 주인공이 earth일 뿐이에요. 숫자를 크게 하면 달이 더 빨리 돌아요.
+    </div></details>
+    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
+      <pre class=&quot;code&quot;><span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>update</span>():
+    <span class=&quot;kw&quot;>for</span> entity <span class=&quot;kw&quot;>in</span> entites:
+        entity.rotation_y += time.dt<span class=&quot;kw&quot;>*</span><span class=&quot;num&quot;>100</span>
+    <span class=&quot;g&quot;>earth.rotation_y += time.dt*250</span>   <span class=&quot;cm&quot;># 지구의 회전판을 추가로 돌리기!</span></pre>
+      이제 지구는 태양 주위를 돌면서(공전) 스스로도 돌아요(자전). 그리고 지구에 붙은 달은 지구 주위를 돌죠. 진짜 태양계 완성!
+    </div></details>
+  </div>
+
+  <div class=&quot;mission&quot;>
+    <span class=&quot;m-tag&quot;>미션 3</span>
+    <h3>화성 추가하기</h3>
+    <p>빨간 화성을 하나 추가해 보세요. 단, <b>update 함수는 한 글자도 고치지 않고!</b> 어떻게 가능할까요?</p>
+    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
+      update는 entites <b>리스트에 담긴 모든 것</b>을 돌려요. 그러니까 화성을 만들고, 바구니(리스트)에 담기만 하면 자동으로 함께 돕니다. 이게 리스트 + for문의 힘!
+    </div></details>
+    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
+      <pre class=&quot;code&quot;>mars = Entity(parent=sun, model=<span class=&quot;st&quot;>&quot;sphere&quot;</span>, color=color.red,
+              scale=<span class=&quot;num&quot;>.6</span>, position=(<span class=&quot;num&quot;>-2</span>, <span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>2</span>))
+entites.append(<span class=&quot;g&quot;>mars</span>)   <span class=&quot;cm&quot;># 바구니에 담으면 끝!</span></pre>
+      행성이 100개여도 update는 그대로예요. 지난 시간 9개 행성 코드에서 비슷한 줄이 9번 반복됐던 것과 비교해 보세요 — 이게 &quot;반복문으로 코드 줄이기&quot;의 답이에요.
+    </div></details>
+  </div>
+
+  <div class=&quot;mission&quot;>
+    <span class=&quot;m-tag&quot;>미션 4</span>
+    <h3>3번 키: 비스듬히 보기 추가</h3>
+    <p>1번은 정면, 2번은 꼭대기. 그럼 <b>3번을 누르면 45도 비스듬히</b> 내려다보게 만들어 볼까요? 영화 같은 앵글이 나와요.</p>
+    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
+      input 함수에 if를 하나 더 추가하면 돼요. 비스듬히 보려면 카메라가 <b>위로도, 뒤로도</b> 물러나 있어야 해요. y와 z를 둘 다 써 보세요. rotation_x는 0(정면)과 90(수직) 사이의 값!
+    </div></details>
+    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
+      <pre class=&quot;code&quot;><span class=&quot;kw&quot;>if</span> key == <span class=&quot;st&quot;>'3'</span>:
+    camera.position = (<span class=&quot;num&quot;>0</span>, <span class=&quot;num&quot;>14</span>, <span class=&quot;num&quot;>-14</span>)   <span class=&quot;cm&quot;># 위로 14, 뒤로 14</span>
+    camera.rotation_x = <span class=&quot;num&quot;>45</span>            <span class=&quot;cm&quot;># 45도 숙여서 본다</span></pre>
+      숫자를 바꿔 가며 나만의 베스트 앵글을 찾아보세요!
+    </div></details>
+  </div>
+
+  <div class=&quot;mission hard&quot;>
+    <span class=&quot;m-tag&quot;>도전 미션</span>
+    <h3>태양만 회전 멈추기</h3>
+    <p>지금은 태양 자신도 뱅글뱅글 돌아요(자세히 보면!). <b>태양은 가만히 있고 지구와 달만</b> 돌게 하려면? 방법은 두 가지 이상 있어요.</p>
+    <details><summary>힌트 보기</summary><div class=&quot;inner&quot;>
+      방법 ① for문 안에서 &quot;이 entity가 태양이면 건너뛰기&quot; — if와 continue를 검색해 보세요.<br>
+      방법 ② 애초에 태양을 바구니에 담지 않으면? …그런데 그러면 지구와 달도 안 돌아요. 왜일까요? (지구와 달은 태양의 <b>회전판</b>에 붙어 있으니까!) 이 방법이 왜 실패하는지 설명할 수 있다면 parent를 완벽히 이해한 거예요.
+    </div></details>
+    <details class=&quot;answer&quot;><summary>정답 코드 보기</summary><div class=&quot;inner&quot;>
+      <pre class=&quot;code&quot;><span class=&quot;kw&quot;>def</span> <span class=&quot;fn&quot;>update</span>():
+    <span class=&quot;kw&quot;>for</span> entity <span class=&quot;kw&quot;>in</span> entites:
+        <span class=&quot;kw&quot;>if</span> entity == sun:      <span class=&quot;cm&quot;># 태양이면</span>
+            <span class=&quot;kw&quot;>continue</span>           <span class=&quot;cm&quot;># 건너뛰기!</span>
+        entity.rotation_y += time.dt<span class=&quot;kw&quot;>*</span><span class=&quot;num&quot;>100</span></pre>
+      잠깐, 이러면 지구와 달도 태양 주위를 안 돌게 돼요! (태양 회전판이 멈췄으니까요.) 대신 지구와 달이 <b>제자리에서 자전만</b> 하죠. &quot;태양은 멈추고 행성은 공전&quot;을 만들려면 어떻게 해야 할까요? — 힌트: 보이지 않는 <b>빈 Entity를 회전판으로</b> 하나 만들어서 (pivot = Entity()) 행성들을 거기에 붙이면 됩니다. 여기까지 오면 여러분은 이미 게임 개발자!
+    </div></details>
+  </div>
+
+  <div class=&quot;mission&quot;>
+    <span class=&quot;m-tag&quot;>보너스</span>
+    <h3>속도 실험실</h3>
+    <p>코드 속 숫자들을 바꿔 보며 아래 질문에 답해 보세요.</p>
+    <details><summary>실험 목록 보기</summary><div class=&quot;inner&quot;>
+      ① time.dt*100의 100을 300으로 바꾸면?<br>
+      ② earth의 scale을 .8에서 .3으로 바꾸면 달의 크기는 왜 같이 작아질까? (미션 1을 한 경우)<br>
+      ③ moon의 position을 (3, 0, -3)으로 바꾸면 달의 속도가 빨라 보이는 이유는? — 힌트: 같은 시간에 더 <b>큰 원</b>을 그리니까!<br>
+      ④ rotation_y 대신 rotation_x를 돌리면 어떻게 될까? 상상해 보고 실행해서 확인!
+    </div></details>
+  </div>
+</section>
+
+<footer>
+  <span class=&quot;star&quot;>★</span> 오늘의 한 줄 요약 — 부모가 돌면 자식도 돈다. 세상은 회전판 위의 회전판! <span class=&quot;star&quot;>★</span>
+</footer>
+</main>
+
+<script>
+(function(){
+  &quot;use strict&quot;;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- starfield ---------- */
+  var sc=document.getElementById('stars'), sx=sc.getContext('2d');
+  function drawStars(){
+    sc.width=innerWidth; sc.height=innerHeight;
+    sx.clearRect(0,0,sc.width,sc.height);
+    for(var i=0;i<140;i++){
+      var x=Math.random()*sc.width,y=Math.random()*sc.height,r=Math.random()*1.3+.2;
+      sx.globalAlpha=Math.random()*.6+.15;
+      sx.fillStyle=Math.random()<.12?'#ffc94d':'#cdd4f6';
+      sx.beginPath();sx.arc(x,y,r,0,7);sx.fill();
+    }
+    sx.globalAlpha=1;
+  }
+  drawStars(); addEventListener('resize',drawStars);
+
+  var C={sun:'#ffc94d',green:'#3fdca0',pink:'#ff7fb2',violet:'#9b95ff',blue:'#6fb2ff',
+         grid:'#232d5c',axis:'#39457f',ink:'#eef0ff',muted:'#8a93c4',gray:'#b6bdd9',earth:'#57d68a'};
+  var TAU=Math.PI*2, D2R=Math.PI/180;
+
+  function ctx2(id){var cv=document.getElementById(id);return{cv:cv,x:cv.getContext('2d'),w:cv.width,h:cv.height};}
+  function clear(c){c.x.clearRect(0,0,c.w,c.h);}
+  function circle(c,x,y,r,fill,stroke,lw,dash){
+    c.x.beginPath();c.x.arc(x,y,r,0,TAU);
+    if(dash)c.x.setLineDash(dash);else c.x.setLineDash([]);
+    if(fill){c.x.fillStyle=fill;c.x.fill();}
+    if(stroke){c.x.strokeStyle=stroke;c.x.lineWidth=lw||1.5;c.x.stroke();}
+    c.x.setLineDash([]);
+  }
+  function line(c,x1,y1,x2,y2,color,lw,dash){
+    c.x.beginPath();
+    if(dash)c.x.setLineDash(dash);else c.x.setLineDash([]);
+    c.x.moveTo(x1,y1);c.x.lineTo(x2,y2);
+    c.x.strokeStyle=color;c.x.lineWidth=lw||1.5;c.x.lineCap='round';c.x.stroke();
+    c.x.setLineDash([]);
+  }
+  function label(c,txt,x,y,color,size,align){
+    c.x.fillStyle=color;c.x.font=(size||17)+&quot;px 'Gowun Dodum', sans-serif&quot;;
+    c.x.textAlign=align||'center';c.x.textBaseline='middle';c.x.fillText(txt,x,y);
+  }
+  function sunGlow(c,x,y,r){
+    var g=c.x.createRadialGradient(x,y,r*.3,x,y,r*3.2);
+    g.addColorStop(0,'rgba(255,201,77,.35)');g.addColorStop(1,'rgba(255,201,77,0)');
+    c.x.fillStyle=g;c.x.beginPath();c.x.arc(x,y,r*3.2,0,TAU);c.x.fill();
+    circle(c,x,y,r,C.sun);
+  }
+  function spokes(c,cx,cy,R,ang,color,n){
+    for(var i=0;i<(n||6);i++){
+      var a=ang+i*TAU/(n||6);
+      line(c,cx,cy,cx+Math.cos(a)*R,cy+Math.sin(a)*R,color,1,[3,7]);
+    }
+  }
+  function rot(px,py,a){return[px*Math.cos(a)-py*Math.sin(a),px*Math.sin(a)+py*Math.cos(a)];}
+
+  /* ---------- shared scene state (ursina units) ---------- */
+  /* world = parent-relative pos scaled by sun scale 2. earth rel(1,-1) → world 2 units */
+  var earthRel={x:1,z:-1}, moonRelSun={x:1.5,z:-1.5}, moonRelEarth={x:0.8,z:-0.8};
+
+  /* ---------- HERO : turntable ---------- */
+  var hero=ctx2('heroPlate'), hAng=0;
+  function heroDraw(){
+    clear(hero);
+    var cx=hero.w/2,cy=hero.h/2,U=64,squish=.55;
+    var plateR=Math.hypot(1.5,1.5)*U+26;
+    /* plate as ellipse */
+    hero.x.save();hero.x.translate(cx,cy);hero.x.scale(1,squish);
+    circle({x:hero.x,w:0,h:0},0,0,plateR,'rgba(155,149,255,.06)',C.axis,1.5);
+    for(var i=0;i<8;i++){
+      var a=hAng+i*TAU/8;
+      line({x:hero.x},0,0,Math.cos(a)*plateR,Math.sin(a)*plateR,'#2c3870',1,[3,8]);
+    }
+    hero.x.restore();
+    sunGlow(hero,cx,cy,15);
+    var bodies=[{p:earthRel,s:10,col:C.earth},{p:moonRelSun,s:6,col:C.gray}];
+    bodies.forEach(function(b){
+      var r=rot(b.p.x,b.p.z,hAng);
+      circle(hero,cx+r[0]*U,cy+r[1]*U*squish,b.s,b.col);
+    });
+    label(hero,'보이지 않는 회전판',cx,cy+plateR*squish+24,C.muted,15);
+  }
+  function heroLoop(){hAng+=0.012;heroDraw();requestAnimationFrame(heroLoop);}
+  if(reduced){heroDraw();}else{heroLoop();}
+
+  /* ---------- SECTION 1 : time.dt fairness ---------- */
+  var c1=ctx2('cv1'), fps1=document.getElementById('fps1'),
+      fpsOut=document.getElementById('fpsOut'), ro1=document.getElementById('ro1');
+  var angA=0, angB=0, acc=0, last=performance.now();
+
+  function pinwheel(c,cx,cy,R,ang,color){
+    circle(c,cx,cy,R+12,null,C.axis,1.5);
+    for(var i=0;i<3;i++){
+      var a=(ang*D2R)+i*TAU/3;
+      line(c,cx,cy,cx+Math.cos(a)*R,cy+Math.sin(a)*R,color,5);
+      circle(c,cx+Math.cos(a)*R,cy+Math.sin(a)*R,6,color);
+    }
+    circle(c,cx,cy,7,C.sun);
+  }
+  function draw1(){
+    clear(c1);
+    var q=c1.w/4, cy=c1.h/2-24;
+    pinwheel(c1,q,cy,74,angA,C.pink);
+    pinwheel(c1,q*3,cy,74,angB,C.green);
+    label(c1,'회전 += 3  (프레임마다)',q,cy+116,C.pink,16.5);
+    label(c1,'속도가 컴퓨터마다 달라짐!',q,cy+140,C.muted,14.5);
+    label(c1,'회전 += time.dt × 120',q*3,cy+116,C.green,16.5);
+    label(c1,'언제나 1초에 120도!',q*3,cy+140,C.muted,14.5);
+  }
+  function loop1(now){
+    var dt=Math.min((now-last)/1000,.1); last=now;
+    var F=+fps1.value, step=1/F;
+    acc+=dt;
+    while(acc>=step){
+      angA=(angA+3)%360;          /* frame-based */
+      angB=(angB+step*120)%360;   /* dt-based    */
+      acc-=step;
+    }
+    draw1();
+    ro1.innerHTML=
+      '<span class=&quot;dim&quot;># 지금 속도</span><br>'+
+      '<span class=&quot;p&quot;>왼쪽</span> = 3×'+F+' = <span class=&quot;p&quot;>'+(3*F)+'도/초</span><br>'+
+      '<span class=&quot;g&quot;>오른쪽</span> = <span class=&quot;g&quot;>120도/초</span> <span class=&quot;dim&quot;>고정!</span>';
+    if(!reduced) requestAnimationFrame(loop1);
+  }
+  fps1.addEventListener('input',function(){fpsOut.textContent=fps1.value;});
+  if(reduced){draw1();ro1.innerHTML='<span class=&quot;dim&quot;># 애니메이션이 꺼져 있어요</span>';}
+  else requestAnimationFrame(loop1);
+
+  /* ---------- SECTION 2 : parent turntable ---------- */
+  var c2=ctx2('cv2'),
+      showPlate=document.getElementById('showPlate'),
+      moonToEarth=document.getElementById('moonToEarth'),
+      earthSpin=document.getElementById('earthSpin'),
+      ro2=document.getElementById('ro2');
+  var sunAng=0, eAng=0, U2=88;
+
+  function draw2(){
+    clear(c2);
+    var cx=c2.w/2, cy=c2.h/2;
+    var plateR=Math.hypot(1.5,1.5)*U2+22;
+
+    if(showPlate.checked){
+      circle(c2,cx,cy,plateR,'rgba(155,149,255,.05)',C.axis,1.5,[6,6]);
+      spokes(c2,cx,cy,plateR,sunAng,'#2c3870',8);
+      label(c2,'태양의 회전판',cx,cy-plateR-16,C.muted,15);
+    }
+    sunGlow(c2,cx,cy,16);
+
+    var e=rot(earthRel.x,earthRel.z,sunAng);
+    var ex=cx+e[0]*U2, ey=cy+e[1]*U2;
+
+    var mx,my;
+    if(moonToEarth.checked){
+      var mrel=rot(moonRelEarth.x,moonRelEarth.z,sunAng+eAng);
+      mx=ex+mrel[0]*U2*.9; my=ey+mrel[1]*U2*.9;
+      if(showPlate.checked){
+        var mr=Math.hypot(moonRelEarth.x,moonRelEarth.z)*U2*.9;
+        circle(c2,ex,ey,mr+10,'rgba(63,220,160,.05)','#2a5c4a',1.2,[5,6]);
+        spokes(c2,ex,ey,mr+10,sunAng+eAng,'#234d40',6);
+        label(c2,'지구의 회전판',ex,ey-mr-24,'#57a98a',14);
+      }
+      line(c2,ex,ey,mx,my,'#3a6b58',1.2,[4,5]);
+    }else{
+      var m=rot(moonRelSun.x,moonRelSun.z,sunAng);
+      mx=cx+m[0]*U2; my=cy+m[1]*U2;
+      line(c2,cx,cy,mx,my,'#3a4477',1.2,[4,5]);
+    }
+    line(c2,cx,cy,ex,ey,'#3a4477',1.2,[4,5]);
+
+    circle(c2,ex,ey,13,C.earth);
+    label(c2,'지구',ex,ey-28,C.earth,15);
+    circle(c2,mx,my,8,C.gray);
+    label(c2,'달',mx,my-22,C.gray,15);
+
+    ro2.innerHTML=
+      '<span class=&quot;dim&quot;># 지금 코드 상태</span><br>'+
+      'moon(parent=<span class=&quot;'+(moonToEarth.checked?'g&quot;>earth':'y&quot;>sun')+'</span>)<br>'+
+      (earthSpin.checked
+        ? '<span class=&quot;g&quot;>earth.rotation_y</span> <span class=&quot;dim&quot;>돌아가는 중</span>'
+        : '<span class=&quot;dim&quot;>earth 자전: 꺼짐</span>');
+  }
+  function loop2(){
+    sunAng+=0.011;
+    if(earthSpin.checked) eAng+=0.028;
+    draw2();
+    if(!reduced) requestAnimationFrame(loop2);
+  }
+  [showPlate,moonToEarth,earthSpin].forEach(function(el){el.addEventListener('change',draw2);});
+  if(reduced){draw2();}else loop2();
+
+  /* ---------- SECTION 3 : camera views ---------- */
+  var c3=ctx2('cv3'), ro3=document.getElementById('ro3'),
+      bF=document.getElementById('camFront'), bT=document.getElementById('camTop');
+  var view='front', ang3=0, U3=70;
+
+  function setView(v){
+    view=v;
+    bF.classList.toggle('active',v==='front');
+    bT.classList.toggle('active',v==='top');
+    ro3.innerHTML = v==='front'
+      ? '<span class=&quot;dim&quot;># key == </span><span class=&quot;y&quot;>\'1\'</span><br>camera.position=(0,0,<span class=&quot;y&quot;>-20</span>)<br>camera.rotation_x=<span class=&quot;y&quot;>0</span>'
+      : '<span class=&quot;dim&quot;># key == </span><span class=&quot;y&quot;>\'2\'</span><br>camera.position=(0,<span class=&quot;y&quot;>20</span>,0)<br>camera.rotation_x=<span class=&quot;y&quot;>90</span>';
+    draw3();
+  }
+  function bodies3(){
+    var e=rot(earthRel.x,earthRel.z,ang3);
+    var m=rot(moonRelSun.x,moonRelSun.z,ang3);
+    return[
+      {x:0,   z:0,   s:17,col:C.sun, sun:true, name:'태양'},
+      {x:e[0],z:e[1],s:11,col:C.earth,name:'지구'},
+      {x:m[0],z:m[1],s:7, col:C.gray, name:'달'}
+    ];
+  }
+  function draw3(){
+    clear(c3);
+    var cx=c3.w/2, cy=c3.h/2, bs=bodies3();
+    if(view==='top'){
+      label(c3,'하늘에서 내려다본 모습 — 원운동이 보인다!',cx,36,C.muted,16);
+      circle(c3,cx,cy,Math.hypot(1,1)*U3,null,C.grid,1.2);
+      circle(c3,cx,cy,Math.hypot(1.5,1.5)*U3,null,C.grid,1.2);
+      bs.forEach(function(b){
+        var px=cx+b.x*U3, py=cy+b.z*U3;
+        if(b.sun){sunGlow(c3,px,py,b.s);}else circle(c3,px,py,b.s,b.col);
+        label(c3,b.name,px,py-b.s-14,b.col,14.5);
+      });
+    }else{
+      label(c3,'정면에서 본 모습 — 좌우로만 왔다갔다?',cx,36,C.muted,16);
+      line(c3,cx-Math.hypot(1.5,1.5)*U3-20,cy,cx+Math.hypot(1.5,1.5)*U3+20,cy,C.grid,1.2);
+      /* far objects first (z large = far in this fake view) */
+      bs.slice().sort(function(a,b){return b.z-a.z;}).forEach(function(b){
+        var depth=1-(b.z/4);           /* z:-2.1..2.1 → scale cue */
+        var px=cx+b.x*U3, py=cy, s=b.s*(0.75+depth*.25);
+        if(b.sun){sunGlow(c3,px,py,s);}else circle(c3,px,py,s,b.col);
+        label(c3,b.name,px,py-s-14,b.col,14.5);
+      });
+      label(c3,'(사실은 앞뒤로도 움직이는 중!)',cx,c3.h-34,C.muted,14.5);
+    }
+  }
+  function loop3(){ang3+=0.012;draw3();if(!reduced)requestAnimationFrame(loop3);}
+  bF.addEventListener('click',function(){setView('front');});
+  bT.addEventListener('click',function(){setView('top');});
+  addEventListener('keydown',function(ev){
+    if(ev.key==='1')setView('front');
+    if(ev.key==='2')setView('top');
+  });
+  setView('front');
+  if(!reduced)loop3();
+})();
+</script>
+</body>
+</html>
+"></iframe>
+<iframe class="lesson" id="lesson11" title="학습지 #13 — Circular Motion with Cos and Sin" srcdoc="<!DOCTYPE html>
+<html lang=&quot;ko&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<title>빙글빙글 태양계의 비밀 — cos, sin으로 원운동 만들기</title>
+<link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;>
+<link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin>
+<link href=&quot;https://fonts.googleapis.com/css2?family=Jua&amp;family=Gowun+Dodum&amp;family=Nanum+Gothic+Coding:wght@400;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
+<style>
+  :root{
+    --night:#0d1330;
+    --panel:#161e44;
+    --panel-2:#1d2757;
+    --line:#2c3870;
+    --ink:#eef0ff;
+    --muted:#a3abd6;
+    --sun:#ffc94d;
+    --cosg:#3fdca0;
+    --sinp:#ff7fb2;
+    --violet:#9b95ff;
+    --blue:#6fb2ff;
+    --code-bg:#0a0f26;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--night);
+    color:var(--ink);
+    font-family:'Gowun Dodum',sans-serif;
+    font-size:19px;
+    line-height:1.75;
+    overflow-x:hidden;
+  }
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+  main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 24px 120px}
+
+  h1,h2,h3{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:.5px}
+
+  /* ---------- hero ---------- */
+  header{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:60px 0 40px}
+  .eyebrow{color:var(--sun);font-family:'Jua',sans-serif;font-size:20px;letter-spacing:3px;margin-bottom:14px}
+  h1{font-size:clamp(38px,6vw,64px);line-height:1.25}
+  h1 .hl{color:var(--sun)}
+  header p{color:var(--muted);margin-top:18px;font-size:20px;max-width:560px}
+  #heroOrbit{margin-top:36px;filter:drop-shadow(0 0 30px rgba(255,201,77,.12))}
+  .scroll-hint{margin-top:34px;color:var(--muted);font-size:16px;animation:bob 2.2s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+  @media (prefers-reduced-motion: reduce){.scroll-hint{animation:none}}
+
+  /* ---------- sections ---------- */
+  section{margin-top:110px}
+  .step-tag{display:inline-block;background:var(--panel-2);border:1px solid var(--line);color:var(--sun);font-family:'Jua',sans-serif;font-size:17px;padding:5px 16px;border-radius:999px;margin-bottom:14px}
+  h2{font-size:clamp(28px,4vw,40px);margin-bottom:10px}
+  .lead{color:var(--muted);font-size:20px;max-width:720px}
+  .lead b{color:var(--ink)}
+
+  .lab{
+    margin-top:28px;background:var(--panel);border:1px solid var(--line);
+    border-radius:20px;padding:28px;display:grid;gap:26px;
+    grid-template-columns:minmax(0,1fr) 300px;align-items:start;
+  }
+  @media (max-width:820px){.lab{grid-template-columns:1fr}}
+  .lab canvas{width:100%;height:auto;display:block;border-radius:14px;background:var(--code-bg)}
+
+  .controls{display:flex;flex-direction:column;gap:18px}
+  .ctrl label{display:flex;justify-content:space-between;font-size:17px;color:var(--muted);margin-bottom:6px}
+  .ctrl label output{color:var(--ink);font-family:'Nanum Gothic Coding',monospace;font-size:16px}
+  input[type=range]{width:100%;accent-color:var(--sun);height:26px;cursor:pointer}
+  input[type=range]:focus-visible{outline:2px solid var(--sun);outline-offset:3px;border-radius:6px}
+
+  button.play{
+    font-family:'Jua',sans-serif;font-size:19px;color:#1a1405;background:var(--sun);
+    border:none;border-radius:12px;padding:12px 0;cursor:pointer;transition:transform .12s ease;
+  }
+  button.play:hover{transform:translateY(-2px)}
+  button.play:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  button.ghost{
+    font-family:'Jua',sans-serif;font-size:17px;color:var(--ink);background:transparent;
+    border:1px solid var(--line);border-radius:12px;padding:10px 0;cursor:pointer;
+  }
+  button.ghost:hover{border-color:var(--sun);color:var(--sun)}
+  button.ghost:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+
+  .readout{background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:'Nanum Gothic Coding',monospace;font-size:16.5px;line-height:2}
+  .readout .g{color:var(--cosg)} .readout .p{color:var(--sinp)} .readout .y{color:var(--sun)} .readout .v{color:var(--violet)} .readout .b{color:var(--blue)}
+  .readout .dim{color:#5a648f}
+
+  .tip{
+    margin-top:22px;border-left:4px solid var(--sun);background:rgba(255,201,77,.06);
+    padding:16px 20px;border-radius:0 14px 14px 0;font-size:18px;color:var(--ink)
+  }
+  .tip .who{color:var(--sun);font-family:'Jua',sans-serif;margin-right:8px}
+
+  pre.code{
+    margin-top:22px;background:var(--code-bg);border:1px solid var(--line);border-radius:14px;
+    padding:20px 24px;font-family:'Nanum Gothic Coding',monospace;font-size:16.5px;line-height:1.9;
+    overflow-x:auto;color:#cdd4f6;
+  }
+  pre.code .kw{color:var(--violet)} pre.code .fn{color:var(--blue)} pre.code .num{color:var(--sun)} pre.code .cm{color:#5a648f} pre.code .g{color:var(--cosg)} pre.code .p{color:var(--sinp)}
+
+  .big-formula{
+    margin-top:22px;text-align:center;font-family:'Jua',sans-serif;font-size:clamp(22px,3.4vw,32px);
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 18px;
+  }
+  .big-formula .y{color:var(--sun)} .big-formula .v{color:var(--violet)}
+
+  .presets{display:flex;gap:10px;flex-wrap:wrap}
+  .presets button{flex:1 1 auto;padding:8px 0;font-size:16px}
+
+  .toggle-row{display:flex;align-items:center;gap:12px;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px;cursor:pointer;user-select:none}
+  .toggle-row input{width:22px;height:22px;accent-color:var(--sun);cursor:pointer}
+  .toggle-row span{font-size:18px}
+
+  footer{margin-top:120px;text-align:center;color:var(--muted);font-size:16px}
+  footer .star{color:var(--sun)}
+</style>
+</head>
+<body>
+<canvas id=&quot;stars&quot; aria-hidden=&quot;true&quot;></canvas>
+<main>
+
+<!-- ================= HERO ================= -->
+<header>
+  <div class=&quot;eyebrow&quot;>중학교 코딩 × 수학 수업</div>
+  <h1>빙글빙글 <span class=&quot;hl&quot;>태양계</span>의 비밀</h1>
+  <p>cos과 sin, 단 두 개의 계산기로 행성을 태양 주위에 돌게 만들 수 있어요.<br>오늘 그 비밀을 하나씩 풀어봅시다.</p>
+  <canvas id=&quot;heroOrbit&quot; width=&quot;640&quot; height=&quot;360&quot; aria-label=&quot;행성들이 태양 주위를 도는 애니메이션&quot;></canvas>
+  <div class=&quot;scroll-hint&quot;>▼ 아래로 내려가며 하나씩 실험해 보세요</div>
+</header>
+
+<!-- ================= 1. 그림자 자판기 ================= -->
+<section id=&quot;s1&quot;>
+  <span class=&quot;step-tag&quot;>비밀 1</span>
+  <h2>cos과 sin은 &quot;그림자 자판기&quot;</h2>
+  <p class=&quot;lead&quot;>
+    관람차에 탄 사람을 위에서 해가 비추면, 그림자는 땅에서 <b>왔다갔다</b>만 해요.
+    옆에서 비추면 그림자는 <b>위아래로</b>만 움직이죠.
+    원 위의 점의 위치는 이렇게 <b style=&quot;color:var(--cosg)&quot;>가로 그림자</b>와
+    <b style=&quot;color:var(--sinp)&quot;>세로 그림자</b> 두 개로 쪼갤 수 있어요.
+    각도를 넣으면 그림자 길이를 뱉어주는 자판기 — 그게 cos과 sin입니다.
+  </p>
+
+  <div class=&quot;lab&quot;>
+    <canvas id=&quot;cv1&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;단위원 위의 점과 가로, 세로 그림자를 보여주는 그림&quot;></canvas>
+    <div class=&quot;controls&quot;>
+      <div class=&quot;ctrl&quot;>
+        <label>각도 t <output id=&quot;deg1&quot;>40°</output></label>
+        <input type=&quot;range&quot; id=&quot;t1&quot; min=&quot;0&quot; max=&quot;360&quot; value=&quot;40&quot; step=&quot;1&quot; aria-label=&quot;각도 t 조절&quot;>
+      </div>
+      <button class=&quot;play&quot; id=&quot;play1&quot;>▶ 자동으로 돌리기</button>
+      <div class=&quot;readout&quot; id=&quot;ro1&quot;></div>
+      <div class=&quot;readout&quot; style=&quot;line-height:1.7&quot;>
+        <span class=&quot;dim&quot;># cos, sin의 답은</span><br>
+        <span class=&quot;dim&quot;># 언제나 -1 ~ 1 사이!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>슬라이더를 0° → 90° → 180° → 270°로 맞춰 보세요. 초록 막대(가로 그림자)와 분홍 막대(세로 그림자)가 번갈아 길어졌다 사라지는 걸 학생이 직접 발견하게 하는 게 포인트!</div>
+</section>
+
+<!-- ================= 2. radius 풍선 ================= -->
+<section id=&quot;s2&quot;>
+  <span class=&quot;step-tag&quot;>비밀 2</span>
+  <h2>radius를 곱하면 원이 커진다 (풍선 불기)</h2>
+  <p class=&quot;lead&quot;>
+    cos, sin이 주는 답은 <b>반지름 1짜리 기본 원</b> 위의 위치예요.
+    풍선에 그린 원을 후~ 불면 커지듯이, 여기에 radius를 곱하면
+    원 전체가 그만큼 커집니다. 수성은 ×1, 명왕성은 ×4!
+  </p>
+
+  <div class=&quot;lab&quot;>
+    <canvas id=&quot;cv2&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;반지름을 바꾸면 궤도가 커지는 것을 보여주는 그림&quot;></canvas>
+    <div class=&quot;controls&quot;>
+      <div class=&quot;ctrl&quot;>
+        <label>radius (원의 크기) <output id=&quot;rOut&quot;>2.0</output></label>
+        <input type=&quot;range&quot; id=&quot;r2&quot; min=&quot;1&quot; max=&quot;4&quot; value=&quot;2&quot; step=&quot;0.1&quot; aria-label=&quot;반지름 조절&quot;>
+      </div>
+      <div class=&quot;ctrl&quot;>
+        <label>각도 t <output id=&quot;deg2&quot;>40°</output></label>
+        <input type=&quot;range&quot; id=&quot;t2&quot; min=&quot;0&quot; max=&quot;360&quot; value=&quot;40&quot; step=&quot;1&quot; aria-label=&quot;각도 t 조절&quot;>
+      </div>
+      <div class=&quot;readout&quot; id=&quot;ro2&quot;></div>
+    </div>
+  </div>
+
+  <pre class=&quot;code&quot;><span class=&quot;cm&quot;># 코드에서는 이렇게!</span>
+planet.x = <span class=&quot;fn&quot;>np.cos</span>(t) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>radius</span>   <span class=&quot;cm&quot;># 가로 그림자 × 원의 크기</span>
+planet.z = <span class=&quot;fn&quot;>np.sin</span>(t) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>radius</span>   <span class=&quot;cm&quot;># 세로 그림자 × 원의 크기</span></pre>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>회색 점선 원(반지름 1짜리 기본 원)은 그대로 두고 파란 궤도만 커지죠? &quot;cos, sin의 답은 그대로인데 곱하는 수만 바뀐다&quot;는 걸 눈으로 확인시켜 주세요.</div>
+</section>
+
+<!-- ================= 3. 라디안 번역기 ================= -->
+<section id=&quot;s3&quot;>
+  <span class=&quot;step-tag&quot;>비밀 3</span>
+  <h2>np.pi × 40 / 180 — 각도 번역기</h2>
+  <p class=&quot;lead&quot;>
+    우리는 각도를 <b>도(°)</b>로 재지만, 컴퓨터의 np.cos, np.sin은
+    <b>라디안</b>이라는 단위를 써요. 키를 cm로 재든 인치로 재든 같은 키인 것처럼,
+    같은 각도를 다른 숫자로 부르는 것뿐! 한 바퀴 360° = 2π 라디안이에요.
+  </p>
+
+  <div class=&quot;big-formula&quot;>
+    360° = 2π &amp;nbsp;&amp;nbsp;→&amp;nbsp;&amp;nbsp; 180° = π &amp;nbsp;&amp;nbsp;→&amp;nbsp;&amp;nbsp;
+    <span class=&quot;y&quot;>40°</span> = π × <span class=&quot;y&quot;>40</span> / 180 ≈ <span class=&quot;v&quot;>0.698 라디안</span>
+  </div>
+
+  <div class=&quot;lab&quot;>
+    <canvas id=&quot;cv3&quot; width=&quot;640&quot; height=&quot;480&quot; aria-label=&quot;도 단위 각도를 라디안으로 번역해 보여주는 그림&quot;></canvas>
+    <div class=&quot;controls&quot;>
+      <div class=&quot;ctrl&quot;>
+        <label>도(°) 단위 각도 <output id=&quot;deg3&quot;>40°</output></label>
+        <input type=&quot;range&quot; id=&quot;t3&quot; min=&quot;0&quot; max=&quot;360&quot; value=&quot;40&quot; step=&quot;1&quot; aria-label=&quot;번역할 각도&quot;>
+      </div>
+      <div class=&quot;presets&quot;>
+        <button class=&quot;ghost&quot; data-deg=&quot;40&quot;>40°</button>
+        <button class=&quot;ghost&quot; data-deg=&quot;90&quot;>90°</button>
+        <button class=&quot;ghost&quot; data-deg=&quot;180&quot;>180°</button>
+        <button class=&quot;ghost&quot; data-deg=&quot;360&quot;>360°</button>
+      </div>
+      <div class=&quot;readout&quot; id=&quot;ro3&quot;></div>
+    </div>
+  </div>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>180°를 눌러 보세요 — 정확히 π(3.141…)가 나옵니다. &quot;180° = π&quot;만 기억하면 나머지 번역은 비례식으로 전부 해결돼요. (중1은 비례식을 배웠으니 여기서 연결!)</div>
+</section>
+
+<!-- ================= 4. angle 출발선 ================= -->
+<section id=&quot;s4&quot;>
+  <span class=&quot;step-tag&quot;>비밀 4</span>
+  <h2>+ angle — 출발선을 벌려 놓아라</h2>
+  <p class=&quot;lead&quot;>
+    행성이 여러 개인데 전부 같은 각도 t에서 출발하면? 한 줄로 겹쳐서 돌아요.
+    그래서 <b>360° ÷ 행성 수</b>만큼 출발선을 벌려 놓습니다.
+    운동장 트랙에서 출발선만 다르게 잡고 <b>같은 속도</b>로 달리면,
+    간격이 영원히 유지되는 것과 같아요.
+  </p>
+
+  <div class=&quot;lab&quot;>
+    <canvas id=&quot;cv4&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;세 행성이 120도 간격으로 도는 모습&quot;></canvas>
+    <div class=&quot;controls&quot;>
+      <label class=&quot;toggle-row&quot;>
+        <input type=&quot;checkbox&quot; id=&quot;angleOn&quot; checked>
+        <span>출발선 벌리기 <b style=&quot;color:var(--sun)&quot;>(+ angle)</b></span>
+      </label>
+      <button class=&quot;play&quot; id=&quot;play4&quot;>⏸ 멈추기</button>
+      <div class=&quot;readout&quot; id=&quot;ro4&quot;></div>
+    </div>
+  </div>
+
+  <pre class=&quot;code&quot;>angle = np.pi <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>120</span> / <span class=&quot;num&quot;>180</span>          <span class=&quot;cm&quot;># 행성 3개 → 360÷3 = 120°</span>
+
+planet1.x = <span class=&quot;fn&quot;>np.cos</span>(t) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>2</span>            <span class=&quot;cm&quot;># 출발선 그대로</span>
+planet2.x = <span class=&quot;fn&quot;>np.cos</span>(t <span class=&quot;kw&quot;>+ angle</span>) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>3</span>    <span class=&quot;cm&quot;># 120° 앞에서 출발</span>
+planet3.x = <span class=&quot;fn&quot;>np.cos</span>(t <span class=&quot;kw&quot;>+ angle*2</span>) <span class=&quot;kw&quot;>*</span> <span class=&quot;num&quot;>4</span>  <span class=&quot;cm&quot;># 240° 앞에서 출발</span></pre>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>수업 팁</span>체크박스를 껐다 켜 보세요! 끄는 순간 행성 셋이 한 줄로 겹칩니다. 이 한 번의 클릭이 angle의 역할을 백 마디 설명보다 확실하게 보여줘요.</div>
+</section>
+
+<!-- ================= 5. 완성 ================= -->
+<section id=&quot;s5&quot;>
+  <span class=&quot;step-tag&quot;>완성!</span>
+  <h2>비밀 4개를 합치면 = 태양계</h2>
+  <p class=&quot;lead&quot;>
+    <b style=&quot;color:var(--cosg)&quot;>그림자 자판기(cos, sin)</b> +
+    <b style=&quot;color:var(--blue)&quot;>풍선 불기(radius)</b> +
+    <b style=&quot;color:var(--violet)&quot;>각도 번역(라디안)</b> +
+    <b style=&quot;color:var(--sun)&quot;>출발선 벌리기(angle)</b>.
+    이 네 가지가 여러분이 만든 코드의 전부입니다.
+    행성 9개 × 40° 간격, 진짜 태양계를 돌려 봅시다!
+  </p>
+
+  <div class=&quot;lab&quot;>
+    <canvas id=&quot;cv5&quot; width=&quot;640&quot; height=&quot;640&quot; aria-label=&quot;아홉 행성이 40도 간격으로 태양 주위를 도는 완성 시뮬레이션&quot;></canvas>
+    <div class=&quot;controls&quot;>
+      <div class=&quot;ctrl&quot;>
+        <label>속도 (t = t + ?) <output id=&quot;spdOut&quot;>0.02</output></label>
+        <input type=&quot;range&quot; id=&quot;spd5&quot; min=&quot;0.005&quot; max=&quot;0.1&quot; value=&quot;0.02&quot; step=&quot;0.005&quot; aria-label=&quot;회전 속도&quot;>
+      </div>
+      <button class=&quot;play&quot; id=&quot;play5&quot;>⏸ 멈추기</button>
+      <div class=&quot;readout&quot;>
+        <span class=&quot;dim&quot;># 오늘 배운 것</span><br>
+        <span class=&quot;g&quot;>cos, sin</span> <span class=&quot;dim&quot;>→ 그림자 자판기</span><br>
+        <span class=&quot;b&quot;>radius</span> <span class=&quot;dim&quot;>→ 원 키우기</span><br>
+        <span class=&quot;v&quot;>np.pi*40/180</span> <span class=&quot;dim&quot;>→ 각도 번역</span><br>
+        <span class=&quot;y&quot;>+ angle</span> <span class=&quot;dim&quot;>→ 출발선 벌리기</span>
+      </div>
+    </div>
+  </div>
+
+  <div class=&quot;tip&quot;><span class=&quot;who&quot;>심화 질문</span>① 지금은 모든 행성이 같은 속도로 돌아요. 진짜 태양계처럼 안쪽 행성을 더 빠르게 하려면 코드의 어디를 고쳐야 할까요? ② 비슷한 코드가 9번 반복되는데, 반복문으로 줄일 수 있을까요?</div>
+</section>
+
+<footer>
+  <span class=&quot;star&quot;>★</span> 오늘의 한 줄 요약 — 원운동 = 그림자 두 개(cos, sin)가 함께 춤추는 것 <span class=&quot;star&quot;>★</span>
+</footer>
+</main>
+
+<script>
+(function(){
+  &quot;use strict&quot;;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- starfield ---------- */
+  var sc = document.getElementById('stars'), sx = sc.getContext('2d');
+  function drawStars(){
+    sc.width = innerWidth; sc.height = innerHeight;
+    sx.clearRect(0,0,sc.width,sc.height);
+    for(var i=0;i<140;i++){
+      var x=Math.random()*sc.width, y=Math.random()*sc.height, r=Math.random()*1.3+.2;
+      sx.globalAlpha = Math.random()*.6+.15;
+      sx.fillStyle = Math.random()<.12 ? '#ffc94d' : '#cdd4f6';
+      sx.beginPath(); sx.arc(x,y,r,0,7); sx.fill();
+    }
+    sx.globalAlpha = 1;
+  }
+  drawStars(); addEventListener('resize', drawStars);
+
+  var C = { sun:'#ffc94d', cos:'#3fdca0', sin:'#ff7fb2', violet:'#9b95ff',
+            blue:'#6fb2ff', grid:'#232d5c', axis:'#39457f', ink:'#eef0ff', muted:'#8a93c4' };
+  var TAU = Math.PI*2;
+
+  function ctx2(id){
+    var cv = document.getElementById(id);
+    return { cv:cv, x:cv.getContext('2d'), w:cv.width, h:cv.height };
+  }
+  function clear(c){ c.x.clearRect(0,0,c.w,c.h); }
+  function circle(c,x,y,r,fill,stroke,lw,dash){
+    c.x.beginPath(); c.x.arc(x,y,r,0,TAU);
+    if(dash) c.x.setLineDash(dash); else c.x.setLineDash([]);
+    if(fill){ c.x.fillStyle=fill; c.x.fill(); }
+    if(stroke){ c.x.strokeStyle=stroke; c.x.lineWidth=lw||1.5; c.x.stroke(); }
+    c.x.setLineDash([]);
+  }
+  function line(c,x1,y1,x2,y2,color,lw,dash){
+    c.x.beginPath();
+    if(dash) c.x.setLineDash(dash); else c.x.setLineDash([]);
+    c.x.moveTo(x1,y1); c.x.lineTo(x2,y2);
+    c.x.strokeStyle=color; c.x.lineWidth=lw||1.5; c.x.lineCap='round'; c.x.stroke();
+    c.x.setLineDash([]);
+  }
+  function label(c,txt,x,y,color,size,align){
+    c.x.fillStyle=color; c.x.font=(size||17)+&quot;px 'Gowun Dodum', sans-serif&quot;;
+    c.x.textAlign=align||'center'; c.x.textBaseline='middle'; c.x.fillText(txt,x,y);
+  }
+  function sunGlow(c,x,y,r){
+    var g=c.x.createRadialGradient(x,y,r*.3,x,y,r*3.2);
+    g.addColorStop(0,'rgba(255,201,77,.35)'); g.addColorStop(1,'rgba(255,201,77,0)');
+    c.x.fillStyle=g; c.x.beginPath(); c.x.arc(x,y,r*3.2,0,TAU); c.x.fill();
+    circle(c,x,y,r,C.sun);
+  }
+  function fmt(n,d){ return n.toFixed(d===undefined?3:d); }
+
+  /* ---------- HERO : mini solar system ---------- */
+  var hero = ctx2('heroOrbit'), hT = -Math.PI;
+  var heroPlanets = [
+    {r:44,s:5,col:'#b6bdd9'},{r:70,s:6,col:'#ffa254'},{r:96,s:7,col:'#6fb2ff'},
+    {r:122,s:6,col:'#d98cff'},{r:150,s:9,col:'#ff6b6b'}
+  ];
+  function heroDraw(){
+    clear(hero);
+    var cx=hero.w/2, cy=hero.h/2;
+    heroPlanets.forEach(function(p){ circle(hero,cx,cy,p.r,null,C.grid,1); });
+    sunGlow(hero,cx,cy,16);
+    heroPlanets.forEach(function(p,i){
+      var a=hT+i*(TAU/heroPlanets.length)*0.9;
+      circle(hero,cx+Math.cos(a)*p.r,cy+Math.sin(a)*p.r*0.55,p.s,p.col);
+    });
+  }
+  function heroLoop(){ hT+=0.012; heroDraw(); requestAnimationFrame(heroLoop); }
+  if(reduced){ heroDraw(); } else { heroLoop(); }
+
+  /* ---------- SECTION 1 : shadow machine ---------- */
+  var c1=ctx2('cv1'), t1=document.getElementById('t1'),
+      deg1=document.getElementById('deg1'), ro1=document.getElementById('ro1'),
+      play1=document.getElementById('play1'), run1=false;
+
+  function draw1(){
+    clear(c1);
+    var cx=c1.w/2, cy=c1.h/2, R=210;
+    var deg=+t1.value, t=deg*Math.PI/180;
+    var px=cx+Math.cos(t)*R, py=cy-Math.sin(t)*R;
+
+    line(c1,40,cy,c1.w-40,cy,C.axis,1);
+    line(c1,cx,40,cx,c1.h-40,C.axis,1);
+    label(c1,'x 방향',c1.w-52,cy-18,C.muted,15);
+    label(c1,'z 방향',cx+34,52,C.muted,15);
+    circle(c1,cx,cy,R,null,C.axis,1.5);
+
+    /* angle arc */
+    c1.x.beginPath(); c1.x.arc(cx,cy,46,0,-t,true);
+    c1.x.strokeStyle=C.violet; c1.x.lineWidth=2.5; c1.x.stroke();
+    var mid=-t/2;
+    label(c1,'t',cx+Math.cos(mid)*66,cy+Math.sin(mid)*66,C.violet,19);
+
+    /* radius line */
+    line(c1,cx,cy,px,py,'#5a648f',1.5,[5,5]);
+
+    /* projection guides */
+    line(c1,px,py,px,cy,'#414d85',1,[4,5]);
+    line(c1,px,py,cx,py,'#414d85',1,[4,5]);
+
+    /* shadows */
+    line(c1,cx,cy,px,cy,C.cos,6);
+    circle(c1,px,cy,5,C.cos);
+    line(c1,cx,cy,cx,py,C.sin,6);
+    circle(c1,cx,py,5,C.sin);
+
+    label(c1,'가로 그림자 cos(t)',(cx+px)/2, cy+(Math.sin(t)>=0?26:-26), C.cos,16);
+    label(c1,'세로 그림자',cx+(Math.cos(t)>=0?-58:58),(cy+py)/2-12,C.sin,16);
+    label(c1,'sin(t)',cx+(Math.cos(t)>=0?-58:58),(cy+py)/2+11,C.sin,16);
+
+    sunGlow(c1,cx,cy,13);
+    circle(c1,px,py,11,C.blue,'#dbe8ff',1.5);
+    label(c1,'행성',px,py-26,C.blue,16);
+
+    deg1.textContent = deg+'°';
+    ro1.innerHTML =
+      '<span class=&quot;dim&quot;># 자판기의 답</span><br>'+
+      '<span class=&quot;g&quot;>np.cos('+deg+'°)</span> = <span class=&quot;g&quot;>'+fmt(Math.cos(t))+'</span><br>'+
+      '<span class=&quot;p&quot;>np.sin('+deg+'°)</span> = <span class=&quot;p&quot;>'+fmt(Math.sin(t))+'</span>';
+  }
+  t1.addEventListener('input',function(){ stop1(); draw1(); });
+  function loop1(){ if(!run1)return; t1.value=(+t1.value+0.7)%360; draw1(); requestAnimationFrame(loop1); }
+  function stop1(){ run1=false; play1.textContent='▶ 자동으로 돌리기'; }
+  play1.addEventListener('click',function(){
+    run1=!run1; play1.textContent=run1?'⏸ 멈추기':'▶ 자동으로 돌리기';
+    if(run1)loop1();
+  });
+  draw1();
+
+  /* ---------- SECTION 2 : radius balloon ---------- */
+  var c2=ctx2('cv2'), r2=document.getElementById('r2'), t2=document.getElementById('t2'),
+      rOut=document.getElementById('rOut'), deg2=document.getElementById('deg2'),
+      ro2=document.getElementById('ro2');
+  var UNIT=62; /* px per 1 radius */
+
+  function draw2(){
+    clear(c2);
+    var cx=c2.w/2, cy=c2.h/2, r=+r2.value, deg=+t2.value, t=deg*Math.PI/180;
+    line(c2,40,cy,c2.w-40,cy,C.axis,1);
+    line(c2,cx,40,cx,c2.h-40,C.axis,1);
+
+    /* base unit circle */
+    circle(c2,cx,cy,UNIT,null,'#4a5488',1.5,[6,6]);
+    label(c2,'기본 원 (반지름 1)',cx,cy-UNIT-18,C.muted,15);
+
+    /* scaled orbit */
+    circle(c2,cx,cy,UNIT*r,null,C.blue,2);
+
+    var px=cx+Math.cos(t)*UNIT*r, py=cy-Math.sin(t)*UNIT*r;
+    var ux=cx+Math.cos(t)*UNIT,  uy=cy-Math.sin(t)*UNIT;
+
+    line(c2,cx,cy,px,py,'#5a648f',1.5,[5,5]);
+    circle(c2,ux,uy,5,'#8a93c4');
+
+    line(c2,cx,cy,px,cy,C.cos,6);
+    label(c2,'cos(t) × '+fmt(r,1),(cx+px)/2, cy+(Math.sin(t)>=0?24:-24), C.cos,16);
+
+    sunGlow(c2,cx,cy,13);
+    circle(c2,px,py,11,C.blue,'#dbe8ff',1.5);
+    label(c2,'행성',px,py-26,C.blue,16);
+
+    rOut.textContent=fmt(r,1);
+    deg2.textContent=deg+'°';
+    ro2.innerHTML =
+      '<span class=&quot;dim&quot;># 풍선 불기!</span><br>'+
+      'planet.x = <span class=&quot;g&quot;>'+fmt(Math.cos(t))+'</span> <span class=&quot;dim&quot;>×</span> <span class=&quot;y&quot;>'+fmt(r,1)+'</span><br>'+
+      '&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; = <span class=&quot;b&quot;>'+fmt(Math.cos(t)*r)+'</span>';
+  }
+  r2.addEventListener('input',draw2);
+  t2.addEventListener('input',draw2);
+  draw2();
+
+  /* ---------- SECTION 3 : radian translator ---------- */
+  var c3=ctx2('cv3'), t3=document.getElementById('t3'),
+      deg3=document.getElementById('deg3'), ro3=document.getElementById('ro3');
+
+  function draw3(){
+    clear(c3);
+    var cx=c3.w/2, cy=c3.h/2+26, R=170;
+    var deg=+t3.value, rad=Math.PI*deg/180;
+
+    circle(c3,cx,cy,R,null,C.axis,1.5);
+    line(c3,cx,cy,cx+R,cy,'#5a648f',1.5);
+
+    if(deg>0){
+      c3.x.beginPath(); c3.x.moveTo(cx,cy);
+      c3.x.arc(cx,cy,R,0,-rad,true); c3.x.closePath();
+      c3.x.fillStyle='rgba(155,149,255,.16)'; c3.x.fill();
+      c3.x.beginPath(); c3.x.arc(cx,cy,R,0,-rad,true);
+      c3.x.strokeStyle=C.violet; c3.x.lineWidth=4; c3.x.lineCap='round'; c3.x.stroke();
+      line(c3,cx,cy,cx+Math.cos(rad)*R,cy-Math.sin(rad)*R,C.violet,2);
+    }
+    circle(c3,cx,cy,5,C.sun);
+
+    var mid=-rad/2, lr=R*.62;
+    if(deg>10) label(c3,deg+'°',cx+Math.cos(mid)*lr,cy+Math.sin(mid)*lr,C.ink,21);
+    label(c3,'한 바퀴 = 360° = 2π 라디안',cx,cy+R+42,C.muted,16);
+
+    deg3.textContent=deg+'°';
+    ro3.innerHTML =
+      '<span class=&quot;dim&quot;># 번역기</span><br>'+
+      'np.pi <span class=&quot;dim&quot;>×</span> <span class=&quot;y&quot;>'+deg+'</span> / <span class=&quot;dim&quot;>180</span><br>'+
+      '= <span class=&quot;v&quot;>'+fmt(rad)+' 라디안</span>'+
+      (deg===180?'<br><span class=&quot;dim&quot;># 정확히 π!</span>':'')+
+      (deg===360?'<br><span class=&quot;dim&quot;># 정확히 2π!</span>':'');
+  }
+  t3.addEventListener('input',draw3);
+  document.querySelectorAll('.presets button').forEach(function(b){
+    b.addEventListener('click',function(){ t3.value=b.dataset.deg; draw3(); });
+  });
+  draw3();
+
+  /* ---------- SECTION 4 : starting-line offset ---------- */
+  var c4=ctx2('cv4'), angleOn=document.getElementById('angleOn'),
+      play4=document.getElementById('play4'), ro4=document.getElementById('ro4');
+  var t4=-Math.PI, run4=!reduced;
+  var P4=[{r:1.6,col:C.blue,name:'1번'},{r:2.4,col:'#ff6b6b',name:'2번'},{r:3.2,col:C.cos,name:'3번'}];
+  var U4=82;
+
+  function draw4(){
+    clear(c4);
+    var cx=c4.w/2, cy=c4.h/2, on=angleOn.checked, ang=TAU/3;
+    P4.forEach(function(p){ circle(c4,cx,cy,p.r*U4,null,C.grid,1.2); });
+    sunGlow(c4,cx,cy,14);
+    P4.forEach(function(p,i){
+      var a=t4+(on?ang*i:0);
+      var px=cx+Math.cos(a)*p.r*U4, py=cy-Math.sin(a)*p.r*U4;
+      circle(c4,px,py,11,p.col);
+    });
+    ro4.innerHTML = on
+      ? '<span class=&quot;dim&quot;># 지금 상태</span><br>cos(t <span class=&quot;y&quot;>+ angle×?</span>)<br><span class=&quot;dim&quot;># 120°씩 벌어져 있다!</span>'
+      : '<span class=&quot;dim&quot;># 지금 상태</span><br>cos(t)  <span class=&quot;dim&quot;># 전부 똑같음</span><br><span class=&quot;p&quot;># 한 줄로 겹쳤다!</span>';
+  }
+  function loop4(){ if(!run4)return; t4+=0.014; draw4(); requestAnimationFrame(loop4); }
+  angleOn.addEventListener('change',draw4);
+  play4.addEventListener('click',function(){
+    run4=!run4; play4.textContent=run4?'⏸ 멈추기':'▶ 다시 돌리기';
+    if(run4)loop4();
+  });
+  if(run4){ loop4(); } else { play4.textContent='▶ 다시 돌리기'; draw4(); }
+
+  /* ---------- SECTION 5 : full solar system ---------- */
+  var c5=ctx2('cv5'), spd5=document.getElementById('spd5'),
+      spdOut=document.getElementById('spdOut'), play5=document.getElementById('play5');
+  var t5=-Math.PI, run5=!reduced;
+  var P5=[
+    {r:1.0,s:5, col:'#b6bdd9'},{r:1.4,s:6,col:'#ffa254'},{r:1.8,s:8,col:C.blue},
+    {r:2.2,s:6, col:'#d98cff'},{r:2.6,s:11,col:'#ff6b6b'},{r:3.0,s:9,col:'#f0f2ff'},
+    {r:3.4,s:9, col:'#7fe3ff'},{r:3.8,s:9,col:'#ffd76b'},{r:4.0,s:5,col:C.sin}
+  ];
+  var U5=66, ANG=TAU/9;
+
+  function draw5(){
+    clear(c5);
+    var cx=c5.w/2, cy=c5.h/2;
+    P5.forEach(function(p){ circle(c5,cx,cy,p.r*U5,null,C.grid,1); });
+    sunGlow(c5,cx,cy,15);
+    P5.forEach(function(p,i){
+      var a=t5+ANG*i;
+      circle(c5,cx+Math.cos(a)*p.r*U5,cy-Math.sin(a)*p.r*U5,p.s,p.col);
+    });
+  }
+  function loop5(){ if(!run5)return; t5+=+spd5.value; draw5(); requestAnimationFrame(loop5); }
+  spd5.addEventListener('input',function(){ spdOut.textContent=(+spd5.value).toFixed(3).replace(/0+$/,'').replace(/\.$/,'.0'); });
+  play5.addEventListener('click',function(){
+    run5=!run5; play5.textContent=run5?'⏸ 멈추기':'▶ 다시 돌리기';
+    if(run5)loop5();
+  });
+  if(run5){ loop5(); } else { play5.textContent='▶ 다시 돌리기'; draw5(); }
+})();
+</script>
 </body>
 </html>
 "></iframe>
