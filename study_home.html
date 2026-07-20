@@ -4232,6 +4232,9 @@ setTimeout(function() {
 
 // ── PANEL SELECT
 let currentStep = 0;
+// 갤러리 파일명 설정 — v2 디자인 테스트 중 (원래대로 되돌리려면 아래 두 줄을 '엔트리_갤러리.html' / '스크래치_갤러리.html'로 변경)
+const ENTRY_GALLERY_FILE = '엔트리_갤러리_v2.html';
+const SCRATCH_GALLERY_FILE = '스크래치_갤러리_v2.html';
 // 갤러리 로드 상태 추적 (frame.src는 한국어가 URL인코딩되어 indexOf 검사가 항상 실패함)
 let _entryGalleryName = null;
 let _scratchGalleryName = null;
@@ -4288,7 +4291,7 @@ function selectStep(n) {
       const name = getStore('studentName', '학생');
       // frame.src는 한국어가 URL인코딩되므로 indexOf 검사 불가 → JS 변수로 추적
       if (_entryGalleryName !== name) {
-        frame.src = encodeURI('엔트리_갤러리.html') + '?name=' + encodeURIComponent(name);
+        frame.src = encodeURI(ENTRY_GALLERY_FILE) + '?name=' + encodeURIComponent(name);
         _entryGalleryName = name;
       }
     }
@@ -4298,7 +4301,7 @@ function selectStep(n) {
     if (frame) {
       const name = getStore('studentName', '학생');
       if (_scratchGalleryName !== name) {
-        frame.src = encodeURI('스크래치_갤러리.html') + '?name=' + encodeURIComponent(name);
+        frame.src = encodeURI(SCRATCH_GALLERY_FILE) + '?name=' + encodeURIComponent(name);
         _scratchGalleryName = name;
       }
     }
