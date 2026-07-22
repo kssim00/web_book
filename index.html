@@ -2894,14 +2894,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         allowtransparency="true"
         title="파이썬 터틀 웹교재">
       </iframe>
-
-      <div class="lesson-done-row">
-        <label class="done-toggle" id="done-p4" onclick="toggleDone('p4')">
-          <div class="chk" id="chk-p4">✓</div>
-          오늘 단계 완료 표시
-        </label>
-      </div>
-      <button class="panel-done-btn s4" onclick="openCompleteModal(4)">✅ 수업 완료 보고</button>
+      <!-- 완료 표시/보고는 갤러리 카드의 완료 버튼(⭐)에서 처리됨 -->
     </div>
 
     <!-- ── PANEL 5: 파이썬 문법완성 ── -->
@@ -2998,15 +2991,15 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         <div class="py-toc-chapter">
           <div class="py-toc-chapter-title">입출력과 자료형</div>
           <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="print" href="https://coden-class.netlify.app/06_python/02-01_print" target="_blank">
+            <a class="py-toc-lesson" data-lid="print" href="https://kssim00.github.io/web_book/python_print.html" target="_blank">
               <span class="py-toc-lesson-title">출력 print()</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'print')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="var" href="https://coden-class.netlify.app/06_python/02-02_var" target="_blank">
+            <a class="py-toc-lesson" data-lid="var" href="https://kssim00.github.io/web_book/python_var.html" target="_blank">
               <span class="py-toc-lesson-title">변수와 자료형</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'var')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="input" href="https://coden-class.netlify.app/06_python/02-03_input" target="_blank">
+            <a class="py-toc-lesson" data-lid="input" href="https://kssim00.github.io/web_book/python_input.html" target="_blank">
               <span class="py-toc-lesson-title">입력 input()</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'input')">➜</span>
             </a>
@@ -3017,11 +3010,11 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         <div class="py-toc-chapter">
           <div class="py-toc-chapter-title">문자열과 리스트</div>
           <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="string" href="https://coden-class.netlify.app/06_python/03-01_string" target="_blank">
+            <a class="py-toc-lesson" data-lid="string" href="https://kssim00.github.io/web_book/python_string.html" target="_blank">
               <span class="py-toc-lesson-title">문자열 (string)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'string')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="list" href="https://coden-class.netlify.app/06_python/03-02_list" target="_blank">
+            <a class="py-toc-lesson" data-lid="list" href="https://kssim00.github.io/web_book/python_list.html" target="_blank">
               <span class="py-toc-lesson-title">리스트 (list)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'list')">➜</span>
             </a>
@@ -3032,19 +3025,19 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         <div class="py-toc-chapter">
           <div class="py-toc-chapter-title">조건문 · 반복문</div>
           <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="if" href="python_if.html" data-pybook="python_if.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="if" href="https://kssim00.github.io/web_book/python_if.html" target="_blank">
               <span class="py-toc-lesson-title">조건문 (if)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'if')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="while" href="python_while.html" data-pybook="python_while.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="while" href="https://kssim00.github.io/web_book/python_while.html" target="_blank">
               <span class="py-toc-lesson-title">반복문 (while)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'while')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="for" href="python_for.html" data-pybook="python_for.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="for" href="https://kssim00.github.io/web_book/python_for.html" target="_blank">
               <span class="py-toc-lesson-title">반복문 (for)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'for')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="nested" href="python_nested_loop.html" data-pybook="python_nested_loop.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="nested" href="https://kssim00.github.io/web_book/python_nested_loop.html" target="_blank">
               <span class="py-toc-lesson-title">중첩 반복문</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'nested')">➜</span>
             </a>
@@ -3055,15 +3048,15 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         <div class="py-toc-chapter">
           <div class="py-toc-chapter-title">자료형</div>
           <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="unicode" href="python_unicode.html" data-pybook="python_unicode.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="unicode" href="https://kssim00.github.io/web_book/python_unicode.html" target="_blank">
               <span class="py-toc-lesson-title">유니코드 &amp; 문자열</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'unicode')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="tuple" href="python_tuple.html" data-pybook="python_tuple.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="tuple" href="https://kssim00.github.io/web_book/python_tuple.html" target="_blank">
               <span class="py-toc-lesson-title">튜플 (tuple)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'tuple')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="set" href="python_set.html" data-pybook="python_set.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="set" href="https://kssim00.github.io/web_book/python_set.html" target="_blank">
               <span class="py-toc-lesson-title">집합 (set)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'set')">➜</span>
             </a>
@@ -3071,8 +3064,8 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <span class="py-toc-lesson-title">딕셔너리 (dict)</span>
               <div class="py-toc-lesson-right">
                 <div class="py-toc-ver-group">
-                  <a class="py-toc-ver" href="python_dict.html" data-pybook="python_dict.html" target="_blank" title="버전 1">1</a>
-                  <a class="py-toc-ver" href="python_dict2.html" data-pybook="python_dict2.html" target="_blank" title="버전 2">2</a>
+                  <a class="py-toc-ver" href="https://kssim00.github.io/web_book/python_dict.html" target="_blank" title="버전 1">1</a>
+                  <a class="py-toc-ver" href="https://kssim00.github.io/web_book/python_dict2.html" target="_blank" title="버전 2">2</a>
                 </div>
                 <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'dict')">➜</span>
               </div>
@@ -3084,15 +3077,15 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         <div class="py-toc-chapter">
           <div class="py-toc-chapter-title">함수와 클래스</div>
           <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="function" href="python_function.html" data-pybook="python_function.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="function" href="https://kssim00.github.io/web_book/python_function.html" target="_blank">
               <span class="py-toc-lesson-title">함수 (function)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'function')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="class" href="python_class.html" data-pybook="python_class.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="class" href="https://kssim00.github.io/web_book/python_class.html" target="_blank">
               <span class="py-toc-lesson-title">클래스 (class)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'class')">➜</span>
             </a>
-            <a class="py-toc-lesson" data-lid="class2" href="python_class2.html" data-pybook="python_class2.html" target="_blank">
+            <a class="py-toc-lesson" data-lid="class2" href="https://kssim00.github.io/web_book/python_class2.html" target="_blank">
               <span class="py-toc-lesson-title">클래스 두 번째 이야기 (class 2)</span>
               <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'class2')">➜</span>
             </a>
@@ -3173,13 +3166,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
         allowtransparency="true"
         title="틴커캐드 웹교재">
       </iframe>
-      <div class="lesson-done-row">
-        <label class="done-toggle" id="done-p7" onclick="toggleDone('p7')">
-          <div class="chk" id="chk-p7">✓</div>
-          오늘 단계 완료 표시
-        </label>
-      </div>
-      <button class="panel-done-btn s4" onclick="openCompleteModal(7)">✅ 수업 완료 보고</button>
+      <!-- 완료 표시/보고는 갤러리 카드의 완료 버튼(⭐)에서 처리됨 -->
     </div>
 
     <!-- ── PANEL 8: 자격증 ── -->
@@ -3284,15 +3271,16 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
   <path d="M185 15 L188 7 L191 15 L199 18 L191 21 L188 29 L185 21 L177 18 Z" fill="#FCD34D" opacity="0.85"/>
 </svg></div>
               <div>
-                <div class="panel-hero-lv">Level 6 · AI 마스터</div>
-                <div class="panel-hero-title">실전 AI (AICE · 바이브코딩)</div>
+                <div class="panel-hero-lv">Level 6 · 심화 특강</div>
+                <div class="panel-hero-title">기타·심화 특강 (AI · 마인크래프트)</div>
               </div>
             </div>
-            <div class="panel-hero-desc">KT 공식 AI 자격증! 데이터 분석부터 AI 모델까지 도전해요.</div>
+            <div class="panel-hero-desc">AI 자격증부터 마인크래프트 코딩까지! 다양한 심화 과정에 도전해요.</div>
             <div class="panel-hero-tags">
               <span class="panel-hero-tag">AICE Future</span>
               <span class="panel-hero-tag">AICE Junior</span>
               <span class="panel-hero-tag">바이브코딩</span>
+              <span class="panel-hero-tag">마인크래프트</span>
             </div>
           </div>
         </div>
@@ -3322,6 +3310,15 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             <div class="lesson-card-label">바이브코딩</div>
             <div class="lesson-card-title">바이브코딩 과정</div>
             <div class="lesson-card-sub">피지컬 컴퓨팅 + AI 연동 프로젝트</div>
+          </div>
+          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
+        </a>
+        <a href="마인크래프트_파이썬_코딩_학습지.html" target="_blank" class="lesson-card s5" data-key="p8-l4" onclick="return goLesson(this)">
+          <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:20px;">MC</div></div>
+          <div class="lesson-card-body">
+            <div class="lesson-card-label">마인크래프트</div>
+            <div class="lesson-card-title">마인크래프트 파이썬 코딩</div>
+            <div class="lesson-card-sub">마인크래프트 세계에서 파이썬으로 코딩하기</div>
           </div>
           <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
         </a>
@@ -3418,11 +3415,12 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
             </div>
 
             <!-- STEP 07: 파이썬 실전 프로젝트 -->
-            <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#0891B2">
-              <span class="cn-badge soon">준비 중</span>
+            <div class="cn-card" onclick="window.open('python_ursina.html','_blank')" style="--cn-color:#0891B2">
+              <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#0891B2">STEP 07</div>
               <div class="cn-title">파이썬 실전 프로젝트</div>
-              <div class="cn-desc">Pygame · Ursina로<br>나만의 게임을 직접 만들어요!</div>
+              <div class="cn-desc">Ursina로<br>나만의 3D 게임을 직접 만들어요!</div>
+              <div class="cn-footer" style="color:#0891B2">학습 시작하기 →</div>
             </div>
 
             <!-- STEP 08: 3D 모델링 -->
@@ -3434,12 +3432,13 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <div class="cn-footer" style="color:#F97316">학습 시작하기 →</div>
             </div>
 
-            <!-- STEP 09: 자격증 과정 -->
-            <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#BE4BDB">
-              <span class="cn-badge soon">준비 중</span>
+            <!-- STEP 09: 기타·심화 특강 -->
+            <div class="cn-card" onclick="selectStep(8)" style="--cn-color:#BE4BDB">
+              <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#BE4BDB">STEP 09</div>
-              <div class="cn-title">자격증 과정</div>
-              <div class="cn-desc">최상급 자격증 완벽 대비!</div>
+              <div class="cn-title">기타·심화 특강</div>
+              <div class="cn-desc">AI 자격증부터 마인크래프트까지<br>다양한 심화 과정!</div>
+              <div class="cn-footer" style="color:#BE4BDB">학습 시작하기 →</div>
             </div>
 
             <!-- 커스텀 과목 카드 (관리자가 추가한 것) -->
@@ -4233,6 +4232,9 @@ setTimeout(function() {
 
 // ── PANEL SELECT
 let currentStep = 0;
+// 갤러리 파일명 설정 — v2 디자인 테스트 중 (원래대로 되돌리려면 아래 두 줄을 '엔트리_갤러리.html' / '스크래치_갤러리.html'로 변경)
+const ENTRY_GALLERY_FILE = '엔트리_갤러리_v2.html';
+const SCRATCH_GALLERY_FILE = '스크래치_갤러리_v2.html';
 // 갤러리 로드 상태 추적 (frame.src는 한국어가 URL인코딩되어 indexOf 검사가 항상 실패함)
 let _entryGalleryName = null;
 let _scratchGalleryName = null;
@@ -4289,7 +4291,7 @@ function selectStep(n) {
       const name = getStore('studentName', '학생');
       // frame.src는 한국어가 URL인코딩되므로 indexOf 검사 불가 → JS 변수로 추적
       if (_entryGalleryName !== name) {
-        frame.src = encodeURI('엔트리_갤러리.html') + '?name=' + encodeURIComponent(name);
+        frame.src = encodeURI(ENTRY_GALLERY_FILE) + '?name=' + encodeURIComponent(name);
         _entryGalleryName = name;
       }
     }
@@ -4299,7 +4301,7 @@ function selectStep(n) {
     if (frame) {
       const name = getStore('studentName', '학생');
       if (_scratchGalleryName !== name) {
-        frame.src = encodeURI('스크래치_갤러리.html') + '?name=' + encodeURIComponent(name);
+        frame.src = encodeURI(SCRATCH_GALLERY_FILE) + '?name=' + encodeURIComponent(name);
         _scratchGalleryName = name;
       }
     }
@@ -4341,6 +4343,16 @@ window.addEventListener('resize', sendViewportHeight);
 window.addEventListener('message', function(e) {
   if (!e.data) return;
 
+
+  // 파이썬 터틀: 갤러리 카드 완료 버튼 클릭 → 오늘 단계 완료 표시 + 수업 완료 보고를 한 번에 처리
+  if (e.data.type === 'turtle-mission-complete') {
+    reportTurtleMissionComplete(e.data.title || '');
+  }
+
+  // 틴커캐드(3D모델링): 갤러리 카드 완료 버튼(⭐) 클릭 → 오늘 단계 완료 표시 + 수업 완료 보고를 한 번에 처리
+  if (e.data.type === 'tinkercad-mission-complete') {
+    reportTinkercadMissionComplete(e.data.title || '');
+  }
 
   // 엔트리 XP 업데이트
   if (e.data.type === 'entry-xp') {
@@ -4656,6 +4668,50 @@ async function confirmComplete() {
   }
 }
 
+// ── 파이썬 터틀: 갤러리 카드 완료 버튼 → 완료 표시 + 완료 보고 통합 처리
+async function reportTurtleMissionComplete(title) {
+  const panelKey = 'p4';
+
+  // 1) 오늘 단계 완료 표시 + 폭죽
+  setStore('done-' + panelKey, true);
+  applyDone(panelKey, true);
+  calcProgress();
+  fireConfetti();
+
+  // 2) 수업 완료 보고 (구글 시트 기록)
+  const name = getStore('studentName', '이름 없음');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+  const level = LEVEL_NAMES[panelKey] || panelKey;
+  const memo = title ? ('🐢 ' + title + ' 미션 완료') : '미션 완료';
+  const isSetup = APPS_SCRIPT_URL && APPS_SCRIPT_URL !== '여기에_Apps_Script_URL_붙여넣기';
+  if (isSetup) {
+    await sendToSheets({ type: 'complete', name, date: dateStr, level, memo });
+  }
+}
+
+// ── 틴커캐드(3D모델링): 갤러리 카드 완료 버튼(⭐) → 완료 표시 + 완료 보고 통합 처리
+async function reportTinkercadMissionComplete(title) {
+  const panelKey = 'p7';
+
+  // 1) 오늘 단계 완료 표시 + 폭죽
+  setStore('done-' + panelKey, true);
+  applyDone(panelKey, true);
+  calcProgress();
+  fireConfetti();
+
+  // 2) 수업 완료 보고 (구글 시트 기록)
+  const name = getStore('studentName', '이름 없음');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+  const level = LEVEL_NAMES[panelKey] || panelKey;
+  const memo = title ? ('🖨️ ' + title + ' 미션 완료') : '미션 완료';
+  const isSetup = APPS_SCRIPT_URL && APPS_SCRIPT_URL !== '여기에_Apps_Script_URL_붙여넣기';
+  if (isSetup) {
+    await sendToSheets({ type: 'complete', name, date: dateStr, level, memo });
+  }
+}
+
 // ── CONFETTI
 function loadAllState() {
   ['p1','p2','p3','p4','p5','p6','p7','p8'].forEach(p => {
@@ -4922,4 +4978,4 @@ function doPost(e) {
 */
 </script>
 </body>
-</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+</html>
