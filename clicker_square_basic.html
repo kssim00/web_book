@@ -192,6 +192,7 @@ h2.sec-title{
 .spec-list li{padding:6px 0; border-top:1px dashed var(--line); display:flex; justify-content:space-between; gap:10px;}
 .spec-list li:first-child{border-top:none;}
 .spec-list b{color:var(--ink); white-space:nowrap;}
+.spec-list .spec-note{font-size:0.82rem; color:#b9a8bd; font-weight:500;}
 @media (max-width:620px){
   .preview-card{grid-template-columns:1fr;}
 }
@@ -209,7 +210,7 @@ h2.sec-title{
 #clickerDemo.is-pressed .demo-state .dot{background:#6fe0a0; box-shadow:0 0 8px rgba(111,224,160,0.8);}
 .demo-stage{
   border:1.5px dashed rgba(255,255,255,0.22); border-radius:12px; padding:10px;
-  background-image:radial-gradient(rgba(255,255,255,0.10) 1px, transparent 1px);
+  background-image:radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
   background-size:14px 14px; display:flex; align-items:center; justify-content:center;
 }
 .demo-stage svg{width:100%; max-width:180px; height:auto; display:block;}
@@ -254,6 +255,7 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
     <a href="#s1"><span class="n">01</span>몸체 만들기</a>
     <a href="#s2"><span class="n">02</span>청축 구멍 만들기+결합</a>
     <a href="#s3"><span class="n">03</span>넓은 턱 만들기+결합</a>
+    <a href="#s4"><span class="n">04</span>열쇠고리 만들기</a>
     <a href="#s5"><span class="n">05</span>뚜껑 만들기</a>
     <a href="#s6"><span class="n">06</span>뚜껑 홈 만들기+결합</a>
     <a href="#s7"><span class="n">07</span>중심 기둥 만들기</a>
@@ -270,7 +272,7 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
 
   <section class="section hero" id="s0">
     <div class="eyebrow">TINKERCAD · 사각 클릭커</div>
-    <h1>사각 기본 클릭커,<br>몸체 만들기</h1>
+    <h1>사각 기본 클릭커,<br>Basic 2</h1>
     <p class="desc">스위치가 <b>쏙 들어가서 빠지지 않는 사각 몸체</b>를 순서대로 만들어요. 도형은 딱 3개(몸체 + 구멍 2개), 숫자만 정확히 입력하면 완성돼요.</p>
 
     <div class="demo-card" id="clickerDemo">
@@ -329,23 +331,24 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
         <p>도형 3개(몸체·청축 구멍·넓은 턱)를 하나씩 순서대로 완성해서, 스위치가 턱에 걸려 빠지지 않아요.</p>
         <div class="spec-group-title">몸체(Box)</div>
         <ul class="spec-list">
-          <li>가로(X) <b>28.00 mm</b></li>
-          <li>세로(Y) <b>28.00 mm</b></li>
-          <li>높이(Z) <b>17.00 mm</b></li>
+          <li>가로(X) <b>28 mm</b></li>
+          <li>세로(Y) <b>28 mm</b></li>
+          <li>높이(Z) <b>17 mm</b></li>
         </ul>
         <div class="spec-group-title">청축 구멍 &middot; 스위치 몸통(Box &rarr; Hole)</div>
         <ul class="spec-list">
-          <li>가로(X) <b>14.00 mm</b></li>
-          <li>세로(Y) <b>14.00 mm</b></li>
-          <li>높이(Z) <b>15.10 mm</b></li>
-          <li>Z 위치 <b>1.90 mm</b></li>
+          <li>가로(X) <b>14 mm</b></li>
+          <li>세로(Y) <b>15.5 mm</b></li>
+          <li>높이(Z) <b>10 mm</b></li>
+          <li>Z 위치 <b>1.9 mm</b></li>
         </ul>
-        <div class="spec-group-title">넓은 턱 &middot; 걸림턱(Box &rarr; Hole)</div>
+        <div class="spec-group-title">넓은 턱 &middot; 걸림턱(Rounded Box &rarr; Hole)</div>
         <ul class="spec-list">
-          <li>가로(X) <b>24.00 mm</b></li>
-          <li>세로(Y) <b>24.00 mm</b></li>
-          <li>높이(Z) <b>4.45 mm</b></li>
-          <li>Z 위치 <b>12.55 mm</b></li>
+          <li>가로(X) <b>24 mm</b></li>
+          <li>세로(Y) <b>24 mm</b></li>
+          <li>높이(Z) <b>5.8 mm</b></li>
+          <li>Z 위치 <b>11.2 mm</b></li>
+          <li>모서리 반지름 <b>3 mm</b></li>
         </ul>
       </div>
     </div>
@@ -353,14 +356,14 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
     <h2 class="preview-title">치수는 이렇게 정해져요</h2>
     <p class="desc" style="max-width:none;">숫자를 다 외울 필요는 없어요. 아래 공식만 알면 몸체 모양이 바뀌어도 그대로 적용할 수 있어요.</p>
     <ul class="spec-list">
-      <li>청축 구멍 (고정값) <b>14 &times; 14mm</b></li>
-      <li>넓은 턱 (고정값) <b>24 &times; 24mm, 높이 4.45mm</b></li>
-      <li>청축 구멍 높이 <b>몸체 높이 &minus; 1.90mm</b></li>
-      <li>넓은 턱 Z 위치 <b>몸체 높이 &minus; 4.45mm</b></li>
+      <li><span>청축 구멍 (고정값) <span class="spec-note">(스위치 몸통이 정사각형이 아니에요)</span></span> <b>14 &times; 15.5mm</b></li>
+      <li>넓은 턱 높이 (고정값) <b>5.8mm</b></li>
+      <li>넓은 턱 가로&middot;세로 <b>24 &times; 24mm (28mm 정사각 몸체 기준)</b></li>
+      <li>넓은 턱 Z 위치 <b>몸체 높이 &minus; 5.8mm</b></li>
       <li>뚜껑 외곽 크기 <b>넓은 턱 &minus; 2mm</b></li>
       <li>뚜껑 속 비우기 크기 <b>뚜껑 외곽 &minus; (벽 두께&times;2)</b></li>
     </ul>
-    <div class="callout">청축 구멍과 넓은 턱은 <b>스위치 규격이라 몸체 모양이 바뀌어도 그대로</b> 써요. 나머지는 몸체 높이·뚜껑 두께에 맞춰 계산만 다시 하면 돼요.</div>
+    <div class="callout">청축 구멍(14&times;15.5)&middot;턱 높이(5.8mm)는 고정값, 턱 <b>가로&middot;세로(24&times;24)</b>는 몸체가 바뀌면 재확인하세요.</div>
   </section>
 
   <section class="section" id="s1">
@@ -372,10 +375,10 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
         <p class="desc" style="max-width:none;">기본 도형에서 <b>Rounded Box</b>를 작업판에 놓고, 크기와 모서리 반지름을 숫자로 정확히 입력합니다.</p>
         <div class="spec-chip-row">
           <span class="spec-chip shape-tag">도형 ① 몸체</span>
-          <span class="spec-chip">가로 28.00mm</span>
-          <span class="spec-chip">세로 28.00mm</span>
-          <span class="spec-chip">높이 17.00mm</span>
-          <span class="spec-chip">모서리 반지름 2.00mm</span>
+          <span class="spec-chip">가로 28mm</span>
+          <span class="spec-chip">세로 28mm</span>
+          <span class="spec-chip">높이 17mm</span>
+          <span class="spec-chip">모서리 반지름 2mm</span>
         </div>
         <div class="diagram-box">
           <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
@@ -389,9 +392,10 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
             <line x1="245" y1="60" x2="245" y2="185" stroke="#e14f68" stroke-width="1.5"/>
             <line x1="238" y1="60" x2="252" y2="60" stroke="#e14f68" stroke-width="1.5"/>
             <line x1="238" y1="185" x2="252" y2="185" stroke="#e14f68" stroke-width="1.5"/>
-            <text x="260" y="126" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="13" fill="#e14f68">17.00mm</text>
+            <text x="260" y="126" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="13" fill="#e14f68">17mm</text>
           </svg>
         </div>
+        <div class="callout">다른 모양으로 만들 땐 <b>여기서 몸체만 바꾸고</b>, 이후 숫자는 다시 확인하세요.</div>
       </div>
     </div>
   </section>
@@ -402,20 +406,15 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <p class="desc" style="max-width:none;"><b>Box</b>를 하나 더 만들어서, 스위치 축이 지나가는 <b>청축 구멍</b> 크기로 입력합니다. 가로·세로(X, Y)는 <b>정렬(Align)</b>로 몸체 가운데에 맞추고, 높이(Z 위치)는 아래 계산대로 <b>직접 숫자를 입력</b>합니다.</p>
+        <p class="desc" style="max-width:none;"><b>Box</b>를 새로 만들어서, 스위치 축이 지나가는 <b>청축 구멍</b> 크기로 입력합니다. 몸체(Rounded Box)를 복제하면 <b>모서리가 둥글게 남아</b> 스위치가 안 들어갈 수 있어요 — 꼭 새 <b>Box</b>를 쓰세요.</p>
         <div class="spec-chip-row">
           <span class="spec-chip shape-tag">도형 ② 청축 구멍</span>
-          <span class="spec-chip">가로 14.00mm</span>
-          <span class="spec-chip">세로 14.00mm</span>
-          <span class="spec-chip">높이 15.10mm</span>
+          <span class="spec-chip">가로 14mm</span>
+          <span class="spec-chip">세로 15.5mm</span>
+          <span class="spec-chip">높이 10mm</span>
+          <span class="spec-chip warn">Z 위치 = 1.9mm</span>
         </div>
-        <div class="calc-line">
-          17.00 <span class="op">−</span> 1.90 <span class="op">=</span> <span class="res">15.10</span>
-          <small>몸체 높이 − 바닥 두께 = 청축 구멍의 높이(Z 크기), 바닥만 남기고 위로 끝까지 뚫어요</small>
-        </div>
-        <div class="spec-chip-row">
-          <span class="spec-chip warn">Z 위치 = 1.90mm</span>
-        </div>
+        <div class="callout">가로·세로 값이 다른 건 오타가 아니에요. <b>스위치 몸통이 완전한 정사각형이 아니라서</b> 세로 쪽에 여유를 더 뒀어요.</div>
         <div class="callout">이 상자는 <b>스위치 축 폭에 딱 맞는 크기</b>예요. 이것 하나만 있으면 스위치가 위에서 그대로 빠져버려서, 다음 스텝에서 <b>넓은 턱</b>을 하나 더 만들 거예요.</div>
         <div class="diagram-box">
           <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
@@ -425,11 +424,11 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
             <rect x="111" y="52" width="78" height="76" rx="2" fill="#a99bd1" stroke="#7c6ba8" stroke-width="1.5"/>
             <text x="230" y="80" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#5d4e8c">도형②</text>
             <text x="230" y="96" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#5d4e8c">청축 구멍</text>
-            <text x="230" y="116" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#8a7a97">14×14</text>
+            <text x="230" y="116" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#8a7a97">14×15.5</text>
             <line x1="111" y1="128" x2="111" y2="137" stroke="#b8862a" stroke-width="2"/>
             <line x1="104" y1="128" x2="118" y2="128" stroke="#b8862a" stroke-width="2"/>
             <line x1="104" y1="137" x2="118" y2="137" stroke="#b8862a" stroke-width="2"/>
-            <text x="95" y="136" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#b8862a">1.90</text>
+            <text x="95" y="136" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#b8862a">1.9</text>
           </svg>
         </div>
         <div class="warn-box"><b>주의.</b> Tinkercad의 "가운데 정렬"을 Z축까지 누르면 안 돼요. Z값은 항상 <b>숫자를 직접 입력</b>하세요.</div>
@@ -444,18 +443,20 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <p class="desc" style="max-width:none;"><b>Box</b>를 하나 더 만들어서, 스위치의 넓은 윗부분이 걸리는 <b>턱</b> 크기로 입력합니다. X, Y는 똑같이 가운데 <b>정렬</b>, 높이(Z 위치)는 아래 계산대로 <b>직접 입력</b>합니다.</p>
+        <p class="desc" style="max-width:none;"><b>Rounded Box</b>를 새로 만들어서, 스위치의 넓은 윗부분이 걸리는 <b>턱</b> 크기로 입력합니다. 이번엔 <b>모서리를 둥글게</b> 만들어요 — 스위치가 위에서 미끄러지듯 잘 들어가게 도와줘요.</p>
         <div class="spec-chip-row">
           <span class="spec-chip shape-tag">도형 ③ 넓은 턱</span>
-          <span class="spec-chip">가로 24.00mm</span>
-          <span class="spec-chip">세로 24.00mm</span>
-          <span class="spec-chip">높이 4.45mm</span>
+          <span class="spec-chip">가로 24mm</span>
+          <span class="spec-chip">세로 24mm</span>
+          <span class="spec-chip">높이 5.8mm</span>
+          <span class="spec-chip">모서리 반지름 3mm</span>
         </div>
         <div class="calc-line">
-          17.00 <span class="op">−</span> 4.45 <span class="op">=</span> <span class="res">12.55</span>
+          17 <span class="op">−</span> 5.8 <span class="op">=</span> <span class="res">11.2</span>
           <small>몸체 높이 − 턱 높이 = 넓은 턱의 Z 위치</small>
         </div>
-        <div class="callout">몸체 바닥에서 <b>12.55mm 띄워서</b> 정렬하면, 도형②와 넉넉히(4.45mm) 겹쳐서 딱 맞아요.</div>
+        <div class="callout">몸체 바닥에서 <b>11.2mm 띄워서</b> 정렬하면, 도형②와 넉넉히(0.7mm) 겹쳐서 딱 맞아요.</div>
+        <div class="warn-box"><b>다른 모양일 때.</b> 24&times;24를 그대로 쓰지 말고, 턱이 몸체 안에 들어오는지 확인 후 줄이세요.</div>
         <div class="diagram-box">
           <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
             <rect width="300" height="220" rx="14" fill="#fdf9fb"/>
@@ -469,7 +470,7 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
             <line x1="60" y1="74" x2="60" y2="137" stroke="#b8862a" stroke-width="2"/>
             <line x1="53" y1="74" x2="67" y2="74" stroke="#b8862a" stroke-width="2"/>
             <line x1="53" y1="137" x2="67" y2="137" stroke="#b8862a" stroke-width="2"/>
-            <text x="50" y="109" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#b8862a">12.55</text>
+            <text x="50" y="109" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#b8862a">11.2</text>
             <text x="150" y="205" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="600" font-size="11.5" fill="#8a7a97">초록 = 지금 단계(도형③) / 연한 보라 = 도형② (겹치는 구간)</text>
           </svg>
         </div>
@@ -508,10 +509,10 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
         <p class="desc" style="max-width:none;">이번엔 뚜껑을 만들어요. 기본 도형에서 <b>Rounded Box</b>를 새로 놓고 크기를 입력합니다.</p>
         <div class="spec-chip-row">
           <span class="spec-chip shape-tag">도형 ④ 뚜껑</span>
-          <span class="spec-chip">가로 22.00mm</span>
-          <span class="spec-chip">세로 22.00mm</span>
-          <span class="spec-chip">높이 10.00mm</span>
-          <span class="spec-chip">모서리 반지름 1.50mm</span>
+          <span class="spec-chip">가로 22mm</span>
+          <span class="spec-chip">세로 22mm</span>
+          <span class="spec-chip">높이 10mm</span>
+          <span class="spec-chip">모서리 반지름 1.5mm</span>
         </div>
         <div class="diagram-box">
           <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
@@ -525,7 +526,7 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
             <line x1="245" y1="60" x2="245" y2="185" stroke="#e14f68" stroke-width="1.5"/>
             <line x1="238" y1="60" x2="252" y2="60" stroke="#e14f68" stroke-width="1.5"/>
             <line x1="238" y1="185" x2="252" y2="185" stroke="#e14f68" stroke-width="1.5"/>
-            <text x="260" y="126" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="13" fill="#e14f68">10.00mm</text>
+            <text x="260" y="126" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="13" fill="#e14f68">10mm</text>
           </svg>
         </div>
       </div>
@@ -538,23 +539,21 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
     <div class="step">
       <div class="step-num">6</div>
       <div class="step-body">
-        <p class="desc" style="max-width:none;">뚜껑 속을 비우는 상자를 만듭니다. 이번엔 <b>천장 대신 바닥에 3.00mm 두께를 남기고</b>, 열린 위쪽(천장 쪽)으로 겹치게 파냅니다. 기둥을 바닥에 튼튼히 박아 넣기 위해서예요.</p>
+        <p class="desc" style="max-width:none;">뚜껑 속을 비우는 상자를 만듭니다. 이번엔 <b>천장 대신 바닥에 3mm 두께를 남기고</b>, 열린 위쪽(천장 쪽)으로 겹치게 파냅니다. 기둥을 바닥에 튼튼히 박아 넣기 위해서예요.</p>
         <div class="spec-chip-row">
           <span class="spec-chip shape-tag">도형 ⑤ 뚜껑 홈</span>
-          <span class="spec-chip">가로 18.00mm</span>
-          <span class="spec-chip">세로 18.00mm</span>
-          <span class="spec-chip">높이 9.00mm</span>
+          <span class="spec-chip">가로 18mm</span>
+          <span class="spec-chip">세로 18mm</span>
+          <span class="spec-chip">높이 9mm</span>
+          <span class="spec-chip warn">Z 위치 = 3mm</span>
         </div>
         <div class="calc-line">
-          10.00 <span class="op">−</span> 3.00 <span class="op">=</span> <span class="res">7.00</span>
+          10 <span class="op">−</span> 3 <span class="op">=</span> <span class="res">7</span>
           <small>뚜껑 높이 − 남길 바닥 두께 = 실제로 파는 깊이</small>
         </div>
         <div class="calc-line">
-          0.00 <span class="op">+</span> 3.00 <span class="op">=</span> <span class="res">3.00</span>
+          0 <span class="op">+</span> 3 <span class="op">=</span> <span class="res">3</span>
           <small>바닥(0) + 남길 바닥 두께 = Z 위치 (구멍이 바닥 위에서 시작해 위쪽으로 겹치게)</small>
-        </div>
-        <div class="spec-chip-row">
-          <span class="spec-chip warn">Z 위치 = 3.00mm</span>
         </div>
         <div class="diagram-box">
           <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
@@ -567,7 +566,10 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
             <line x1="80" y1="60" x2="220" y2="60" stroke="#b8862a" stroke-width="1" stroke-dasharray="3 2"/>
             <text x="222" y="55" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#5d4e8c">천장(열린 면)</text>
             <text x="222" y="100" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#8a7a97">도형⑤ 18×18</text>
-            <text x="65" y="106" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#b8862a">바닥 3.00 남음</text>
+            <line x1="70" y1="95" x2="70" y2="110" stroke="#b8862a" stroke-width="2"/>
+            <line x1="63" y1="95" x2="77" y2="95" stroke="#b8862a" stroke-width="2"/>
+            <line x1="63" y1="110" x2="77" y2="110" stroke="#b8862a" stroke-width="2"/>
+            <text x="58" y="106" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#b8862a">3mm</text>
             <text x="150" y="185" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="600" font-size="11.5" fill="#8a7a97">보라색 구멍이 열린 위쪽으로 겹치게 튀어나와 있어요</text>
           </svg>
         </div>
@@ -582,24 +584,49 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
     <div class="step">
       <div class="step-num">7</div>
       <div class="step-body">
-        <p class="desc" style="max-width:none;">스위치 축이 끼워질 원기둥을 만듭니다. 예전엔 기둥이 천장에 닿기만 해서 출력했더니 <b>분리돼서 떨어졌어요.</b> 이번엔 반대로, 기둥을 <b>바닥(도형⑤가 파낸 바닥)에 2.00mm 박아 넣어서</b> 튼튼히 고정합니다.</p>
+        <p class="desc" style="max-width:none;">스위치 축이 끼워질 원기둥을 만듭니다. 기둥을 <b>바닥(도형⑤가 파낸 바닥)에 2mm 겹치게 박아 넣어서</b> 튼튼히 고정합니다.</p>
         <div class="spec-chip-row">
           <span class="spec-chip shape-tag">도형 ⑥ 중심 기둥</span>
-          <span class="spec-chip">지름 8.00mm</span>
-          <span class="spec-chip">높이 9.00mm</span>
+          <span class="spec-chip">지름 5mm</span>
+          <span class="spec-chip">높이 7mm</span>
+          <span class="spec-chip warn">Z 위치 = 1mm</span>
         </div>
         <div class="calc-line">
-          3.00 <span class="op">−</span> 2.00 <span class="op">=</span> <span class="res">1.00</span>
-          <small>바닥 두께 − 박아 넣을 만큼 = 기둥의 Z 위치 (바닥 맨 밑에 1.00mm는 그대로 남음)</small>
+          3 <span class="op">−</span> 2 <span class="op">=</span> <span class="res">1</span>
+          <small>바닥 두께 − 박아 넣을 만큼 = 기둥의 Z 위치 (바닥 맨 밑에 1mm는 그대로 남음)</small>
         </div>
         <div class="calc-line">
-          1.00 <span class="op">+</span> 9.00 <span class="op">=</span> <span class="res">10.00</span>
-          <small>Z 위치 + 기둥 높이 = 뚜껑 맨 윗면(열린 면)과 딱 맞음</small>
+          1 <span class="op">+</span> 7 <span class="op">=</span> <span class="res">8</span>
+          <small>Z 위치 + 기둥 높이 = 뚜껑 맨 윗면(열린 면)보다 2mm 안쪽 (딱 맞추면 안 됨)</small>
         </div>
-        <div class="spec-chip-row">
-          <span class="spec-chip warn">Z 위치 = 1.00mm</span>
+        <div class="diagram-box">
+          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="300" height="200" rx="14" fill="#fdf9fb"/>
+            <text x="150" y="20" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="700" font-size="11" fill="#8a7a97">도형⑥ 중심 기둥 (바닥에 2mm 겹치게)</text>
+            <rect x="60" y="100" width="180" height="24" fill="#ff6b81" opacity="0.85"/>
+            <line x1="60" y1="100" x2="240" y2="100" stroke="#b8862a" stroke-width="1.3" stroke-dasharray="3 2"/>
+            <rect x="140" y="60" width="20" height="56" rx="3" fill="#e8b84b" stroke="#b8862a" stroke-width="1.5"/>
+            <ellipse cx="150" cy="60" rx="10" ry="4" fill="#f3cc7a" stroke="#b8862a" stroke-width="1.3"/>
+            <text x="45" y="104" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#b8862a">바닥 윗면</text>
+            <line x1="172" y1="44" x2="172" y2="60" stroke="#5d4e8c" stroke-width="1.3"/>
+            <text x="177" y="48" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#5d4e8c">지름 5mm</text>
+            <line x1="255" y1="60" x2="255" y2="116" stroke="#e14f68" stroke-width="1.5"/>
+            <line x1="248" y1="60" x2="262" y2="60" stroke="#e14f68" stroke-width="1.5"/>
+            <line x1="248" y1="116" x2="262" y2="116" stroke="#e14f68" stroke-width="1.5"/>
+            <text x="267" y="91" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#e14f68">7mm</text>
+            <line x1="93" y1="100" x2="107" y2="100" stroke="#2f7d54" stroke-width="2"/>
+            <line x1="93" y1="116" x2="107" y2="116" stroke="#2f7d54" stroke-width="2"/>
+            <line x1="100" y1="100" x2="100" y2="116" stroke="#2f7d54" stroke-width="2"/>
+            <text x="88" y="112" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="12" fill="#2f7d54">2mm 박힘</text>
+            <line x1="118" y1="116" x2="132" y2="116" stroke="#b8862a" stroke-width="2"/>
+            <line x1="118" y1="124" x2="132" y2="124" stroke="#b8862a" stroke-width="2"/>
+            <line x1="125" y1="116" x2="125" y2="124" stroke="#b8862a" stroke-width="2"/>
+            <text x="136" y="123" text-anchor="start" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#b8862a">1mm</text>
+            <text x="150" y="150" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="600" font-size="10.5" fill="#8a7a97">바닥 맨 밑 1mm는 순수하게 남아요</text>
+            <text x="150" y="180" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="600" font-size="11" fill="#8a7a97">아래쪽 2mm가 바닥 속에 겹쳐서 단단히 고정돼요</text>
+          </svg>
         </div>
-        <div class="callout">기둥 아래쪽 <b>2.00mm가 바닥 속에 박혀서</b> 단단히 고정돼요. 바닥 맨 밑 <b>1.00mm는 순수하게 남아서</b> 기둥이 바깥으로 튀어나오지 않게 막아줘요. 남은 <b>7.00mm</b>는 뚜껑 안쪽 빈 공간에 서서 천장(열린 면)까지 닿아요.</div>
+        <div class="callout">기둥 아래쪽 <b>2mm가 바닥 속에 박혀서</b> 단단히 고정돼요. 바닥 맨 밑 <b>1mm는 순수하게 남아서</b> 기둥이 바깥으로 튀어나오지 않게 막아줘요. 남은 <b>5mm</b>는 뚜껑 안쪽 빈 공간에 서서, 뚜껑 맨 윗면(열린 면)보다 <b>2mm 안쪽</b>까지 닿아요.</div>
       </div>
     </div>
   </section>
@@ -613,19 +640,19 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
         <p class="desc" style="max-width:none;">막대 하나를 만든 다음 <b>복제해서 90도 회전</b>시켜 겹치면 십자가 모양이 됩니다. 이번엔 <b>구멍이 아니라 그냥 도형 합치기</b>예요 (색은 그대로 둡니다).</p>
         <div class="spec-chip-row">
           <span class="spec-chip shape-tag">도형 ⑦ 십자 막대 A</span>
-          <span class="spec-chip">가로 4.10mm</span>
-          <span class="spec-chip">세로 1.30mm</span>
-          <span class="spec-chip">높이 9.00mm</span>
+          <span class="spec-chip">가로 4.1mm</span>
+          <span class="spec-chip">세로 1.3mm</span>
+          <span class="spec-chip">높이 9mm</span>
+          <span class="spec-chip warn">Z 위치 = 3mm</span>
         </div>
         <div class="spec-chip-row">
           <span class="spec-chip shape-tag">도형 ⑧ 십자 막대 B (복제 후 90도 회전)</span>
-          <span class="spec-chip">가로 4.10mm</span>
-          <span class="spec-chip">세로 1.30mm</span>
-          <span class="spec-chip">높이 9.00mm</span>
+          <span class="spec-chip">가로 4.1mm</span>
+          <span class="spec-chip">세로 1.3mm</span>
+          <span class="spec-chip">높이 9mm</span>
+          <span class="spec-chip warn">Z 위치 = 3mm</span>
         </div>
-        <div class="spec-chip-row">
-          <span class="spec-chip warn">Z 위치 = 3.00mm (둘 다 동일, 뚜껑 홈과 같은 위치)</span>
-        </div>
+        <div class="callout">두 막대 모두 <b>같은 Z 위치</b>예요 — 뚜껑 홈(도형⑤)과 같은 위치라 딱 맞아요.</div>
         <div class="diagram-box">
           <svg viewBox="0 0 340 150" xmlns="http://www.w3.org/2000/svg">
             <rect width="340" height="150" rx="14" fill="#fdf9fb"/>
@@ -697,28 +724,24 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
       <div class="step-body">
         <p class="desc" style="max-width:none;">이제 두 덩어리를 합칠 차례예요. <b>속이 빈 뚜껑</b>(도형④+⑤)와 <b>십자 구멍이 뚫린 기둥</b>(도형⑥+⑦+⑧), 이 <b>2개만</b> 선택해서 <b>그룹(Group)</b>을 누르면 뚜껑이 완성돼요.</p>
         <div class="spec-chip-row">
-          <span class="spec-chip warn">기둥 Z 위치 = 1.00mm (그대로 유지)</span>
+          <span class="spec-chip warn">기둥 Z 위치 = 1mm (그대로 유지)</span>
         </div>
-        <div class="callout">두 도형 모두 7단계에서 이미 <b>기둥이 바닥에 2.00mm 박히도록</b> 만들어져 있어요(바닥 맨 밑 1.00mm는 순수하게 남음). <b>따로 옮기지 않아도 돼요.</b> 단, Align의 "가운데 정렬"을 누르면 Z까지 같이 움직여서 이 박힌 부분이 사라질 수 있으니, <b>X, Y만</b> 맞추고 Z는 건드리지 마세요.</div>
+        <div class="callout">두 도형 모두 7단계에서 이미 <b>기둥이 바닥에 2mm 박히도록</b> 만들어져 있어요(바닥 맨 밑 1mm는 순수하게 남음). <b>따로 옮기지 않아도 돼요.</b> 단, Align의 "가운데 정렬"을 누르면 Z까지 같이 움직여서 이 박힌 부분이 사라질 수 있으니, <b>X, Y만</b> 맞추고 Z는 건드리지 마세요.</div>
         <div class="diagram-box">
-          <svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
-            <rect width="340" height="190" rx="14" fill="#fdf9fb"/>
-            <text x="95" y="18" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="700" font-size="11.5" fill="#2f7d54">✓ 올바르게 (2.00mm 박아 넣기)</text>
-            <rect x="55" y="88" width="80" height="22" fill="#ff6b81"/>
-            <rect x="55" y="35" width="10" height="53" fill="#ff6b81"/>
-            <rect x="125" y="35" width="10" height="53" fill="#ff6b81"/>
-            <rect x="75" y="35" width="40" height="68" fill="#e8b84b" stroke="#b8862a" stroke-width="1.3"/>
-            <line x1="50" y1="88" x2="140" y2="88" stroke="#b8862a" stroke-width="1.3" stroke-dasharray="3 2"/>
-            <text x="95" y="146" text-anchor="middle" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#b8862a">바닥 윗면(3.00mm)</text>
-            <text x="95" y="172" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="600" font-size="11" fill="#8a7a97">기둥 아래쪽 2mm가 바닥 속에, 1mm는 그대로</text>
-            <text x="245" y="18" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="700" font-size="11.5" fill="#c9455f">✗ 잘못된 예 (닿기만 함)</text>
-            <rect x="205" y="88" width="80" height="22" fill="#ff6b81"/>
-            <rect x="205" y="35" width="10" height="53" fill="#ff6b81"/>
-            <rect x="275" y="35" width="10" height="53" fill="#ff6b81"/>
-            <rect x="225" y="35" width="40" height="53" fill="#e8b84b" stroke="#c9455f" stroke-width="1.5" stroke-dasharray="3 2"/>
-            <line x1="200" y1="88" x2="290" y2="88" stroke="#b8862a" stroke-width="1.3" stroke-dasharray="3 2"/>
-            <text x="245" y="146" text-anchor="middle" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#b8862a">바닥 윗면(3.00mm)</text>
-            <text x="245" y="172" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="700" font-size="11" fill="#c9455f">겹침 없이 닿기만 해서 분리됨!</text>
+          <svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
+            <rect width="300" height="190" rx="14" fill="#fdf9fb"/>
+            <text x="150" y="20" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="700" font-size="11.5" fill="#2f7d54">✓ 기둥이 바닥에 2mm 박힌 상태 (그대로 유지)</text>
+            <rect x="110" y="88" width="80" height="22" fill="#ff6b81"/>
+            <rect x="110" y="35" width="10" height="53" fill="#ff6b81"/>
+            <rect x="180" y="35" width="10" height="53" fill="#ff6b81"/>
+            <rect x="130" y="35" width="40" height="68" fill="#e8b84b" stroke="#b8862a" stroke-width="1.3"/>
+            <line x1="105" y1="88" x2="195" y2="88" stroke="#b8862a" stroke-width="1.3" stroke-dasharray="3 2"/>
+            <line x1="100" y1="103" x2="100" y2="110" stroke="#b8862a" stroke-width="2"/>
+            <line x1="93" y1="103" x2="107" y2="103" stroke="#b8862a" stroke-width="2"/>
+            <line x1="93" y1="110" x2="107" y2="110" stroke="#b8862a" stroke-width="2"/>
+            <text x="88" y="109" text-anchor="end" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#b8862a">1mm</text>
+            <text x="150" y="146" text-anchor="middle" font-family="'Baloo 2',sans-serif" font-weight="700" font-size="11" fill="#b8862a">바닥 윗면(3mm)</text>
+            <text x="150" y="172" text-anchor="middle" font-family="'Pretendard',sans-serif" font-weight="600" font-size="10.5" fill="#8a7a97">2mm 박힘, 바닥에서 1mm 띄운 채 고정</text>
           </svg>
         </div>
         <div class="warn-box"><b>주의.</b> 이번엔 색을 <b>"구멍"으로 바꾸지 않습니다.</b> 두 덩어리 모두 이미 완성된 <b>단단한 도형</b>이라서, 그냥 합치기만 하면 돼요.</div>
