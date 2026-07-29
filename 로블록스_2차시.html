@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CODE:N - 로블록스 2차시</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+:root{
+  --bg:#faf9f6;
+  --surface:#ffffff;
+  --ink:#1c1c22;
+  --sub:#54585f;
+  --line:#e9e6df;
+  --accent:#5b56e0;
+  --accent-soft:#efeeff;
+  --accent2:#ff6b57;
+  --warn:#e0563f;
+  --warn-soft:#fdeeea;
+  --code-bg:#1b1b23;
+  --code-ink:#e7e5f3;
+  --radius:18px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-weight:500;
+  line-height:1.6;
+  padding-left:252px;
+  transition:padding-left 0.28s ease;
+  word-break:keep-all;
+  overflow-wrap:break-word;
+}
+body.nav-collapsed{padding-left:0;}
+a{color:inherit;}
+
+/* sidebar */
+.sidebar{
+  position:fixed; top:0; left:0; bottom:0; width:252px;
+  background:var(--surface); border-right:1px solid var(--line);
+  padding:26px 18px; display:flex; flex-direction:column;
+  z-index:60; overflow-y:auto;
+  transition:transform 0.28s ease;
+}
+body.nav-collapsed .sidebar{transform:translateX(-100%);}
+.sidebar-top{display:flex; align-items:center; gap:8px; margin-bottom:20px; flex-wrap:wrap;}
+.brand{
+  font-weight:800; font-size:0.8rem; letter-spacing:0.5px;
+  background:var(--ink); color:#fff; padding:5px 12px; border-radius:50px;
+}
+.edition-tag{
+  font-size:0.75rem; font-weight:700; color:var(--accent);
+  background:var(--accent-soft); padding:5px 11px; border-radius:50px;
+}
+.sidebar nav{display:flex; flex-direction:column; gap:2px; flex:1; margin-top:6px;}
+.sidebar nav a{
+  display:flex; align-items:baseline; gap:10px; padding:9px 10px; border-radius:10px;
+  font-size:0.85rem; color:var(--sub); text-decoration:none; font-weight:600;
+}
+.sidebar nav a span.n{font-size:0.7rem; font-weight:800; color:#c9c6bd; width:16px; flex-shrink:0;}
+.sidebar nav a:hover{background:var(--accent-soft); color:var(--accent);}
+.sidebar nav a.active{background:var(--accent); color:#fff;}
+.sidebar nav a.active span.n{color:rgba(255,255,255,0.7);}
+
+.nav-toggle{
+  position:fixed; top:50%; left:252px; z-index:70;
+  width:15px; height:52px; transform:translateY(-50%);
+  border-radius:0 8px 8px 0; border:none; border-left:none;
+  background:var(--line); color:var(--sub);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; padding:0; font-size:0.68rem; line-height:1;
+  opacity:0.55; transition:left 0.28s ease, opacity 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+.nav-toggle:hover{opacity:1; background:var(--accent-soft); color:var(--accent);}
+.nav-toggle::after{content:"‹";}
+body.nav-collapsed .nav-toggle{left:0;}
+body.nav-collapsed .nav-toggle::after{content:"›";}
+
+/* layout */
+main{max-width:780px; margin:0 auto; padding:0 24px;}
+.section{
+  padding:72px 0; border-top:1px solid var(--line);
+  scroll-margin-top:70px;
+}
+.section:first-of-type{border-top:none;}
+.hero{padding:64px 0 56px; border-top:none;}
+
+.eyebrow{
+  display:inline-block; font-size:0.86rem; font-weight:800; letter-spacing:0.6px;
+  color:var(--accent2); text-transform:uppercase; margin-bottom:10px;
+}
+.sec-num{font-size:0.86rem; font-weight:800; color:#c9c6bd; margin-right:8px;}
+h2.sec-title{
+  font-size:2.1rem; font-weight:800; margin:0 0 14px; letter-spacing:-0.5px;
+}
+.hero h1{
+  font-size:2.7rem; font-weight:800; margin:0 0 16px; letter-spacing:-1px; line-height:1.3;
+}
+.desc{font-size:1.15rem; color:var(--sub); margin:0 0 24px; max-width:600px;}
+.desc b{color:var(--ink); font-weight:700;}
+
+.code-card{
+  background:var(--code-bg); border-radius:var(--radius);
+  padding:22px 24px; margin:20px 0; overflow-x:auto;
+  box-shadow:0 14px 34px rgba(20,20,30,0.16);
+  transition:width 0.2s ease, margin 0.2s ease;
+}
+.code-dots{display:flex; gap:6px; margin-bottom:14px;}
+.code-dots span{width:9px; height:9px; border-radius:50%; background:#3a3a46;}
+pre{margin:0; font-family:'SF Mono','Consolas','Menlo',monospace; font-size:1.02rem; color:var(--code-ink); line-height:1.7;}
+.c-kw{color:#ff7f9c; font-weight:600;}
+.c-bi{color:#7fd8ff;}
+.c-str{color:#b9f18c;}
+.c-num{color:#ffc978;}
+.c-cm{color:#7a7d8c; font-style:italic;}
+
+code{
+  font-family:'SF Mono','Consolas','Menlo',monospace;
+  font-weight:700;
+  font-size:0.95em;
+  color:var(--accent);
+  background:var(--accent-soft);
+  padding:2px 7px;
+  border-radius:6px;
+}
+.code-card code{
+  font-family:inherit; font-weight:inherit; font-size:inherit;
+  color:inherit; background:none; padding:0; border-radius:0;
+}
+
+.arrow-line{display:flex; align-items:center; gap:10px; margin:14px 0; font-size:1.05rem; color:var(--sub);}
+.arrow-line .arrow{color:var(--accent); font-weight:800;}
+.arrow-line b{color:var(--ink);}
+
+.callout{
+  background:var(--accent-soft); border-radius:14px; padding:16px 18px;
+  font-size:1.02rem; color:var(--ink); margin:16px 0;
+}
+.callout b{color:var(--accent);}
+.callout.tip{background:#fff4ec;}
+.callout.tip b{color:var(--accent2);}
+.callout.warn{background:var(--warn-soft); border:1.5px solid #f3c9bd;}
+.callout.warn b{color:var(--warn);}
+.callout.warn .warn-title{display:flex; align-items:center; gap:8px; font-weight:800; color:var(--warn); margin-bottom:10px; font-size:1.02rem;}
+.callout.warn ul{margin:0; padding-left:20px;}
+.callout.warn li{margin:6px 0;}
+
+.chips{display:flex; flex-wrap:wrap; gap:10px; margin:18px 0;}
+.chip{
+  background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:10px 16px; font-size:0.98rem; font-weight:600; box-shadow:0 4px 12px rgba(20,20,30,0.05);
+}
+.chip.time{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+.illust-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:18px; margin:20px 0; box-shadow:0 6px 18px rgba(20,20,30,0.05); text-align:center;
+}
+.illust-card svg{width:60%; min-width:280px; height:auto; display:inline-block;}
+.illust-card svg.illust-lg{width:88%;}
+
+.shot-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:16px; margin:20px 0; box-shadow:0 6px 18px rgba(20,20,30,0.05); text-align:center;
+}
+.shot-card img{max-width:100%; height:auto; border-radius:8px; border:1px solid var(--line); display:inline-block;}
+.shot-card .cap{margin-top:10px; font-size:0.84rem; color:var(--sub); font-weight:600;}
+.shot-annotated{position:relative; display:inline-block;}
+.shot-annotated svg.mark{position:absolute; top:0; left:0; width:100%; height:100%; overflow:visible; pointer-events:none;}
+
+.summary-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+.summary-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px;
+  box-shadow:0 6px 18px rgba(20,20,30,0.05);
+}
+.summary-card code{font-family:'SF Mono',monospace; font-weight:700; color:var(--accent); font-size:1.05rem;}
+.summary-card p{margin:8px 0 0; font-size:0.96rem; color:var(--sub);}
+
+.check-list{display:flex; flex-direction:column; gap:10px; margin-top:18px;}
+.check-item{
+  display:flex; align-items:flex-start; gap:12px; background:var(--surface);
+  border:1px solid var(--line); border-radius:14px; padding:14px 16px;
+  box-shadow:0 4px 12px rgba(20,20,30,0.04);
+}
+.check-item .box{width:20px; height:20px; border-radius:6px; border:2px solid var(--accent); flex-shrink:0; margin-top:2px;}
+.check-item p{margin:0; font-size:1rem;}
+
+.steps{list-style:none; margin:20px 0; padding:0; display:flex; flex-direction:column; gap:10px; counter-reset:step;}
+.steps li{
+  display:flex; gap:14px; align-items:flex-start; background:var(--surface);
+  border:1px solid var(--line); border-radius:14px; padding:14px 16px;
+  box-shadow:0 4px 12px rgba(20,20,30,0.04);
+}
+.steps li .num{
+  width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0;
+}
+.steps li p{margin:0; font-size:1rem;}
+.steps li p b{color:var(--accent);}
+.steps.sub{margin-left:20px;}
+
+footer{
+  max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center;
+}
+.next-card{
+  background:var(--ink); color:#fff; border-radius:20px; padding:32px 28px;
+  display:flex; flex-direction:column; align-items:center; gap:14px; margin-bottom:28px;
+}
+.next-card p{margin:0; color:#c9c8d6; font-size:1.05rem;}
+.copyright{color:#a8a49a; font-size:0.8rem;}
+
+@keyframes jumpBounce{
+  0%{transform:translateY(0);}
+  30%{transform:translateY(-55px);}
+  50%{transform:translateY(-70px);}
+  70%{transform:translateY(-55px);}
+  100%{transform:translateY(0);}
+}
+.jump-char{animation:jumpBounce 1.6s cubic-bezier(.32,.68,.42,1.01) infinite; transform-box:fill-box; transform-origin:center;}
+@keyframes jumpShadow{
+  0%{opacity:0.13; transform:scale(1);}
+  50%{opacity:0.04; transform:scale(0.55);}
+  100%{opacity:0.13; transform:scale(1);}
+}
+.jump-shadow{animation:jumpShadow 1.6s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes teleportLoop{
+  0%{transform:translateX(0); opacity:1;}
+  38%{transform:translateX(0); opacity:1;}
+  42%{transform:translateX(0); opacity:0;}
+  46%{transform:translateX(-265px); opacity:0;}
+  50%{transform:translateX(-265px); opacity:1;}
+  88%{transform:translateX(-265px); opacity:1;}
+  92%{transform:translateX(-265px); opacity:0;}
+  96%{transform:translateX(0); opacity:0;}
+  100%{transform:translateX(0); opacity:1;}
+}
+.teleport-char{animation:teleportLoop 3s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes coinBob{
+  0%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
+  100%{transform:translateY(0);}
+}
+.coin-bob{animation:coinBob 1.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+@keyframes coinPop{
+  0%{transform:translateY(0); opacity:0;}
+  10%{opacity:1;}
+  60%{transform:translateY(-40px); opacity:1;}
+  85%{transform:translateY(-50px); opacity:0;}
+  100%{transform:translateY(-50px); opacity:0;}
+}
+.coin-plus{animation:coinPop 1.8s ease-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes errPulse{
+  0%, 100%{opacity:1;}
+  50%{opacity:0.25;}
+}
+.err-pulse{animation:errPulse 1.2s ease-in-out infinite;}
+
+@media (max-width:900px){
+  body{padding-left:0;}
+  .sidebar{transform:translateX(-100%); box-shadow:0 0 40px rgba(20,20,30,0.18);}
+  body.nav-open .sidebar{transform:translateX(0);}
+  .nav-toggle{left:0;}
+  .nav-toggle::after{content:"›";}
+  body.nav-open .nav-toggle{left:252px;}
+  body.nav-open .nav-toggle::after{content:"‹";}
+}
+@media (max-width:640px){
+  .hero h1{font-size:2.1rem;}
+  h2.sec-title{font-size:1.7rem;}
+  .summary-grid{grid-template-columns:1fr;}
+  .illust-card svg{width:90%;}
+}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기/닫기"></button>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="brand">CODE:N</span>
+    <span class="edition-tag">로블록스 · 2차시</span>
+  </div>
+  <nav>
+    <a href="#s0"><span class="n">00</span>오늘의 목표</a>
+    <a href="#s1"><span class="n">01</span>변수: 값 담는 상자</a>
+    <a href="#s2"><span class="n">02</span>조건문 if로 비교하기</a>
+    <a href="#s3"><span class="n">03</span>점프대 만들기</a>
+    <a href="#s4"><span class="n">04</span>함정 만들기</a>
+    <a href="#s5"><span class="n">05</span>코인 줍기</a>
+    <a href="#s6"><span class="n">06</span>AI로 에러 고치기</a>
+    <a href="#s7"><span class="n">07</span>마무리 체크리스트</a>
+  </nav>
+</aside>
+
+<main>
+
+  <section class="section hero" id="s0">
+    <div class="eyebrow">LESSON · 2차시</div>
+    <h1>움직이고 반응하는 세상<br>변수·조건문부터 Touched까지</h1>
+    <p class="desc">오늘은 값을 담아두는 <b>변수</b>와, 조건에 따라 다르게 행동하는 <b>if</b>를 배워요. 그리고 1차시에서 살짝 맛본 <b>Touched</b>를 다시 써서 점프대·함정·코인을 만들어요. 마지막엔 AI 도우미로 진짜 에러를 직접 고쳐봐요.</p>
+    <div class="callout tip"><b>이 교재 사용법</b> — 1차시에서 만든 폭발 트랩과 거의 같은 구조예요. Touched·hit.Parent·FindFirstChild("Humanoid")가 낯설다면 1차시 09번을 먼저 복습하고 오면 훨씬 수월해요.</div>
+    <div class="chips">
+      <div class="chip">변수</div>
+      <div class="chip">조건문 if</div>
+      <div class="chip">점프대</div>
+      <div class="chip">함정</div>
+      <div class="chip">코인 줍기</div>
+      <div class="chip">AI로 에러 고치기</div>
+    </div>
+  </section>
+
+  <section class="section" id="s1">
+    <div class="eyebrow">STEP 1</div>
+    <h2 class="sec-title">변수: 값 담는 상자</h2>
+    <p class="desc">변수는 값을 담아두는 상자예요. 이름을 붙여두면 나중에 다시 꺼내 쓰거나 바꿀 수 있어요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local score = 0 -- score라는 상자를 만들고 0을 담음
+print(score) -- 상자 안의 값을 출력
+
+score = score + 10 -- 상자 안의 값에 10을 더해서 다시 저장
+print(score) -- 늘어난 값을 다시 출력</code></pre>
+    </div>
+    <div class="arrow-line"><span class="arrow">→</span> <b>0</b> 그리고 <b>10</b>이 순서대로 출력 창에 나와요.</div>
+    <div class="callout"><b>local</b>은 이 변수를 새로 만든다는 뜻이에요. <code>score = score + 10</code>처럼 자기 자신의 값에 더해서 다시 저장할 수 있어요. 이 패턴은 오늘 코인 줍기에서 그대로 다시 써요.</div>
+  </section>
+
+  <section class="section" id="s2">
+    <div class="eyebrow">STEP 2</div>
+    <h2 class="sec-title">조건문 if로 비교하기</h2>
+    <p class="desc">if는 조건에 따라 다른 코드를 실행해요. 숫자 맞추기로 감을 잡아봐요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local secret = 7 -- 정답 숫자
+local guess = 5 -- 내가 추측한 숫자 (바꿔가며 다시 실행해보세요)
+
+if guess == secret then -- 두 값이 같으면
+    print("정답이에요!")
+elseif guess < secret then -- guess가 secret보다 작으면
+    print("더 큰 숫자예요")
+else -- 그 외의 경우 (guess가 더 클 때)
+    print("더 작은 숫자예요")
+end</code></pre>
+    </div>
+    <ol class="steps">
+      <li><span class="num">1</span><p><code>guess</code> 값을 여러 개로 바꿔가며 재생 버튼을 눌러봅니다.</p></li>
+      <li><span class="num">2</span><p>출력 창 문구가 값에 따라 달라지는지 확인합니다.</p></li>
+    </ol>
+    <div class="callout warn">
+      <div class="warn-title">⚠ 자주 헷갈리는 부분</div>
+      <ul>
+        <li><code>==</code> (두 개)는 "같다"를 비교할 때, <code>=</code> (한 개)는 값을 저장할 때 써요.</li>
+        <li><code>elseif</code>는 한 단어예요. <code>else if</code>로 띄어 쓰면 오류가 나요.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="s3">
+    <div class="eyebrow">HIGHLIGHT · 03</div>
+    <h2 class="sec-title">점프대 만들기 — 밟으면 점프</h2>
+    <p class="desc">1차시에서 배운 Touched를 다시 써요. 이번엔 밟으면 캐릭터가 점프해요.</p>
+    <ol class="steps">
+      <li><span class="num">1</span><p>새 파트를 추가하고 <b>속성</b>에서 <code>Anchored</code>를 체크합니다. (1차시 06 참고)</p></li>
+      <li><span class="num">2</span><p>같은 파트 안에 <b>Script</b>를 추가합니다.</p></li>
+    </ol>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part(점프대)
+
+part.Touched:Connect(function(hit) -- Part에 뭔가 닿을 때마다 실행됨
+    local character = hit.Parent -- 닿은 물체의 부모
+    local humanoid = character:FindFirstChild("Humanoid") -- 사람 캐릭터인지 확인
+
+    if humanoid then -- 사람이 닿았을 때만
+        humanoid.Jump = true -- 캐릭터를 점프시킴
+    end
+end)</code></pre>
+    </div>
+    <div class="illust-card">
+      <svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyJump" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#bfe0f5"/>
+            <stop offset="1" stop-color="#eef8ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="18" width="420" height="126" rx="10" fill="url(#skyJump)"/>
+        <path d="M20 118 L440 118 L440 138 Q230 146 20 138 Z" fill="#b7c4c9" opacity="0.5"/>
+
+        <rect x="205" y="96" width="50" height="14" rx="4" fill="#ff6b57"/>
+        <path class="jump-shadow" d="M195 103 l-8 -5 M265 103 l8 -5 M230 90 l0 -9" stroke="#ff6b57" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+
+        <ellipse class="jump-shadow" cx="230" cy="122" rx="24" ry="6" fill="#1c1c22"/>
+        <g class="jump-char">
+          <path d="M222,86 L238,86 L236,114 L224,114 Z" fill="#5b56e0"/>
+          <circle cx="230" cy="76" r="8" fill="#1c1c22"/>
+        </g>
+
+        <text x="230" y="152" text-anchor="middle" fill="#6b6f76" font-size="12">점프대를 밟으면 캐릭터가 계속 점프해요</text>
+      </svg>
+    </div>
+    <div class="callout"><code>humanoid.Jump = true</code>는 딱 한 번 점프시키는 명령이에요. 계속 밟고 있으면 여러 번 반복 실행될 수 있어요.</div>
+  </section>
+
+  <section class="section" id="s4">
+    <div class="eyebrow">HIGHLIGHT · 04</div>
+    <h2 class="sec-title">함정 만들기 — 되돌리기 또는 쓰러뜨리기</h2>
+    <p class="desc">밟으면 정해둔 위치로 되돌리거나, 체력을 0으로 만들어 쓰러뜨려요. 두 버전을 만들어 비교해봐요.</p>
+    <ol class="steps">
+      <li><span class="num">1</span><p>새 파트를 추가하고 <code>Anchored</code>를 체크합니다.</p></li>
+      <li><span class="num">2</span><p>같은 파트 안에 <b>Script</b>를 추가합니다.</p></li>
+    </ol>
+    <p class="desc" style="margin-top:28px;">버전 1 — 되돌아가기 (텔레포트)</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part(함정)
+local spawnPoint = Vector3.new(0, 5, 0) -- 되돌아갈 위치 좌표
+local triggered = false -- 중복 실행을 막는 잠금장치
+
+part.Touched:Connect(function(hit)
+    if triggered then return end -- 이미 작동 중이면 무시
+
+    local character = hit.Parent
+    local humanoid = character:FindFirstChild("Humanoid")
+
+    if humanoid then
+        triggered = true -- 잠금장치 걸기
+
+        character:MoveTo(spawnPoint) -- 캐릭터를 spawnPoint 위치로 이동
+        print("함정에 걸렸어요!") -- 출력 창에 메시지 표시
+
+        wait(1) -- 1초 대기
+        triggered = false -- 잠금장치 풀기 (다시 밟을 수 있게)
+    end
+end)</code></pre>
+    </div>
+    <div class="illust-card">
+      <svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyTrap" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#bfe0f5"/>
+            <stop offset="1" stop-color="#eef8ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="18" width="420" height="126" rx="10" fill="url(#skyTrap)"/>
+        <path d="M20 118 L440 118 L440 138 Q230 146 20 138 Z" fill="#b7c4c9" opacity="0.5"/>
+
+        <path d="M90 132 V96" stroke="#54585f" stroke-width="2"/>
+        <path d="M90 96 L112 104 L90 112 Z" fill="#3fa14f"/>
+        <text x="90" y="150" text-anchor="middle" fill="#6b6f76" font-size="11">spawnPoint</text>
+
+        <g opacity="0.16">
+          <path d="M78,96 L94,96 L92,124 L80,124 Z" fill="#5b56e0"/>
+          <circle cx="86" cy="86" r="8" fill="#1c1c22"/>
+        </g>
+        <g opacity="0.3">
+          <path d="M82,100 L98,100 L96,128 L84,128 Z" fill="#5b56e0"/>
+          <circle cx="90" cy="90" r="8" fill="#1c1c22"/>
+        </g>
+
+        <rect x="330" y="96" width="50" height="14" rx="4" fill="#fff4ec" stroke="#ff6b57" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <text x="355" y="82" text-anchor="middle" fill="#ff6b57" font-size="11" font-weight="700">함정</text>
+
+        <g class="teleport-char">
+          <ellipse cx="355" cy="122" rx="22" ry="6" fill="#1c1c22" opacity="0.13"/>
+          <path d="M347,86 L363,86 L361,114 L349,114 Z" fill="#5b56e0"/>
+          <circle cx="355" cy="76" r="8" fill="#1c1c22"/>
+        </g>
+
+        <text x="230" y="152" text-anchor="middle" fill="#6b6f76" font-size="12">밟으면 spawnPoint로 순간이동해요</text>
+      </svg>
+    </div>
+    <div class="callout"><code>Vector3.new(x, y, z)</code>는 3차원 좌표예요. 원하는 위치를 클릭한 뒤 <b>속성</b> 창의 <code>Position</code> 값을 참고해서 <code>spawnPoint</code> 숫자를 바꿔보세요.</div>
+
+    <p class="desc" style="margin-top:28px;">버전 2 — 즉시 쓰러뜨리기 (Health = 0)</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local killPart = script.Parent -- 이 스크립트가 들어있는 Part(함정)
+
+killPart.Touched:Connect(function(otherPart) -- Part에 뭔가 닿을 때마다 실행됨
+    print(otherPart) -- 무엇이 닿았는지 출력 창에서 확인
+    local character = otherPart.Parent -- 닿은 물체의 부모
+    local human = character:FindFirstChild("Humanoid") -- 사람 캐릭터인지 확인
+
+    if human then
+        human.Health = 0 -- 체력을 0으로 만들어 캐릭터를 쓰러뜨림
+    end
+end)</code></pre>
+    </div>
+    <ol class="steps">
+      <li><span class="num">1</span><p><code>human.Health = 0</code>을 <code>human.Health = 50</code>으로 바꿔서 재생해보세요. 체력이 반만 줄어드는지 확인합니다.</p></li>
+      <li><span class="num">2</span><p>재생 중 출력 창에서 <code>print(otherPart)</code> 결과를 확인해보세요. 캐릭터가 아닌 다른 물체가 닿았을 땐 뭐라고 찍히는지도 살펴보세요.</p></li>
+    </ol>
+  </section>
+
+  <section class="section" id="s5">
+    <div class="eyebrow">HIGHLIGHT · 05</div>
+    <h2 class="sec-title">코인 줍기 — 밟을 때마다 개수 세기</h2>
+    <p class="desc">밟을 때마다 <code>score</code> 변수가 늘어나요. 변수가 값을 "기억"하는 걸 직접 확인해요.</p>
+    <ol class="steps">
+      <li><span class="num">1</span><p>새 파트를 추가합니다. (코인처럼 만들고 싶으면 모양을 <b>구체(Ball)</b>로 바꿔도 좋아요)</p></li>
+      <li><span class="num">2</span><p>같은 파트 안에 <b>Script</b>를 추가합니다.</p></li>
+    </ol>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part(코인)
+local score = 0 -- 지금까지 모은 코인 개수
+
+part.Touched:Connect(function(hit)
+    local character = hit.Parent
+    local humanoid = character:FindFirstChild("Humanoid")
+
+    if humanoid then
+        score = score + 1 -- 코인 개수를 1 늘림
+        print("코인 획득! 총", score, "개") -- 출력 창에 현재 개수 표시
+    end
+end)</code></pre>
+    </div>
+    <div class="illust-card">
+      <svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyCoin" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#bfe0f5"/>
+            <stop offset="1" stop-color="#eef8ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="18" width="420" height="126" rx="10" fill="url(#skyCoin)"/>
+        <path d="M20 118 L440 118 L440 138 Q230 146 20 138 Z" fill="#b7c4c9" opacity="0.5"/>
+
+        <ellipse cx="230" cy="120" rx="20" ry="5" fill="#1c1c22" opacity="0.13"/>
+        <g class="coin-bob">
+          <circle cx="230" cy="100" r="17" fill="#ffc978" stroke="#e0a83f" stroke-width="2"/>
+          <circle cx="230" cy="100" r="10" fill="none" stroke="#e0a83f" stroke-width="1.4"/>
+        </g>
+
+        <text class="coin-plus" x="230" y="66" text-anchor="middle" fill="#5b56e0" font-size="18" font-weight="800">+1</text>
+
+        <text x="230" y="152" text-anchor="middle" fill="#6b6f76" font-size="12">밟을 때마다 score가 1씩 늘어나요</text>
+      </svg>
+    </div>
+    <div class="callout">일부러 <code>part:Destroy()</code>를 넣지 않았어요. 그래서 밟을 때마다 <code>score</code>가 계속 늘어나는 걸 볼 수 있어요. 진짜 코인처럼 주우면 사라지게 하고 싶다면 마지막 줄에 <code>part:Destroy()</code>를 추가하면 돼요.</div>
+  </section>
+
+  <section class="section" id="s6">
+    <div class="eyebrow">STEP 6</div>
+    <h2 class="sec-title">AI로 에러 고치기</h2>
+    <p class="desc">1차시에서 살짝 맛본 어시스턴트로, 이번엔 진짜 에러를 직접 고쳐봐요.</p>
+    <p class="desc" style="margin-top:0;">아래 코드를 스크립트에 붙여넣고 재생을 눌러보세요. 일부러 오타를 심어뒀어요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent
+
+part.Touched:Conenct(function(hit) -- 오타가 숨어있어요
+    local character = hit.Parent
+    local humanoid = character:FindFirstChild("Humanoid")
+
+    if humanoid then
+        print("밟았다!")
+    end
+end)</code></pre>
+    </div>
+    <div class="illust-card">
+      <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="20" width="290" height="150" rx="10" fill="#1b1b23"/>
+        <rect x="20" y="20" width="70" height="26" rx="6" fill="#2a2a35"/>
+        <text x="55" y="37" text-anchor="middle" fill="#e7e5f3" font-size="10">Script</text>
+
+        <text x="34" y="66" fill="#e7e5f3" font-size="11">part.Touched:</text>
+        <text x="118" y="66" fill="#ff9a8a" font-size="11">Conenct</text>
+        <path class="err-pulse" d="M118 70 q4 -3 8 0 q4 -3 8 0 q4 -3 8 0" fill="none" stroke="#ff6b57" stroke-width="1.6"/>
+
+        <text x="34" y="88" fill="#e7e5f3" font-size="11">(function(hit)</text>
+        <text x="34" y="108" fill="#5a5a68" font-size="11">  ...</text>
+        <text x="34" y="128" fill="#e7e5f3" font-size="11">end)</text>
+
+        <rect x="20" y="144" width="290" height="26" fill="#2a1618"/>
+        <circle class="err-pulse" cx="34" cy="157" r="4" fill="#ff6b57"/>
+        <text x="46" y="161" fill="#ff9a8a" font-size="10">attempt to call a nil value</text>
+
+        <rect x="330" y="20" width="210" height="150" rx="10" fill="#ffffff" stroke="#e9e6df"/>
+        <text x="346" y="44" fill="#1c1c22" font-size="13" font-weight="700">어시스턴트</text>
+        <rect x="346" y="58" width="178" height="30" rx="8" fill="#f4f2ec"/>
+        <text x="356" y="77" fill="#6b6f76" font-size="11">왜 에러가 나?</text>
+        <rect x="346" y="96" width="178" height="58" rx="8" fill="#efeeff"/>
+        <text x="356" y="114" fill="#1c1c22" font-size="11">Conenct는 오타예요.</text>
+        <text x="356" y="130" fill="#1c1c22" font-size="11">Connect로 고쳐보세요.</text>
+      </svg>
+    </div>
+    <ol class="steps">
+      <li><span class="num">1</span><p>재생 버튼을 눌러 출력 창(빨간 글씨)에 뜨는 에러 메시지를 확인합니다.</p></li>
+      <li><span class="num">2</span><p>에러가 난 코드를 드래그해서 선택합니다.</p></li>
+      <li><span class="num">3</span><p><b>어시스턴트에 질문 (Ctrl+J)</b>으로 "이 코드 왜 에러가 나?"라고 물어봅니다.</p></li>
+      <li><span class="num">4</span><p>AI 답변을 참고해 오타를 고치고, 다시 재생해서 에러가 사라졌는지 확인합니다.</p></li>
+    </ol>
+    <div class="callout warn">
+      <div class="warn-title">⚠ 자주 나는 오타, AI에게 이렇게 물어보세요</div>
+      <ul>
+        <li><code>Connect</code>를 <code>Conenct</code>·<code>Conect</code>처럼 잘못 쓴 경우 — "attempt to call a nil value" 에러가 나요.</li>
+        <li>괄호 <code>( )</code>나 <code>end</code> 짝이 안 맞는 경우</li>
+        <li>따옴표 <code>" "</code>를 한쪽만 닫은 경우</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="s7">
+    <div class="eyebrow">CHECKLIST</div>
+    <h2 class="sec-title">마무리 체크리스트</h2>
+    <div class="check-list">
+      <div class="check-item"><div class="box"></div><p>변수에 값을 담고, 값을 늘려서 다시 저장해봤나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>if / elseif / else로 값에 따라 다른 print 결과를 확인했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>점프대를 만들어 밟으면 점프하는지 확인했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>함정을 만들어 밟으면 정해둔 위치로 되돌아가는지 확인했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>코인을 만들어 밟을 때마다 개수가 늘어나는지 확인했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>AI 어시스턴트로 에러 메시지를 해석하고 직접 고쳐봤나요?</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="next-card">
+    <p>오늘 수업 수고하셨어요 🎉 다음에는 오늘 만든 score를 화면에 순위판(leaderstats)으로 띄워볼 거예요.</p>
+  </div>
+  <div class="copyright">Copyright © 2026 CODE:N ACADEMY</div>
+</footer>
+
+<script>
+// syntax highlight (Lua)
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function highlight(code){
+  code = esc(code);
+  // 한 번의 패스로 토큰을 판별해 치환한다 (여러 번 replace를 이어붙이면
+  // 앞서 삽입한 span의 class="c-xx" 속성 안의 글자를 키워드로 다시 인식해
+  // 태그가 깨지는 문제가 생긴다)
+  var token = /(--.*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(\d+\.?\d*)\b|\b(local|function|end|if|then|elseif|else|for|do|while|repeat|until|return|and|or|not|in|break|true|false|nil)\b|\b(game|workspace|script|print|wait|task|Instance|pairs|ipairs|Color3|Vector3)\b/g;
+  return code.replace(token, function(m, cm, str, num, kw, bi){
+    if (cm) return '<span class="c-cm">'+cm+'</span>';
+    if (str) return '<span class="c-str">'+str+'</span>';
+    if (num) return '<span class="c-num">'+num+'</span>';
+    if (kw) return '<span class="c-kw">'+kw+'</span>';
+    if (bi) return '<span class="c-bi">'+bi+'</span>';
+    return m;
+  });
+}
+document.querySelectorAll('code.lua').forEach(function(el){
+  el.innerHTML = highlight(el.textContent);
+});
+
+// sidebar toggle (desktop: nav-collapsed hides it / mobile: nav-open shows it)
+var isMobile = window.matchMedia('(max-width:900px)').matches;
+if (isMobile) document.body.classList.remove('nav-collapsed');
+var navToggle = document.getElementById('navToggle');
+navToggle.addEventListener('click', function(){
+  if (window.matchMedia('(max-width:900px)').matches){
+    document.body.classList.toggle('nav-open');
+  } else {
+    document.body.classList.toggle('nav-collapsed');
+  }
+});
+
+// close mobile sidebar after choosing a section
+document.querySelectorAll('.sidebar nav a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.body.classList.remove('nav-open');
+  });
+});
+
+// scrollspy: highlight current section link
+var navLinks = document.querySelectorAll('.sidebar nav a');
+var sections = document.querySelectorAll('main .section');
+var observer = new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if (entry.isIntersecting){
+      navLinks.forEach(function(l){ l.classList.remove('active'); });
+      var link = document.querySelector('.sidebar nav a[href="#' + entry.target.id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(function(s){ observer.observe(s); });
+
+// 가장 긴 코드 줄이 필요로 하는 너비를 구해서, 본문(main) 전체를
+// 그 너비에 맞춰 넓힌다 — 코드 카드만 넓어지지 않고 제목·본문·일러스트 등
+// 다른 요소도 같은 폭으로 맞춰져서 좌우 줄이 어긋나지 않는다.
+function fitMainWidth(){
+  var main = document.querySelector('main');
+  main.style.maxWidth = '';
+  if (window.matchMedia('(max-width:900px)').matches) return;
+
+  var maxPreWidth = 0;
+  document.querySelectorAll('.code-card pre').forEach(function(pre){
+    if (pre.scrollWidth > maxPreWidth) maxPreWidth = pre.scrollWidth;
+  });
+  if (maxPreWidth === 0) return;
+
+  var neededCardWidth = maxPreWidth + 50;   // pre + code-card 여백
+  var neededMainWidth = neededCardWidth + 48; // + main 좌우 패딩(24px*2)
+
+  var sidebarW = document.body.classList.contains('nav-collapsed') ? 0 : 252;
+  var maxAvail = window.innerWidth - sidebarW - 40;
+
+  var finalWidth = Math.min(Math.max(neededMainWidth, 780), maxAvail);
+  if (finalWidth > 780) main.style.maxWidth = finalWidth + 'px';
+}
+window.addEventListener('load', fitMainWidth);
+window.addEventListener('resize', fitMainWidth);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitMainWidth);
+navToggle.addEventListener('click', function(){ setTimeout(fitMainWidth, 300); });
+</script>
+
+</body>
+</html>
