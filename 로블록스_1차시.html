@@ -118,6 +118,10 @@ pre{margin:0; font-family:'SF Mono','Consolas','Menlo',monospace; font-size:1.02
 .c-str{color:#b9f18c;}
 .c-num{color:#ffc978;}
 .c-cm{color:#7a7d8c; font-style:italic;}
+.code-card .added-block{
+  display:block; border:1.5px dashed #e0c94a; border-radius:10px;
+  background:rgba(224,201,74,0.08); padding:8px 14px; margin:6px 0;
+}
 
 /* 본문 속 인라인 코드(예: <code>Color</code>) — 배경 없는 기본 모노스페이스는
    주변 글자와 대비가 약해 눈에 잘 안 들어오므로, 칩 형태로 강조한다.
@@ -159,6 +163,24 @@ code{
   padding:10px 16px; font-size:0.98rem; font-weight:600; box-shadow:0 4px 12px rgba(20,20,30,0.05);
 }
 .chip.time{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+.progress-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:16px;
+  padding:18px 20px; margin:22px 0 18px; box-shadow:0 6px 18px rgba(20,20,30,0.05);
+}
+.progress-title{font-weight:800; font-size:0.92rem; color:var(--sub); margin-bottom:12px; letter-spacing:0.2px;}
+.progress-chips{display:flex; flex-wrap:wrap; gap:8px;}
+.progress-chip{
+  display:flex; align-items:center; gap:7px; padding:8px 14px; border-radius:50px;
+  font-size:0.86rem; font-weight:700; border:1.5px solid var(--line); color:#a8a49a; background:var(--bg);
+}
+.progress-chip .ck{width:14px; height:14px; border-radius:50%; border:2px solid currentColor; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:900; color:#fff;}
+.progress-chip.done{color:var(--accent); border-color:var(--accent); background:var(--accent-soft);}
+.progress-chip.done .ck{background:var(--accent); border-color:var(--accent);}
+.progress-chip.done .ck::after{content:"✓";}
+.progress-chip.current{color:var(--accent2); border-color:var(--accent2); background:#fff4ec;}
+.progress-chip.current .ck{background:#fff; border-color:var(--accent2);}
+.progress-chip.todo{color:#c9c6bd; border-color:var(--line); background:var(--bg); border-style:dashed;}
 
 .illust-card{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
@@ -226,6 +248,83 @@ footer{
 }
 .fall-box{animation:fallLoop 2.4s ease-in-out infinite;}
 
+@keyframes growPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.4);}
+}
+.grow-pulse{animation:growPulse 1.5s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes shrinkPulse{
+  0%,100%{transform:scale(1); opacity:1;}
+  50%{transform:scale(0.55); opacity:0.7;}
+}
+.shrink-pulse{animation:shrinkPulse 1.6s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes popGone{
+  0%,60%{transform:scale(1); opacity:1;}
+  80%{transform:scale(1.15); opacity:0.4;}
+  100%{transform:scale(0.2); opacity:0;}
+}
+.pop-gone{animation:popGone 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes dashFlow{ to{stroke-dashoffset:-20;} }
+.flow-path{stroke-dasharray:6 5; animation:dashFlow 1s linear infinite;}
+
+@keyframes toggleSlide{
+  0%,40%{transform:translateX(0); fill:#c9c6bd;}
+  60%,100%{transform:translateX(22px); fill:#ff6b57;}
+}
+.toggle-knob{animation:toggleSlide 2.6s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes jumpBounce{
+  0%{transform:translateY(0);}
+  30%{transform:translateY(-55px);}
+  50%{transform:translateY(-70px);}
+  70%{transform:translateY(-55px);}
+  100%{transform:translateY(0);}
+}
+.jump-char{animation:jumpBounce 1.6s cubic-bezier(.32,.68,.42,1.01) infinite; transform-box:fill-box; transform-origin:center;}
+@keyframes jumpShadow{
+  0%{opacity:0.13; transform:scale(1);}
+  50%{opacity:0.04; transform:scale(0.55);}
+  100%{opacity:0.13; transform:scale(1);}
+}
+.jump-shadow{animation:jumpShadow 1.6s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes teleportLoop{
+  0%{transform:translateX(0); opacity:1;}
+  38%{transform:translateX(0); opacity:1;}
+  42%{transform:translateX(0); opacity:0;}
+  46%{transform:translateX(-265px); opacity:0;}
+  50%{transform:translateX(-265px); opacity:1;}
+  88%{transform:translateX(-265px); opacity:1;}
+  92%{transform:translateX(-265px); opacity:0;}
+  96%{transform:translateX(0); opacity:0;}
+  100%{transform:translateX(0); opacity:1;}
+}
+.teleport-char{animation:teleportLoop 3s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes coinBob{
+  0%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
+  100%{transform:translateY(0);}
+}
+.coin-bob{animation:coinBob 1.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+@keyframes coinPop{
+  0%{transform:translateY(0); opacity:0;}
+  10%{opacity:1;}
+  60%{transform:translateY(-40px); opacity:1;}
+  85%{transform:translateY(-50px); opacity:0;}
+  100%{transform:translateY(-50px); opacity:0;}
+}
+.coin-plus{animation:coinPop 1.8s ease-out infinite; transform-box:fill-box; transform-origin:center;}
+
+@keyframes errPulse{
+  0%, 100%{opacity:1;}
+  50%{opacity:0.25;}
+}
+.err-pulse{animation:errPulse 1.2s ease-in-out infinite;}
+
 @media (max-width:900px){
   body{padding-left:0;}
   .sidebar{transform:translateX(-100%); box-shadow:0 0 40px rgba(20,20,30,0.18);}
@@ -261,13 +360,16 @@ footer{
     <a href="#s5"><span class="n">05</span>첫 스크립트: print</a>
     <a href="#s6"><span class="n">06</span>나만의 문구 출력</a>
     <a href="#s7"><span class="n">07</span>스크립트로 경로 찾기</a>
-    <a href="#s8"><span class="n">08</span>클릭 파트 ① 감지기</a>
-    <a href="#s9"><span class="n">09</span>클릭 파트 ② 코드</a>
-    <a href="#s10"><span class="n">10</span>클릭 파트 ③ 확인</a>
-    <a href="#s11"><span class="n">11</span>보너스 트랩 ① 준비</a>
-    <a href="#s12"><span class="n">12</span>보너스 트랩 ② 실행</a>
-    <a href="#s13"><span class="n">13</span>AI 살짝 맛보기</a>
-    <a href="#s14"><span class="n">14</span>마무리 체크리스트</a>
+    <a href="#s8"><span class="n">08</span>시작 게이트</a>
+    <a href="#s11"><span class="n">09</span>색깔 파트</a>
+    <a href="#s13"><span class="n">10</span>작아지는 파트</a>
+    <a href="#s15"><span class="n">11</span>폭발 함정</a>
+    <a href="#s17"><span class="n">12</span>AI 살짝 맛보기</a>
+    <a href="#s19"><span class="n">13</span>점프대</a>
+    <a href="#s20"><span class="n">14</span>함정</a>
+    <a href="#s21"><span class="n">15</span>AI로 에러 고치기</a>
+    <a href="#s22"><span class="n">·</span>코인 줍기 (보너스)</a>
+    <a href="#s18"><span class="n">16</span>마무리 체크리스트</a>
   </nav>
 </aside>
 
@@ -275,23 +377,36 @@ footer{
 
   <section class="section hero" id="s0">
     <div class="eyebrow">LESSON · 1차시</div>
-    <h1>로블록스 스튜디오 첫 만남<br>탐색기부터 클릭 파트까지</h1>
-    <p class="desc">오늘은 로블록스 스튜디오를 처음 열어보고, 게임의 지도인 <b>탐색기</b>와 친해진 뒤 첫 스크립트로 <b>print</b>를 찍어봐요. 마지막엔 클릭하면 반응하는 파트와, 밟으면 터지는 폭발 트랩까지 만들어요.</p>
-    <div class="callout tip"><b>이 교재 사용법</b> — 완전 초보자도 이 문서만 보고 따라 할 수 있도록, 클릭 위치와 순서를 하나하나 적어뒀어요. 번호 순서대로 진행해주세요.</div>
+    <h1>나만의 점프맵 프로젝트, 시작!<br>탐색기부터 점프대·함정까지</h1>
+    <p class="desc">1차시에서는 스튜디오·탐색기와 친해지고, 클릭 게이트·색깔 파트·작아지는 파트·폭발 함정을 <b>변수</b>와 <b>조건문(if)</b>으로 완성해요. 이어서 점프대·함정까지 더해 진짜 장애물 점프맵을 만들고, AI 도우미로 에러도 직접 고쳐봐요.</p>
+    <div class="callout tip">번호 순서대로 따라 하면 완성돼요.</div>
+    <div class="progress-card">
+      <div class="progress-title">🗺 나의 점프맵 프로젝트</div>
+      <div class="progress-chips">
+        <div class="progress-chip current"><span class="ck"></span>1차시 · 게이트·트랩 5종 &amp; 변수·if·AI</div>
+        <div class="progress-chip todo"><span class="ck"></span>2차시 · 바다 · 점프맵 완성</div>
+      </div>
+    </div>
     <div class="chips">
             <div class="chip">스튜디오 둘러보기</div>
       <div class="chip">탐색기</div>
       <div class="chip">첫 스크립트</div>
-      <div class="chip">클릭 파트 (하이라이트)</div>
-      <div class="chip">폭발 트랩 (보너스)</div>
+      <div class="chip">시작 게이트 (클릭)</div>
+      <div class="chip">색깔 파트 (밟기)</div>
+      <div class="chip">작아지는 파트 (변수 · if)</div>
+      <div class="chip">폭발 함정</div>
       <div class="chip">AI 맛보기</div>
+      <div class="chip">점프대</div>
+      <div class="chip">함정</div>
+      <div class="chip">AI로 에러 고치기</div>
+      <div class="chip">코인 줍기 (보너스)</div>
     </div>
   </section>
 
   <section class="section" id="s1">
     <div class="eyebrow">STEP 1</div>
     <h2 class="sec-title">스튜디오 둘러보기</h2>
-    <p class="desc">코드 없이 손으로 만져보며 스튜디오와 먼저 친해져요.</p>
+    <p class="desc">코드 없이 손으로 만져보며 스튜디오와 먼저 친해져요. 지금 만드는 파트는 이따 08에서 <b>시작 게이트</b>로 다시 쓸 거예요.</p>
     <ol class="steps">
       <li><span class="num">1</span><p><b>홈</b> 탭 → <b>파트</b>를 눌러 파트를 추가합니다.</p></li>
       <li><span class="num">2</span><p>탐색기 <b>Workspace</b> 안에 파트가 생깁니다.</p></li>
@@ -353,7 +468,7 @@ footer{
       <img src="data:image/png;base64,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" alt="홈 탭의 재질·색상·그룹·잠금·고정 도구">
       <div class="cap">실제 홈 탭 — 재질 · 색상 · 그룹 · 잠금 · 고정 도구</div>
     </div>
-    <div class="callout tip">오늘 손으로 익힌 <b>이동·크기·회전·고정</b>은 나중에 스크립트에서 각각 <code>Position</code>, <code>Size</code>, <code>Rotation</code>, <code>Anchored</code>라는 이름으로 그대로 다시 만나요. 파트 여러 개를 하나로 묶고 싶을 땐 <b>그룹(Group)</b>을 쓰는데, 오늘은 몰라도 괜찮아요.</div>
+    <div class="callout tip"><b>이동·크기·회전·고정</b>은 나중에 코드에서 <code>Position</code>, <code>Size</code>, <code>Rotation</code>, <code>Anchored</code>로 다시 만나요.</div>
   </section>
 
   <section class="section" id="s2">
@@ -467,26 +582,21 @@ footer{
   <section class="section" id="s7">
     <div class="eyebrow">STEP 7</div>
     <h2 class="sec-title"><span class="sec-num">07</span>스크립트로 경로 찾기</h2>
-    <p class="desc">탐색기에 보이는 순서 그대로 코드에 적으면 그 물건을 찾을 수 있어요.</p>
-    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="lua">local part = workspace.Baseplate -- Workspace 안의 Baseplate를 가리킴
-print(part.Name) -- 그 개체의 이름을 출력</code></pre>
-    </div>
-    <div class="callout"><b>workspace.Baseplate</b>는 "Workspace 안에 있는 Baseplate"라는 뜻이에요. 탐색기에서 본 순서와 똑같아요.</div>
+    <p class="desc">아까 탐색기 구조에서 봤죠? Part 안에 스크립트를 넣으면, 그 스크립트 입장에서 <b>Part는 바로 위(부모)</b>예요. 이걸 코드로는 <b>script.Parent</b>라고 적어요.</p>
     <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
 <pre><code class="lua">local part = script.Parent -- 이 스크립트 바로 위 개체를 가리킴
 print(part.Name) -- 그 개체의 이름을 출력</code></pre>
     </div>
-    <div class="callout"><b>script.Parent</b>는 "이 스크립트가 들어있는 바로 위 개체"를 가리켜요.</div>
+    <div class="callout"><b>script.Parent</b>는 "이 스크립트가 들어있는 바로 위 개체"를 가리켜요. 앞으로 나올 예제에서 계속 쓰일 거예요.</div>
   </section>
 
   <section class="section" id="s8">
     <div class="eyebrow">HIGHLIGHT · 08</div>
-    <h2 class="sec-title">클릭 파트 ① 감지기 넣기</h2>
-    <p class="desc">오늘의 하이라이트! 클릭하면 사라지거나 색이 바뀌는 파트를 만들어요. 먼저 <b>ClickDetector</b>를 Part 안에 넣습니다.</p>
+    <h2 class="sec-title">시작 게이트 ① 감지기 넣기</h2>
+    <p class="desc">오늘의 하이라이트! 01에서 만든 그 Part를 <b>시작 게이트</b>로 바꿔볼게요. 클릭하면 열리거나 표시등이 켜지는 파트예요. 먼저 <b>ClickDetector</b>를 Part 안에 넣습니다.</p>
     <ol class="steps">
-      <li><span class="num">1</span><p><b>Part</b>를 클릭해 선택합니다.</p></li>
-      <li><span class="num">2</span><p><b>⊕</b> 버튼(또는 우클릭 → 삽입 → 개체 삽입...)을 누릅니다.</p></li>
+      <li><span class="num">1</span><p>01에서 만든 <b>Part</b>를 클릭해 선택합니다.</p></li>
+      <li><span class="num">2</span><p><b>⊕</b> 버튼(우클릭도 가능)을 누릅니다.</p></li>
       <li><span class="num">3</span><p>검색창에 <code>ClickDetector</code>를 입력해 선택합니다.</p></li>
       <li><span class="num">4</span><p>탐색기에서 Part를 펼쳐 <b>Part 안에</b> 들어있는지 확인합니다.</p></li>
     </ol>
@@ -514,14 +624,13 @@ print(part.Name) -- 그 개체의 이름을 출력</code></pre>
 
   <section class="section" id="s9">
     <div class="eyebrow">HIGHLIGHT · 08</div>
-    <h2 class="sec-title">클릭 파트 ② 코드 작성</h2>
+    <h2 class="sec-title">시작 게이트 ② 코드 작성</h2>
     <p class="desc">같은 Part 안에 <b>Script</b>를 추가하고, 클릭 시 실행할 코드를 작성해요.</p>
     <ol class="steps">
       <li><span class="num">1</span><p>같은 <b>Part</b>를 선택하고 <b>⊕</b> 버튼(또는 삽입 → 개체 삽입...)을 누릅니다.</p></li>
       <li><span class="num">2</span><p>검색창에 <code>Script</code>를 입력해 선택합니다.</p></li>
-      <li><span class="num">3</span><p>Script를 더블클릭해 열고 아래 코드 중 하나를 작성합니다.</p></li>
+      <li><span class="num">3</span><p>Script를 더블클릭해 열고 아래 코드를 작성합니다.</p></li>
     </ol>
-    <p class="desc" style="margin-top:28px;">버전 1 — 클릭하면 사라지기</p>
     <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
 <pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part
 local clickDetector = part:WaitForChild("ClickDetector") -- 같은 Part 안의 ClickDetector를 찾음
@@ -530,22 +639,13 @@ clickDetector.MouseClick:Connect(function() -- Part를 클릭하면 실행됨
     part:Destroy() -- Part를 삭제함
 end)</code></pre>
     </div>
-    <p class="desc" style="margin-top:28px;">버전 2 — 클릭하면 색이 바뀌기</p>
-    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part
-local clickDetector = part:WaitForChild("ClickDetector") -- 같은 Part 안의 ClickDetector를 찾음
-
-clickDetector.MouseClick:Connect(function() -- Part를 클릭하면 실행됨
-    part.Color = Color3.new(1, 0, 0) -- Part 색을 빨간색으로 바꿈
-end)</code></pre>
-    </div>
     <div class="callout"><b>참고</b> — <code>WaitForChild("ClickDetector")</code>는 ClickDetector가 Part 안에 없으면 그 줄에서 계속 멈춰있어요. 그래서 08에서 ClickDetector를 먼저 넣어야 해요.</div>
   </section>
 
   <section class="section" id="s10">
     <div class="eyebrow">HIGHLIGHT · 08</div>
-    <h2 class="sec-title">클릭 파트 ③ 실행해서 확인</h2>
-    <p class="desc">재생 버튼을 누르고 파트를 직접 클릭해봐요.</p>
+    <h2 class="sec-title">시작 게이트 ③ 실행해서 확인</h2>
+    <p class="desc">재생 버튼을 누르고 게이트 파트를 직접 클릭해봐요.</p>
     <div class="illust-card">
       <svg class="illust-lg" viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -572,42 +672,33 @@ end)</code></pre>
         <rect x="228" y="20" width="130" height="120" rx="10" fill="url(#sky3)"/>
         <path d="M228 108 L358 108 L358 132 Q293 140 228 132 Z" fill="#b7c4c9" opacity="0.55"/>
         <rect x="273" y="82" width="40" height="30" rx="4" fill="none" stroke="#c9c6bd" stroke-width="2" stroke-dasharray="5 4"/>
-        <text x="293" y="156" text-anchor="middle" fill="#6b6f76" font-size="12">버전1: 사라짐</text>
-
-        <text x="390" y="86" text-anchor="middle" fill="#c9c6bd" font-size="13">또는</text>
-
-        <rect x="410" y="20" width="130" height="120" rx="10" fill="url(#sky3)"/>
-        <path d="M410 108 L540 108 L540 132 Q475 140 410 132 Z" fill="#b7c4c9" opacity="0.55"/>
-        <ellipse cx="475" cy="112" rx="22" ry="5" fill="#1c1c22" opacity="0.13"/>
-        <rect x="455" y="82" width="40" height="30" rx="4" fill="#e0563f"/>
-        <text x="475" y="156" text-anchor="middle" fill="#6b6f76" font-size="12">버전2: 빨간색</text>
+        <text x="293" y="156" text-anchor="middle" fill="#6b6f76" font-size="12">게이트가 사라짐</text>
       </svg>
     </div>
     <ol class="steps">
       <li><span class="num">1</span><p><b>재생</b> 버튼을 누릅니다.</p></li>
-      <li><span class="num">2</span><p>파트를 <b>직접 클릭</b>합니다. 사라지거나 색이 바뀌면 성공!</p></li>
+      <li><span class="num">2</span><p>파트를 <b>직접 클릭</b>합니다. 사라지면 성공!</p></li>
       <li><span class="num">3</span><p>확인 후 <b>정지</b> 버튼을 누릅니다.</p></li>
     </ol>
     <div class="callout warn">
       <div class="warn-title">⚠ 클릭해도 반응이 없을 때 확인하세요</div>
       <ul>
-        <li>탐색기에서 Part를 펼쳤을 때, <b>ClickDetector가 Part의 자식(안쪽)</b>으로 보이나요?</li>
-        <li>Script도 <b>같은 Part 안</b>에 있나요? ServerScriptService 안에 넣으면 작동하지 않아요.</li>
-        <li>ClickDetector의 이름이 <b>정확히 "ClickDetector"</b>인가요? (코드의 <code>WaitForChild</code>와 이름이 같아야 해요)</li>
-        <li>출력 창(빨간 글씨)에 오류 메시지가 떠 있는지 확인해보세요.</li>
+        <li>ClickDetector와 Script가 <b>같은 Part 안</b>에 있나요?</li>
+        <li>ClickDetector 이름이 <b>정확히 "ClickDetector"</b>인가요?</li>
+        <li>출력 창에 오류 메시지가 있나요?</li>
       </ul>
     </div>
   </section>
 
   <section class="section" id="s11">
-    <div class="eyebrow">BONUS · 09</div>
-    <h2 class="sec-title">보너스 트랩 ① 준비하기</h2>
-    <p class="desc">시간이 남으면 도전! 캐릭터가 밟으면 3초 뒤 폭발해요. 08은 <b>클릭</b>, 이번엔 <b>걸어가서 밟기</b>예요.</p>
+    <div class="eyebrow">HIGHLIGHT · 09</div>
+    <h2 class="sec-title">색깔 파트 ① 준비하기</h2>
+    <p class="desc">이번엔 클릭이 아니라 <b>밟으면</b> 반응하는 새 파트를 만들어요. ClickDetector 없이, 파트에 바로 <b>Touched</b>를 연결해요.</p>
     <ol class="steps">
-      <li><span class="num">1</span><p>새 파트를 추가합니다. (01과 같은 방법: 홈 탭 → 파트)</p></li>
-      <li><span class="num">2</span><p><b>속성</b> → <code>Anchored</code>를 체크합니다. (안 하면 파트가 떨어져요)</p></li>
-      <li><span class="num">3</span><p><b>⊕</b> 버튼(또는 우클릭 → 삽입 → 개체 삽입...)을 누릅니다.</p></li>
-      <li><span class="num">4</span><p>검색창에 <code>Script</code>를 입력해 선택합니다.</p></li>
+      <li><span class="num">1</span><p>새 파트를 추가합니다. (01과 같은 방법)</p></li>
+      <li><span class="num">2</span><p><b>이동(Move)</b> 도구로 파트를 <b>바닥에서 살짝 위로</b> 띄웁니다. 바닥에 닿아있으면 재생하자마자 Touched가 먼저 실행돼버려요.</p></li>
+      <li><span class="num">3</span><p><b>속성</b> → <code>Anchored</code>를 체크합니다. (안 하면 파트가 떨어져요)</p></li>
+      <li><span class="num">4</span><p><b>⊕</b> 버튼(우클릭도 가능)을 눌러 <code>Script</code>를 추가합니다.</p></li>
     </ol>
     <div class="illust-card">
       <svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
@@ -643,34 +734,167 @@ end)</code></pre>
   </section>
 
   <section class="section" id="s12">
-    <div class="eyebrow">BONUS · 09</div>
-    <h2 class="sec-title">보너스 트랩 ② 코드 &amp; 실행</h2>
+    <div class="eyebrow">HIGHLIGHT · 09</div>
+    <h2 class="sec-title">색깔 파트 ② 코드 &amp; 실행</h2>
+    <p class="desc">Script를 더블클릭해서 열고 아래 코드를 작성합니다.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part
+part.Touched:Connect(function(hit) -- Part에 뭔가 닿을 때마다 실행됨
+    part.Color = Color3.new(1, 0.6, 0) -- Part 색을 주황색으로 바꿈
+end)</code></pre>
+    </div>
+    <div class="callout warn">
+      <div class="warn-title">⚠ 재생하자마자 이미 주황색인가요?</div>
+      <p style="margin:0;">파트가 바닥에 닿아있으면 재생 순간 Touched가 먼저 실행돼요. <code>Position</code>의 <b>Y</b> 값을 올려보세요.</p>
+    </div>
+    <div class="callout">지금 코드는 <b>뭐가 닿아도, 계속 같은 색</b>으로만 반응해요. 다음엔 <b>새 파트</b>로 <b>변수</b>와 <b>조건문(if)</b>을 배워서 "천천히 작아지다 사라지는 파트"를 만들고, 그 다음엔 폭발 함정을 만들어요.</div>
+    <div class="callout tip"><code>Color3.new(1, 0.6, 0)</code>의 세 숫자(빨강·초록·파랑)를 바꾸면 다른 색이 나와요.</div>
+    <ol class="steps">
+      <li><span class="num">1</span><p><b>재생</b> 버튼을 누릅니다.</p></li>
+      <li><span class="num">2</span><p><b>W·A·S·D</b>로 걸어서 파트를 밟습니다. 색이 바뀌면 성공!</p></li>
+      <li><span class="num">3</span><p>확인 후 <b>정지</b> 버튼을 누릅니다.</p></li>
+    </ol>
+  </section>
+
+  <section class="section" id="s13">
+    <div class="eyebrow">STEP 10</div>
+    <h2 class="sec-title">변수: 값 담는 상자</h2>
+    <p class="desc">이번엔 <b>새 파트</b>로 두 번째 트랩을 만들어요. 밟을 때마다 아주 조금씩 작아지는 파트예요. "몇 번 밟았는지"를 기억해두려면 값을 담는 <b>변수</b>가 필요해요.</p>
+    <ol class="steps">
+      <li><span class="num">1</span><p>새 파트를 추가합니다. (01과 같은 방법)</p></li>
+      <li><span class="num">2</span><p><b>속성</b> → <code>Anchored</code>를 체크합니다.</p></li>
+      <li><span class="num">3</span><p><b>⊕</b> 버튼(우클릭도 가능)을 눌러 <code>Script</code>를 추가합니다.</p></li>
+    </ol>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part
+local count = 0 -- 닿은 횟수를 기억하는 상자, 처음엔 0
+
+part.Touched:Connect(function(hit) -- Part에 뭔가 닿을 때마다 실행됨
+    count = count + 1 -- 상자 안의 값에 1을 더해서 다시 저장
+    part.Size = part.Size - Vector3.new(0.3, 0, 0.3) -- 가로(X)·세로(Z)만 조금씩 줄임, 높이(Y)는 0이라 그대로 유지
+    print(count) -- 지금까지 몇 번 닿았는지 출력
+end)</code></pre>
+    </div>
+    <div class="arrow-line"><span class="arrow">→</span> 밟을 때마다 파트가 <b>아주 조금씩 작아지고</b>, 출력 창에 <b>1, 2, 3...</b>이 순서대로 나와요.</div>
+    <div class="callout"><b>local count = 0</b>으로 상자를 만들고, <code>count = count + 1</code>처럼 자기 자신의 값에 더해서 다시 저장해요. <code>part.Size</code>도 같은 방식으로 값을 계속 줄여서 눈에 보이는 변화를 만든 거예요. <code>Vector3.new(X, Y, Z)</code>에서 <b>Y를 0으로</b> 두면 높이는 그대로 두고 가로·세로만 줄일 수 있어요.</div>
+  </section>
+
+  <section class="section" id="s14">
+    <div class="eyebrow">STEP 11</div>
+    <h2 class="sec-title">조건문 if로 비교하기</h2>
+    <p class="desc">if는 조건에 따라 다른 코드를 실행해요. 너무 많이 밟아서 파트가 사라질 만큼 작아지면, 아예 없애버리게 만들어볼게요.</p>
+    <div class="callout tip">STEP 10 코드는 <b>지우지 않아요.</b> 맨 아래에 <code>if ~ end</code> 한 덩어리만 추가하면 끝이에요. 새로 추가된 부분은 코드 안 주석에 표시해뒀어요.</div>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part
+local count = 0 -- 닿은 횟수를 기억하는 상자
+
+part.Touched:Connect(function(hit) -- Part에 뭔가 닿을 때마다 실행됨
+    count = count + 1 -- 상자 안의 값에 1을 더해서 다시 저장
+    part.Size = part.Size - Vector3.new(0.3, 0, 0.3) -- 가로(X)·세로(Z)만 조금씩 줄임, 높이(Y)는 0이라 그대로 유지
+    print(count) -- 지금까지 몇 번 닿았는지 출력
+
+<span class="added-block">    -- ▼ 추가 : count가 5 이상이면 파트를 완전히 없앰
+    if count >= 5 then -- count가 5 이상일 때만 실행
+        part:Destroy() -- 파트를 완전히 없앰(사라짐)
+    end</span>
+end)</code></pre>
+    </div>
+    <div class="callout">정리하면 <b>새로 생긴 건 <code>if ~ end</code> 한 덩어리뿐</b>이에요. 위에 있던 세 줄(<code>count</code>, <code>Size</code>, <code>print</code>)은 하나도 안 건드렸어요.</div>
+    <ol class="steps">
+      <li><span class="num">1</span><p><b>재생</b> 버튼을 누르고 <b>W·A·S·D</b>로 파트를 <b>5번 이상</b> 밟아봅니다(밟고 내려왔다 다시 밟기 반복). 5번째에 완전히 사라지면 성공!</p></li>
+      <li><span class="num">2</span><p>확인 후 <b>정지</b> 버튼을 누릅니다.</p></li>
+    </ol>
+    <div class="illust-card">
+      <svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="18" width="190" height="120" rx="10" fill="#f7f6f2"/>
+        <ellipse cx="115" cy="112" rx="52" ry="8" fill="#1c1c22" opacity="0.08"/>
+        <rect class="shrink-pulse" x="95" y="65" width="40" height="30" rx="6" fill="#5b56e0"/>
+        <text x="115" y="42" text-anchor="middle" fill="#5b56e0" font-size="15" font-weight="800">1~4</text>
+        <text x="115" y="156" text-anchor="middle" fill="#6b6f76" font-size="12" font-weight="700">count &lt; 5 → 조금씩 작아짐</text>
+
+        <rect x="250" y="18" width="190" height="120" rx="10" fill="#fdeeea"/>
+        <ellipse cx="345" cy="112" rx="52" ry="8" fill="#1c1c22" opacity="0.05"/>
+        <rect class="pop-gone" x="325" y="65" width="40" height="30" rx="6" fill="none" stroke="#e0563f" stroke-width="2" stroke-dasharray="4 4"/>
+        <text x="345" y="42" text-anchor="middle" fill="#e0563f" font-size="15" font-weight="800">5+</text>
+        <text x="345" y="156" text-anchor="middle" fill="#e0563f" font-size="12" font-weight="700">count ≥ 5 → 완전히 사라짐</text>
+      </svg>
+    </div>
+    <div class="arrow-line"><span class="arrow">→</span> <code>count &gt;= 5</code>가 참(true)이 되는 순간 <code>part:Destroy()</code>가 실행돼서 파트가 사라져요.</div>
+
+    <div class="illust-card">
+      <svg class="illust-lg" viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="reuseArrow" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 Z" fill="#c9c6bd"/>
+          </marker>
+        </defs>
+
+        <rect x="20" y="60" width="230" height="76" rx="14" fill="#1b1b23"/>
+        <text x="42" y="93" fill="#ff7f9c" font-size="17" font-family="monospace" font-weight="700">if</text>
+        <text x="64" y="93" fill="#e7e5f3" font-size="17" font-family="monospace">count&gt;=5</text>
+        <text x="180" y="93" fill="#ff7f9c" font-size="17" font-family="monospace" font-weight="700">then</text>
+        <text x="42" y="117" fill="#7a7d8c" font-size="13" font-family="monospace">STEP 11</text>
+
+        <path d="M258 98 H322" stroke="#c9c6bd" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#reuseArrow)"/>
+        <text x="290" y="84" text-anchor="middle" fill="#6b6f76" font-size="14" font-weight="700">if 구조 재사용</text>
+
+        <rect x="332" y="30" width="210" height="140" rx="18" fill="#efeeff"/>
+        <g transform="translate(390,100) scale(1.3)">
+          <path d="M0,-22 L5,-6 L21,-10 L8,3 L19,15 L2,9 L0,24 L-2,9 L-19,15 L-8,3 L-21,-10 L-5,-6 Z" fill="#ff6b57"/>
+        </g>
+        <text x="390" y="150" text-anchor="middle" fill="#6b6f76" font-size="15" font-weight="700">폭발 함정</text>
+
+        <rect x="452" y="72" width="56" height="26" rx="13" fill="#e9e6df"/>
+        <circle class="toggle-knob" cx="466" cy="85" r="10" fill="#c9c6bd"/>
+        <text x="452" y="62" fill="#9a978d" font-size="12" font-weight="700">false</text>
+        <text x="488" y="62" text-anchor="end" fill="#ff6b57" font-size="12" font-weight="700">true</text>
+        <text x="480" y="114" text-anchor="middle" fill="#6b6f76" font-size="13" font-weight="700">triggered</text>
+      </svg>
+    </div>
+  </section>
+
+  <section class="section" id="s15">
+    <div class="eyebrow">HIGHLIGHT · 12</div>
+    <h2 class="sec-title">코스 속 폭발 함정 ① 준비하기</h2>
+    <p class="desc">이제 방금 배운 변수와 if로 <b>세 번째 트랩</b>을 만들어요. 밟으면 3초 뒤 폭발하는데, <b>딱 한 번만</b> 터지고 잠시 후 <b>다시 나타나게</b> 만들어요. 텔레포트나 사망으로 처음부터 되돌아왔을 때도 이 자리를 건너갈 수 있어야 하니까요.</p>
+    <ol class="steps">
+      <li><span class="num">1</span><p>새 파트를 추가합니다. (01과 같은 방법)</p></li>
+      <li><span class="num">2</span><p><b>속성</b> → <code>Anchored</code>를 체크합니다. (안 하면 파트가 떨어져요)</p></li>
+      <li><span class="num">3</span><p><b>⊕</b> 버튼(우클릭도 가능)을 누릅니다.</p></li>
+      <li><span class="num">4</span><p>검색창에 <code>Script</code>를 입력해 선택합니다.</p></li>
+    </ol>
+  </section>
+
+  <section class="section" id="s16">
+    <div class="eyebrow">HIGHLIGHT · 12</div>
+    <h2 class="sec-title">코스 속 폭발 함정 ② 코드 &amp; 실행</h2>
     <p class="desc">Script를 더블클릭해서 열고 아래 코드를 작성합니다.</p>
     <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
 <pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part(트랩)
 local triggered = false -- 한 번만 터지게 막는 잠금장치
 
-part.Touched:Connect(function(hit) -- Part에 뭔가 닿을 때마다 실행됨, hit = 닿은 물체
+part.Touched:Connect(function(hit) -- Part에 뭔가 닿을 때마다 실행됨
     if triggered then return end -- 이미 터졌으면 아무것도 안 함
+    triggered = true -- 잠금장치를 걸어서 중복 실행 방지
 
-    local character = hit.Parent -- 닿은 물체의 부모(캐릭터일 수도 있음)
-    local humanoid = character:FindFirstChild("Humanoid") -- 사람 캐릭터인지 확인
+    wait(3) -- 3초 대기
 
-    if humanoid then -- 사람이 닿았을 때만
-        triggered = true -- 잠금장치를 걸어서 중복 실행 방지
+    local explosion = Instance.new("Explosion") -- 폭발 효과 생성
+    explosion.Position = part.Position -- 터질 위치 = Part의 위치
+    explosion.BlastRadius = 10      -- 폭발 범위
+    explosion.BlastPressure = 500000 -- 폭발 힘
+    explosion.Parent = workspace -- 게임 화면에 등장시킴
 
-        wait(3) -- 3초 대기
+    part.Transparency = 1 -- 파트를 안 보이게 함
+    part.CanCollide = false -- 밟고 설 수 없게(통과되게) 함
 
-        local explosion = Instance.new("Explosion") -- 폭발 효과 생성
-        explosion.Position = part.Position -- 터질 위치 = Part의 위치
-        explosion.BlastRadius = 10      -- 폭발 범위
-        explosion.BlastPressure = 500000 -- 폭발 힘
-        explosion.Parent = workspace -- 게임 화면에 등장시킴
-
-        part:Destroy() -- 트랩 Part 제거
-    end
+    wait(5) -- 5초 뒤
+    part.Transparency = 0 -- 다시 보이게
+    part.CanCollide = true -- 다시 밟고 설 수 있게
+    triggered = false -- 잠금장치 풀기(다시 터질 수 있게)
 end)</code></pre>
     </div>
+    <div class="callout"><code>triggered</code>가 <code>false</code>일 때만 폭발이 진행되고, 바로 <code>true</code>로 바꿔서 <b>딱 한 번만</b> 터지게 막아요. <code>part:Destroy()</code>로 아예 없애버리면, 텔레포트나 사망으로 되돌아왔을 때 이 자리를 영영 건너갈 수 없게 돼요. 그래서 <code>Transparency</code>·<code>CanCollide</code>로 잠깐 숨겼다가 다시 되돌리는 방식을 썼어요.</div>
     <div class="illust-card">
       <svg class="illust-lg" viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -707,27 +931,27 @@ end)</code></pre>
         <g transform="translate(400,100)">
           <path d="M0,-30 L7,-8 L28,-14 L10,4 L26,20 L2,12 L0,32 L-2,12 L-26,20 L-10,4 L-28,-14 L-7,-8 Z" fill="#ff6b57"/>
         </g>
-        <text x="400" y="150" text-anchor="middle" fill="#6b6f76" font-size="12">폭발! 트랩 제거</text>
+        <text x="400" y="150" text-anchor="middle" fill="#6b6f76" font-size="12">폭발! 잠깐 사라졌다 다시 나타나요</text>
       </svg>
     </div>
     <ol class="steps">
       <li><span class="num">1</span><p><b>재생</b> 버튼을 누르면 캐릭터가 나타납니다.</p></li>
       <li><span class="num">2</span><p><b>W·A·S·D</b>로 걸어서 트랩을 밟습니다. (클릭 아님)</p></li>
-      <li><span class="num">3</span><p>3초 뒤 폭발과 함께 트랩이 사라지면 <b>정지</b>합니다.</p></li>
+      <li><span class="num">3</span><p>3초 뒤 폭발과 함께 트랩이 사라졌다가, 5초 뒤 다시 나타나면 <b>정지</b>합니다.</p></li>
     </ol>
     <div class="callout warn">
       <div class="warn-title">⚠ 폭발이 안 일어날 때 확인하세요</div>
       <ul>
-        <li>혹시 <b>마우스로 클릭</b>하고 있지 않나요? W·A·S·D로 캐릭터를 움직여 파트 위로 지나가야 해요.</li>
-        <li>Script가 <b>트랩 파트 안</b>에 들어있나요?</li>
-        <li>트랩 파트의 <code>CanCollide</code>가 꺼져 있으면 <code>Touched</code>가 발생하지 않을 수 있어요.</li>
-        <li>한 번 터진 트랩은 <code>triggered</code> 때문에 다시 반응하지 않아요. 재생을 껐다 켜서 다시 테스트해요.</li>
+        <li>W·A·S·D로 캐릭터를 움직여 파트를 <b>밟았나요</b>? (클릭 아님)</li>
+        <li>Script가 <b>트랩 파트 안</b>에 있나요?</li>
+        <li>트랩이 사라진 직후엔 안 보여요. 5초 정도 기다리면 다시 나타나서 재시도할 수 있어요.</li>
       </ul>
     </div>
+    <div class="callout tip"><code>wait(3)</code>은 밟고 나서 터지기까지, <code>wait(5)</code>는 터진 뒤 다시 나타나기까지 걸리는 시간이에요. 숫자를 바꾸면 각각 조절돼요.</div>
   </section>
 
-  <section class="section" id="s13">
-    <div class="eyebrow">STEP 10</div>
+  <section class="section" id="s17">
+    <div class="eyebrow">STEP 13</div>
     <h2 class="sec-title">AI 살짝 맛보기</h2>
     <p class="desc">스튜디오 안에 AI <b>도우미(Assistant)</b>가 이미 들어있어요. 외부 사이트 없이 바로 물어볼 수 있어요.</p>
     <ol class="steps">
@@ -753,13 +977,241 @@ end)</code></pre>
         <rect x="346" y="58" width="178" height="34" rx="8" fill="#f4f2ec"/>
         <text x="356" y="79" fill="#6b6f76" font-size="11">이 코드 뭐가 잘못됐어?</text>
         <rect x="346" y="100" width="178" height="50" rx="8" fill="#efeeff"/>
-        <text x="356" y="118" fill="#1c1c22" font-size="11">humanoid가 없을 때</text>
-        <text x="356" y="134" fill="#1c1c22" font-size="11">체크가 필요해요 ...</text>
+        <text x="356" y="118" fill="#1c1c22" font-size="11">triggered가 없으면</text>
+        <text x="356" y="134" fill="#1c1c22" font-size="11">계속 반복 실행돼요 ...</text>
       </svg>
     </div>
   </section>
 
-  <section class="section" id="s14">
+  <section class="section" id="s19">
+    <div class="eyebrow">HIGHLIGHT · 13</div>
+    <h2 class="sec-title">점프대 만들기 — 밟으면 점프</h2>
+    <p class="desc">앞에서 배운 Touched를 다시 써요. 이번엔 밟으면 캐릭터가 점프해요.</p>
+    <ol class="steps">
+      <li><span class="num">1</span><p>새 파트를 추가하고 <b>속성</b>에서 <code>Anchored</code>를 체크합니다. (앞에서 배운 것처럼)</p></li>
+      <li><span class="num">2</span><p>같은 파트 안에 <b>Script</b>를 추가합니다.</p></li>
+    </ol>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part(점프대)
+
+part.Touched:Connect(function(hit) -- Part에 뭔가 닿을 때마다 실행됨
+    local character = hit.Parent -- 닿은 물체의 부모
+    local humanoid = character:FindFirstChild("Humanoid") -- Jump를 실행하려면 Humanoid 객체 자체가 필요함
+
+    if humanoid then -- Humanoid가 있을 때만(점프시킬 대상이 있을 때만)
+        humanoid.Jump = true -- 캐릭터를 점프시킴
+    end
+end)</code></pre>
+    </div>
+    <div class="illust-card">
+      <svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyJump" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#bfe0f5"/>
+            <stop offset="1" stop-color="#eef8ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="18" width="420" height="126" rx="10" fill="url(#skyJump)"/>
+        <path d="M20 118 L440 118 L440 138 Q230 146 20 138 Z" fill="#b7c4c9" opacity="0.5"/>
+
+        <rect x="205" y="96" width="50" height="14" rx="4" fill="#ff6b57"/>
+        <path class="jump-shadow" d="M195 103 l-8 -5 M265 103 l8 -5 M230 90 l0 -9" stroke="#ff6b57" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+
+        <ellipse class="jump-shadow" cx="230" cy="122" rx="24" ry="6" fill="#1c1c22"/>
+        <g class="jump-char">
+          <path d="M222,86 L238,86 L236,114 L224,114 Z" fill="#5b56e0"/>
+          <circle cx="230" cy="76" r="8" fill="#1c1c22"/>
+        </g>
+
+        <text x="230" y="152" text-anchor="middle" fill="#6b6f76" font-size="12">점프대를 밟으면 캐릭터가 계속 점프해요</text>
+      </svg>
+    </div>
+    <div class="callout"><code>humanoid.Jump = true</code>는 딱 한 번 점프시키는 명령이에요. 계속 밟고 있으면 여러 번 반복 실행될 수 있어요.</div>
+  </section>
+
+  <section class="section" id="s20">
+    <div class="eyebrow">HIGHLIGHT · 14</div>
+    <h2 class="sec-title">함정 만들기 — 되돌리기 또는 쓰러뜨리기</h2>
+    <p class="desc">밟으면 정해둔 위치로 되돌리거나, 체력을 0으로 만들어 쓰러뜨려요. 두 버전을 만들어 비교해봐요.</p>
+    <ol class="steps">
+      <li><span class="num">1</span><p>새 파트를 추가하고 <code>Anchored</code>를 체크합니다.</p></li>
+      <li><span class="num">2</span><p>같은 파트 안에 <b>Script</b>를 추가합니다.</p></li>
+    </ol>
+    <p class="desc" style="margin-top:28px;">버전 1 — 되돌아가기 (텔레포트)</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part(함정)
+local spawnPoint = Vector3.new(0, 5, 0) -- 되돌아갈 위치 좌표
+local triggered = false -- 중복 실행을 막는 잠금장치
+
+part.Touched:Connect(function(hit)
+    if triggered then return end -- 이미 작동 중이면 무시
+    triggered = true -- 잠금장치 걸기
+
+    local character = hit.Parent -- 닿은 물체의 부모(캐릭터)
+    character:MoveTo(spawnPoint) -- 캐릭터를 spawnPoint 위치로 이동
+    print("함정에 걸렸어요!") -- 출력 창에 메시지 표시
+
+    wait(1) -- 1초 대기
+    triggered = false -- 잠금장치 풀기 (다시 밟을 수 있게)
+end)</code></pre>
+    </div>
+    <div class="illust-card">
+      <svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyTrap" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#bfe0f5"/>
+            <stop offset="1" stop-color="#eef8ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="18" width="420" height="126" rx="10" fill="url(#skyTrap)"/>
+        <path d="M20 118 L440 118 L440 138 Q230 146 20 138 Z" fill="#b7c4c9" opacity="0.5"/>
+
+        <path d="M90 132 V96" stroke="#54585f" stroke-width="2"/>
+        <path d="M90 96 L112 104 L90 112 Z" fill="#3fa14f"/>
+        <text x="90" y="150" text-anchor="middle" fill="#6b6f76" font-size="11">spawnPoint</text>
+
+        <g opacity="0.16">
+          <path d="M78,96 L94,96 L92,124 L80,124 Z" fill="#5b56e0"/>
+          <circle cx="86" cy="86" r="8" fill="#1c1c22"/>
+        </g>
+        <g opacity="0.3">
+          <path d="M82,100 L98,100 L96,128 L84,128 Z" fill="#5b56e0"/>
+          <circle cx="90" cy="90" r="8" fill="#1c1c22"/>
+        </g>
+
+        <rect x="330" y="96" width="50" height="14" rx="4" fill="#fff4ec" stroke="#ff6b57" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <text x="355" y="82" text-anchor="middle" fill="#ff6b57" font-size="11" font-weight="700">함정</text>
+
+        <g class="teleport-char">
+          <ellipse cx="355" cy="122" rx="22" ry="6" fill="#1c1c22" opacity="0.13"/>
+          <path d="M347,86 L363,86 L361,114 L349,114 Z" fill="#5b56e0"/>
+          <circle cx="355" cy="76" r="8" fill="#1c1c22"/>
+        </g>
+
+        <text x="230" y="152" text-anchor="middle" fill="#6b6f76" font-size="12">밟으면 spawnPoint로 순간이동해요</text>
+      </svg>
+    </div>
+    <div class="callout"><code>Vector3.new(x, y, z)</code>는 3차원 좌표예요. 원하는 위치를 클릭한 뒤 <b>속성</b> 창의 <code>Position</code> 값을 참고해서 <code>spawnPoint</code> 숫자를 바꿔보세요.</div>
+
+    <p class="desc" style="margin-top:28px;">버전 2 — 즉시 쓰러뜨리기 (Health = 0)</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local killPart = script.Parent -- 이 스크립트가 들어있는 Part(함정)
+
+killPart.Touched:Connect(function(otherPart) -- Part에 뭔가 닿을 때마다 실행됨
+    print(otherPart) -- 무엇이 닿았는지 출력 창에서 확인
+    local character = otherPart.Parent -- 닿은 물체의 부모
+    local human = character:FindFirstChild("Humanoid") -- Health를 0으로 만들려면 Humanoid 객체 자체가 필요함
+
+    if human then -- Humanoid가 있을 때만(쓰러뜨릴 대상이 있을 때만)
+        human.Health = 0 -- 체력을 0으로 만들어 캐릭터를 쓰러뜨림
+    end
+end)</code></pre>
+    </div>
+    <ol class="steps">
+      <li><span class="num">1</span><p><code>human.Health = 0</code>을 <code>human.Health = 50</code>으로 바꿔서 재생해보세요. 체력이 반만 줄어드는지 확인합니다.</p></li>
+      <li><span class="num">2</span><p>재생 중 출력 창에서 <code>print(otherPart)</code> 결과를 확인해보세요. 캐릭터가 아닌 다른 물체가 닿았을 땐 뭐라고 찍히는지도 살펴보세요.</p></li>
+    </ol>
+  </section>
+
+  <section class="section" id="s21">
+    <div class="eyebrow">STEP 15</div>
+    <h2 class="sec-title">AI로 에러 고치기</h2>
+    <p class="desc">방금 살짝 맛본 어시스턴트로, 이번엔 진짜 에러를 직접 고쳐봐요.</p>
+    <p class="desc" style="margin-top:0;">아래 코드를 스크립트에 붙여넣고 재생을 눌러보세요. 일부러 오타를 심어뒀어요.</p>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent
+
+part.Touched:Conenct(function(hit) -- 오타가 숨어있어요
+    print("밟았다!")
+end)</code></pre>
+    </div>
+    <div class="illust-card">
+      <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="20" width="290" height="150" rx="10" fill="#1b1b23"/>
+        <rect x="20" y="20" width="70" height="26" rx="6" fill="#2a2a35"/>
+        <text x="55" y="37" text-anchor="middle" fill="#e7e5f3" font-size="10">Script</text>
+
+        <text x="34" y="66" fill="#e7e5f3" font-size="11">part.Touched:</text>
+        <text x="118" y="66" fill="#ff9a8a" font-size="11">Conenct</text>
+        <path class="err-pulse" d="M118 70 q4 -3 8 0 q4 -3 8 0 q4 -3 8 0" fill="none" stroke="#ff6b57" stroke-width="1.6"/>
+
+        <text x="34" y="88" fill="#e7e5f3" font-size="11">(function(hit)</text>
+        <text x="34" y="108" fill="#5a5a68" font-size="11">  ...</text>
+        <text x="34" y="128" fill="#e7e5f3" font-size="11">end)</text>
+
+        <rect x="20" y="144" width="290" height="26" fill="#2a1618"/>
+        <circle class="err-pulse" cx="34" cy="157" r="4" fill="#ff6b57"/>
+        <text x="46" y="161" fill="#ff9a8a" font-size="10">attempt to call a nil value</text>
+
+        <rect x="330" y="20" width="210" height="150" rx="10" fill="#ffffff" stroke="#e9e6df"/>
+        <text x="346" y="44" fill="#1c1c22" font-size="13" font-weight="700">어시스턴트</text>
+        <rect x="346" y="58" width="178" height="30" rx="8" fill="#f4f2ec"/>
+        <text x="356" y="77" fill="#6b6f76" font-size="11">왜 에러가 나?</text>
+        <rect x="346" y="96" width="178" height="58" rx="8" fill="#efeeff"/>
+        <text x="356" y="114" fill="#1c1c22" font-size="11">Conenct는 오타예요.</text>
+        <text x="356" y="130" fill="#1c1c22" font-size="11">Connect로 고쳐보세요.</text>
+      </svg>
+    </div>
+    <ol class="steps">
+      <li><span class="num">1</span><p>재생 버튼을 눌러 출력 창(빨간 글씨)에 뜨는 에러 메시지를 확인합니다.</p></li>
+      <li><span class="num">2</span><p>에러가 난 코드를 드래그해서 선택합니다.</p></li>
+      <li><span class="num">3</span><p><b>어시스턴트에 질문 (Ctrl+J)</b>으로 "이 코드 왜 에러가 나?"라고 물어봅니다.</p></li>
+      <li><span class="num">4</span><p>AI 답변을 참고해 오타를 고치고, 다시 재생해서 에러가 사라졌는지 확인합니다.</p></li>
+    </ol>
+    <div class="callout warn">
+      <div class="warn-title">⚠ 자주 나는 오타, AI에게 이렇게 물어보세요</div>
+      <ul>
+        <li><code>Connect</code>를 <code>Conenct</code>·<code>Conect</code>처럼 잘못 쓴 경우 — "attempt to call a nil value" 에러가 나요.</li>
+        <li>괄호 <code>( )</code>나 <code>end</code> 짝이 안 맞는 경우</li>
+        <li>따옴표 <code>" "</code>를 한쪽만 닫은 경우</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="s22">
+    <div class="eyebrow">BONUS</div>
+    <h2 class="sec-title">코인 줍기 — 밟을 때마다 개수 세기</h2>
+    <p class="desc">지금까지 만든 점프대·함정은 코스 한 줄을 따라 순서대로 놓는 장애물이었죠. 코인은 달라요 — 코스 위 <b>원하는 곳 아무 데나</b> 자유롭게 흩어놓는 보너스 아이템이에요. 밟을 때마다 <code>score</code> 변수가 늘어나는 걸로, 변수가 값을 "기억"하는 걸 직접 확인해요.</p>
+    <div class="callout tip">이 <code>score</code>는 3차시에서 화면 순위판(leaderstats)에 그대로 띄울 거예요. 지금은 출력 창에서 늘어나는 것만 확인하면 충분해요.</div>
+    <ol class="steps">
+      <li><span class="num">1</span><p>새 파트를 추가합니다. (코인처럼 만들고 싶으면 모양을 <b>구체(Ball)</b>로 바꿔도 좋아요)</p></li>
+      <li><span class="num">2</span><p>같은 파트 안에 <b>Script</b>를 추가합니다.</p></li>
+    </ol>
+    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="lua">local part = script.Parent -- 이 스크립트가 들어있는 Part(코인)
+local score = 0 -- 지금까지 모은 코인 개수
+
+part.Touched:Connect(function(hit)
+    score = score + 1 -- 코인 개수를 1 늘림
+    print("코인 획득! 총", score, "개") -- 출력 창에 현재 개수 표시
+end)</code></pre>
+    </div>
+    <div class="illust-card">
+      <svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyCoin" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#bfe0f5"/>
+            <stop offset="1" stop-color="#eef8ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="18" width="420" height="126" rx="10" fill="url(#skyCoin)"/>
+        <path d="M20 118 L440 118 L440 138 Q230 146 20 138 Z" fill="#b7c4c9" opacity="0.5"/>
+
+        <ellipse cx="230" cy="120" rx="20" ry="5" fill="#1c1c22" opacity="0.13"/>
+        <g class="coin-bob">
+          <circle cx="230" cy="100" r="17" fill="#ffc978" stroke="#e0a83f" stroke-width="2"/>
+          <circle cx="230" cy="100" r="10" fill="none" stroke="#e0a83f" stroke-width="1.4"/>
+        </g>
+
+        <text class="coin-plus" x="230" y="66" text-anchor="middle" fill="#5b56e0" font-size="18" font-weight="800">+1</text>
+
+        <text x="230" y="152" text-anchor="middle" fill="#6b6f76" font-size="12">밟을 때마다 score가 1씩 늘어나요</text>
+      </svg>
+    </div>
+    <div class="callout">일부러 <code>part:Destroy()</code>를 넣지 않았어요. 그래서 밟을 때마다 <code>score</code>가 계속 늘어나는 걸 볼 수 있어요. 진짜 코인처럼 주우면 사라지게 하고 싶다면 마지막 줄에 <code>part:Destroy()</code>를 추가하면 돼요.</div>
+  </section>
+
+  <section class="section" id="s18">
     <div class="eyebrow">CHECKLIST</div>
     <h2 class="sec-title">마무리 체크리스트</h2>
     <div class="check-list">
@@ -767,9 +1219,16 @@ end)</code></pre>
       <div class="check-item"><div class="box"></div><p>탐색기에서 Workspace와 서비스들의 구조를 살펴봤나요?</p></div>
       <div class="check-item"><div class="box"></div><p>ServerScriptService에 Script를 넣고 print("Hello world!")를 출력 창에서 확인했나요?</p></div>
       <div class="check-item"><div class="box"></div><p>탐색기에서 Part를 펼쳐 ClickDetector와 Script가 <b>둘 다 Part 안</b>에 들어있는지 확인했나요?</p></div>
-      <div class="check-item"><div class="box"></div><p>클릭하면 반응하는 파트(사라지기 또는 색 변경)를 완성했나요?</p></div>
-      <div class="check-item"><div class="box"></div><p>(보너스) 밟으면 3초 뒤 터지는 폭발 트랩을 완성했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>클릭하면 사라지는 시작 게이트를 완성했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>밟으면 색이 바뀌는 파트를 완성했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>변수에 값을 담고, 값을 늘려서 다시 저장해봤나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>변수와 if로, 5번 밟으면 아주 조금씩 작아지다 완전히 사라지는 파트를 만들었나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>변수와 if를 써서, 밟으면 3초 뒤 터지고 잠시 후 다시 나타나는 폭발 함정을 완성했나요?</p></div>
       <div class="check-item"><div class="box"></div><p>스튜디오 안 AI 도우미로 코드 설명 받는 걸 시연으로 보여줬나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>점프대를 만들어 밟으면 점프하는지 확인했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>함정을 만들어 밟으면 정해둔 위치로 되돌아가는지 확인했나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>AI 어시스턴트로 에러 메시지를 해석하고 직접 고쳐봤나요?</p></div>
+      <div class="check-item"><div class="box"></div><p>(보너스) 코인을 만들어 밟을 때마다 개수가 늘어나는지 확인했나요?</p></div>
     </div>
   </section>
 
@@ -777,7 +1236,7 @@ end)</code></pre>
 
 <footer>
   <div class="next-card">
-    <p>오늘 수업 수고하셨어요 🎉 다음에는 값을 담아두는 변수(Variable)를 배워봐요.</p>
+    <p>오늘 수업 수고하셨어요 🎉 시작 게이트·색깔 파트·작아지는 파트·폭발 함정에 점프대·함정까지, AI 디버깅과 보너스 코인까지 만들었으니 정말 알차죠? 다음 시간엔 지형 편집기로 바다를 채우고, 오늘 만든 파트들을 이어 붙여 진짜 점프맵을 완성해볼 거예요.</p>
   </div>
   <div class="copyright">Copyright © 2026 CODE:N ACADEMY</div>
 </footer>
@@ -800,9 +1259,20 @@ function highlight(code){
     return m;
   });
 }
-document.querySelectorAll('code.lua').forEach(function(el){
-  el.innerHTML = highlight(el.textContent);
-});
+// added-block처럼 강조 상자로 감싼 부분도 안쪽 텍스트만 하이라이트하도록
+// 재귀적으로 순회한다 (텍스트 노드만 치환, 기존 span 태그는 그대로 둠)
+function highlightNode(node){
+  Array.prototype.slice.call(node.childNodes).forEach(function(child){
+    if (child.nodeType === 3) {
+      var span = document.createElement('span');
+      span.innerHTML = highlight(child.nodeValue);
+      child.replaceWith(span);
+    } else if (child.nodeType === 1) {
+      highlightNode(child);
+    }
+  });
+}
+document.querySelectorAll('code.lua').forEach(highlightNode);
 
 // sidebar toggle (desktop: nav-collapsed hides it / mobile: nav-open shows it)
 var isMobile = window.matchMedia('(max-width:900px)').matches;
@@ -824,13 +1294,24 @@ document.querySelectorAll('.sidebar nav a').forEach(function(a){
 });
 
 // scrollspy: highlight current section link
+// 네비게이션이 섹션마다 있지 않고 여러 섹션을 하나로 묶어서 보여주므로
+// (예: 시작 게이트 ①②③ → "시작 게이트" 링크 하나), 네비 링크가 없는
+// 섹션은 자신보다 앞서 나온 가장 가까운 네비 링크의 그룹으로 취급한다.
 var navLinks = document.querySelectorAll('.sidebar nav a');
+var navHrefs = Array.prototype.map.call(navLinks, function(l){ return l.getAttribute('href').slice(1); });
 var sections = document.querySelectorAll('main .section');
+var groupOf = {};
+var currentGroup = null;
+sections.forEach(function(s){
+  if (navHrefs.indexOf(s.id) !== -1) currentGroup = s.id;
+  groupOf[s.id] = currentGroup;
+});
 var observer = new IntersectionObserver(function(entries){
   entries.forEach(function(entry){
     if (entry.isIntersecting){
       navLinks.forEach(function(l){ l.classList.remove('active'); });
-      var link = document.querySelector('.sidebar nav a[href="#' + entry.target.id + '"]');
+      var groupId = groupOf[entry.target.id];
+      var link = document.querySelector('.sidebar nav a[href="#' + groupId + '"]');
       if (link) link.classList.add('active');
     }
   });
