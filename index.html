@@ -2070,7 +2070,7 @@ body::before { display: none !important; }
 .py-sec-title.func::before { background: #7C3AED !important; }
 
 /* 파이썬 갤러리 — 1200px 풀넓이 */
-.py-gallery, .py-sec-title, .py-today-bar, .py-done-btn, .py-toc-header, .py-toc-grid {
+.py-gallery, .py-sec-title, .py-today-bar, .py-done-btn, .py-toc-header, .py-toc-grid, .p8-toc-grid {
   width: min(1200px, calc(100vw - 32px)) !important;
   position: relative !important;
   left: 50% !important;
@@ -2205,6 +2205,52 @@ body::before { display: none !important; }
 }
 .py-toc-ver:hover { background: #2AC1A5; color: #fff; border-color: #2AC1A5; }
 @media (max-width: 900px) { .py-toc-grid { grid-template-columns: 1fr; } }
+
+/* PANEL8 특강 목차 (py-toc 스타일 재사용, .py-toc-lesson 진행률 카운트와는 분리된 별도 클래스) */
+.p8-toc-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:24px;margin-bottom:20px;align-items:stretch;
+}
+.p8-toc-chapter{
+  background:#FFFFFF;border-radius:20px;padding:28px;
+  box-shadow:0 10px 25px -5px rgba(0,0,0,0.05),0 8px 10px -6px rgba(0,0,0,0.05);
+  display:flex;flex-direction:column;
+}
+.p8-toc-chapter-title{
+  font-size:18px;font-weight:800;color:#0F172A;
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;
+}
+.p8-toc-chapter-title::before{
+  content:'';width:4px;height:18px;background:#BE4BDB;border-radius:10px;flex-shrink:0;
+}
+.p8-toc-lessons{display:flex;flex-direction:column;gap:10px;flex:1;}
+.p8-toc-lesson{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:15px 20px;background:#F8FAFC;border-radius:14px;border:1px solid #F1F5F9;
+  text-decoration:none;color:inherit;transition:.25s ease;
+}
+.p8-toc-lesson:hover{background:#FFFFFF;border-color:#BE4BDB;transform:translateX(4px);box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+.p8-toc-lesson-text{min-width:0;}
+.p8-toc-lesson-title{font-weight:700;font-size:15px;color:#334155;display:block;}
+.p8-toc-lesson-sub{font-size:12px;color:#94A3B8;margin-top:3px;display:block;}
+.p8-toc-lesson-icon{
+  width:28px;height:28px;background:#FFFFFF;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:#94A3B8;font-size:13px;border:1px solid #E2E8F0;flex-shrink:0;transition:.25s ease;
+}
+.p8-toc-lesson:hover .p8-toc-lesson-icon{background:#BE4BDB;color:#fff;border-color:#BE4BDB;transform:rotate(-45deg);}
+.p8-toc-lesson.soon{cursor:pointer;opacity:0.6;}
+.p8-toc-lesson.soon:hover{border-color:#F1F5F9;transform:none;box-shadow:none;background:#F8FAFC;}
+.p8-toc-lesson.soon:hover .p8-toc-lesson-icon{background:#FFFFFF;color:#94A3B8;border-color:#E2E8F0;transform:none;}
+.p8-toc-lesson.p8-done{background:#FBF0FE;border-color:rgba(190,75,219,0.35);}
+.p8-toc-lesson.p8-done .p8-toc-lesson-title{color:#862E99;}
+.p8-toc-lesson.p8-done .p8-toc-lesson-icon{background:#BE4BDB;color:#fff;border-color:#862E99;}
+.p8-toc-lesson.p8-done:hover .p8-toc-lesson-icon{background:#862E99;border-color:#862E99;transform:none;}
+.p8-soon-badge{
+  font-size:11px;font-weight:700;color:#A855F7;background:#F3E8FF;
+  padding:3px 10px;border-radius:20px;flex-shrink:0;
+}
+@media (max-width:900px){ .p8-toc-grid{grid-template-columns:1fr;} }
 
 /* 파이썬 메모 */
 
@@ -3272,7 +3318,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
 </svg></div>
               <div>
                 <div class="panel-hero-lv">Level 6 · 심화 특강</div>
-                <div class="panel-hero-title">기타·심화 특강 (AI · 마인크래프트)</div>
+                <div class="panel-hero-title">기타·심화 특강 (AI · 마인크래프트 · 로블록스)</div>
               </div>
             </div>
             <div class="panel-hero-desc">AI 자격증부터 마인크래프트 코딩까지! 다양한 심화 과정에 도전해요.</div>
@@ -3281,55 +3327,70 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <span class="panel-hero-tag">AICE Junior</span>
               <span class="panel-hero-tag">바이브코딩</span>
               <span class="panel-hero-tag">마인크래프트</span>
+              <span class="panel-hero-tag">로블록스</span>
             </div>
           </div>
         </div>
       </div>
-      <div class="lesson-card-grid">
-        <a href="#" class="lesson-card s5" data-key="p8-l1" onclick="return goLesson(this)">
-          <div class="lesson-card-thumb"><div class="lesson-card-num">AI 1</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">AICE Future</div>
-            <div class="lesson-card-title">AICE Future 과정</div>
-            <div class="lesson-card-sub">AI 기초 원리, 머신러닝 개념 이해</div>
+      <div class="p8-toc-grid">
+        <div class="p8-toc-chapter">
+          <div class="p8-toc-chapter-title">AI · 자격증 과정</div>
+          <div class="p8-toc-lessons">
+            <a href="#" class="p8-toc-lesson soon" onclick="return goLesson(this)">
+              <div class="p8-toc-lesson-text">
+                <span class="p8-toc-lesson-title">AICE Future 과정</span>
+                <span class="p8-toc-lesson-sub">AI 기초 원리, 머신러닝 개념 이해</span>
+              </div>
+              <span class="p8-soon-badge">준비중</span>
+            </a>
+            <a href="#" class="p8-toc-lesson soon" onclick="return goLesson(this)">
+              <div class="p8-toc-lesson-text">
+                <span class="p8-toc-lesson-title">AICE Junior 과정</span>
+                <span class="p8-toc-lesson-sub">데이터 분석 & 실전 AI 모델 만들기</span>
+              </div>
+              <span class="p8-soon-badge">준비중</span>
+            </a>
+            <a href="#" class="p8-toc-lesson soon" onclick="return goLesson(this)">
+              <div class="p8-toc-lesson-text">
+                <span class="p8-toc-lesson-title">바이브코딩 과정</span>
+                <span class="p8-toc-lesson-sub">피지컬 컴퓨팅 + AI 연동 프로젝트</span>
+              </div>
+              <span class="p8-soon-badge">준비중</span>
+            </a>
           </div>
-          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
-        </a>
-        <a href="#" class="lesson-card s5" data-key="p8-l2" onclick="return goLesson(this)">
-          <div class="lesson-card-thumb"><div class="lesson-card-num">AI 2</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">AICE Junior</div>
-            <div class="lesson-card-title">AICE Junior 과정</div>
-            <div class="lesson-card-sub">데이터 분석 & 실전 AI 모델 만들기</div>
+        </div>
+        <div class="p8-toc-chapter">
+          <div class="p8-toc-chapter-title">마인크래프트</div>
+          <div class="p8-toc-lessons">
+            <a href="마인크래프트_파이썬_코딩_학습지.html" target="_blank" class="p8-toc-lesson" data-lid="mc1">
+              <div class="p8-toc-lesson-text">
+                <span class="p8-toc-lesson-title">마인크래프트 파이썬 코딩</span>
+                <span class="p8-toc-lesson-sub">마인크래프트 세계에서 파이썬으로 코딩하기</span>
+              </div>
+              <span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'mc1','🧱 마인크래프트 파이썬 코딩')">➜</span>
+            </a>
           </div>
-          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
-        </a>
-        <a href="#" class="lesson-card s5" data-key="p8-l3" onclick="return goLesson(this)">
-          <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:20px;">Vibe</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">바이브코딩</div>
-            <div class="lesson-card-title">바이브코딩 과정</div>
-            <div class="lesson-card-sub">피지컬 컴퓨팅 + AI 연동 프로젝트</div>
+        </div>
+        <div class="p8-toc-chapter">
+          <div class="p8-toc-chapter-title">로블록스</div>
+          <div class="p8-toc-lessons">
+            <a href="로블록스_점프맵.html" target="_blank" class="p8-toc-lesson" data-lid="rbxjmp1">
+              <div class="p8-toc-lesson-text">
+                <span class="p8-toc-lesson-title">나만의 점프맵 완성하기</span>
+                <span class="p8-toc-lesson-sub">스튜디오 조작부터 여섯 블록까지</span>
+              </div>
+              <span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'rbxjmp1','🎮 나만의 점프맵 완성하기')">➜</span>
+            </a>
+            <a href="로블록스_점프맵타워형.html" target="_blank" class="p8-toc-lesson" data-lid="rbxjmp2">
+              <div class="p8-toc-lesson-text">
+                <span class="p8-toc-lesson-title">점프맵부터 타워형까지</span>
+                <span class="p8-toc-lesson-sub">타워형 게임 완성 후 게시하기</span>
+              </div>
+              <span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'rbxjmp2','🎮 점프맵부터 타워형까지')">➜</span>
+            </a>
           </div>
-          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
-        </a>
-        <a href="마인크래프트_파이썬_코딩_학습지.html" target="_blank" class="lesson-card s5" data-key="p8-l4" onclick="return goLesson(this)">
-          <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:20px;">MC</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">마인크래프트</div>
-            <div class="lesson-card-title">마인크래프트 파이썬 코딩</div>
-            <div class="lesson-card-sub">마인크래프트 세계에서 파이썬으로 코딩하기</div>
-          </div>
-          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
-        </a>
+        </div>
       </div>
-      <div class="lesson-done-row">
-        <label class="done-toggle" id="done-p8" onclick="toggleDone('p8')">
-          <div class="chk" id="chk-p8">✓</div>
-          오늘 단계 완료 표시
-        </label>
-      </div>
-      <button class="panel-done-btn s5" onclick="openCompleteModal(8">✅ 수업 완료 보고</button>
     </div>
 
     <!-- PLACEHOLDER / HOME DASHBOARD -->
@@ -3437,7 +3498,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
               <span class="cn-badge ready">학습 가능</span>
               <div class="cn-step" style="color:#BE4BDB">STEP 09</div>
               <div class="cn-title">기타·심화 특강</div>
-              <div class="cn-desc">AI 자격증부터 마인크래프트까지<br>다양한 심화 과정!</div>
+              <div class="cn-desc">AI 자격증부터 마인크래프트, 로블록스까지<br>다양한 심화 과정!</div>
               <div class="cn-footer" style="color:#BE4BDB">학습 시작하기 →</div>
             </div>
 
@@ -4712,6 +4773,65 @@ async function reportTinkercadMissionComplete(title) {
   }
 }
 
+// ── PANEL8(기타·심화특강) 목차 화살표 클릭 완료 처리 (터틀 미션 완료 방식과 동일)
+function toggleP8LessonDone(e, iconEl, lid, title) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  const name = getStore('studentName', '');
+  const key = 'p8-lessons-' + name;
+  let done = [];
+  try { done = JSON.parse(localStorage.getItem(key) || '[]'); } catch(err) {}
+  const idx = done.indexOf(lid);
+  const row = iconEl.closest('.p8-toc-lesson');
+  if (idx >= 0) {
+    done.splice(idx, 1);
+    try { localStorage.setItem(key, JSON.stringify(done)); } catch(err) {}
+    row.classList.remove('p8-done');
+    iconEl.textContent = '➜';
+    return;
+  }
+  done.push(lid);
+  try { localStorage.setItem(key, JSON.stringify(done)); } catch(err) {}
+  row.classList.add('p8-done');
+  iconEl.textContent = '✓';
+  reportP8LessonComplete(title);
+}
+function restoreP8DoneLessons() {
+  const name = getStore('studentName', '');
+  let done = [];
+  try { done = JSON.parse(localStorage.getItem('p8-lessons-' + name) || '[]'); } catch(e) {}
+  document.querySelectorAll('.p8-toc-lesson[data-lid]').forEach(function(row) {
+    const lid = row.getAttribute('data-lid');
+    const icon = row.querySelector('.p8-toc-lesson-icon');
+    if (done.includes(lid)) {
+      row.classList.add('p8-done');
+      if (icon) icon.textContent = '✓';
+    } else {
+      row.classList.remove('p8-done');
+      if (icon) icon.textContent = '➜';
+    }
+  });
+}
+async function reportP8LessonComplete(title) {
+  const panelKey = 'p8';
+
+  // 1) 오늘 단계 완료 표시 + 폭죽
+  setStore('done-' + panelKey, true);
+  applyDone(panelKey, true);
+  calcProgress();
+  fireConfetti();
+
+  // 2) 수업 완료 보고 (구글 시트 기록)
+  const name = getStore('studentName', '이름 없음');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+  const level = LEVEL_NAMES[panelKey] || panelKey;
+  const memo = title ? (title + ' 완료') : '미션 완료';
+  const isSetup = APPS_SCRIPT_URL && APPS_SCRIPT_URL !== '여기에_Apps_Script_URL_붙여넣기';
+  if (isSetup) {
+    await sendToSheets({ type: 'complete', name, date: dateStr, level, memo });
+  }
+}
+
 // ── CONFETTI
 function loadAllState() {
   ['p1','p2','p3','p4','p5','p6','p7','p8'].forEach(p => {
@@ -4723,6 +4843,7 @@ function loadAllState() {
   });
   loadTodaySelect('p5');
   restorePyDoneCards();
+  restoreP8DoneLessons();
   // 로그인 후에는 항상 홈 화면으로 시작 (과목 자동 이동 없음)
 }
 
