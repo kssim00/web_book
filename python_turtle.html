@@ -1555,6 +1555,27 @@ function setTurtleDone(list){
   catch(e){}
 }
 
+// ── 시트에 보일 때는 u0/w0 대신 사람이 알아보기 쉬운 표시로 저장 ──
+// 커리큘럼(u0~u8) → 차시 번호 그대로(0~8), 보너스 게임(w0~w9) → "게임1"~"게임10"
+function _turtleKeyToLabel(key){
+  if (key.charAt(0) === 'u') return String(parseInt(key.slice(1), 10));
+  if (key.charAt(0) === 'w') return '게임' + (parseInt(key.slice(1), 10) + 1);
+  return key;
+}
+function _turtleLabelToKey(label){
+  label = (label || '').trim();
+  if (!label) return null;
+  if (/^[uw]\d+$/.test(label)) return label; // 예전 형식(u0 등)으로 저장된 데이터도 그대로 인식
+  const gameMatch = label.match(/^게임(\d+)$/);
+  if (gameMatch) return 'w' + (parseInt(gameMatch[1], 10) - 1);
+  if (/^\d+$/.test(label)) return 'u' + label;
+  return null;
+}
+function _turtleSortOrder(key){
+  const n = parseInt(key.slice(1), 10) || 0;
+  return key.charAt(0) === 'w' ? 1000 + n : n;
+}
+
 // ── 클라우드 동기화 (구글시트, 엔트리/스크래치와 같은 구조) ──
 // 여러 컴퓨터에서 같은 학생 이름으로 접속하면 완료/취소 상태가 서로 동기화됨
 async function loadTurtleFromCloud(){
@@ -1565,7 +1586,7 @@ async function loadTurtleFromCloud(){
     const data = JSON.parse(await res.text());
     if (data.found){
       const raw = (data.turtleMissions || '').toString();
-      const cloudList = raw.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+      const cloudList = raw.split(',').map(_turtleLabelToKey).filter(Boolean);
       setTurtleDone(cloudList);
       return true;
     }
@@ -1576,7 +1597,8 @@ function saveTurtleToCloud(){
   const name = _turtleStudentName();
   if (typeof APPS_SCRIPT_URL === 'undefined' || !APPS_SCRIPT_URL || !name || name === '학생') return;
   try {
-    const missions = getTurtleDone().join(',');
+    const missions = getTurtleDone().slice().sort(function(a,b){ return _turtleSortOrder(a) - _turtleSortOrder(b); })
+      .map(_turtleKeyToLabel).join(',');
     const url = APPS_SCRIPT_URL + '?action=save&type=turtle&name=' + encodeURIComponent(name) + '&xp=0&missions=' + encodeURIComponent(missions);
     fetch(url).catch(function(){});
   } catch(e){}
