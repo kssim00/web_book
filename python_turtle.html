@@ -6,6 +6,7 @@
 <title>파이썬 터틀 웹교재</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="config.js"></script>
 <style>
   :root{
     --primary:#2f9e6e;
@@ -1554,6 +1555,33 @@ function setTurtleDone(list){
   catch(e){}
 }
 
+// ── 클라우드 동기화 (구글시트, 엔트리/스크래치와 같은 구조) ──
+// 여러 컴퓨터에서 같은 학생 이름으로 접속하면 완료/취소 상태가 서로 동기화됨
+async function loadTurtleFromCloud(){
+  const name = _turtleStudentName();
+  if (typeof APPS_SCRIPT_URL === 'undefined' || !APPS_SCRIPT_URL || !name || name === '학생') return false;
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=read&name=' + encodeURIComponent(name) + '&t=' + Date.now());
+    const data = JSON.parse(await res.text());
+    if (data.found){
+      const raw = (data.turtleMissions || '').toString();
+      const cloudList = raw.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+      setTurtleDone(cloudList);
+      return true;
+    }
+  } catch(e){ console.log('터틀 클라우드 로드 실패:', e); }
+  return false;
+}
+function saveTurtleToCloud(){
+  const name = _turtleStudentName();
+  if (typeof APPS_SCRIPT_URL === 'undefined' || !APPS_SCRIPT_URL || !name || name === '학생') return;
+  try {
+    const missions = getTurtleDone().join(',');
+    const url = APPS_SCRIPT_URL + '?action=save&type=turtle&name=' + encodeURIComponent(name) + '&xp=0&missions=' + encodeURIComponent(missions);
+    fetch(url).catch(function(){});
+  } catch(e){}
+}
+
 let _homeTab = 'curriculum';
 
 function switchHomeTab(tab){
@@ -1632,27 +1660,36 @@ function completeMission(btnEl){
   const isUnit = key.charAt(0) === 'u';
   const idx = parseInt(key.slice(1), 10);
   const title = isUnit ? ((UNITS[idx] || {}).title || '') : ((WORKSHEETS[idx] || {}).title || '');
+  const undoneIcon = isUnit ? '➜' : '⭐';
+  const row = btnEl.closest('.py-toc-lesson');
 
-  const doneList = getTurtleDone();
+  let doneList = getTurtleDone();
   const already = doneList.indexOf(key) > -1;
-  if (!already){
+
+  if (already){
+    // 실수로 눌렀을 때: 다시 누르면 완료 취소
+    doneList = doneList.filter(function(k){ return k !== key; });
+    setTurtleDone(doneList);
+    btnEl.classList.remove('done');
+    btnEl.textContent = undoneIcon;
+    if (row) row.classList.remove('py-done');
+  } else {
     doneList.push(key);
     setTurtleDone(doneList);
     btnEl.classList.add('done');
     btnEl.textContent = '✓';
-    const row = btnEl.closest('.py-toc-lesson');
     if (row) row.classList.add('py-done');
-  }
 
-  burstConfettiLocal(btnEl);
+    burstConfettiLocal(btnEl);
 
-  if (!already){
     try {
       if (window.parent && window.parent !== window){
         window.parent.postMessage({ type:'turtle-mission-complete', title: title }, '*');
       }
     } catch(e){}
   }
+
+  saveTurtleToCloud();
 }
 
 // ── 작은 폭죽 애니메이션 (버튼 클릭 위치에서 터짐)
@@ -1882,6 +1919,14 @@ if(_storedLesson !== null){
 } else {
   showHome();
 }
+
+// 로컬 데이터로 먼저 화면을 그린 뒤, 백그라운드에서 구글시트와 동기화
+// (다른 컴퓨터에서 완료/취소한 내용이 있으면 반영해서 다시 그림)
+loadTurtleFromCloud().then(function(changed){
+  if (changed && document.getElementById('sidebar').style.display === 'none'){
+    showHome();
+  }
+});
 </script>
 </body>
 </html>
