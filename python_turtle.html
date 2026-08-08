@@ -1556,9 +1556,9 @@ function setTurtleDone(list){
 }
 
 // ── 시트에 보일 때는 u0/w0 대신 사람이 알아보기 쉬운 표시로 저장 ──
-// 커리큘럼(u0~u8) → 차시 번호 그대로(0~8), 보너스 게임(w0~w9) → "게임1"~"게임10"
+// 커리큘럼(u0~u8) → 1부터 시작하는 번호(1~9), 보너스 게임(w0~w9) → "게임1"~"게임10"
 function _turtleKeyToLabel(key){
-  if (key.charAt(0) === 'u') return String(parseInt(key.slice(1), 10));
+  if (key.charAt(0) === 'u') return String(parseInt(key.slice(1), 10) + 1);
   if (key.charAt(0) === 'w') return '게임' + (parseInt(key.slice(1), 10) + 1);
   return key;
 }
@@ -1568,7 +1568,7 @@ function _turtleLabelToKey(label){
   if (/^[uw]\d+$/.test(label)) return label; // 예전 형식(u0 등)으로 저장된 데이터도 그대로 인식
   const gameMatch = label.match(/^게임(\d+)$/);
   if (gameMatch) return 'w' + (parseInt(gameMatch[1], 10) - 1);
-  if (/^\d+$/.test(label)) return 'u' + label;
+  if (/^\d+$/.test(label)) return 'u' + (parseInt(label, 10) - 1);
   return null;
 }
 function _turtleSortOrder(key){
