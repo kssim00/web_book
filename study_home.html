@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>코딩 마스터 — 나의 학습 홈</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Gmarket+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&amp;family=Gmarket+Sans:wght@300;500;700&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 
@@ -2605,1068 +2606,1001 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
 </style>
 </head>
 <body>
-
 <!-- ✨ 그래픽 레이어 -->
 <canvas id="bgCanvas"></canvas>
 <div class="grid-overlay"></div>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
-
 <!-- ══ WELCOME ══ -->
 <div id="welcome">
-  <div class="welcome-logo">⚡ 코딩 마스터</div>
-  <h1 class="welcome-title">안녕하세요!<br><em>오늘도 코딩 시작해볼까요?</em></h1>
-  <p class="welcome-sub">스크래치 · 엔트리 · 파이썬 · AI<br>나만의 학습 홈에서 오늘도 한 걸음씩!</p>
-  <div class="name-box">
-    <label>내 이름 입력하기</label>
-    <div class="name-input-row">
-      <input type="text" class="name-input" id="nameInput" placeholder="예) 김민준" maxlength="8" />
-      <button class="start-btn" onclick="startApp()">시작</button>
-    </div>
-  </div>
+<div class="welcome-logo">⚡ 코딩 마스터</div>
+<h1 class="welcome-title">안녕하세요!<br/><em>오늘도 코딩 시작해볼까요?</em></h1>
+<p class="welcome-sub">스크래치 · 엔트리 · 파이썬 · AI<br/>나만의 학습 홈에서 오늘도 한 걸음씩!</p>
+<div class="name-box">
+<label>내 이름 입력하기</label>
+<div class="name-input-row">
+<input class="name-input" id="nameInput" maxlength="8" placeholder="예) 김민준" type="text"/>
+<button class="start-btn" onclick="startApp()">시작</button>
 </div>
-
+</div>
+</div>
 <!-- ══ MAIN APP ══ -->
 <div id="app">
-
-  <div class="topbar">
-    <div class="topbar-logo">코드앤 코딩 스튜디오</div>
-    <div style="flex:1;"></div>
-    <div class="topbar-right">
-      <button class="gallery-back-nav-btn" id="galleryBackNavBtn" onclick="goBackToGalleryFromTopbar()"><span class="gallery-back-nav-arrow">←</span> 미션 갤러리로</button>
-      <button class="home-nav-btn" onclick="goHome()">← 홈으로</button>
-      <span class="topbar-xp" id="entryXpBadge" style="display:none;">⭐ 0 XP</span>
-      <span class="topbar-xp" id="scratchXpBadge" style="display:none;">⭐ 0 XP</span>
-      <span class="admin-mode-badge" onclick="exitAdminMode()" title="클릭하면 관리자 모드 종료">🔧 관리자</span>
-      <div class="topbar-user">
-        <div class="user-avatar" id="avatarInitial">?</div>
-        <span class="user-name-label" id="topbarName">이름</span>
-        <button class="change-btn" onclick="resetApp()">변경</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="main">
-
-    <!-- ── PANEL 1: 스크래치 주니어 ── -->
-    <div class="content-panel" id="panel1">
-      <div class="panel-hero s1">
-        <span class="panel-hero-orb-l"></span>
-        <div class="panel-hero-inner">
-          <div class="panel-hero-left">
-            <div class="panel-hero-row">
-              <div class="panel-hero-icon"><svg width="240" height="290" viewBox="0 0 240 290" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="sh3a_p1x"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="rgba(0,0,0,0.3)"/></filter>
-    <linearGradient id="mg3_p1x" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ECEFF1"/><stop offset="1" stop-color="#B0BEC5"/></linearGradient>
-    <linearGradient id="sc3_p1x" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3F2FD"/><stop offset="1" stop-color="#BBDEFB"/></linearGradient>
-    <radialGradient id="pad3_p1x" cx="40%" cy="35%" r="60%"><stop offset="0" stop-color="#78909C"/><stop offset="1" stop-color="#37474F"/></radialGradient>
-  </defs>
-  <g transform="translate(0,48)">
-    <g filter="url(#sh3a_p1x)">
-      <rect x="28" y="18" width="168" height="138" rx="10" fill="url(#mg3_p1x)"/>
-      <rect x="36" y="26" width="152" height="122" rx="6" fill="url(#sc3_p1x)"/>
-      <rect x="100" y="156" width="20" height="22" rx="4" fill="#90A4AE"/>
-      <rect x="80" y="178" width="60" height="10" rx="5" fill="#B0BEC5"/>
-      <circle cx="112" cy="22" r="3" fill="#90A4AE"/>
-    </g>
-    <rect x="36" y="26" width="152" height="80" rx="6" fill="#7DD3FC"/>
-    <rect x="36" y="106" width="152" height="42" fill="#86EFAC"/>
-    <rect x="36" y="140" width="152" height="8" fill="#4ADE80"/>
-    <ellipse cx="70" cy="50" rx="22" ry="14" fill="white" opacity="0.9"/>
-    <ellipse cx="85" cy="44" rx="16" ry="11" fill="white" opacity="0.9"/>
-    <g transform="translate(95,70)">
-      <circle r="22" fill="#FF8C5A"/>
-      <circle cy="-18" r="16" fill="#FF8C5A"/>
-      <path d="M-10 -28 L-16 -42 L-4 -30 Z" fill="#FF8C5A"/>
-      <path d="M10 -28 L16 -42 L4 -30 Z" fill="#FF8C5A"/>
-      <path d="M-9 -29 L-13 -39 L-5 -31 Z" fill="#FFAB8C"/>
-      <path d="M9 -29 L13 -39 L5 -31 Z" fill="#FFAB8C"/>
-      <circle cx="-6" cy="-20" r="4" fill="white"/>
-      <circle cx="6" cy="-20" r="4" fill="white"/>
-      <circle cx="-5" cy="-20" r="2.5" fill="#1E293B"/>
-      <circle cx="7" cy="-20" r="2.5" fill="#1E293B"/>
-      <path d="M-6 -10 Q0 -5 6 -10" stroke="#BF360C" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    </g>
-    <circle cx="170" cy="42" r="12" fill="#FCD34D"/>
-    <g filter="url(#sh3a_p1x)" transform="rotate(15,210,100)">
-      <rect x="188" y="72" width="48" height="34" rx="14" fill="url(#pad3_p1x)"/>
-      <rect x="194" y="83" width="10" height="4" rx="1" fill="rgba(255,255,255,0.5)"/>
-      <rect x="197" y="80" width="4" height="10" rx="1" fill="rgba(255,255,255,0.5)"/>
-      <circle cx="224" cy="83" r="3" fill="#FF5252" opacity="0.85"/>
-      <circle cx="231" cy="86" r="3" fill="#4CAF50" opacity="0.85"/>
-      <circle cx="224" cy="92" r="3" fill="#2196F3" opacity="0.85"/>
-    </g>
-    <g filter="url(#sh3a_p1x)">
-      <path d="M12 38 L16 26 L20 38 L32 42 L20 46 L16 58 L12 46 L0 42 Z" fill="#FFD43B"/>
-    </g>
-    <circle cx="228" cy="18" r="8" fill="rgba(255,255,255,0.7)"/>
-    <circle cx="14" cy="160" r="6" fill="rgba(255,255,255,0.55)"/>
-    <circle cx="226" cy="168" r="5" fill="#EC4899" opacity="0.8" filter="url(#sh3a_p1x)"/>
-  </g>
+<div class="topbar">
+<div class="topbar-logo">코드앤 코딩 스튜디오</div>
+<div style="flex:1;"></div>
+<div class="topbar-right">
+<button class="gallery-back-nav-btn" id="galleryBackNavBtn" onclick="goBackToGalleryFromTopbar()"><span class="gallery-back-nav-arrow">←</span> 미션 갤러리로</button>
+<button class="home-nav-btn" onclick="goHome()">← 홈으로</button>
+<span class="topbar-xp" id="entryXpBadge" style="display:none;">⭐ 0 XP</span>
+<span class="topbar-xp" id="scratchXpBadge" style="display:none;">⭐ 0 XP</span>
+<span class="admin-mode-badge" onclick="exitAdminMode()" title="클릭하면 관리자 모드 종료">🔧 관리자</span>
+<div class="topbar-user">
+<div class="user-avatar" id="avatarInitial">?</div>
+<span class="user-name-label" id="topbarName">이름</span>
+<button class="change-btn" onclick="resetApp()">변경</button>
+</div>
+</div>
+</div>
+<div class="main">
+<!-- ── PANEL 1: 스크래치 주니어 ── -->
+<div class="content-panel" id="panel1">
+<div class="panel-hero s1">
+<span class="panel-hero-orb-l"></span>
+<div class="panel-hero-inner">
+<div class="panel-hero-left">
+<div class="panel-hero-row">
+<div class="panel-hero-icon"><svg fill="none" height="290" viewbox="0 0 240 290" width="240" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="sh3a_p1x"><fedropshadow dx="0" dy="8" flood-color="rgba(0,0,0,0.3)" stddeviation="10"></fedropshadow></filter>
+<lineargradient id="mg3_p1x" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ECEFF1"></stop><stop offset="1" stop-color="#B0BEC5"></stop></lineargradient>
+<lineargradient id="sc3_p1x" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#E3F2FD"></stop><stop offset="1" stop-color="#BBDEFB"></stop></lineargradient>
+<radialgradient cx="40%" cy="35%" id="pad3_p1x" r="60%"><stop offset="0" stop-color="#78909C"></stop><stop offset="1" stop-color="#37474F"></stop></radialgradient>
+</defs>
+<g transform="translate(0,48)">
+<g filter="url(#sh3a_p1x)">
+<rect fill="url(#mg3_p1x)" height="138" rx="10" width="168" x="28" y="18"></rect>
+<rect fill="url(#sc3_p1x)" height="122" rx="6" width="152" x="36" y="26"></rect>
+<rect fill="#90A4AE" height="22" rx="4" width="20" x="100" y="156"></rect>
+<rect fill="#B0BEC5" height="10" rx="5" width="60" x="80" y="178"></rect>
+<circle cx="112" cy="22" fill="#90A4AE" r="3"></circle>
+</g>
+<rect fill="#7DD3FC" height="80" rx="6" width="152" x="36" y="26"></rect>
+<rect fill="#86EFAC" height="42" width="152" x="36" y="106"></rect>
+<rect fill="#4ADE80" height="8" width="152" x="36" y="140"></rect>
+<ellipse cx="70" cy="50" fill="white" opacity="0.9" rx="22" ry="14"></ellipse>
+<ellipse cx="85" cy="44" fill="white" opacity="0.9" rx="16" ry="11"></ellipse>
+<g transform="translate(95,70)">
+<circle fill="#FF8C5A" r="22"></circle>
+<circle cy="-18" fill="#FF8C5A" r="16"></circle>
+<path d="M-10 -28 L-16 -42 L-4 -30 Z" fill="#FF8C5A"></path>
+<path d="M10 -28 L16 -42 L4 -30 Z" fill="#FF8C5A"></path>
+<path d="M-9 -29 L-13 -39 L-5 -31 Z" fill="#FFAB8C"></path>
+<path d="M9 -29 L13 -39 L5 -31 Z" fill="#FFAB8C"></path>
+<circle cx="-6" cy="-20" fill="white" r="4"></circle>
+<circle cx="6" cy="-20" fill="white" r="4"></circle>
+<circle cx="-5" cy="-20" fill="#1E293B" r="2.5"></circle>
+<circle cx="7" cy="-20" fill="#1E293B" r="2.5"></circle>
+<path d="M-6 -10 Q0 -5 6 -10" fill="none" stroke="#BF360C" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<circle cx="170" cy="42" fill="#FCD34D" r="12"></circle>
+<g filter="url(#sh3a_p1x)" transform="rotate(15,210,100)">
+<rect fill="url(#pad3_p1x)" height="34" rx="14" width="48" x="188" y="72"></rect>
+<rect fill="rgba(255,255,255,0.5)" height="4" rx="1" width="10" x="194" y="83"></rect>
+<rect fill="rgba(255,255,255,0.5)" height="10" rx="1" width="4" x="197" y="80"></rect>
+<circle cx="224" cy="83" fill="#FF5252" opacity="0.85" r="3"></circle>
+<circle cx="231" cy="86" fill="#4CAF50" opacity="0.85" r="3"></circle>
+<circle cx="224" cy="92" fill="#2196F3" opacity="0.85" r="3"></circle>
+</g>
+<g filter="url(#sh3a_p1x)">
+<path d="M12 38 L16 26 L20 38 L32 42 L20 46 L16 58 L12 46 L0 42 Z" fill="#FFD43B"></path>
+</g>
+<circle cx="228" cy="18" fill="rgba(255,255,255,0.7)" r="8"></circle>
+<circle cx="14" cy="160" fill="rgba(255,255,255,0.55)" r="6"></circle>
+<circle cx="226" cy="168" fill="#EC4899" filter="url(#sh3a_p1x)" opacity="0.8" r="5"></circle>
+</g>
 </svg></div>
-              <div>
-                <div class="panel-hero-lv">Level 1 · 입문</div>
-                <div class="panel-hero-title">스크래치 주니어</div>
-              </div>
-            </div>
-            <div class="panel-hero-desc">블록을 끌어다 캐릭터를 움직여 보세요! 코딩과의 첫 만남이에요.</div>
-            <div class="panel-hero-tags">
-              <span class="panel-hero-tag">흥미 유발 과정</span>
-              <span class="panel-hero-tag">초등 저학년</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="lesson-card-grid">
-        <a href="#" class="lesson-card s1" data-key="p1-l1" onclick="return goLesson(this)">
-          <div class="lesson-card-thumb"><div class="lesson-card-num">01</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">1단원</div>
-            <div class="lesson-card-title">움직임 블록 익히기</div>
-            <div class="lesson-card-sub">캐릭터를 앞으로, 뒤로, 회전시켜 보자</div>
-          </div>
-          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
-        </a>
-        <a href="#" class="lesson-card s1" data-key="p1-l2" onclick="return goLesson(this)">
-          <div class="lesson-card-thumb"><div class="lesson-card-num">02</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">2단원</div>
-            <div class="lesson-card-title">이야기 만들기</div>
-            <div class="lesson-card-sub">배경을 바꾸고 대화를 넣어보자</div>
-          </div>
-          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
-        </a>
-        <a href="#" class="lesson-card s1" data-key="p1-l3" onclick="return goLesson(this)">
-          <div class="lesson-card-thumb"><div class="lesson-card-num">03</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">3단원</div>
-            <div class="lesson-card-title">나만의 애니메이션</div>
-            <div class="lesson-card-sub">반복 블록으로 신나는 움직임 만들기</div>
-          </div>
-          <div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
-        </a>
-      </div>
-      <div class="lesson-done-row">
-        <label class="done-toggle" id="done-p1" onclick="toggleDone('p1')">
-          <div class="chk" id="chk-p1">✓</div>
+<div>
+<div class="panel-hero-lv">Level 1 · 입문</div>
+<div class="panel-hero-title">스크래치 주니어</div>
+</div>
+</div>
+<div class="panel-hero-desc">블록을 끌어다 캐릭터를 움직여 보세요! 코딩과의 첫 만남이에요.</div>
+<div class="panel-hero-tags">
+<span class="panel-hero-tag">흥미 유발 과정</span>
+<span class="panel-hero-tag">초등 저학년</span>
+</div>
+</div>
+</div>
+</div>
+<div class="lesson-card-grid">
+<a class="lesson-card s1" data-key="p1-l1" href="#" onclick="return goLesson(this)">
+<div class="lesson-card-thumb"><div class="lesson-card-num">01</div></div>
+<div class="lesson-card-body">
+<div class="lesson-card-label">1단원</div>
+<div class="lesson-card-title">움직임 블록 익히기</div>
+<div class="lesson-card-sub">캐릭터를 앞으로, 뒤로, 회전시켜 보자</div>
+</div>
+<div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
+</a>
+<a class="lesson-card s1" data-key="p1-l2" href="#" onclick="return goLesson(this)">
+<div class="lesson-card-thumb"><div class="lesson-card-num">02</div></div>
+<div class="lesson-card-body">
+<div class="lesson-card-label">2단원</div>
+<div class="lesson-card-title">이야기 만들기</div>
+<div class="lesson-card-sub">배경을 바꾸고 대화를 넣어보자</div>
+</div>
+<div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
+</a>
+<a class="lesson-card s1" data-key="p1-l3" href="#" onclick="return goLesson(this)">
+<div class="lesson-card-thumb"><div class="lesson-card-num">03</div></div>
+<div class="lesson-card-body">
+<div class="lesson-card-label">3단원</div>
+<div class="lesson-card-title">나만의 애니메이션</div>
+<div class="lesson-card-sub">반복 블록으로 신나는 움직임 만들기</div>
+</div>
+<div class="lesson-card-foot"><span class="lesson-card-arrow">열기 ↗</span></div>
+</a>
+</div>
+<div class="lesson-done-row">
+<label class="done-toggle" id="done-p1" onclick="toggleDone('p1')">
+<div class="chk" id="chk-p1">✓</div>
           오늘 단계 완료 표시
         </label>
-      </div>
-      <button class="panel-done-btn s1" onclick="openCompleteModal(1)">✅ 수업 완료 보고</button>
-    </div>
-
-    <!-- ── PANEL 2: 엔트리 미션 갤러리 ── -->
-    <div class="content-panel" id="panel2">
-
-      <!-- 패널 히어로 헤더 -->
-      <div class="panel-hero s2">
-        <span class="panel-hero-orb-l"></span>
-        <div class="panel-hero-inner">
-          <div class="panel-hero-left">
-            <div class="panel-hero-row">
-              <div class="panel-hero-icon"><svg width="240" height="290" viewBox="0 0 240 290" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="sh1a_p2x"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="rgba(0,0,0,0.28)"/></filter>
-    <linearGradient id="r_top_p2x" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A65"/><stop offset="1" stop-color="#F4511E"/></linearGradient>
-    <linearGradient id="r_front_p2x" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4511E"/><stop offset="1" stop-color="#BF360C"/></linearGradient>
-    <linearGradient id="r_side_p2x" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#BF360C"/><stop offset="1" stop-color="#8D2708"/></linearGradient>
-    <linearGradient id="b_top_p2x" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#64B5F6"/><stop offset="1" stop-color="#1565C0"/></linearGradient>
-    <linearGradient id="b_front_p2x" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1976D2"/><stop offset="1" stop-color="#0D47A1"/></linearGradient>
-    <linearGradient id="b_side_p2x" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0D47A1"/><stop offset="1" stop-color="#062B6E"/></linearGradient>
-    <linearGradient id="y_top_p2x" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF59D"/><stop offset="1" stop-color="#F9A825"/></linearGradient>
-    <linearGradient id="y_front_p2x" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBC02D"/><stop offset="1" stop-color="#E65100"/></linearGradient>
-    <linearGradient id="y_side_p2x" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E65100"/><stop offset="1" stop-color="#BF360C"/></linearGradient>
-    <linearGradient id="g_top_p2x" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A5D6A7"/><stop offset="1" stop-color="#2E7D32"/></linearGradient>
-    <linearGradient id="g_front_p2x" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#388E3C"/><stop offset="1" stop-color="#1B5E20"/></linearGradient>
-    <linearGradient id="g_side_p2x" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1B5E20"/><stop offset="1" stop-color="#0a2e0d"/></linearGradient>
-  </defs>
-  <g transform="translate(0,65)">
-    <g filter="url(#sh1a_p2x)">
-      <path d="M30 130 L80 103 L130 130 L80 157 Z" fill="url(#r_top_p2x)"/>
-      <path d="M30 130 L80 157 L80 185 L30 158 Z" fill="url(#r_front_p2x)"/>
-      <path d="M130 130 L80 157 L80 185 L130 158 Z" fill="url(#r_side_p2x)"/>
-      <text x="80" y="148" text-anchor="middle" font-size="16" font-weight="900" fill="rgba(255,255,255,0.6)" font-family="Arial">A</text>
-    </g>
-    <g filter="url(#sh1a_p2x)">
-      <path d="M80 88 L135 60 L190 88 L135 116 Z" fill="url(#b_top_p2x)"/>
-      <path d="M80 88 L135 116 L135 148 L80 120 Z" fill="url(#b_front_p2x)"/>
-      <path d="M190 88 L135 116 L135 148 L190 120 Z" fill="url(#b_side_p2x)"/>
-      <text x="135" y="108" text-anchor="middle" font-size="18" font-weight="900" fill="rgba(255,255,255,0.6)" font-family="Arial">B</text>
-    </g>
-    <g filter="url(#sh1a_p2x)">
-      <path d="M60 48 L110 22 L160 48 L110 74 Z" fill="url(#y_top_p2x)"/>
-      <path d="M60 48 L110 74 L110 108 L60 82 Z" fill="url(#y_front_p2x)"/>
-      <path d="M160 48 L110 74 L110 108 L160 82 Z" fill="url(#y_side_p2x)"/>
-      <text x="110" y="66" text-anchor="middle" font-size="18" font-weight="900" fill="rgba(255,255,255,0.6)" font-family="Arial">C</text>
-    </g>
-    <g filter="url(#sh1a_p2x)" transform="rotate(-8,200,80)">
-      <path d="M185 68 L210 55 L235 68 L210 81 Z" fill="url(#g_top_p2x)"/>
-      <path d="M185 68 L210 81 L210 102 L185 89 Z" fill="url(#g_front_p2x)"/>
-      <path d="M235 68 L210 81 L210 102 L235 89 Z" fill="url(#g_side_p2x)"/>
-    </g>
-    <circle cx="220" cy="30" r="10" fill="#FFD43B" opacity="0.9" filter="url(#sh1a_p2x)"/>
-    <circle cx="20" cy="75" r="7" fill="rgba(255,255,255,0.55)"/>
-    <circle cx="228" cy="148" r="6" fill="#EC4899" opacity="0.8" filter="url(#sh1a_p2x)"/>
-    <path d="M210 10 L213 2 L216 10 L224 13 L216 16 L213 24 L210 16 L202 13 Z" fill="white" opacity="0.95"/>
-    <path d="M15 150 L17 144 L19 150 L25 152 L19 154 L17 160 L15 154 L9 152 Z" fill="white" opacity="0.7"/>
-  </g>
+</div>
+<button class="panel-done-btn s1" onclick="openCompleteModal(1)">✅ 수업 완료 보고</button>
+</div>
+<!-- ── PANEL 2: 엔트리 미션 갤러리 ── -->
+<div class="content-panel" id="panel2">
+<!-- 패널 히어로 헤더 -->
+<div class="panel-hero s2">
+<span class="panel-hero-orb-l"></span>
+<div class="panel-hero-inner">
+<div class="panel-hero-left">
+<div class="panel-hero-row">
+<div class="panel-hero-icon"><svg fill="none" height="290" viewbox="0 0 240 290" width="240" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="sh1a_p2x"><fedropshadow dx="0" dy="6" flood-color="rgba(0,0,0,0.28)" stddeviation="8"></fedropshadow></filter>
+<lineargradient id="r_top_p2x" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#FF8A65"></stop><stop offset="1" stop-color="#F4511E"></stop></lineargradient>
+<lineargradient id="r_front_p2x" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F4511E"></stop><stop offset="1" stop-color="#BF360C"></stop></lineargradient>
+<lineargradient id="r_side_p2x" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#BF360C"></stop><stop offset="1" stop-color="#8D2708"></stop></lineargradient>
+<lineargradient id="b_top_p2x" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#64B5F6"></stop><stop offset="1" stop-color="#1565C0"></stop></lineargradient>
+<lineargradient id="b_front_p2x" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1976D2"></stop><stop offset="1" stop-color="#0D47A1"></stop></lineargradient>
+<lineargradient id="b_side_p2x" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#0D47A1"></stop><stop offset="1" stop-color="#062B6E"></stop></lineargradient>
+<lineargradient id="y_top_p2x" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#FFF59D"></stop><stop offset="1" stop-color="#F9A825"></stop></lineargradient>
+<lineargradient id="y_front_p2x" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FBC02D"></stop><stop offset="1" stop-color="#E65100"></stop></lineargradient>
+<lineargradient id="y_side_p2x" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#E65100"></stop><stop offset="1" stop-color="#BF360C"></stop></lineargradient>
+<lineargradient id="g_top_p2x" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#A5D6A7"></stop><stop offset="1" stop-color="#2E7D32"></stop></lineargradient>
+<lineargradient id="g_front_p2x" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#388E3C"></stop><stop offset="1" stop-color="#1B5E20"></stop></lineargradient>
+<lineargradient id="g_side_p2x" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#1B5E20"></stop><stop offset="1" stop-color="#0a2e0d"></stop></lineargradient>
+</defs>
+<g transform="translate(0,65)">
+<g filter="url(#sh1a_p2x)">
+<path d="M30 130 L80 103 L130 130 L80 157 Z" fill="url(#r_top_p2x)"></path>
+<path d="M30 130 L80 157 L80 185 L30 158 Z" fill="url(#r_front_p2x)"></path>
+<path d="M130 130 L80 157 L80 185 L130 158 Z" fill="url(#r_side_p2x)"></path>
+<text fill="rgba(255,255,255,0.6)" font-family="Arial" font-size="16" font-weight="900" text-anchor="middle" x="80" y="148">A</text>
+</g>
+<g filter="url(#sh1a_p2x)">
+<path d="M80 88 L135 60 L190 88 L135 116 Z" fill="url(#b_top_p2x)"></path>
+<path d="M80 88 L135 116 L135 148 L80 120 Z" fill="url(#b_front_p2x)"></path>
+<path d="M190 88 L135 116 L135 148 L190 120 Z" fill="url(#b_side_p2x)"></path>
+<text fill="rgba(255,255,255,0.6)" font-family="Arial" font-size="18" font-weight="900" text-anchor="middle" x="135" y="108">B</text>
+</g>
+<g filter="url(#sh1a_p2x)">
+<path d="M60 48 L110 22 L160 48 L110 74 Z" fill="url(#y_top_p2x)"></path>
+<path d="M60 48 L110 74 L110 108 L60 82 Z" fill="url(#y_front_p2x)"></path>
+<path d="M160 48 L110 74 L110 108 L160 82 Z" fill="url(#y_side_p2x)"></path>
+<text fill="rgba(255,255,255,0.6)" font-family="Arial" font-size="18" font-weight="900" text-anchor="middle" x="110" y="66">C</text>
+</g>
+<g filter="url(#sh1a_p2x)" transform="rotate(-8,200,80)">
+<path d="M185 68 L210 55 L235 68 L210 81 Z" fill="url(#g_top_p2x)"></path>
+<path d="M185 68 L210 81 L210 102 L185 89 Z" fill="url(#g_front_p2x)"></path>
+<path d="M235 68 L210 81 L210 102 L235 89 Z" fill="url(#g_side_p2x)"></path>
+</g>
+<circle cx="220" cy="30" fill="#FFD43B" filter="url(#sh1a_p2x)" opacity="0.9" r="10"></circle>
+<circle cx="20" cy="75" fill="rgba(255,255,255,0.55)" r="7"></circle>
+<circle cx="228" cy="148" fill="#EC4899" filter="url(#sh1a_p2x)" opacity="0.8" r="6"></circle>
+<path d="M210 10 L213 2 L216 10 L224 13 L216 16 L213 24 L210 16 L202 13 Z" fill="white" opacity="0.95"></path>
+<path d="M15 150 L17 144 L19 150 L25 152 L19 154 L17 160 L15 154 L9 152 Z" fill="white" opacity="0.7"></path>
+</g>
 </svg></div>
-              <div>
-                <div class="panel-hero-lv">Level 2 · 기초 논리</div>
-                <div class="panel-hero-title">엔트리 미션 갤러리</div>
-              </div>
-            </div>
-            <div class="panel-hero-desc">블록을 조합해 나만의 작품을 만들어봐요! 미션을 하나씩 해결하며 코딩 실력을 키워가는 과정이에요.</div>
-            <div class="panel-hero-tags">
-              <span class="panel-hero-tag">COS 3급</span>
-              <span class="panel-hero-tag">COS 2급</span>
-              <span class="panel-hero-tag">COS 1급</span>
-            </div>
-          </div>
-          <div class="p2-xp-badge" id="p2XpBadge">⭐ 0 XP</div>
-        </div>
-      </div>
-
-      <!-- 갤러리 iframe (나머지 높이 자동 채움) -->
-      <iframe id="entryGalleryFrame"
-        class="gallery-iframe"
-        allowtransparency="true"
-        title="엔트리 미션 갤러리">
-      </iframe>
-
-    </div>
-
-    <!-- ── PANEL 3: 스크래치 미션 갤러리 ── -->
-    <div class="content-panel" id="panel3">
-
-      <!-- 패널 히어로 헤더 -->
-      <div class="panel-hero s3">
-        <span class="panel-hero-orb-l"></span>
-        <div class="panel-hero-inner">
-          <div class="panel-hero-left">
-            <div class="panel-hero-row">
-              <div class="panel-hero-icon"><svg width="240" height="290" viewBox="0 0 240 290" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="sh2a_p3x"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="rgba(0,0,0,0.3)"/></filter>
-    <linearGradient id="lb2_p3x" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E0E7EF"/><stop offset="1" stop-color="#B0BEC5"/></linearGradient>
-    <linearGradient id="sb2_p3x" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E293B"/><stop offset="1" stop-color="#0F172A"/></linearGradient>
-  </defs>
-  <g transform="translate(0,55)">
-    <g filter="url(#sh2a_p3x)">
-      <path d="M22 168 L218 168 L230 188 L10 188 Z" fill="url(#lb2_p3x)"/>
-      <ellipse cx="120" cy="168" rx="20" ry="3" fill="#90A4AE"/>
-      <rect x="28" y="22" width="184" height="144" rx="10" fill="#CFD8DC"/>
-      <rect x="36" y="30" width="168" height="128" rx="6" fill="url(#sb2_p3x)"/>
-    </g>
-    <ellipse cx="100" cy="51" rx="46" ry="13" fill="#FF8C00"/>
-    <rect x="54" y="51" width="92" height="20" rx="6" fill="#FF8C00"/>
-    <rect x="68" y="56" width="50" height="8" rx="4" fill="rgba(255,255,255,0.7)"/>
-    <rect x="54" y="74" width="98" height="18" rx="5" fill="#FFAB19"/>
-    <rect x="54" y="92" width="18" height="38" fill="#FFAB19"/>
-    <rect x="54" y="130" width="98" height="14" rx="5" fill="#FFAB19"/>
-    <rect x="68" y="79" width="60" height="8" rx="4" fill="rgba(255,255,255,0.75)"/>
-    <rect x="76" y="100" width="70" height="16" rx="5" fill="#4C97FF"/>
-    <rect x="84" y="105" width="45" height="6" rx="3" fill="rgba(255,255,255,0.8)"/>
-    <rect x="76" y="120" width="70" height="14" rx="5" fill="#9966FF"/>
-    <rect x="84" y="124" width="38" height="6" rx="3" fill="rgba(255,255,255,0.8)"/>
-    <g filter="url(#sh2a_p3x)" transform="rotate(12,215,60)">
-      <rect x="196" y="42" width="38" height="28" rx="7" fill="#FF8C00"/>
-      <rect x="203" y="50" width="22" height="6" rx="3" fill="rgba(255,255,255,0.75)"/>
-      <rect x="203" y="59" width="16" height="5" rx="2" fill="rgba(255,255,255,0.5)"/>
-    </g>
-    <g filter="url(#sh2a_p3x)" transform="rotate(-8,215,120)">
-      <rect x="196" y="108" width="36" height="26" rx="7" fill="#4C97FF"/>
-      <rect x="203" y="116" width="20" height="6" rx="3" fill="rgba(255,255,255,0.75)"/>
-      <rect x="203" y="125" width="14" height="5" rx="2" fill="rgba(255,255,255,0.5)"/>
-    </g>
-    <circle cx="14" cy="50" r="9" fill="#FFD43B" opacity="0.9" filter="url(#sh2a_p3x)"/>
-    <circle cx="228" cy="170" r="7" fill="rgba(255,255,255,0.6)"/>
-    <path d="M225 20 L228 12 L231 20 L239 23 L231 26 L228 34 L225 26 L217 23 Z" fill="white" opacity="0.95"/>
-  </g>
+<div>
+<div class="panel-hero-lv">Level 2 · 기초 논리</div>
+<div class="panel-hero-title">엔트리 미션 갤러리</div>
+</div>
+</div>
+<div class="panel-hero-desc">블록을 조합해 나만의 작품을 만들어봐요! 미션을 하나씩 해결하며 코딩 실력을 키워가는 과정이에요.</div>
+<div class="panel-hero-tags">
+<span class="panel-hero-tag">COS 3급</span>
+<span class="panel-hero-tag">COS 2급</span>
+<span class="panel-hero-tag">COS 1급</span>
+</div>
+</div>
+<div class="p2-xp-badge" id="p2XpBadge">⭐ 0 XP</div>
+</div>
+</div>
+<!-- 갤러리 iframe (나머지 높이 자동 채움) -->
+<iframe allowtransparency="true" class="gallery-iframe" id="entryGalleryFrame" title="엔트리 미션 갤러리">
+</iframe>
+</div>
+<!-- ── PANEL 3: 스크래치 미션 갤러리 ── -->
+<div class="content-panel" id="panel3">
+<!-- 패널 히어로 헤더 -->
+<div class="panel-hero s3">
+<span class="panel-hero-orb-l"></span>
+<div class="panel-hero-inner">
+<div class="panel-hero-left">
+<div class="panel-hero-row">
+<div class="panel-hero-icon"><svg fill="none" height="290" viewbox="0 0 240 290" width="240" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="sh2a_p3x"><fedropshadow dx="0" dy="8" flood-color="rgba(0,0,0,0.3)" stddeviation="10"></fedropshadow></filter>
+<lineargradient id="lb2_p3x" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#E0E7EF"></stop><stop offset="1" stop-color="#B0BEC5"></stop></lineargradient>
+<lineargradient id="sb2_p3x" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1E293B"></stop><stop offset="1" stop-color="#0F172A"></stop></lineargradient>
+</defs>
+<g transform="translate(0,55)">
+<g filter="url(#sh2a_p3x)">
+<path d="M22 168 L218 168 L230 188 L10 188 Z" fill="url(#lb2_p3x)"></path>
+<ellipse cx="120" cy="168" fill="#90A4AE" rx="20" ry="3"></ellipse>
+<rect fill="#CFD8DC" height="144" rx="10" width="184" x="28" y="22"></rect>
+<rect fill="url(#sb2_p3x)" height="128" rx="6" width="168" x="36" y="30"></rect>
+</g>
+<ellipse cx="100" cy="51" fill="#FF8C00" rx="46" ry="13"></ellipse>
+<rect fill="#FF8C00" height="20" rx="6" width="92" x="54" y="51"></rect>
+<rect fill="rgba(255,255,255,0.7)" height="8" rx="4" width="50" x="68" y="56"></rect>
+<rect fill="#FFAB19" height="18" rx="5" width="98" x="54" y="74"></rect>
+<rect fill="#FFAB19" height="38" width="18" x="54" y="92"></rect>
+<rect fill="#FFAB19" height="14" rx="5" width="98" x="54" y="130"></rect>
+<rect fill="rgba(255,255,255,0.75)" height="8" rx="4" width="60" x="68" y="79"></rect>
+<rect fill="#4C97FF" height="16" rx="5" width="70" x="76" y="100"></rect>
+<rect fill="rgba(255,255,255,0.8)" height="6" rx="3" width="45" x="84" y="105"></rect>
+<rect fill="#9966FF" height="14" rx="5" width="70" x="76" y="120"></rect>
+<rect fill="rgba(255,255,255,0.8)" height="6" rx="3" width="38" x="84" y="124"></rect>
+<g filter="url(#sh2a_p3x)" transform="rotate(12,215,60)">
+<rect fill="#FF8C00" height="28" rx="7" width="38" x="196" y="42"></rect>
+<rect fill="rgba(255,255,255,0.75)" height="6" rx="3" width="22" x="203" y="50"></rect>
+<rect fill="rgba(255,255,255,0.5)" height="5" rx="2" width="16" x="203" y="59"></rect>
+</g>
+<g filter="url(#sh2a_p3x)" transform="rotate(-8,215,120)">
+<rect fill="#4C97FF" height="26" rx="7" width="36" x="196" y="108"></rect>
+<rect fill="rgba(255,255,255,0.75)" height="6" rx="3" width="20" x="203" y="116"></rect>
+<rect fill="rgba(255,255,255,0.5)" height="5" rx="2" width="14" x="203" y="125"></rect>
+</g>
+<circle cx="14" cy="50" fill="#FFD43B" filter="url(#sh2a_p3x)" opacity="0.9" r="9"></circle>
+<circle cx="228" cy="170" fill="rgba(255,255,255,0.6)" r="7"></circle>
+<path d="M225 20 L228 12 L231 20 L239 23 L231 26 L228 34 L225 26 L217 23 Z" fill="white" opacity="0.95"></path>
+</g>
 </svg></div>
-              <div>
-                <div class="panel-hero-lv">Level 3 · 블록 코딩 심화</div>
-                <div class="panel-hero-title">스크래치 미션 갤러리</div>
-              </div>
-            </div>
-            <div class="panel-hero-desc">게임, 애니메이션, 인터랙티브 스토리까지! 블록 코딩의 모든 것을 직접 만들며 마스터해 봐요.</div>
-            <div class="panel-hero-tags">
-              <span class="panel-hero-tag">COS 3급</span>
-              <span class="panel-hero-tag">COS 2급</span>
-              <span class="panel-hero-tag">COS 1급</span>
-            </div>
-          </div>
-          <div class="p3-xp-badge" id="p3XpBadge">⭐ 0 XP</div>
-        </div>
-      </div>
-
-      <!-- 갤러리 iframe (나머지 높이 자동 채움) -->
-      <iframe id="scratchGalleryFrame"
-        class="gallery-iframe"
-        allowtransparency="true"
-        title="스크래치 미션 갤러리">
-      </iframe>
-
-    </div>
-
-    <!-- ── PANEL 4: 파이썬 터틀 ── -->
-    <div class="content-panel" id="panel4">
-      <div class="panel-hero s4">
-        <span class="panel-hero-orb-l"></span>
-        <div class="panel-hero-inner">
-          <div class="panel-hero-left">
-            <div class="panel-hero-row">
-              <div class="panel-hero-icon" style="font-size:52px;">🐢</div>
-              <div>
-                <div class="panel-hero-lv">Level 4 · 시각형 파이썬</div>
-                <div class="panel-hero-title">파이썬 터틀</div>
-              </div>
-            </div>
-            <div class="panel-hero-desc">코드 한 줄로 그림을 그려요! 거북이를 움직여 파이썬의 재미를 처음 경험해봐요.</div>
-            <div class="panel-hero-tags">
-              <span class="panel-hero-tag">🐢 터틀 그래픽</span>
-              <span class="panel-hero-tag">반복문 응용</span>
-              <span class="panel-hero-tag">시각적 코딩</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 터틀 웹교재 iframe -->
-      <iframe id="turtleGalleryFrame"
-        class="gallery-iframe"
-        src="python_turtle.html"
-        allowtransparency="true"
-        title="파이썬 터틀 웹교재">
-      </iframe>
-      <!-- 완료 표시/보고는 갤러리 카드의 완료 버튼(⭐)에서 처리됨 -->
-    </div>
-
-    <!-- ── PANEL 5: 파이썬 문법완성 ── -->
-    <div class="content-panel" id="panel5">
-
-      <!-- ✦ 히어로 -->
-      <div class="py-hero">
-        <span class="py-hero-orb-l"></span>
-        <div class="py-hero-inner">
-          <!-- 좌측: 아이콘 + 텍스트 -->
-          <div class="py-hero-left">
-            <div class="py-hero-row">
-              <div class="py-hero-icon-box"><svg width="240" height="290" viewBox="0 0 240 290" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="sh4a"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="rgba(0,0,0,0.3)"/></filter>
-    <linearGradient id="mb4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D1D5DB"/><stop offset="1" stop-color="#9CA3AF"/></linearGradient>
-    <linearGradient id="tb4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1a2e"/><stop offset="1" stop-color="#16213e"/></linearGradient>
-    <linearGradient id="cup4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5F5F5"/><stop offset="1" stop-color="#D0D0D0"/></linearGradient>
-    <linearGradient id="pyb4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4B8BBE"/><stop offset="1" stop-color="#306998"/></linearGradient>
-    <linearGradient id="pyy4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE873"/><stop offset="1" stop-color="#FFD43B"/></linearGradient>
-  </defs>
-  <g transform="translate(0,55)">
-    <g filter="url(#sh4a)">
-      <path d="M18 168 L222 168 L234 186 L6 186 Z" fill="url(#mb4)"/>
-      <ellipse cx="120" cy="168" rx="22" ry="3.5" fill="#9CA3AF"/>
-      <rect x="26" y="16" width="188" height="150" rx="12" fill="url(#mb4)"/>
-      <circle cx="120" cy="91" r="18" fill="rgba(0,0,0,0.06)"/>
-      <rect x="35" y="24" width="170" height="134" rx="7" fill="url(#tb4)"/>
-    </g>
-    <rect x="35" y="24" width="170" height="22" rx="7" fill="#2D2D2D"/>
-    <rect x="35" y="38" width="170" height="8" fill="#2D2D2D"/>
-    <circle cx="49" cy="35" r="5" fill="#FF5F57"/>
-    <circle cx="64" cy="35" r="5" fill="#FEBC2E"/>
-    <circle cx="79" cy="35" r="5" fill="#28C840"/>
-    <rect x="100" y="31" width="60" height="8" rx="3" fill="rgba(255,255,255,0.1)"/>
-    <rect x="42" y="58" width="14" height="7" rx="2" fill="#34D399"/>
-    <rect x="60" y="58" width="20" height="7" rx="3" fill="#60A5FA"/>
-    <rect x="84" y="58" width="38" height="7" rx="2" fill="rgba(255,255,255,0.4)"/>
-    <rect x="126" y="58" width="22" height="7" rx="2" fill="#FCD34D"/>
-    <rect x="42" y="72" width="14" height="7" rx="2" fill="#34D399"/>
-    <rect x="60" y="72" width="16" height="7" rx="3" fill="#60A5FA"/>
-    <rect x="80" y="72" width="32" height="7" rx="2" fill="#FCD34D"/>
-    <rect x="116" y="72" width="12" height="7" rx="2" fill="rgba(255,255,255,0.45)"/>
-    <rect x="132" y="72" width="28" height="7" rx="2" fill="#34D399"/>
-    <rect x="52" y="86" width="22" height="7" rx="3" fill="#60A5FA"/>
-    <rect x="78" y="86" width="55" height="7" rx="2" fill="rgba(255,255,255,0.5)"/>
-    <rect x="137" y="86" width="30" height="7" rx="2" fill="#FCD34D"/>
-    <rect x="52" y="100" width="30" height="7" rx="3" fill="#A78BFA"/>
-    <rect x="86" y="100" width="45" height="7" rx="2" fill="rgba(255,255,255,0.4)"/>
-    <rect x="42" y="114" width="14" height="7" rx="2" fill="#34D399"/>
-    <rect x="60" y="114" width="16" height="7" rx="3" fill="#60A5FA"/>
-    <rect x="80" y="114" width="20" height="7" rx="2" fill="rgba(255,255,255,0.55)"/>
-    <rect x="104" y="114" width="28" height="7" rx="2" fill="#F87171"/>
-    <rect x="52" y="128" width="32" height="7" rx="3" fill="#A78BFA"/>
-    <rect x="88" y="128" width="50" height="7" rx="2" fill="rgba(255,255,255,0.4)"/>
-    <rect x="42" y="142" width="14" height="7" rx="2" fill="#34D399"/>
-    <rect x="60" y="142" width="9" height="7" rx="1" fill="rgba(255,255,255,0.85)"/>
-    <g filter="url(#sh4a)" transform="rotate(8,215,55)">
-      <rect x="198" y="18" width="34" height="30" rx="10" fill="url(#pyb4)"/>
-      <rect x="206" y="34" width="34" height="30" rx="10" fill="url(#pyy4)"/>
-      <circle cx="208" cy="24" r="3.5" fill="rgba(255,255,255,0.7)"/>
-      <circle cx="228" cy="58" r="3.5" fill="rgba(255,255,255,0.7)"/>
-    </g>
-    <g filter="url(#sh4a)" transform="rotate(-10,215,148)">
-      <rect x="198" y="132" width="30" height="28" rx="5" fill="url(#cup4)"/>
-      <path d="M228 140 Q238 140 238 150 Q238 160 228 160" stroke="#D0D0D0" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-      <rect x="200" y="134" width="26" height="16" rx="3" fill="#795548"/>
-      <path d="M205 128 Q207 122 205 116" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M212 126 Q214 120 212 114" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
-    </g>
-    <circle cx="14" cy="40" r="8" fill="#FFD43B" opacity="0.9" filter="url(#sh4a)"/>
-    <circle cx="14" cy="165" r="6" fill="rgba(255,255,255,0.55)"/>
-    <path d="M222 8 L225 0 L228 8 L236 11 L228 14 L225 22 L222 14 L214 11 Z" fill="white" opacity="0.95"/>
-  </g>
+<div>
+<div class="panel-hero-lv">Level 3 · 블록 코딩 심화</div>
+<div class="panel-hero-title">스크래치 미션 갤러리</div>
+</div>
+</div>
+<div class="panel-hero-desc">게임, 애니메이션, 인터랙티브 스토리까지! 블록 코딩의 모든 것을 직접 만들며 마스터해 봐요.</div>
+<div class="panel-hero-tags">
+<span class="panel-hero-tag">COS 3급</span>
+<span class="panel-hero-tag">COS 2급</span>
+<span class="panel-hero-tag">COS 1급</span>
+</div>
+</div>
+<div class="p3-xp-badge" id="p3XpBadge">⭐ 0 XP</div>
+</div>
+</div>
+<!-- 갤러리 iframe (나머지 높이 자동 채움) -->
+<iframe allowtransparency="true" class="gallery-iframe" id="scratchGalleryFrame" title="스크래치 미션 갤러리">
+</iframe>
+</div>
+<!-- ── PANEL 4: 파이썬 터틀 ── -->
+<div class="content-panel" id="panel4">
+<div class="panel-hero s4">
+<span class="panel-hero-orb-l"></span>
+<div class="panel-hero-inner">
+<div class="panel-hero-left">
+<div class="panel-hero-row">
+<div class="panel-hero-icon" style="font-size:52px;">🐢</div>
+<div>
+<div class="panel-hero-lv">Level 4 · 시각형 파이썬</div>
+<div class="panel-hero-title">파이썬 터틀</div>
+</div>
+</div>
+<div class="panel-hero-desc">코드 한 줄로 그림을 그려요! 거북이를 움직여 파이썬의 재미를 처음 경험해봐요.</div>
+<div class="panel-hero-tags">
+<span class="panel-hero-tag">🐢 터틀 그래픽</span>
+<span class="panel-hero-tag">반복문 응용</span>
+<span class="panel-hero-tag">시각적 코딩</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 터틀 웹교재 iframe -->
+<iframe allowtransparency="true" class="gallery-iframe" id="turtleGalleryFrame" src="python_turtle.html" title="파이썬 터틀 웹교재">
+</iframe>
+<!-- 완료 표시/보고는 갤러리 카드의 완료 버튼(⭐)에서 처리됨 -->
+</div>
+<!-- ── PANEL 5: 파이썬 문법완성 ── -->
+<div class="content-panel" id="panel5">
+<!-- ✦ 히어로 -->
+<div class="py-hero">
+<span class="py-hero-orb-l"></span>
+<div class="py-hero-inner">
+<!-- 좌측: 아이콘 + 텍스트 -->
+<div class="py-hero-left">
+<div class="py-hero-row">
+<div class="py-hero-icon-box"><svg fill="none" height="290" viewbox="0 0 240 290" width="240" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="sh4a"><fedropshadow dx="0" dy="8" flood-color="rgba(0,0,0,0.3)" stddeviation="10"></fedropshadow></filter>
+<lineargradient id="mb4" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D1D5DB"></stop><stop offset="1" stop-color="#9CA3AF"></stop></lineargradient>
+<lineargradient id="tb4" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1a1a2e"></stop><stop offset="1" stop-color="#16213e"></stop></lineargradient>
+<lineargradient id="cup4" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F5F5F5"></stop><stop offset="1" stop-color="#D0D0D0"></stop></lineargradient>
+<lineargradient id="pyb4" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#4B8BBE"></stop><stop offset="1" stop-color="#306998"></stop></lineargradient>
+<lineargradient id="pyy4" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#FFE873"></stop><stop offset="1" stop-color="#FFD43B"></stop></lineargradient>
+</defs>
+<g transform="translate(0,55)">
+<g filter="url(#sh4a)">
+<path d="M18 168 L222 168 L234 186 L6 186 Z" fill="url(#mb4)"></path>
+<ellipse cx="120" cy="168" fill="#9CA3AF" rx="22" ry="3.5"></ellipse>
+<rect fill="url(#mb4)" height="150" rx="12" width="188" x="26" y="16"></rect>
+<circle cx="120" cy="91" fill="rgba(0,0,0,0.06)" r="18"></circle>
+<rect fill="url(#tb4)" height="134" rx="7" width="170" x="35" y="24"></rect>
+</g>
+<rect fill="#2D2D2D" height="22" rx="7" width="170" x="35" y="24"></rect>
+<rect fill="#2D2D2D" height="8" width="170" x="35" y="38"></rect>
+<circle cx="49" cy="35" fill="#FF5F57" r="5"></circle>
+<circle cx="64" cy="35" fill="#FEBC2E" r="5"></circle>
+<circle cx="79" cy="35" fill="#28C840" r="5"></circle>
+<rect fill="rgba(255,255,255,0.1)" height="8" rx="3" width="60" x="100" y="31"></rect>
+<rect fill="#34D399" height="7" rx="2" width="14" x="42" y="58"></rect>
+<rect fill="#60A5FA" height="7" rx="3" width="20" x="60" y="58"></rect>
+<rect fill="rgba(255,255,255,0.4)" height="7" rx="2" width="38" x="84" y="58"></rect>
+<rect fill="#FCD34D" height="7" rx="2" width="22" x="126" y="58"></rect>
+<rect fill="#34D399" height="7" rx="2" width="14" x="42" y="72"></rect>
+<rect fill="#60A5FA" height="7" rx="3" width="16" x="60" y="72"></rect>
+<rect fill="#FCD34D" height="7" rx="2" width="32" x="80" y="72"></rect>
+<rect fill="rgba(255,255,255,0.45)" height="7" rx="2" width="12" x="116" y="72"></rect>
+<rect fill="#34D399" height="7" rx="2" width="28" x="132" y="72"></rect>
+<rect fill="#60A5FA" height="7" rx="3" width="22" x="52" y="86"></rect>
+<rect fill="rgba(255,255,255,0.5)" height="7" rx="2" width="55" x="78" y="86"></rect>
+<rect fill="#FCD34D" height="7" rx="2" width="30" x="137" y="86"></rect>
+<rect fill="#A78BFA" height="7" rx="3" width="30" x="52" y="100"></rect>
+<rect fill="rgba(255,255,255,0.4)" height="7" rx="2" width="45" x="86" y="100"></rect>
+<rect fill="#34D399" height="7" rx="2" width="14" x="42" y="114"></rect>
+<rect fill="#60A5FA" height="7" rx="3" width="16" x="60" y="114"></rect>
+<rect fill="rgba(255,255,255,0.55)" height="7" rx="2" width="20" x="80" y="114"></rect>
+<rect fill="#F87171" height="7" rx="2" width="28" x="104" y="114"></rect>
+<rect fill="#A78BFA" height="7" rx="3" width="32" x="52" y="128"></rect>
+<rect fill="rgba(255,255,255,0.4)" height="7" rx="2" width="50" x="88" y="128"></rect>
+<rect fill="#34D399" height="7" rx="2" width="14" x="42" y="142"></rect>
+<rect fill="rgba(255,255,255,0.85)" height="7" rx="1" width="9" x="60" y="142"></rect>
+<g filter="url(#sh4a)" transform="rotate(8,215,55)">
+<rect fill="url(#pyb4)" height="30" rx="10" width="34" x="198" y="18"></rect>
+<rect fill="url(#pyy4)" height="30" rx="10" width="34" x="206" y="34"></rect>
+<circle cx="208" cy="24" fill="rgba(255,255,255,0.7)" r="3.5"></circle>
+<circle cx="228" cy="58" fill="rgba(255,255,255,0.7)" r="3.5"></circle>
+</g>
+<g filter="url(#sh4a)" transform="rotate(-10,215,148)">
+<rect fill="url(#cup4)" height="28" rx="5" width="30" x="198" y="132"></rect>
+<path d="M228 140 Q238 140 238 150 Q238 160 228 160" fill="none" stroke="#D0D0D0" stroke-linecap="round" stroke-width="3.5"></path>
+<rect fill="#795548" height="16" rx="3" width="26" x="200" y="134"></rect>
+<path d="M205 128 Q207 122 205 116" fill="none" stroke="rgba(255,255,255,0.5)" stroke-linecap="round" stroke-width="2"></path>
+<path d="M212 126 Q214 120 212 114" fill="none" stroke="rgba(255,255,255,0.4)" stroke-linecap="round" stroke-width="2"></path>
+</g>
+<circle cx="14" cy="40" fill="#FFD43B" filter="url(#sh4a)" opacity="0.9" r="8"></circle>
+<circle cx="14" cy="165" fill="rgba(255,255,255,0.55)" r="6"></circle>
+<path d="M222 8 L225 0 L228 8 L236 11 L228 14 L225 22 L222 14 L214 11 Z" fill="white" opacity="0.95"></path>
+</g>
 </svg></div>
-              <div>
-                <div class="py-hero-lv">Level 5 · 텍스트 코딩</div>
-                <div class="py-hero-title">파이썬 문법완성</div>
-              </div>
-            </div>
-            <div class="py-hero-desc">중학교·고등학교 수행평가 완벽 대비! 변수, 반복문, 함수까지 실생활에 바로 쓰이는 파이썬을 배워봐요.</div>
-            <div class="py-hero-tags">
-              <span class="py-hero-tag">COS Pro 3급</span>
-              <span class="py-hero-tag">COS Pro 2급</span>
-              <span class="py-hero-tag">COS Pro 1급</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="py-toc-grid">
-
-        <!-- CHAPTER: 입출력과 자료형 -->
-        <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">입출력과 자료형</div>
-          <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="print" href="https://kssim00.github.io/web_book/python_print.html" target="_blank">
-              <span class="py-toc-lesson-title">출력 print()</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'print')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="var" href="https://kssim00.github.io/web_book/python_var.html" target="_blank">
-              <span class="py-toc-lesson-title">변수와 자료형</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'var')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="input" href="https://kssim00.github.io/web_book/python_input.html" target="_blank">
-              <span class="py-toc-lesson-title">입력 input()</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'input')">➜</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- CHAPTER: 문자열과 리스트 -->
-        <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">문자열과 리스트</div>
-          <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="string" href="https://kssim00.github.io/web_book/python_string.html" target="_blank">
-              <span class="py-toc-lesson-title">문자열 (string)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'string')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="list" href="https://kssim00.github.io/web_book/python_list.html" target="_blank">
-              <span class="py-toc-lesson-title">리스트 (list)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'list')">➜</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- CHAPTER: 조건문 · 반복문 -->
-        <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">조건문 · 반복문</div>
-          <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="if" href="https://kssim00.github.io/web_book/python_if.html" target="_blank">
-              <span class="py-toc-lesson-title">조건문 (if)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'if')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="while" href="https://kssim00.github.io/web_book/python_while.html" target="_blank">
-              <span class="py-toc-lesson-title">반복문 (while)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'while')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="for" href="https://kssim00.github.io/web_book/python_for.html" target="_blank">
-              <span class="py-toc-lesson-title">반복문 (for)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'for')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="nested" href="https://kssim00.github.io/web_book/python_nested_loop.html" target="_blank">
-              <span class="py-toc-lesson-title">중첩 반복문</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'nested')">➜</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- CHAPTER: 자료형 -->
-        <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">자료형</div>
-          <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="unicode" href="https://kssim00.github.io/web_book/python_unicode.html" target="_blank">
-              <span class="py-toc-lesson-title">유니코드 &amp; 문자열</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'unicode')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="tuple" href="https://kssim00.github.io/web_book/python_tuple.html" target="_blank">
-              <span class="py-toc-lesson-title">튜플 (tuple)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'tuple')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="set" href="https://kssim00.github.io/web_book/python_set.html" target="_blank">
-              <span class="py-toc-lesson-title">집합 (set)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'set')">➜</span>
-            </a>
-            <div class="py-toc-lesson" data-lid="dict">
-              <span class="py-toc-lesson-title">딕셔너리 (dict)</span>
-              <div class="py-toc-lesson-right">
-                <div class="py-toc-ver-group">
-                  <a class="py-toc-ver" href="https://kssim00.github.io/web_book/python_dict.html" target="_blank" title="버전 1">1</a>
-                  <a class="py-toc-ver" href="https://kssim00.github.io/web_book/python_dict2.html" target="_blank" title="버전 2">2</a>
-                </div>
-                <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'dict')">➜</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CHAPTER: 함수와 클래스 -->
-        <div class="py-toc-chapter">
-          <div class="py-toc-chapter-title">함수와 클래스</div>
-          <div class="py-toc-lessons">
-            <a class="py-toc-lesson" data-lid="function" href="https://kssim00.github.io/web_book/python_function.html" target="_blank">
-              <span class="py-toc-lesson-title">함수 (function)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'function')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="class" href="https://kssim00.github.io/web_book/python_class.html" target="_blank">
-              <span class="py-toc-lesson-title">클래스 (class)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'class')">➜</span>
-            </a>
-            <a class="py-toc-lesson" data-lid="class2" href="https://kssim00.github.io/web_book/python_class2.html" target="_blank">
-              <span class="py-toc-lesson-title">클래스 두 번째 이야기 (class 2)</span>
-              <span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'class2')">➜</span>
-            </a>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- ── PANEL 6: 앱인벤터 ── -->
-    <div class="content-panel" id="panel6">
-      <div class="panel-hero s4">
-        <span class="panel-hero-orb-l"></span>
-        <div class="panel-hero-inner">
-          <div class="panel-hero-left">
-            <div class="panel-hero-row">
-              <div class="panel-hero-icon" style="font-size:52px;">📱</div>
-              <div>
-                <div class="panel-hero-lv">Level 6 · 앱 개발</div>
-                <div class="panel-hero-title">앱인벤터</div>
-              </div>
-            </div>
-            <div class="panel-hero-desc">블록 코딩으로 나만의 스마트폰 앱을 만들어요!</div>
-            <div class="panel-hero-tags">
-              <span class="panel-hero-tag">📱 앱 만들기</span>
-              <span class="panel-hero-tag">UI 디자인</span>
-              <span class="panel-hero-tag">이벤트 처리</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="lesson-card-grid">
-        <div class="lesson-card s4" style="opacity:0.5;pointer-events:none;">
-          <div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:26px;">📱</div></div>
-          <div class="lesson-card-body">
-            <div class="lesson-card-label">준비 중</div>
-            <div class="lesson-card-title">앱인벤터 웹교재</div>
-            <div class="lesson-card-sub">곧 업로드될 예정이에요!</div>
-          </div>
-        </div>
-      </div>
-      <div class="lesson-done-row">
-        <label class="done-toggle" id="done-p6" onclick="toggleDone('p6')">
-          <div class="chk" id="chk-p6">✓</div>
+<div>
+<div class="py-hero-lv">Level 5 · 텍스트 코딩</div>
+<div class="py-hero-title">파이썬 문법완성</div>
+</div>
+</div>
+<div class="py-hero-desc">중학교·고등학교 수행평가 완벽 대비! 변수, 반복문, 함수까지 실생활에 바로 쓰이는 파이썬을 배워봐요.</div>
+<div class="py-hero-tags">
+<span class="py-hero-tag">COS Pro 3급</span>
+<span class="py-hero-tag">COS Pro 2급</span>
+<span class="py-hero-tag">COS Pro 1급</span>
+</div>
+</div>
+</div>
+</div>
+<div class="py-toc-grid">
+<!-- CHAPTER: 입출력과 자료형 -->
+<div class="py-toc-chapter">
+<div class="py-toc-chapter-title">입출력과 자료형</div>
+<div class="py-toc-lessons">
+<a class="py-toc-lesson" data-lid="print" href="https://kssim00.github.io/web_book/python_print.html" target="_blank">
+<span class="py-toc-lesson-title">출력 print()</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'print')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="var" href="https://kssim00.github.io/web_book/python_var.html" target="_blank">
+<span class="py-toc-lesson-title">변수와 자료형</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'var')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="input" href="https://kssim00.github.io/web_book/python_input.html" target="_blank">
+<span class="py-toc-lesson-title">입력 input()</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'input')">➜</span>
+</a>
+</div>
+</div>
+<!-- CHAPTER: 문자열과 리스트 -->
+<div class="py-toc-chapter">
+<div class="py-toc-chapter-title">문자열과 리스트</div>
+<div class="py-toc-lessons">
+<a class="py-toc-lesson" data-lid="string" href="https://kssim00.github.io/web_book/python_string.html" target="_blank">
+<span class="py-toc-lesson-title">문자열 (string)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'string')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="list" href="https://kssim00.github.io/web_book/python_list.html" target="_blank">
+<span class="py-toc-lesson-title">리스트 (list)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'list')">➜</span>
+</a>
+</div>
+</div>
+<!-- CHAPTER: 조건문 · 반복문 -->
+<div class="py-toc-chapter">
+<div class="py-toc-chapter-title">조건문 · 반복문</div>
+<div class="py-toc-lessons">
+<a class="py-toc-lesson" data-lid="if" href="https://kssim00.github.io/web_book/python_if.html" target="_blank">
+<span class="py-toc-lesson-title">조건문 (if)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'if')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="while" href="https://kssim00.github.io/web_book/python_while.html" target="_blank">
+<span class="py-toc-lesson-title">반복문 (while)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'while')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="for" href="https://kssim00.github.io/web_book/python_for.html" target="_blank">
+<span class="py-toc-lesson-title">반복문 (for)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'for')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="nested" href="https://kssim00.github.io/web_book/python_nested_loop.html" target="_blank">
+<span class="py-toc-lesson-title">중첩 반복문</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'nested')">➜</span>
+</a>
+</div>
+</div>
+<!-- CHAPTER: 자료형 -->
+<div class="py-toc-chapter">
+<div class="py-toc-chapter-title">자료형</div>
+<div class="py-toc-lessons">
+<a class="py-toc-lesson" data-lid="unicode" href="https://kssim00.github.io/web_book/python_unicode.html" target="_blank">
+<span class="py-toc-lesson-title">유니코드 &amp; 문자열</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'unicode')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="tuple" href="https://kssim00.github.io/web_book/python_tuple.html" target="_blank">
+<span class="py-toc-lesson-title">튜플 (tuple)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'tuple')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="set" href="https://kssim00.github.io/web_book/python_set.html" target="_blank">
+<span class="py-toc-lesson-title">집합 (set)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'set')">➜</span>
+</a>
+<div class="py-toc-lesson" data-lid="dict">
+<span class="py-toc-lesson-title">딕셔너리 (dict)</span>
+<div class="py-toc-lesson-right">
+<div class="py-toc-ver-group">
+<a class="py-toc-ver" href="https://kssim00.github.io/web_book/python_dict.html" target="_blank" title="버전 1">1</a>
+<a class="py-toc-ver" href="https://kssim00.github.io/web_book/python_dict2.html" target="_blank" title="버전 2">2</a>
+</div>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'dict')">➜</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CHAPTER: 함수와 클래스 -->
+<div class="py-toc-chapter">
+<div class="py-toc-chapter-title">함수와 클래스</div>
+<div class="py-toc-lessons">
+<a class="py-toc-lesson" data-lid="function" href="https://kssim00.github.io/web_book/python_function.html" target="_blank">
+<span class="py-toc-lesson-title">함수 (function)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'function')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="class" href="https://kssim00.github.io/web_book/python_class.html" target="_blank">
+<span class="py-toc-lesson-title">클래스 (class)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'class')">➜</span>
+</a>
+<a class="py-toc-lesson" data-lid="class2" href="https://kssim00.github.io/web_book/python_class2.html" target="_blank">
+<span class="py-toc-lesson-title">클래스 두 번째 이야기 (class 2)</span>
+<span class="py-toc-lesson-icon" onclick="togglePyLessonDone(event,this,'class2')">➜</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- ── PANEL 6: 앱인벤터 ── -->
+<div class="content-panel" id="panel6">
+<div class="panel-hero s4">
+<span class="panel-hero-orb-l"></span>
+<div class="panel-hero-inner">
+<div class="panel-hero-left">
+<div class="panel-hero-row">
+<div class="panel-hero-icon" style="font-size:52px;">📱</div>
+<div>
+<div class="panel-hero-lv">Level 6 · 앱 개발</div>
+<div class="panel-hero-title">앱인벤터</div>
+</div>
+</div>
+<div class="panel-hero-desc">블록 코딩으로 나만의 스마트폰 앱을 만들어요!</div>
+<div class="panel-hero-tags">
+<span class="panel-hero-tag">📱 앱 만들기</span>
+<span class="panel-hero-tag">UI 디자인</span>
+<span class="panel-hero-tag">이벤트 처리</span>
+</div>
+</div>
+</div>
+</div>
+<div class="lesson-card-grid">
+<div class="lesson-card s4" style="opacity:0.5;pointer-events:none;">
+<div class="lesson-card-thumb"><div class="lesson-card-num" style="font-size:26px;">📱</div></div>
+<div class="lesson-card-body">
+<div class="lesson-card-label">준비 중</div>
+<div class="lesson-card-title">앱인벤터 웹교재</div>
+<div class="lesson-card-sub">곧 업로드될 예정이에요!</div>
+</div>
+</div>
+</div>
+<div class="lesson-done-row">
+<label class="done-toggle" id="done-p6" onclick="toggleDone('p6')">
+<div class="chk" id="chk-p6">✓</div>
           오늘 단계 완료 표시
         </label>
-      </div>
-      <button class="panel-done-btn s4" onclick="openCompleteModal(6)">✅ 수업 완료 보고</button>
-    </div>
-
-    <!-- ── PANEL 7: 3D 모델링 (틴커캐드) ── -->
-    <div class="content-panel" id="panel7">
-      <div class="panel-hero s4" style="background:linear-gradient(135deg,#0d1a2e 0%,#0f2040 45%,#070e1c 100%);border-top:1px solid rgba(99,179,237,0.3);border-bottom:1px solid rgba(99,179,237,0.3);">
-        <span class="panel-hero-orb-l" style="background:radial-gradient(circle,rgba(99,179,237,0.10) 0%,transparent 65%);"></span>
-        <div class="panel-hero-inner">
-          <div class="panel-hero-left">
-            <div class="panel-hero-row">
-              <div class="panel-hero-icon" style="font-size:52px;">🖨️</div>
-              <div>
-                <div class="panel-hero-lv" style="color:rgba(99,179,237,0.85);">Level 7 · 3D 모델링</div>
-                <div class="panel-hero-title">3D 모델링</div>
-              </div>
-            </div>
-            <div class="panel-hero-desc">틴커캐드로 3D 작품을 설계하고 프린터로 출력해요!</div>
-            <div class="panel-hero-tags">
-              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">🖨️ 3D 프린팅</span>
-              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">틴커캐드</span>
-              <span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">3D 설계</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 틴커캐드 웹교재 iframe -->
-      <iframe id="tinkercadGalleryFrame"
-        class="gallery-iframe"
-        src="틴커캐드_웹교재.html"
-        allowtransparency="true"
-        title="틴커캐드 웹교재">
-      </iframe>
-      <!-- 완료 표시/보고는 갤러리 카드의 완료 버튼(⭐)에서 처리됨 -->
-    </div>
-
-    <!-- ── PANEL 8: 자격증 ── -->
-    <div class="content-panel" id="panel8">
-      <div class="panel-hero s5">
-        <span class="panel-hero-orb-l"></span>
-        <div class="panel-hero-inner">
-          <div class="panel-hero-left">
-            <div class="panel-hero-row">
-              <div class="panel-hero-icon"><svg width="240" height="290" viewBox="0 0 240 290" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="sh_ai"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="rgba(0,0,0,0.3)"/></filter>
-    <linearGradient id="ai_body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7C3AED"/><stop offset="1" stop-color="#4C1D95"/></linearGradient>
-    <linearGradient id="ai_head" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6D28D9"/></linearGradient>
-    <linearGradient id="ai_screen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E1B4B"/><stop offset="1" stop-color="#312E81"/></linearGradient>
-    <radialGradient id="ai_eye_l" cx="35%" cy="30%" r="65%"><stop offset="0" stop-color="#A5F3FC"/><stop offset="1" stop-color="#06B6D4"/></radialGradient>
-    <radialGradient id="ai_eye_r" cx="35%" cy="30%" r="65%"><stop offset="0" stop-color="#FDE68A"/><stop offset="1" stop-color="#F59E0B"/></radialGradient>
-  </defs>
-
-  <!-- 로봇 몸통 -->
-  <g filter="url(#sh_ai)" transform="translate(30, 50)">
-    <!-- 몸통 -->
-    <rect x="22" y="82" width="116" height="96" rx="14" fill="url(#ai_body)"/>
-    <!-- 가슴 화면 -->
-    <rect x="34" y="94" width="92" height="62" rx="8" fill="url(#ai_screen)"/>
-    <!-- 화면 내용: 코드 라인들 -->
-    <rect x="42" y="102" width="38" height="5" rx="2" fill="#34D399"/>
-    <rect x="84" y="102" width="28" height="5" rx="2" fill="#60A5FA"/>
-    <rect x="42" y="113" width="28" height="5" rx="2" fill="#A78BFA"/>
-    <rect x="74" y="113" width="42" height="5" rx="2" fill="rgba(255,255,255,0.4)"/>
-    <rect x="50" y="124" width="55" height="5" rx="2" fill="#FCD34D"/>
-    <rect x="42" y="135" width="32" height="5" rx="2" fill="#F87171"/>
-    <rect x="78" y="135" width="38" height="5" rx="2" fill="rgba(255,255,255,0.35)"/>
-    <rect x="42" y="146" width="18" height="5" rx="2" fill="#34D399"/>
-    <!-- 배 버튼 -->
-    <circle cx="50" cy="168" r="7" fill="rgba(255,255,255,0.15)"/>
-    <circle cx="50" cy="168" r="4" fill="#818CF8"/>
-    <circle cx="67" cy="168" r="7" fill="rgba(255,255,255,0.15)"/>
-    <circle cx="67" cy="168" r="4" fill="#34D399"/>
-    <circle cx="84" cy="168" r="7" fill="rgba(255,255,255,0.15)"/>
-    <circle cx="84" cy="168" r="4" fill="#F59E0B"/>
-    <!-- 팔 (왼쪽) -->
-    <rect x="0" y="88" width="18" height="70" rx="9" fill="url(#ai_body)"/>
-    <rect x="2" y="150" width="14" height="18" rx="7" fill="#6D28D9"/>
-    <!-- 팔 (오른쪽) -->
-    <rect x="142" y="88" width="18" height="70" rx="9" fill="url(#ai_body)"/>
-    <rect x="144" y="150" width="14" height="18" rx="7" fill="#6D28D9"/>
-    <!-- 다리 (왼쪽) -->
-    <rect x="38" y="176" width="28" height="38" rx="10" fill="#5B21B6"/>
-    <rect x="36" y="206" width="32" height="14" rx="7" fill="#4C1D95"/>
-    <!-- 다리 (오른쪽) -->
-    <rect x="94" y="176" width="28" height="38" rx="10" fill="#5B21B6"/>
-    <rect x="92" y="206" width="32" height="14" rx="7" fill="#4C1D95"/>
-    <!-- 목 -->
-    <rect x="56" y="68" width="48" height="16" rx="8" fill="#6D28D9"/>
-    <!-- 머리 -->
-    <rect x="28" y="14" width="104" height="56" rx="18" fill="url(#ai_head)"/>
-    <!-- 머리 안테나 -->
-    <rect x="75" y="4" width="10" height="14" rx="5" fill="#A78BFA"/>
-    <circle cx="80" cy="4" r="6" fill="#C4B5FD"/>
-    <!-- 눈 (왼쪽: 파란 LED) -->
-    <rect x="42" y="28" width="28" height="20" rx="8" fill="rgba(0,0,0,0.4)"/>
-    <circle cx="56" cy="38" r="8" fill="url(#ai_eye_l)"/>
-    <circle cx="56" cy="38" r="4" fill="rgba(255,255,255,0.9)"/>
-    <circle cx="58" cy="36" r="2" fill="rgba(6,182,212,0.8)"/>
-    <!-- 눈 (오른쪽: 노란 LED) -->
-    <rect x="90" y="28" width="28" height="20" rx="8" fill="rgba(0,0,0,0.4)"/>
-    <circle cx="104" cy="38" r="8" fill="url(#ai_eye_r)"/>
-    <circle cx="104" cy="38" r="4" fill="rgba(255,255,255,0.9)"/>
-    <circle cx="106" cy="36" r="2" fill="rgba(245,158,11,0.8)"/>
-    <!-- 입 (LED 바) -->
-    <rect x="50" y="58" width="60" height="6" rx="3" fill="rgba(0,0,0,0.3)"/>
-    <rect x="52" y="59" width="14" height="4" rx="2" fill="#34D399"/>
-    <rect x="69" y="59" width="14" height="4" rx="2" fill="#34D399"/>
-    <rect x="86" y="59" width="14" height="4" rx="2" fill="#A78BFA"/>
-  </g>
-
-  <!-- 플로팅 회로 칩 (우측 상단) -->
-  <g filter="url(#sh_ai)" transform="rotate(12,210,55)">
-    <rect x="185" y="30" width="46" height="46" rx="8" fill="#312E81"/>
-    <rect x="191" y="36" width="34" height="34" rx="5" fill="#1E1B4B"/>
-    <!-- 칩 핀 -->
-    <rect x="188" y="44" width="3" height="5" rx="1" fill="#818CF8"/>
-    <rect x="188" y="54" width="3" height="5" rx="1" fill="#818CF8"/>
-    <rect x="188" y="64" width="3" height="5" rx="1" fill="#818CF8"/>
-    <rect x="231" y="44" width="3" height="5" rx="1" fill="#818CF8"/>
-    <rect x="231" y="54" width="3" height="5" rx="1" fill="#818CF8"/>
-    <rect x="231" y="64" width="3" height="5" rx="1" fill="#818CF8"/>
-    <!-- 회로 -->
-    <rect x="197" y="42" width="22" height="3" rx="1" fill="#6366F1"/>
-    <rect x="197" y="50" width="16" height="3" rx="1" fill="#A5B4FC"/>
-    <rect x="197" y="58" width="22" height="3" rx="1" fill="#6366F1"/>
-    <rect x="208" y="42" width="3" height="22" rx="1" fill="#A5B4FC"/>
-    <circle cx="208" cy="53" r="4" fill="#4F46E5"/>
-    <circle cx="208" cy="53" r="2" fill="#C7D2FE"/>
-  </g>
-
-  <!-- 플로팅 별 / 장식 -->
-  <path d="M22 34 L25 24 L28 34 L38 37 L28 40 L25 50 L22 40 L12 37 Z" fill="white" opacity="0.95"/>
-  <circle cx="195" cy="235" r="8" fill="#FCD34D" opacity="0.9" filter="url(#sh_ai)"/>
-  <circle cx="18" cy="185" r="5" fill="rgba(255,255,255,0.5)"/>
-  <path d="M185 15 L188 7 L191 15 L199 18 L191 21 L188 29 L185 21 L177 18 Z" fill="#FCD34D" opacity="0.85"/>
+</div>
+<button class="panel-done-btn s4" onclick="openCompleteModal(6)">✅ 수업 완료 보고</button>
+</div>
+<!-- ── PANEL 7: 3D 모델링 (틴커캐드) ── -->
+<div class="content-panel" id="panel7">
+<div class="panel-hero s4" style="background:linear-gradient(135deg,#0d1a2e 0%,#0f2040 45%,#070e1c 100%);border-top:1px solid rgba(99,179,237,0.3);border-bottom:1px solid rgba(99,179,237,0.3);">
+<span class="panel-hero-orb-l" style="background:radial-gradient(circle,rgba(99,179,237,0.10) 0%,transparent 65%);"></span>
+<div class="panel-hero-inner">
+<div class="panel-hero-left">
+<div class="panel-hero-row">
+<div class="panel-hero-icon" style="font-size:52px;">🖨️</div>
+<div>
+<div class="panel-hero-lv" style="color:rgba(99,179,237,0.85);">Level 7 · 3D 모델링</div>
+<div class="panel-hero-title">3D 모델링</div>
+</div>
+</div>
+<div class="panel-hero-desc">틴커캐드로 3D 작품을 설계하고 프린터로 출력해요!</div>
+<div class="panel-hero-tags">
+<span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">🖨️ 3D 프린팅</span>
+<span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">틴커캐드</span>
+<span class="panel-hero-tag" style="background:rgba(99,179,237,0.15);border-color:rgba(99,179,237,0.35);color:#90cdf4;">3D 설계</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 틴커캐드 웹교재 iframe -->
+<iframe allowtransparency="true" class="gallery-iframe" id="tinkercadGalleryFrame" src="틴커캐드_웹교재.html" title="틴커캐드 웹교재">
+</iframe>
+<!-- 완료 표시/보고는 갤러리 카드의 완료 버튼(⭐)에서 처리됨 -->
+</div>
+<!-- ── PANEL 8: 자격증 ── -->
+<div class="content-panel" id="panel8">
+<div class="panel-hero s5">
+<span class="panel-hero-orb-l"></span>
+<div class="panel-hero-inner">
+<div class="panel-hero-left">
+<div class="panel-hero-row">
+<div class="panel-hero-icon"><svg fill="none" height="290" viewbox="0 0 240 290" width="240" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="sh_ai"><fedropshadow dx="0" dy="8" flood-color="rgba(0,0,0,0.3)" stddeviation="10"></fedropshadow></filter>
+<lineargradient id="ai_body" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#7C3AED"></stop><stop offset="1" stop-color="#4C1D95"></stop></lineargradient>
+<lineargradient id="ai_head" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8B5CF6"></stop><stop offset="1" stop-color="#6D28D9"></stop></lineargradient>
+<lineargradient id="ai_screen" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1E1B4B"></stop><stop offset="1" stop-color="#312E81"></stop></lineargradient>
+<radialgradient cx="35%" cy="30%" id="ai_eye_l" r="65%"><stop offset="0" stop-color="#A5F3FC"></stop><stop offset="1" stop-color="#06B6D4"></stop></radialgradient>
+<radialgradient cx="35%" cy="30%" id="ai_eye_r" r="65%"><stop offset="0" stop-color="#FDE68A"></stop><stop offset="1" stop-color="#F59E0B"></stop></radialgradient>
+</defs>
+<!-- 로봇 몸통 -->
+<g filter="url(#sh_ai)" transform="translate(30, 50)">
+<!-- 몸통 -->
+<rect fill="url(#ai_body)" height="96" rx="14" width="116" x="22" y="82"></rect>
+<!-- 가슴 화면 -->
+<rect fill="url(#ai_screen)" height="62" rx="8" width="92" x="34" y="94"></rect>
+<!-- 화면 내용: 코드 라인들 -->
+<rect fill="#34D399" height="5" rx="2" width="38" x="42" y="102"></rect>
+<rect fill="#60A5FA" height="5" rx="2" width="28" x="84" y="102"></rect>
+<rect fill="#A78BFA" height="5" rx="2" width="28" x="42" y="113"></rect>
+<rect fill="rgba(255,255,255,0.4)" height="5" rx="2" width="42" x="74" y="113"></rect>
+<rect fill="#FCD34D" height="5" rx="2" width="55" x="50" y="124"></rect>
+<rect fill="#F87171" height="5" rx="2" width="32" x="42" y="135"></rect>
+<rect fill="rgba(255,255,255,0.35)" height="5" rx="2" width="38" x="78" y="135"></rect>
+<rect fill="#34D399" height="5" rx="2" width="18" x="42" y="146"></rect>
+<!-- 배 버튼 -->
+<circle cx="50" cy="168" fill="rgba(255,255,255,0.15)" r="7"></circle>
+<circle cx="50" cy="168" fill="#818CF8" r="4"></circle>
+<circle cx="67" cy="168" fill="rgba(255,255,255,0.15)" r="7"></circle>
+<circle cx="67" cy="168" fill="#34D399" r="4"></circle>
+<circle cx="84" cy="168" fill="rgba(255,255,255,0.15)" r="7"></circle>
+<circle cx="84" cy="168" fill="#F59E0B" r="4"></circle>
+<!-- 팔 (왼쪽) -->
+<rect fill="url(#ai_body)" height="70" rx="9" width="18" x="0" y="88"></rect>
+<rect fill="#6D28D9" height="18" rx="7" width="14" x="2" y="150"></rect>
+<!-- 팔 (오른쪽) -->
+<rect fill="url(#ai_body)" height="70" rx="9" width="18" x="142" y="88"></rect>
+<rect fill="#6D28D9" height="18" rx="7" width="14" x="144" y="150"></rect>
+<!-- 다리 (왼쪽) -->
+<rect fill="#5B21B6" height="38" rx="10" width="28" x="38" y="176"></rect>
+<rect fill="#4C1D95" height="14" rx="7" width="32" x="36" y="206"></rect>
+<!-- 다리 (오른쪽) -->
+<rect fill="#5B21B6" height="38" rx="10" width="28" x="94" y="176"></rect>
+<rect fill="#4C1D95" height="14" rx="7" width="32" x="92" y="206"></rect>
+<!-- 목 -->
+<rect fill="#6D28D9" height="16" rx="8" width="48" x="56" y="68"></rect>
+<!-- 머리 -->
+<rect fill="url(#ai_head)" height="56" rx="18" width="104" x="28" y="14"></rect>
+<!-- 머리 안테나 -->
+<rect fill="#A78BFA" height="14" rx="5" width="10" x="75" y="4"></rect>
+<circle cx="80" cy="4" fill="#C4B5FD" r="6"></circle>
+<!-- 눈 (왼쪽: 파란 LED) -->
+<rect fill="rgba(0,0,0,0.4)" height="20" rx="8" width="28" x="42" y="28"></rect>
+<circle cx="56" cy="38" fill="url(#ai_eye_l)" r="8"></circle>
+<circle cx="56" cy="38" fill="rgba(255,255,255,0.9)" r="4"></circle>
+<circle cx="58" cy="36" fill="rgba(6,182,212,0.8)" r="2"></circle>
+<!-- 눈 (오른쪽: 노란 LED) -->
+<rect fill="rgba(0,0,0,0.4)" height="20" rx="8" width="28" x="90" y="28"></rect>
+<circle cx="104" cy="38" fill="url(#ai_eye_r)" r="8"></circle>
+<circle cx="104" cy="38" fill="rgba(255,255,255,0.9)" r="4"></circle>
+<circle cx="106" cy="36" fill="rgba(245,158,11,0.8)" r="2"></circle>
+<!-- 입 (LED 바) -->
+<rect fill="rgba(0,0,0,0.3)" height="6" rx="3" width="60" x="50" y="58"></rect>
+<rect fill="#34D399" height="4" rx="2" width="14" x="52" y="59"></rect>
+<rect fill="#34D399" height="4" rx="2" width="14" x="69" y="59"></rect>
+<rect fill="#A78BFA" height="4" rx="2" width="14" x="86" y="59"></rect>
+</g>
+<!-- 플로팅 회로 칩 (우측 상단) -->
+<g filter="url(#sh_ai)" transform="rotate(12,210,55)">
+<rect fill="#312E81" height="46" rx="8" width="46" x="185" y="30"></rect>
+<rect fill="#1E1B4B" height="34" rx="5" width="34" x="191" y="36"></rect>
+<!-- 칩 핀 -->
+<rect fill="#818CF8" height="5" rx="1" width="3" x="188" y="44"></rect>
+<rect fill="#818CF8" height="5" rx="1" width="3" x="188" y="54"></rect>
+<rect fill="#818CF8" height="5" rx="1" width="3" x="188" y="64"></rect>
+<rect fill="#818CF8" height="5" rx="1" width="3" x="231" y="44"></rect>
+<rect fill="#818CF8" height="5" rx="1" width="3" x="231" y="54"></rect>
+<rect fill="#818CF8" height="5" rx="1" width="3" x="231" y="64"></rect>
+<!-- 회로 -->
+<rect fill="#6366F1" height="3" rx="1" width="22" x="197" y="42"></rect>
+<rect fill="#A5B4FC" height="3" rx="1" width="16" x="197" y="50"></rect>
+<rect fill="#6366F1" height="3" rx="1" width="22" x="197" y="58"></rect>
+<rect fill="#A5B4FC" height="22" rx="1" width="3" x="208" y="42"></rect>
+<circle cx="208" cy="53" fill="#4F46E5" r="4"></circle>
+<circle cx="208" cy="53" fill="#C7D2FE" r="2"></circle>
+</g>
+<!-- 플로팅 별 / 장식 -->
+<path d="M22 34 L25 24 L28 34 L38 37 L28 40 L25 50 L22 40 L12 37 Z" fill="white" opacity="0.95"></path>
+<circle cx="195" cy="235" fill="#FCD34D" filter="url(#sh_ai)" opacity="0.9" r="8"></circle>
+<circle cx="18" cy="185" fill="rgba(255,255,255,0.5)" r="5"></circle>
+<path d="M185 15 L188 7 L191 15 L199 18 L191 21 L188 29 L185 21 L177 18 Z" fill="#FCD34D" opacity="0.85"></path>
 </svg></div>
-              <div>
-                <div class="panel-hero-lv">Level 6 · 심화 특강</div>
-                <div class="panel-hero-title">기타·심화 특강 (AI · 마인크래프트 · 로블록스)</div>
-              </div>
-            </div>
-            <div class="panel-hero-desc">AI 자격증부터 마인크래프트 코딩까지! 다양한 심화 과정에 도전해요.</div>
-            <div class="panel-hero-tags">
-              <span class="panel-hero-tag">AICE Future</span>
-              <span class="panel-hero-tag">AICE Junior</span>
-              <span class="panel-hero-tag">바이브코딩</span>
-              <span class="panel-hero-tag">마인크래프트</span>
-              <span class="panel-hero-tag">로블록스</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="p8-toc-grid">
-        <div class="p8-toc-chapter">
-          <div class="p8-toc-chapter-title">AI · 자격증 과정</div>
-          <div class="p8-toc-lessons">
-            <a href="#" class="p8-toc-lesson soon" onclick="return goLesson(this)">
-              <div class="p8-toc-lesson-text">
-                <span class="p8-toc-lesson-title">AICE Future 과정</span>
-                <span class="p8-toc-lesson-sub">AI 기초 원리, 머신러닝 개념 이해</span>
-              </div>
-              <span class="p8-soon-badge">준비중</span>
-            </a>
-            <a href="#" class="p8-toc-lesson soon" onclick="return goLesson(this)">
-              <div class="p8-toc-lesson-text">
-                <span class="p8-toc-lesson-title">AICE Junior 과정</span>
-                <span class="p8-toc-lesson-sub">데이터 분석 & 실전 AI 모델 만들기</span>
-              </div>
-              <span class="p8-soon-badge">준비중</span>
-            </a>
-            <a href="#" class="p8-toc-lesson soon" onclick="return goLesson(this)">
-              <div class="p8-toc-lesson-text">
-                <span class="p8-toc-lesson-title">바이브코딩 과정</span>
-                <span class="p8-toc-lesson-sub">피지컬 컴퓨팅 + AI 연동 프로젝트</span>
-              </div>
-              <span class="p8-soon-badge">준비중</span>
-            </a>
-          </div>
-        </div>
-        <div class="p8-toc-chapter">
-          <div class="p8-toc-chapter-title">마인크래프트</div>
-          <div class="p8-toc-lessons">
-            <a href="마인크래프트_파이썬_코딩_학습지.html" target="_blank" class="p8-toc-lesson" data-lid="mc1">
-              <div class="p8-toc-lesson-text">
-                <span class="p8-toc-lesson-title">마인크래프트 파이썬 코딩</span>
-                <span class="p8-toc-lesson-sub">마인크래프트 세계에서 파이썬으로 코딩하기</span>
-              </div>
-              <span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'mc1','🧱 마인크래프트 파이썬 코딩')">➜</span>
-            </a>
-          </div>
-        </div>
-        <div class="p8-toc-chapter">
-          <div class="p8-toc-chapter-title">로블록스</div>
-          <div class="p8-toc-lessons">
-            <a href="로블록스_점프맵.html" target="_blank" class="p8-toc-lesson" data-lid="rbxjmp1">
-              <div class="p8-toc-lesson-text">
-                <span class="p8-toc-lesson-title">나만의 점프맵 완성하기</span>
-                <span class="p8-toc-lesson-sub">스튜디오 조작부터 여섯 블록까지</span>
-              </div>
-              <span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'rbxjmp1','🎮 나만의 점프맵 완성하기')">➜</span>
-            </a>
-            <a href="로블록스_점프맵타워형.html" target="_blank" class="p8-toc-lesson" data-lid="rbxjmp2">
-              <div class="p8-toc-lesson-text">
-                <span class="p8-toc-lesson-title">점프맵부터 타워형까지</span>
-                <span class="p8-toc-lesson-sub">타워형 게임 완성 후 게시하기</span>
-              </div>
-              <span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'rbxjmp2','🎮 점프맵부터 타워형까지')">➜</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PLACEHOLDER / HOME DASHBOARD -->
-    <div id="placeholder">
-      <div class="home-grid">
-        <!-- 왼쪽: 학생 프로필 + 전체 진도 -->
-        <div class="home-profile-card">
-          <div class="home-avatar-row">
-            <div class="home-avatar-big" id="homeAvatar">?</div>
-            <div class="home-avatar-info">
-              <div class="home-student-name" id="homeStudentName">학생</div>
-              <span class="home-student-badge">코딩 마스터 수강생</span>
-            </div>
-          </div>
-          <div style="flex:1;">
-            <div class="home-progress-label">현재 과목 진도</div>
-            <div class="home-progress-numbers">
-              <div class="home-progress-pct" id="totalProgressPct">0%</div>
-              <div class="home-progress-sub" id="currentSubjectLabel">엔트리</div>
-            </div>
-            <div class="home-prog-bar-wrap">
-              <div class="home-prog-bar-fill" id="totalProgressBar" style="width:0%"></div>
-            </div>
-          </div>
-        </div>
-        <!-- 오른쪽: 과목 선택 -->
-        <!-- ── coden-class 스타일 과목 카드 그리드 ── -->
-        <div>
-          <div class="cn-section-title">오늘 수업 선택</div>
-          <div class="cn-grid">
-
-            <!-- STEP 01: 스크래치 주니어 -->
-            <div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#FF6B6B">
-              <span class="cn-badge soon">준비 중</span>
-              <div class="cn-step" style="color:#FF6B6B">STEP 01</div>
-              <div class="cn-title">스크래치 주니어</div>
-              <div class="cn-desc">블록 코딩의 첫 걸음!<br>기초부터 차근차근 배워봐요.</div>
-            </div>
-
-            <!-- STEP 02: 엔트리 -->
-            <div class="cn-card" onclick="selectStep(2)" style="--cn-color:#FCC419">
-              <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#FCC419">STEP 02</div>
-              <div class="cn-title">엔트리</div>
-              <div class="cn-desc">COS 3·2·1급 완벽 대비!<br>엔트리로 재미있게 코딩해요.</div>
-              <div class="cn-footer" style="color:#FCC419">학습 시작하기 →</div>
-            </div>
-
-            <!-- STEP 03: 스크래치 -->
-            <div class="cn-card" onclick="selectStep(3)" style="--cn-color:#4DABF7">
-              <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#4DABF7">STEP 03</div>
-              <div class="cn-title">스크래치</div>
-              <div class="cn-desc">COS 3·2·1급 완벽 대비!<br>스크래치로 나만의 게임을 만들어요.</div>
-              <div class="cn-footer" style="color:#4DABF7">학습 시작하기 →</div>
-            </div>
-
-            <!-- STEP 04: 앱인벤터 -->
-            <div class="cn-card" onclick="window.open('앱인벤터_웹교재.html','_blank')" style="--cn-color:#8B5CF6">
-              <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#8B5CF6">STEP 04</div>
-              <div class="cn-title">앱인벤터</div>
-              <div class="cn-desc">블록 코딩으로<br>나만의 앱을 만들어요!</div>
-              <div class="cn-footer" style="color:#8B5CF6">학습 시작하기 →</div>
-            </div>
-
-            <!-- STEP 05: 파이썬 터틀 -->
-            <div class="cn-card" onclick="selectStep(4)" style="--cn-color:#10B981">
-              <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#10B981">STEP 05</div>
-              <div class="cn-title">파이썬 터틀</div>
-              <div class="cn-desc">코드로 그림 그리기!<br>파이썬 첫 그래픽 체험</div>
-              <div class="cn-footer" style="color:#10B981">학습 시작하기 →</div>
-            </div>
-
-            <!-- STEP 06: 파이썬 문법완성 -->
-            <div class="cn-card" onclick="selectStep(5)" style="--cn-color:#2563EB">
-              <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#2563EB">STEP 06</div>
-              <div class="cn-title">파이썬 문법완성</div>
-              <div class="cn-desc">COS Pro 완벽 대비!<br>파이썬으로 실력을 한 단계 높여봐요.</div>
-              <div class="cn-footer" style="color:#2563EB">학습 시작하기 →</div>
-            </div>
-
-            <!-- STEP 07: 파이썬 실전 프로젝트 -->
-            <div class="cn-card" onclick="window.open('python_ursina.html','_blank')" style="--cn-color:#0891B2">
-              <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#0891B2">STEP 07</div>
-              <div class="cn-title">파이썬 실전 프로젝트</div>
-              <div class="cn-desc">Ursina로<br>나만의 3D 게임을 직접 만들어요!</div>
-              <div class="cn-footer" style="color:#0891B2">학습 시작하기 →</div>
-            </div>
-
-            <!-- STEP 08: 3D 모델링 -->
-            <div class="cn-card" onclick="selectStep(7)" style="--cn-color:#F97316">
-              <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#F97316">STEP 08</div>
-              <div class="cn-title">3D 모델링</div>
-              <div class="cn-desc">틴커캐드로 설계하고<br>3D 프린터로 출력!</div>
-              <div class="cn-footer" style="color:#F97316">학습 시작하기 →</div>
-            </div>
-
-            <!-- STEP 09: 기타·심화 특강 -->
-            <div class="cn-card" onclick="selectStep(8)" style="--cn-color:#BE4BDB">
-              <span class="cn-badge ready">학습 가능</span>
-              <div class="cn-step" style="color:#BE4BDB">STEP 09</div>
-              <div class="cn-title">기타·심화 특강</div>
-              <div class="cn-desc">AI 자격증부터 마인크래프트, 로블록스까지<br>다양한 심화 과정!</div>
-              <div class="cn-footer" style="color:#BE4BDB">학습 시작하기 →</div>
-            </div>
-
-            <!-- 커스텀 과목 카드 (관리자가 추가한 것) -->
-            <div id="customSubjectsContainer" style="display:contents;"></div>
-
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-  </div><!-- /main -->
+<div>
+<div class="panel-hero-lv">Level 6 · 심화 특강</div>
+<div class="panel-hero-title">기타·심화 특강 (AI · 마인크래프트 · 로블록스)</div>
+</div>
+</div>
+<div class="panel-hero-desc">AI 자격증부터 마인크래프트 코딩까지! 다양한 심화 과정에 도전해요.</div>
+<div class="panel-hero-tags">
+<span class="panel-hero-tag">AICE Future</span>
+<span class="panel-hero-tag">AICE Junior</span>
+<span class="panel-hero-tag">바이브코딩</span>
+<span class="panel-hero-tag">마인크래프트</span>
+<span class="panel-hero-tag">로블록스</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p8-toc-grid">
+<div class="p8-toc-chapter">
+<div class="p8-toc-chapter-title">AI · 자격증 과정</div>
+<div class="p8-toc-lessons">
+<a class="p8-toc-lesson soon" href="#" onclick="return goLesson(this)">
+<div class="p8-toc-lesson-text">
+<span class="p8-toc-lesson-title">AICE Future 과정</span>
+<span class="p8-toc-lesson-sub">AI 기초 원리, 머신러닝 개념 이해</span>
+</div>
+<span class="p8-soon-badge">준비중</span>
+</a>
+<a class="p8-toc-lesson soon" href="#" onclick="return goLesson(this)">
+<div class="p8-toc-lesson-text">
+<span class="p8-toc-lesson-title">AICE Junior 과정</span>
+<span class="p8-toc-lesson-sub">데이터 분석 &amp; 실전 AI 모델 만들기</span>
+</div>
+<span class="p8-soon-badge">준비중</span>
+</a>
+<a class="p8-toc-lesson soon" href="#" onclick="return goLesson(this)">
+<div class="p8-toc-lesson-text">
+<span class="p8-toc-lesson-title">바이브코딩 과정</span>
+<span class="p8-toc-lesson-sub">피지컬 컴퓨팅 + AI 연동 프로젝트</span>
+</div>
+<span class="p8-soon-badge">준비중</span>
+</a>
+</div>
+</div>
+<div class="p8-toc-chapter">
+<div class="p8-toc-chapter-title">마인크래프트</div>
+<div class="p8-toc-lessons">
+<a class="p8-toc-lesson" data-lid="mc1" href="마인크래프트_파이썬_코딩_학습지.html" target="_blank">
+<div class="p8-toc-lesson-text">
+<span class="p8-toc-lesson-title">마인크래프트 파이썬 코딩</span>
+<span class="p8-toc-lesson-sub">마인크래프트 세계에서 파이썬으로 코딩하기</span>
+</div>
+<span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'mc1','🧱 마인크래프트 파이썬 코딩')">➜</span>
+</a>
+</div>
+</div>
+<div class="p8-toc-chapter">
+<div class="p8-toc-chapter-title">로블록스</div>
+<div class="p8-toc-lessons">
+<a class="p8-toc-lesson" data-lid="rbxjmp1" href="로블록스_점프맵_기초.html" target="_blank">
+<div class="p8-toc-lesson-text">
+<span class="p8-toc-lesson-title">나만의 점프맵 완성하기</span>
+<span class="p8-toc-lesson-sub">스튜디오 조작부터 여섯 블록까지</span>
+</div>
+<span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'rbxjmp1','🎮 나만의 점프맵 완성하기')">➜</span>
+</a>
+<a class="p8-toc-lesson" data-lid="rbxjmp2" href="로블록스_점프맵_타워형.html" target="_blank">
+<div class="p8-toc-lesson-text">
+<span class="p8-toc-lesson-title">점프맵부터 타워형까지</span>
+<span class="p8-toc-lesson-sub">타워형 게임 완성 후 게시하기</span>
+</div>
+<span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'rbxjmp2','🎮 점프맵부터 타워형까지')">➜</span>
+</a><a class="p8-toc-lesson" data-lid="rbxjmp3" href="로블록스_점프맵_구조물꾸미기.html" target="_blank"><div class="p8-toc-lesson-text"><span class="p8-toc-lesson-title">흔들다리부터 도구상자 꾸미기까지</span><span class="p8-toc-lesson-sub">밧줄 제약으로 흔들다리・그네 만들고 도구상자로 꾸미기</span></div><span class="p8-toc-lesson-icon" onclick="toggleP8LessonDone(event,this,'rbxjmp3','🎮 흔들다리부터 도구상자 꾸미기까지')">➜</span></a>
+</div>
+</div>
+</div>
+</div>
+<!-- PLACEHOLDER / HOME DASHBOARD -->
+<div id="placeholder">
+<div class="home-grid">
+<!-- 왼쪽: 학생 프로필 + 전체 진도 -->
+<div class="home-profile-card">
+<div class="home-avatar-row">
+<div class="home-avatar-big" id="homeAvatar">?</div>
+<div class="home-avatar-info">
+<div class="home-student-name" id="homeStudentName">학생</div>
+<span class="home-student-badge">코딩 마스터 수강생</span>
+</div>
+</div>
+<div style="flex:1;">
+<div class="home-progress-label">현재 과목 진도</div>
+<div class="home-progress-numbers">
+<div class="home-progress-pct" id="totalProgressPct">0%</div>
+<div class="home-progress-sub" id="currentSubjectLabel">엔트리</div>
+</div>
+<div class="home-prog-bar-wrap">
+<div class="home-prog-bar-fill" id="totalProgressBar" style="width:0%"></div>
+</div>
+</div>
+</div>
+<!-- 오른쪽: 과목 선택 -->
+<!-- ── coden-class 스타일 과목 카드 그리드 ── -->
+<div>
+<div class="cn-section-title">오늘 수업 선택</div>
+<div class="cn-grid">
+<!-- STEP 01: 스크래치 주니어 -->
+<div class="cn-card cn-soon" onclick="alert('🙏 선생님이 열심히 준비 중이에요!\n조금만 기다려주세요.')" style="--cn-color:#FF6B6B">
+<span class="cn-badge soon">준비 중</span>
+<div class="cn-step" style="color:#FF6B6B">STEP 01</div>
+<div class="cn-title">스크래치 주니어</div>
+<div class="cn-desc">블록 코딩의 첫 걸음!<br/>기초부터 차근차근 배워봐요.</div>
+</div>
+<!-- STEP 02: 엔트리 -->
+<div class="cn-card" onclick="selectStep(2)" style="--cn-color:#FCC419">
+<span class="cn-badge ready">학습 가능</span>
+<div class="cn-step" style="color:#FCC419">STEP 02</div>
+<div class="cn-title">엔트리</div>
+<div class="cn-desc">COS 3·2·1급 완벽 대비!<br/>엔트리로 재미있게 코딩해요.</div>
+<div class="cn-footer" style="color:#FCC419">학습 시작하기 →</div>
+</div>
+<!-- STEP 03: 스크래치 -->
+<div class="cn-card" onclick="selectStep(3)" style="--cn-color:#4DABF7">
+<span class="cn-badge ready">학습 가능</span>
+<div class="cn-step" style="color:#4DABF7">STEP 03</div>
+<div class="cn-title">스크래치</div>
+<div class="cn-desc">COS 3·2·1급 완벽 대비!<br/>스크래치로 나만의 게임을 만들어요.</div>
+<div class="cn-footer" style="color:#4DABF7">학습 시작하기 →</div>
+</div>
+<!-- STEP 04: 앱인벤터 -->
+<div class="cn-card" onclick="window.open('앱인벤터_웹교재.html','_blank')" style="--cn-color:#8B5CF6">
+<span class="cn-badge ready">학습 가능</span>
+<div class="cn-step" style="color:#8B5CF6">STEP 04</div>
+<div class="cn-title">앱인벤터</div>
+<div class="cn-desc">블록 코딩으로<br/>나만의 앱을 만들어요!</div>
+<div class="cn-footer" style="color:#8B5CF6">학습 시작하기 →</div>
+</div>
+<!-- STEP 05: 파이썬 터틀 -->
+<div class="cn-card" onclick="selectStep(4)" style="--cn-color:#10B981">
+<span class="cn-badge ready">학습 가능</span>
+<div class="cn-step" style="color:#10B981">STEP 05</div>
+<div class="cn-title">파이썬 터틀</div>
+<div class="cn-desc">코드로 그림 그리기!<br/>파이썬 첫 그래픽 체험</div>
+<div class="cn-footer" style="color:#10B981">학습 시작하기 →</div>
+</div>
+<!-- STEP 06: 파이썬 문법완성 -->
+<div class="cn-card" onclick="selectStep(5)" style="--cn-color:#2563EB">
+<span class="cn-badge ready">학습 가능</span>
+<div class="cn-step" style="color:#2563EB">STEP 06</div>
+<div class="cn-title">파이썬 문법완성</div>
+<div class="cn-desc">COS Pro 완벽 대비!<br/>파이썬으로 실력을 한 단계 높여봐요.</div>
+<div class="cn-footer" style="color:#2563EB">학습 시작하기 →</div>
+</div>
+<!-- STEP 07: 파이썬 실전 프로젝트 -->
+<div class="cn-card" onclick="window.open('python_ursina.html','_blank')" style="--cn-color:#0891B2">
+<span class="cn-badge ready">학습 가능</span>
+<div class="cn-step" style="color:#0891B2">STEP 07</div>
+<div class="cn-title">파이썬 실전 프로젝트</div>
+<div class="cn-desc">Ursina로<br/>나만의 3D 게임을 직접 만들어요!</div>
+<div class="cn-footer" style="color:#0891B2">학습 시작하기 →</div>
+</div>
+<!-- STEP 08: 3D 모델링 -->
+<div class="cn-card" onclick="selectStep(7)" style="--cn-color:#F97316">
+<span class="cn-badge ready">학습 가능</span>
+<div class="cn-step" style="color:#F97316">STEP 08</div>
+<div class="cn-title">3D 모델링</div>
+<div class="cn-desc">틴커캐드로 설계하고<br/>3D 프린터로 출력!</div>
+<div class="cn-footer" style="color:#F97316">학습 시작하기 →</div>
+</div>
+<!-- STEP 09: 기타·심화 특강 -->
+<div class="cn-card" onclick="selectStep(8)" style="--cn-color:#BE4BDB">
+<span class="cn-badge ready">학습 가능</span>
+<div class="cn-step" style="color:#BE4BDB">STEP 09</div>
+<div class="cn-title">기타·심화 특강</div>
+<div class="cn-desc">AI 자격증부터 마인크래프트, 로블록스까지<br/>다양한 심화 과정!</div>
+<div class="cn-footer" style="color:#BE4BDB">학습 시작하기 →</div>
+</div>
+<!-- 커스텀 과목 카드 (관리자가 추가한 것) -->
+<div id="customSubjectsContainer" style="display:contents;"></div>
+</div>
+</div>
+</div>
+</div>
+</div><!-- /main -->
 </div><!-- /app -->
-
-
-
 <!-- ── 관리자 로그인 모달 ── -->
 <div class="sh-modal-overlay" id="adminLoginModal">
-  <div class="sh-modal-box" style="max-width:340px; text-align:center;">
-    <div style="font-size:44px; margin-bottom:12px;">🔐</div>
-    <div class="sh-modal-title">관리자 모드</div>
-    <div class="sh-modal-sub">비밀번호를 입력하세요</div>
-    <input type="password" class="sh-pw-input" id="adminPwInput" placeholder="••••••" maxlength="20"
-      onkeydown="if(event.key==='Enter')confirmAdminPw(); if(event.key==='Escape')closeAdminLogin();" />
-    <div class="sh-modal-btns">
-      <button class="sh-cancel-btn" onclick="closeAdminLogin()">취소</button>
-      <button class="sh-confirm-btn" onclick="confirmAdminPw()">🔓 입장</button>
-    </div>
-  </div>
+<div class="sh-modal-box" style="max-width:340px; text-align:center;">
+<div style="font-size:44px; margin-bottom:12px;">🔐</div>
+<div class="sh-modal-title">관리자 모드</div>
+<div class="sh-modal-sub">비밀번호를 입력하세요</div>
+<input class="sh-pw-input" id="adminPwInput" maxlength="20" onkeydown="if(event.key==='Enter')confirmAdminPw(); if(event.key==='Escape')closeAdminLogin();" placeholder="••••••" type="password"/>
+<div class="sh-modal-btns">
+<button class="sh-cancel-btn" onclick="closeAdminLogin()">취소</button>
+<button class="sh-confirm-btn" onclick="confirmAdminPw()">🔓 입장</button>
 </div>
-
+</div>
+</div>
 <!-- ── 과목 추가/편집 모달 ── -->
 <div class="sh-modal-overlay" id="subjectModal">
-  <div class="sh-modal-box">
-    <div class="sh-modal-title" id="subjectModalTitle">과목 추가하기</div>
-    <div class="sh-modal-sub">아래 내용을 입력하면 홈 화면에 카드가 생성돼요.</div>
-    <input type="hidden" id="editSubjectId" value="" />
-    <div class="sh-field">
-      <label>과목명</label>
-      <input type="text" id="subjectName" placeholder="예) 앱 인벤터" maxlength="20" />
-    </div>
-    <div class="sh-field">
-      <label>설명 (2줄 권장)</label>
-      <textarea id="subjectDesc" placeholder="예) 스마트폰 앱을 직접 만들어봐요!&#10;나만의 앱을 완성해보세요."></textarea>
-    </div>
-    <div class="sh-field">
-      <label>STEP 번호 (선택)</label>
-      <input type="text" id="subjectStep" placeholder="예) STEP 06" maxlength="10" />
-    </div>
-    <div class="sh-field">
-      <label>과목 유형</label>
-      <select id="subjectType" onchange="onSubjectTypeChange()">
-        <option value="chapter">챕터형 (목차 카드)</option>
-        <option value="gallery">갤러리형 (결과물 갤러리)</option>
-      </select>
-    </div>
-    <div class="sh-field gallery-file-field" id="galleryFileField">
-      <label>갤러리 파일명</label>
-      <input type="text" id="subjectGalleryFile" placeholder="예) 앱인벤터_갤러리.html" />
-    </div>
-    <div class="sh-field">
-      <label>아이콘 이모지 (선택)</label>
-      <input type="text" id="subjectIcon" placeholder="예) 🤖  🐍  🧱  📱" maxlength="4" style="font-size:20px;" />
-    </div>
-    <div class="sh-field">
-      <label>상태</label>
-      <select id="subjectStatus">
-        <option value="ready">학습 가능</option>
-        <option value="soon">준비 중</option>
-      </select>
-    </div>
-    <div class="sh-field">
-      <label>색상</label>
-      <div class="sh-colors" id="colorPicker">
-        <button class="sh-color-btn selected" data-color="#0078FF" style="background:#0078FF;" onclick="pickColor(this)"></button>
-        <button class="sh-color-btn" data-color="#00B89C" style="background:#00B89C;" onclick="pickColor(this)"></button>
-        <button class="sh-color-btn" data-color="#22C55E" style="background:#22C55E;" onclick="pickColor(this)"></button>
-        <button class="sh-color-btn" data-color="#6B47ED" style="background:#6B47ED;" onclick="pickColor(this)"></button>
-        <button class="sh-color-btn" data-color="#F59E0B" style="background:#F59E0B;" onclick="pickColor(this)"></button>
-        <button class="sh-color-btn" data-color="#EF4444" style="background:#EF4444;" onclick="pickColor(this)"></button>
-        <button class="sh-color-btn" data-color="#EC4899" style="background:#EC4899;" onclick="pickColor(this)"></button>
-        <button class="sh-color-btn" data-color="#64748B" style="background:#64748B;" onclick="pickColor(this)"></button>
-      </div>
-    </div>
-    <div class="sh-modal-btns">
-      <button class="sh-cancel-btn" onclick="closeSubjectModal()">취소</button>
-      <button class="sh-confirm-btn" onclick="saveSubject()">저장하기</button>
-    </div>
-  </div>
+<div class="sh-modal-box">
+<div class="sh-modal-title" id="subjectModalTitle">과목 추가하기</div>
+<div class="sh-modal-sub">아래 내용을 입력하면 홈 화면에 카드가 생성돼요.</div>
+<input id="editSubjectId" type="hidden" value=""/>
+<div class="sh-field">
+<label>과목명</label>
+<input id="subjectName" maxlength="20" placeholder="예) 앱 인벤터" type="text"/>
 </div>
-
+<div class="sh-field">
+<label>설명 (2줄 권장)</label>
+<textarea id="subjectDesc" placeholder="예) 스마트폰 앱을 직접 만들어봐요!
+나만의 앱을 완성해보세요."></textarea>
+</div>
+<div class="sh-field">
+<label>STEP 번호 (선택)</label>
+<input id="subjectStep" maxlength="10" placeholder="예) STEP 06" type="text"/>
+</div>
+<div class="sh-field">
+<label>과목 유형</label>
+<select id="subjectType" onchange="onSubjectTypeChange()">
+<option value="chapter">챕터형 (목차 카드)</option>
+<option value="gallery">갤러리형 (결과물 갤러리)</option>
+</select>
+</div>
+<div class="sh-field gallery-file-field" id="galleryFileField">
+<label>갤러리 파일명</label>
+<input id="subjectGalleryFile" placeholder="예) 앱인벤터_갤러리.html" type="text"/>
+</div>
+<div class="sh-field">
+<label>아이콘 이모지 (선택)</label>
+<input id="subjectIcon" maxlength="4" placeholder="예) 🤖  🐍  🧱  📱" style="font-size:20px;" type="text"/>
+</div>
+<div class="sh-field">
+<label>상태</label>
+<select id="subjectStatus">
+<option value="ready">학습 가능</option>
+<option value="soon">준비 중</option>
+</select>
+</div>
+<div class="sh-field">
+<label>색상</label>
+<div class="sh-colors" id="colorPicker">
+<button class="sh-color-btn selected" data-color="#0078FF" onclick="pickColor(this)" style="background:#0078FF;"></button>
+<button class="sh-color-btn" data-color="#00B89C" onclick="pickColor(this)" style="background:#00B89C;"></button>
+<button class="sh-color-btn" data-color="#22C55E" onclick="pickColor(this)" style="background:#22C55E;"></button>
+<button class="sh-color-btn" data-color="#6B47ED" onclick="pickColor(this)" style="background:#6B47ED;"></button>
+<button class="sh-color-btn" data-color="#F59E0B" onclick="pickColor(this)" style="background:#F59E0B;"></button>
+<button class="sh-color-btn" data-color="#EF4444" onclick="pickColor(this)" style="background:#EF4444;"></button>
+<button class="sh-color-btn" data-color="#EC4899" onclick="pickColor(this)" style="background:#EC4899;"></button>
+<button class="sh-color-btn" data-color="#64748B" onclick="pickColor(this)" style="background:#64748B;"></button>
+</div>
+</div>
+<div class="sh-modal-btns">
+<button class="sh-cancel-btn" onclick="closeSubjectModal()">취소</button>
+<button class="sh-confirm-btn" onclick="saveSubject()">저장하기</button>
+</div>
+</div>
+</div>
 <!-- ── 챕터 추가/편집 모달 ── -->
 <div class="sh-modal-overlay" id="chapterModal">
-  <div class="sh-modal-box">
-    <div class="sh-modal-title" id="chapterModalTitle">챕터 추가하기</div>
-    <div class="sh-modal-sub">챕터 정보를 입력하면 과목 패널에 카드로 표시돼요.</div>
-    <input type="hidden" id="editChapterId" value="" />
-    <input type="hidden" id="editChapterSubjectId" value="" />
-    <div class="sh-field">
-      <label>챕터 제목</label>
-      <input type="text" id="chapterTitle" placeholder="예) 1단원: 변수와 자료형" maxlength="30" />
-    </div>
-    <div class="sh-field">
-      <label>설명 (선택)</label>
-      <textarea id="chapterDesc" placeholder="예) 파이썬의 기본 자료형을 배우고&#10;간단한 코드를 작성해봐요." style="min-height:60px;"></textarea>
-    </div>
-    <div class="sh-field">
-      <label>아이콘 이모지 (선택)</label>
-      <input type="text" id="chapterIcon" placeholder="예) 📝  🎯  🔢  🎮" maxlength="4" style="font-size:20px;" />
-    </div>
-    <div class="sh-field">
-      <label>링크 (선택 — 유튜브, 구글 슬라이드 등)</label>
-      <input type="text" id="chapterLink" placeholder="https://..." />
-    </div>
-    <div class="sh-field">
-      <label>링크 버튼 텍스트 (선택)</label>
-      <input type="text" id="chapterLinkLabel" placeholder="예) 영상 보기  /  자료 열기" maxlength="12" />
-    </div>
-    <div class="sh-modal-btns">
-      <button class="sh-cancel-btn" onclick="closeChapterModal()">취소</button>
-      <button class="sh-confirm-btn" onclick="saveChapter()">저장하기</button>
-    </div>
-  </div>
+<div class="sh-modal-box">
+<div class="sh-modal-title" id="chapterModalTitle">챕터 추가하기</div>
+<div class="sh-modal-sub">챕터 정보를 입력하면 과목 패널에 카드로 표시돼요.</div>
+<input id="editChapterId" type="hidden" value=""/>
+<input id="editChapterSubjectId" type="hidden" value=""/>
+<div class="sh-field">
+<label>챕터 제목</label>
+<input id="chapterTitle" maxlength="30" placeholder="예) 1단원: 변수와 자료형" type="text"/>
 </div>
-
+<div class="sh-field">
+<label>설명 (선택)</label>
+<textarea id="chapterDesc" placeholder="예) 파이썬의 기본 자료형을 배우고
+간단한 코드를 작성해봐요." style="min-height:60px;"></textarea>
+</div>
+<div class="sh-field">
+<label>아이콘 이모지 (선택)</label>
+<input id="chapterIcon" maxlength="4" placeholder="예) 📝  🎯  🔢  🎮" style="font-size:20px;" type="text"/>
+</div>
+<div class="sh-field">
+<label>링크 (선택 — 유튜브, 구글 슬라이드 등)</label>
+<input id="chapterLink" placeholder="https://..." type="text"/>
+</div>
+<div class="sh-field">
+<label>링크 버튼 텍스트 (선택)</label>
+<input id="chapterLinkLabel" maxlength="12" placeholder="예) 영상 보기  /  자료 열기" type="text"/>
+</div>
+<div class="sh-modal-btns">
+<button class="sh-cancel-btn" onclick="closeChapterModal()">취소</button>
+<button class="sh-confirm-btn" onclick="saveChapter()">저장하기</button>
+</div>
+</div>
+</div>
 <!-- ── 수업 완료 확인 모달 ── -->
 <div class="modal-overlay" id="completeModal">
-  <div class="modal-box">
-    <div class="modal-icon" id="modalIcon">🎉</div>
-    <div class="modal-title" id="modalTitle">수업 완료 보고하기</div>
-    <div class="modal-sub" id="modalSub">아래 내용으로 선생님께 보고할게요!</div>
-    <div class="sheets-setup-banner" id="setupBanner">
-      ⚠️ <strong>구글 시트 미설정</strong> — 아래 설정 가이드를 따라 Apps Script URL을 등록하면 자동으로 기록돼요.<br>
+<div class="modal-box">
+<div class="modal-icon" id="modalIcon">🎉</div>
+<div class="modal-title" id="modalTitle">수업 완료 보고하기</div>
+<div class="modal-sub" id="modalSub">아래 내용으로 선생님께 보고할게요!</div>
+<div class="sheets-setup-banner" id="setupBanner">
+      ⚠️ <strong>구글 시트 미설정</strong> — 아래 설정 가이드를 따라 Apps Script URL을 등록하면 자동으로 기록돼요.<br/>
       지금은 로컬 저장만 됩니다.
     </div>
-    <div class="modal-info-box" id="modalInfoBox">
-      <div class="modal-info-row">
-        <span class="modal-info-label">👤 학생</span>
-        <span class="modal-info-value" id="mInfoName">—</span>
-      </div>
-      <div class="modal-info-row">
-        <span class="modal-info-label">📅 날짜</span>
-        <span class="modal-info-value" id="mInfoDate">—</span>
-      </div>
-      <div class="modal-info-row">
-        <span class="modal-info-label">🏆 레벨</span>
-        <span class="modal-info-value" id="mInfoLevel">—</span>
-      </div>
-      <div class="modal-info-row">
-        <span class="modal-info-label">📝 메모</span>
-        <span class="modal-info-value" id="mInfoMemoLabel">있음</span>
-      </div>
-    </div>
-    <div class="modal-memo-preview" id="mInfoMemoPreview" style="display:none"></div>
-    <div class="modal-loading" id="modalLoading">⏳ 구글 시트에 기록 중...</div>
-    <div class="modal-result" id="modalResult"></div>
-    <div class="modal-btns" id="modalBtns">
-      <button class="modal-cancel-btn" onclick="closeModal()">취소</button>
-      <button class="modal-confirm-btn s1" id="modalConfirmBtn" onclick="confirmComplete()">✅ 보고 완료!</button>
-    </div>
-  </div>
+<div class="modal-info-box" id="modalInfoBox">
+<div class="modal-info-row">
+<span class="modal-info-label">👤 학생</span>
+<span class="modal-info-value" id="mInfoName">—</span>
 </div>
-
+<div class="modal-info-row">
+<span class="modal-info-label">📅 날짜</span>
+<span class="modal-info-value" id="mInfoDate">—</span>
+</div>
+<div class="modal-info-row">
+<span class="modal-info-label">🏆 레벨</span>
+<span class="modal-info-value" id="mInfoLevel">—</span>
+</div>
+<div class="modal-info-row">
+<span class="modal-info-label">📝 메모</span>
+<span class="modal-info-value" id="mInfoMemoLabel">있음</span>
+</div>
+</div>
+<div class="modal-memo-preview" id="mInfoMemoPreview" style="display:none"></div>
+<div class="modal-loading" id="modalLoading">⏳ 구글 시트에 기록 중...</div>
+<div class="modal-result" id="modalResult"></div>
+<div class="modal-btns" id="modalBtns">
+<button class="modal-cancel-btn" onclick="closeModal()">취소</button>
+<button class="modal-confirm-btn s1" id="modalConfirmBtn" onclick="confirmComplete()">✅ 보고 완료!</button>
+</div>
+</div>
+</div>
 <!-- ── CONFETTI ── -->
 <div class="confetti-wrap" id="confettiWrap"></div>
-
 <script src="config.js"></script>
 <script>
 // ════════════════════════════════════════════════
