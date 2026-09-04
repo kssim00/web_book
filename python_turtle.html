@@ -34,6 +34,30 @@
     background:linear-gradient(180deg,#2f9e6e,#57b98c);
     color:#fff;padding:22px 0 40px;
     overflow-y:auto;height:100vh;position:sticky;top:0;
+    transition:width .28s ease,padding .28s ease;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  #sidebar::-webkit-scrollbar{display:none;width:0;height:0;background:transparent;}
+  #main{scrollbar-width:none;-ms-overflow-style:none;}
+  #main::-webkit-scrollbar{display:none;width:0;height:0;background:transparent;}
+  html,body{scrollbar-width:none;-ms-overflow-style:none;}
+  html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0;background:transparent;}
+  body.nav-collapsed #sidebar{width:0;padding:0;overflow:hidden;}
+  .nav-toggle{
+    position:fixed;top:50%;left:250px;z-index:70;
+    width:15px;height:52px;transform:translateY(-50%);
+    border-radius:0 8px 8px 0;border:none;
+    background:#d9f0e3;color:#21794f;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;padding:0;font-size:11px;line-height:1;
+    opacity:0.6;transition:left .28s ease,opacity .18s ease,background .18s ease;
+  }
+  .nav-toggle:hover{opacity:1;background:#c3e9d4;}
+  .nav-toggle::after{content:"‹";}
+  body.nav-collapsed .nav-toggle{left:0;}
+  body.nav-collapsed .nav-toggle::after{content:"›";}
+  @media (max-width:700px){
+    .nav-toggle{display:none;}
   }
   #sidebar h1{
     font-size:19px;margin:0;padding:0 20px 16px;
@@ -401,7 +425,8 @@
   .py-toc-lesson.py-done .py-toc-lesson-title{color:#16A34A;}
 </style>
 </head>
-<body>
+<body class="nav-collapsed">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기/닫기"></button>
 <div id="app">
   <nav id="sidebar">
     <h1>🐢 파이썬 터틀<br>웹교재</h1>
@@ -419,18 +444,18 @@
 <script>
 const SESSION_LABELS = {
   1:"1차시", 2:"2차시", 3:"3차시", 4:"4차시", 5:"5차시",
-  6:"6차시", 7:"7차시", 7.5:"미니 프로젝트", 8:"8차시", 9:"9차시", 10:"10차시"
+  6:"6차시", 6.5:"미니 프로젝트", 7:"7차시", 8:"8차시", 9:"9차시"
 };
 
 const UNITS = [
 {
   slug:"01-turtle-start", session:1, icon:"🐢",
-  title:"터틀 시작하기",
+  title:"터틀 시작하기: 화면·모양·크기·색",
   note:["파이썬 파일을 새로 만들어요.","파일 이름은 `turtle_01-1.py`로 정해요.","코드를 한 줄씩 입력해요."],
-  learn:["그림 그릴 화면 만들기","거북이 모양 바꾸기"],
+  learn:["그림 그릴 화면 만들기","창 제목 정하기","거북이 모양 바꾸기","거북이 크기 키우고 줄이기","거북이 색깔 바꾸기","배경 색깔 바꾸기"],
   steps:[
-    { title:"setup() - 화면 만들기",
-      explain:["`setup()`은 그림 그릴 창의 **크기를 정하는** 함수예요.","가로 크기, 세로 크기 순서로 숫자를 넣어요.","`import turtle as t`로 터틀 기능을 불러오고, 맨 마지막 줄엔 `t.mainloop()`을 써서 창이 계속 떠 있게 해요."],
+    { title:"setup()   title() - 화면 만들기",
+      explain:["`setup()`은 그림 그릴 창의 **크기를 정하는** 함수예요.","가로 크기, 세로 크기 순서로 숫자를 넣어요.","`title()`은 창 맨 위에 뜨는 **제목 글자**를 정해요.","`import turtle as t`로 터틀 기능을 불러오고, 맨 마지막 줄엔 `t.mainloop()`을 써서 창이 계속 떠 있게 해요."],
       shot:"가로 800, 세로 600 크기의 창.",
       img: turtleScene({ lines:[
         {x1:-200,y1:-150,x2:200,y2:-150,color:"#2f9e6e",width:2,dash:"6,4"},
@@ -442,9 +467,10 @@ const UNITS = [
 
 # 창 크기 설정
 t.setup(800, 600)
+t.title("나의 첫 터틀 그림")
 
 t.mainloop()`,
-      tryit:["창 크기를 `400, 300`으로 바꿔보세요.","내가 원하는 크기로 창을 만들어보세요."]
+      tryit:["창 크기를 `400, 300`으로 바꿔보세요.","내가 원하는 크기로 창을 만들어보세요.","따옴표 안 제목 글자를 내가 원하는 말로 바꿔보세요."]
     },
     { title:"shape() - 모양 바꾸기",
       explain:["`shape()`는 거북이 **모양을 바꾸는** 함수예요.","괄호 안에 모양 이름을 따옴표와 함께 적어요. (꼭 소문자로 써요!)","모양 이름: \"turtle\", \"classic\", \"triangle\", \"arrow\", \"square\", \"circle\""],
@@ -456,37 +482,7 @@ t.shape("turtle")
 
 t.mainloop()`,
       tryit:["\"turtle\"을 \"circle\"로 바꿔보세요.","\"square\", \"triangle\", \"arrow\"도 넣어보고 내가 좋아하는 모양을 찾아보세요."]
-    }
-  ],
-  funcTable:[
-    {name:"setup(가로, 세로)", desc:"창 크기 정하기", usage:"t.setup(800, 600)"},
-    {name:"shape(\"이름\")", desc:"거북이 모양 바꾸기", usage:"t.shape(\"turtle\")"}
-  ],
-  mission:{
-    tasks:[
-      { task:`**나만의 시작 화면 만들기**
-- 창 크기: 가로 600, 세로 600
-- 거북이 모양: "circle"`, shot:"600×600 창에 원 모양 거북이.",
-        img: turtleScene({ lines:[
-          {x1:-180,y1:-180,x2:180,y2:-180,color:"#2f9e6e",width:2,dash:"6,4"},
-          {x1:180,y1:-180,x2:180,y2:180,color:"#2f9e6e",width:2,dash:"6,4"},
-          {x1:180,y1:180,x2:-180,y2:180,color:"#2f9e6e",width:2,dash:"6,4"},
-          {x1:-180,y1:180,x2:-180,y2:-180,color:"#2f9e6e",width:2,dash:"6,4"}
-        ], texts:[{x:0,y:150,text:"600 × 600",size:14,color:"#21794f",bold:true}], turtles:[{x:0,y:-20,heading:0,shape:"circle",scale:1.4}] }) }
-    ]
-  },
-  quiz:[
-    { q:"그림 그릴 창의 크기를 정하는 함수는?", choices:["`setup()`","`home()`","`shape()`","`forward()`"], answer:0 },
-    { q:"거북이 모양을 바꾸는 함수는?", choices:["`color()`","`bgcolor()`","`shape()`","`pensize()`"], answer:2 }
-  ],
-  next:["거북이 크기를 키우고 줄이는 법을 배워요.","거북이 색깔과 배경 색깔을 바꾸는 법을 배워요."]
-},
-{
-  slug:"02-size-color", session:2, icon:"🎨",
-  title:"거북이 크기와 색 정하기",
-  prevReview:["`setup()`으로 창 크기를 정했어요.","`shape()`으로 거북이 모양을 바꿨어요."],
-  learn:["거북이 크기 키우고 줄이기","거북이 색깔 바꾸기","배경 색깔 바꾸기"],
-  steps:[
+    },
     { title:"shapesize() - 크기 바꾸기",
       explain:["`shapesize()`는 거북이 **크기를 바꾸는** 함수예요.","숫자가 클수록 거북이가 커져요."],
       shot:"거북이가 아주 크게 보여요.",
@@ -527,12 +523,24 @@ t.mainloop()`,
     }
   ],
   funcTable:[
+    {name:"setup(가로, 세로)", desc:"창 크기 정하기", usage:"t.setup(800, 600)"},
+    {name:"title(\"글자\")", desc:"창 제목 정하기", usage:"t.title(\"my window\")"},
+    {name:"shape(\"이름\")", desc:"거북이 모양 바꾸기", usage:"t.shape(\"turtle\")"},
     {name:"shapesize(크기)", desc:"거북이 크기 바꾸기", usage:"t.shapesize(2, 2)"},
     {name:"color(\"색\")", desc:"거북이(선) 색 바꾸기", usage:"t.color(\"pink\")"},
     {name:"bgcolor(\"색\")", desc:"배경 색 바꾸기", usage:"t.bgcolor(\"black\")"}
   ],
   mission:{
     tasks:[
+      { task:`**나만의 시작 화면 만들기**
+- 창 크기: 가로 600, 세로 600
+- 거북이 모양: "circle"`, shot:"600×600 창에 원 모양 거북이.",
+        img: turtleScene({ lines:[
+          {x1:-180,y1:-180,x2:180,y2:-180,color:"#2f9e6e",width:2,dash:"6,4"},
+          {x1:180,y1:-180,x2:180,y2:180,color:"#2f9e6e",width:2,dash:"6,4"},
+          {x1:180,y1:180,x2:-180,y2:180,color:"#2f9e6e",width:2,dash:"6,4"},
+          {x1:-180,y1:180,x2:-180,y2:-180,color:"#2f9e6e",width:2,dash:"6,4"}
+        ], texts:[{x:0,y:150,text:"600 × 600",size:14,color:"#21794f",bold:true}], turtles:[{x:0,y:-20,heading:0,shape:"circle",scale:1.4}] }) },
       { task:`**나만의 거북이 만들기**
 - 거북이 모양: "turtle"
 - 크기: 5배
@@ -542,6 +550,9 @@ t.mainloop()`,
     ]
   },
   quiz:[
+    { q:"그림 그릴 창의 크기를 정하는 함수는?", choices:["`setup()`","`home()`","`shape()`","`forward()`"], answer:0 },
+    { q:"창 제목을 정하는 함수는?", choices:["`title()`","`name()`","`shape()`","`write()`"], answer:0 },
+    { q:"거북이 모양을 바꾸는 함수는?", choices:["`color()`","`bgcolor()`","`shape()`","`pensize()`"], answer:2 },
     { q:"거북이 크기를 바꾸는 함수는?", choices:["`shapesize()`","`color()`","`bgcolor()`","`pensize()`"], answer:0 },
     { q:"화면 배경색을 바꾸는 함수는?", choices:["`color()`","`bgcolor()`","`fillcolor()`","`shape()`"], answer:1 },
     { q:"거북이(선) 색을 바꾸는 함수는?", choices:["`bgcolor()`","`color()`","`shapesize()`","`write()`"], answer:1 }
@@ -549,12 +560,12 @@ t.mainloop()`,
   next:["거북이를 앞뒤로 움직이는 법을 배워요.","처음 자리로 되돌리는 법도 배워요.","선 굵기를 바꾸는 법을 배워요."]
 },
 {
-  slug:"03-forward-back", session:3, icon:"➡️",
+  slug:"03-forward-back", session:2, icon:"➡️",
   title:"앞으로 뒤로 이동하기",
   prevReview:["`shapesize()`로 거북이 크기를 바꿨어요.","`color()`, `bgcolor()`로 색을 바꿨어요."],
-  learn:["거북이를 앞으로 움직이기","거북이를 뒤로 움직이기","처음 자리로 되돌리기","선 굵기 바꾸기"],
+  learn:["거북이를 앞으로 움직이기","거북이를 뒤로 움직이기","처음 자리로 되돌리기","선 굵기 바꾸기","점 찍기"],
   steps:[
-    { title:"forward() / fd() - 앞으로 가기",
+    { title:"forward()   fd() - 앞으로 가기",
       explain:["`forward()`는 거북이를 **앞으로 움직이는** 함수예요.","`fd()`는 줄인 이름이고 똑같이 동작해요.","괄호 안 숫자만큼 픽셀을 움직여요."],
       shot:"빨간 선이 앞으로 그려져요.",
       img: turtleScene({ lines:[{x1:0,y1:0,x2:100,y2:0,color:"#e5383b",width:5}], turtles:[{x:100,y:0,heading:0,color:"#e5383b"}] }),
@@ -573,7 +584,7 @@ t.mainloop()`,
           img: turtleScene({ lines:[{x1:0,y1:0,x2:100,y2:0,color:"#e5383b",width:3},{x1:100,y1:0,x2:250,y2:0,color:"#1d63d1",width:3}], turtles:[{x:250,y:0,heading:0,color:"#1d63d1"}] }) }
       ]
     },
-    { title:"backward() / back() / bk() - 뒤로 가기",
+    { title:"backward()   back()   bk() - 뒤로 가기",
       explain:["`backward()`는 거북이를 **뒤로 움직이는** 함수예요.","`back()`, `bk()`도 같은 함수예요. 이름만 짧아요."],
       shot:"거북이가 뒤로 움직여요.",
       img: turtleScene({ lines:[{x1:0,y1:0,x2:-100,y2:0,color:"#ff6fb0",width:3}], turtles:[{x:-100,y:0,heading:0,color:"#ff6fb0"}] }),
@@ -591,7 +602,7 @@ t.mainloop()`,
           img: turtleScene({ lines:[{x1:0,y1:0,x2:300,y2:0,color:"#e5383b",width:3},{x1:300,y1:0,x2:100,y2:0,color:"#ff8c1a",width:3},{x1:100,y1:0,x2:200,y2:0,color:"#ffd400",width:3},{x1:200,y1:0,x2:150,y2:0,color:"#2f9e6e",width:3}], turtles:[{x:150,y:0,heading:0,color:"#2f9e6e"}] }) }
       ]
     },
-    { title:"home() / clear() / reset() - 처음으로 되돌리기",
+    { title:"home()   clear()   reset() - 처음으로 되돌리기",
       explain:["`home()`은 거북이를 **처음 자리(가운데)로 보내는** 함수예요. 지금까지 그린 그림은 그대로 남아요.","`clear()`는 **그림만 지우고** 거북이는 지금 있는 자리에 그대로 있어요.","`reset()`은 **그림도 지우고** 거북이도 처음 자리로 보내며, 펜 색과 굵기도 처음 상태로 되돌려요."],
       shot:"선은 그대로 두고 거북이만 가운데로 돌아와요.",
       img: turtleScene({ lines:[{x1:0,y1:0,x2:200,y2:0,color:"#e5383b",width:3},{x1:200,y1:0,x2:0,y2:0,color:"#b9c6c0",width:2,dash:"5,4"}], turtles:[{x:0,y:0,heading:0}] }),
@@ -604,8 +615,8 @@ t.home()          # 거북이만 처음 자리로! 그림은 그대로 남아요
 t.mainloop()`,
       tryit:["`t.home()`을 `t.clear()`로 바꿔보세요. 이번엔 그림이 지워지고 거북이는 그 자리에 남아있어요.","`t.reset()`으로 바꿔보세요. 이번엔 그림도 지워지고 거북이도 처음 자리로 돌아가요."]
     },
-    { title:"pensize() - 선 굵기 바꾸기",
-      explain:["`pensize()`는 선의 **두께를 정하는** 함수예요.","숫자가 클수록 선이 두꺼워져요."],
+    { title:"pensize()   width() - 선 굵기 바꾸기",
+      explain:["`pensize()`는 선의 **두께를 정하는** 함수예요.","숫자가 클수록 선이 두꺼워져요.","`width()`도 같은 함수예요. 이름만 달라요."],
       shot:"두꺼운 주황색 선이 보여요.",
       img: turtleScene({ lines:[{x1:0,y1:0,x2:100,y2:0,color:"#ff8c1a",width:5}], turtles:[{x:100,y:0,heading:0,color:"#ff8c1a"}] }),
       code:`import turtle as t
@@ -617,20 +628,36 @@ t.pensize(5)
 t.fd(100)
 
 t.mainloop()`,
-      tryit:["굵기와 색을 바꿔가며 여러 번 실행해보고 마음에 드는 조합을 찾아보세요."],
+      tryit:["굵기와 색을 바꿔가며 여러 번 실행해보고 마음에 드는 조합을 찾아보세요.","`t.pensize(5)`를 `t.width(5)`로 바꿔보세요. 결과는 똑같아요."],
       minis:[
         { title:"점점 두꺼워지는 선 그리기", desc:"빨강 굵기2·20, 주황 굵기4·40, 노랑 굵기6·60, 초록 굵기8·80, 파랑 굵기10·100 순서로 점점 두꺼워지는 선을 그리도록 코딩해보세요.", shot:"점점 두꺼워지는 색색의 선.",
           img: turtleScene({ bgFill:"#000000", lines:[{x1:0,y1:0,x2:20,y2:0,color:"#e5383b",width:2},{x1:20,y1:0,x2:60,y2:0,color:"#ff8c1a",width:4},{x1:60,y1:0,x2:120,y2:0,color:"#ffd400",width:6},{x1:120,y1:0,x2:200,y2:0,color:"#2f9e6e",width:8},{x1:200,y1:0,x2:300,y2:0,color:"#1d63d1",width:10}], turtles:[{x:300,y:0,heading:0,color:"#1d63d1"}] }) }
       ]
+    },
+    { title:"dot() - 점 찍기",
+      explain:["`dot()`은 지금 있는 자리에 **동그란 점을 찍는** 함수예요.","괄호 안 숫자로 점의 크기를 정해요."],
+      shot:"자리에 큰 주황색 점이 찍혀요.",
+      img: turtleScene({ lines:[{x1:-100,y1:0,x2:0,y2:0,color:"#b9c6c0",width:2,dash:"5,4"}], dots:[{x:0,y:0,r:22,color:"#ff8c1a"}], turtles:[{x:-100,y:0,heading:0}] }),
+      code:`import turtle as t
+
+t.shape("turtle")
+t.color("orange")
+
+t.forward(100)
+t.dot(40)
+
+t.mainloop()`,
+      tryit:["숫자를 `80`으로 바꿔서 점이 더 커지는지 확인해보세요.","색을 바꿔서 다른 색 점도 찍어보세요."]
     }
   ],
   funcTable:[
-    {name:"forward(숫자) / fd(숫자)", desc:"앞으로 이동", usage:"t.fd(100)"},
-    {name:"backward(숫자) / bk(숫자)", desc:"뒤로 이동", usage:"t.bk(100)"},
+    {name:"forward(숫자)   fd(숫자)", desc:"앞으로 이동", usage:"t.fd(100)"},
+    {name:"backward(숫자)   bk(숫자)", desc:"뒤로 이동", usage:"t.bk(100)"},
     {name:"home()", desc:"처음 자리로 (그림은 유지)", usage:"t.home()"},
     {name:"clear()", desc:"그림만 지우기 (거북이는 그대로)", usage:"t.clear()"},
     {name:"reset()", desc:"그림도 지우고 거북이도 처음으로", usage:"t.reset()"},
-    {name:"pensize(숫자)", desc:"선 굵기 정하기", usage:"t.pensize(5)"}
+    {name:"pensize(숫자)   width(숫자)", desc:"선 굵기 정하기", usage:"t.pensize(5)"},
+    {name:"dot(숫자)", desc:"동그란 점 찍기", usage:"t.dot(40)"}
   ],
   mission:{
     tasks:[
@@ -645,12 +672,13 @@ t.mainloop()`,
     { q:"거북이를 앞으로 움직이는 함수의 줄인 이름은?", choices:["`bk()`","`fd()`","`lt()`","`rt()`"], answer:1 },
     { q:"그림은 그대로 두고 거북이만 처음 자리로 보내는 함수는?", choices:["`clear()`","`home()`","`reset()`","`penup()`"], answer:1 },
     { q:"선의 두께를 정하는 함수는?", choices:["`pensize()`","`color()`","`goto()`","`circle()`"], answer:0 },
-    { q:"다음 중 뒤로 움직이는 함수가 아닌 것은?", choices:["`backward()`","`bk()`","`back()`","`fd()`"], answer:3 }
+    { q:"다음 중 뒤로 움직이는 함수가 아닌 것은?", choices:["`backward()`","`bk()`","`back()`","`fd()`"], answer:3 },
+    { q:"동그란 점을 찍는 함수는?", choices:["`dot()`","`circle()`","`stamp()`","`fill()`"], answer:0 }
   ],
   next:["좌표를 이용해 원하는 곳으로 한 번에 이동하는 법을 배워요.","펜을 들고 내리는 법을 배워요."]
 },
 {
-  slug:"04-coord-pen", session:4, icon:"📍",
+  slug:"04-coord-pen", session:3, icon:"📍",
   title:"좌표로 이동하기, 펜 들고 내리기",
   prevReview:["`forward()`, `backward()`로 앞뒤로 움직였어요.","`pensize()`로 선 굵기를 바꿨어요."],
   learn:["좌표를 이용해 원하는 위치로 한 번에 이동하기","펜을 들고 내리기 (선이 안 보이게, 보이게)"],
@@ -754,7 +782,7 @@ t.mainloop()`,
   next:["거북이 방향을 왼쪽, 오른쪽으로 돌리는 법을 배워요.","정사각형, 정삼각형을 직접 그려봐요."]
 },
 {
-  slug:"05-turn", session:5, icon:"🔄",
+  slug:"05-turn", session:4, icon:"🔄",
   title:"방향 바꾸기",
   prevReview:["`goto(x, y)`로 좌표 이동을 했어요.","`penup()`, `pendown()`으로 펜을 들고 내렸어요."],
   learn:["거북이를 왼쪽으로 돌리기","거북이를 오른쪽으로 돌리기","도형 그리기 (정사각형, 정삼각형)"],
@@ -840,7 +868,18 @@ t.fd(100)
 t.lt(120)
 
 t.mainloop()`,
-      tryit:["각도 `120`을 `100`으로 바꿔서 도형이 어떻게 달라지는지 확인해보세요. (삼각형이 안 닫힐 수도 있어요)"],
+      explain2:["`fd()`, `lt()`가 3번씩 똑같이 반복되죠? 이렇게 반복되는 부분은 `for` 문으로 훨씬 짧게 쓸 수 있어요.","지금은 `for` 문을 자세히 배우지 않았으니, **이렇게 쓰면 편하다는 것만 알아두고 아래 코드를 그대로 따라 써보세요.** `for` 문은 6차시에서 자세히 배워요."],
+      code2Label:"for문으로 짧게 쓰면",
+      code2:`import turtle as t
+
+t.shape("turtle")
+
+for i in range(3):
+    t.fd(100)
+    t.lt(120)
+
+t.mainloop()`,
+      tryit:["각도 `120`을 `100`으로 바꿔서 도형이 어떻게 달라지는지 확인해보세요. (삼각형이 안 닫힐 수도 있어요)","`range(3)`의 `3`을 `5`로 바꾸고 각도도 `72`로 바꿔서 오각형을 만들어보세요."],
       minis:[
         { title:"정오각형 그리기", desc:"오각형은 몇 도씩 돌아야 할까요? 앞에서 배운 계산법으로 각도를 직접 구해서 정오각형을 그려보세요.", shot:"변 5개의 정오각형.",
           img: turtleScene({ lines:[{x1:0,y1:0,x2:80,y2:0,color:"#27392f",width:3},{x1:80,y1:0,x2:104.7,y2:76.1,color:"#27392f",width:3},{x1:104.7,y1:76.1,x2:40,y2:123.1,color:"#27392f",width:3},{x1:40,y1:123.1,x2:-24.7,y2:76.1,color:"#27392f",width:3},{x1:-24.7,y1:76.1,x2:0,y2:0,color:"#27392f",width:3}], turtles:[{x:0,y:0,heading:0}] }) }
@@ -871,7 +910,7 @@ t.mainloop()`,
   next:["원을 그리는 법을 배워요.","도형을 색으로 채우는 법을 배워요."]
 },
 {
-  slug:"06-circle-fill", session:6, icon:"⭕",
+  slug:"06-circle-fill", session:5, icon:"⭕",
   title:"원 그리기, 색 채우기, 도장, 글씨 쓰기",
   prevReview:["`left()`, `right()`로 방향을 바꿨어요.","정사각형, 정삼각형, 별 모양을 그렸어요."],
   learn:["원 그리기, 반원(호) 그리기","도형 안을 색으로 채우기, 도장 찍기","거북이 숨기기/보이기, 화면에 글씨 쓰기"],
@@ -1048,7 +1087,7 @@ t.mainloop()`,
   next:["같은 동작을 반복할 때 쓰는 `for` 반복문을 배워요.","반복문으로 도형을 훨씬 짧은 코드로 그려봐요."]
 },
 {
-  slug:"07-for-loop", session:7, icon:"🔁",
+  slug:"07-for-loop", session:6, icon:"🔁",
   title:"반복문으로 쉽게 그리기",
   prevReview:["`circle()`로 원을 그렸어요.","`fillcolor()`, `begin_fill()`, `end_fill()`로 색을 채웠어요."],
   learn:["`for` 반복문으로 같은 코드 줄여 쓰기","반복문으로 도형과 집 그리기","반복문을 두 번 겹쳐서 여러 개 그리기"],
@@ -1088,7 +1127,7 @@ t.mainloop()`,
       ]
     },
     { title:"반복문으로 도형 그리기",
-      explain:["`for` 반복문을 쓰면 반복되는 코드를 **훨씬 짧게** 줄일 수 있어요.","5차시에서는 사각형을 그리려고 `fd()`와 `lt()`를 여러 번 썼어요.","이번에는 한 번씩만 쓰고 반복 횟수만 정해주면 돼요."],
+      explain:["`for` 반복문을 쓰면 반복되는 코드를 **훨씬 짧게** 줄일 수 있어요.","4차시에서는 사각형을 그리려고 `fd()`와 `lt()`를 여러 번 썼어요.","이번에는 한 번씩만 쓰고 반복 횟수만 정해주면 돼요."],
       shot:"반복문으로 그려진 사각형.",
       img: turtleScene({ lines:[{x1:0,y1:0,x2:50,y2:0,color:"#27392f",width:3},{x1:50,y1:0,x2:50,y2:50,color:"#27392f",width:3},{x1:50,y1:50,x2:0,y2:50,color:"#27392f",width:3},{x1:0,y1:50,x2:0,y2:0,color:"#27392f",width:3}], turtles:[{x:0,y:0,heading:0}] }),
       code:`import turtle as t
@@ -1103,7 +1142,7 @@ for i in range(4):
 t.mainloop()`,
       tryit:["숫자를 바꿔서 삼각형을 그려보세요."],
       minis:[
-        { title:"반복문으로 다른 정다각형 그리기", desc:"사각형이 아닌 다른 정다각형(정삼각형, 정오각형 등)을 반복문으로 그려보세요. 몇 번 반복해야 하는지, 몇 도씩 돌아야 하는지는 5차시에서 배운 계산법을 떠올려 직접 구해보세요.", shot:"정오각형 같은 정다각형.",
+        { title:"반복문으로 다른 정다각형 그리기", desc:"사각형이 아닌 다른 정다각형(정삼각형, 정오각형 등)을 반복문으로 그려보세요. 몇 번 반복해야 하는지, 몇 도씩 돌아야 하는지는 4차시에서 배운 계산법을 떠올려 직접 구해보세요.", shot:"정오각형 같은 정다각형.",
           img: turtleScene({ lines:[{x1:0,y1:0,x2:80,y2:0,color:"#27392f",width:3},{x1:80,y1:0,x2:104.7,y2:76.1,color:"#27392f",width:3},{x1:104.7,y1:76.1,x2:40,y2:123.1,color:"#27392f",width:3},{x1:40,y1:123.1,x2:-24.7,y2:76.1,color:"#27392f",width:3},{x1:-24.7,y1:76.1,x2:0,y2:0,color:"#27392f",width:3}], turtles:[{x:0,y:0,heading:0}] }) }
       ]
     },
@@ -1216,7 +1255,7 @@ t.mainloop()`,
   next:["지금까지 배운 것들을 모아 미니 프로젝트로 캡틴 아메리카 방패를 만들어봐요.","그다음엔 반복해서 쓰는 코드를 묶어서 이름 붙이는 `함수`를 배워요."]
 },
 {
-  slug:"07-1-mini-project-shield", session:7.5, icon:"🛡️",
+  slug:"07-1-mini-project-shield", session:6.5, icon:"🛡️",
   title:"미니 프로젝트 - 캡틴 아메리카 방패 만들기",
   prevReview:["`circle()`로 원을 그리고 `fillcolor()`로 색을 채웠어요.","`for` 반복문으로 같은 동작을 짧게 반복했어요."],
   learn:["원 4개로 방패 밑판 그리기","반복문으로 뾰족한 별 그리기"],
@@ -1234,7 +1273,7 @@ t.mainloop()`,
       hints:["원은 시작 지점 기준 왼쪽(위쪽)에 그려져요.","그래서 원 중심을 (0, 0)에 맞추려면, 시작 위치를 아래쪽으로 반지름만큼 옮긴 뒤 그리면 돼요."]
     },
     { title:"파란 원 위에 별 그리기",
-      explain:["지금까지 그린 별(5차시)은 선 5개만 그어서 만드는 별이었어요. 이번엔 뾰족한 꼭짓점이 있는 진짜 별 모양을 그려볼 거예요.","**조건**","1. 144도, 72도를 번갈아가며 회전하면서 별을 그려요. 5번 반복해요. (7차시에서 배운 반복문을 활용해보세요!)","2. 그린 모양 안쪽이 채워지도록 해요.","3. 별이 파란 원 가운데에 오도록 시작 위치를 여러 번 시도하며 맞춰보세요.","4. 다 그렸으면 거북이 모양은 숨겨요."],
+      explain:["지금까지 그린 별(4차시)은 선 5개만 그어서 만드는 별이었어요. 이번엔 뾰족한 꼭짓점이 있는 진짜 별 모양을 그려볼 거예요.","**조건**","1. 144도, 72도를 번갈아가며 회전하면서 별을 그려요. 5번 반복해요. (6차시에서 배운 반복문을 활용해보세요!)","2. 그린 모양 안쪽이 채워지도록 해요.","3. 별이 파란 원 가운데에 오도록 시작 위치를 여러 번 시도하며 맞춰보세요.","4. 다 그렸으면 거북이 모양은 숨겨요."],
       shot:"별의 한 변(길이 100)을 그린 뒤, 오른쪽으로 144도, 다시 왼쪽으로 72도 꺾는 것을 5번 반복하면 별이 완성돼요.",
       img: turtleScene({ fills:[{cx:0,cy:0,r:150,color:"#e5383b"},{cx:0,cy:0,r:120,color:"#ffffff"},{cx:0,cy:0,r:90,color:"#e5383b"},{cx:0,cy:0,r:60,color:"#1d63d1"},{points:[[12,12],[52,12],[19.6,-11.5],[32,-49.6],[-0.4,-26],[-32.7,-49.6],[-20.4,-11.5],[-52.7,12],[-12.7,12],[-0.4,50],[12,12]],color:"#ffffff"}] })
     }
@@ -1250,7 +1289,7 @@ t.mainloop()`,
   next:["반복해서 쓰는 코드를 묶어서 이름 붙이는 `함수`를 배워요.","함수를 만들어서 집과 눈송이를 그려봐요."]
 },
 {
-  slug:"08-functions", session:8, icon:"📦",
+  slug:"08-functions", session:7, icon:"📦",
   title:"함수 만들기",
   prevReview:["`for` 반복문으로 도형과 집을 그렸어요.","반복문을 두 번 겹쳐서 집 5개를 그렸어요."],
   learn:["함수가 무엇인지 알기","함수 만들기 (`def`)","만든 함수 실행하기 (함수 호출)"],
@@ -1289,7 +1328,7 @@ t.mainloop()`,
       ]
     },
     { title:"함수로 눈송이 그리기",
-      explain:["6차시 눈송이 도장 코드를 함수로 만들어봐요.","여러 줄이던 코드를 `snow()` 이름 하나로 묶어요.","이제 `snow()`만 부르면 눈송이를 또 그릴 수 있어요."],
+      explain:["5차시 눈송이 도장 코드를 함수로 만들어봐요.","여러 줄이던 코드를 `snow()` 이름 하나로 묶어요.","이제 `snow()`만 부르면 눈송이를 또 그릴 수 있어요."],
       shot:"원 모양으로 찍힌 눈송이 도장.",
       img: turtleScene({ bgFill:"#87ceeb", fills:[
             {points:[[160,0],[140,20],[100,10],[70,40],[90,70],[80,90],[50,60],[10,70],[-30,50],[-60,80],[-80,60],[-50,40],[-70,0],[-50,-40],[-80,-60],[-60,-80],[-30,-50],[10,-70],[50,-60],[80,-90],[90,-70],[70,-40],[100,-10],[140,-20]],color:"#ffffff",strokeWidth:0},
@@ -1403,7 +1442,7 @@ t.mainloop()`,
   next:["키보드와 마우스로 거북이를 움직이는 법을 배워요.","화면을 클릭하면 그림이 그려지는 코드를 만들어봐요."]
 },
 {
-  slug:"09-events", session:9, icon:"⌨️",
+  slug:"09-events", session:8, icon:"⌨️",
   title:"키보드와 마우스로 움직이기",
   prevReview:["`def`로 함수를 만들었어요.","함수를 호출해서 집과 눈송이를 그렸어요."],
   learn:["키보드와 마우스로 거북이를 움직이는 코드 만들기","일정 시간마다 자동으로 실행되는 코드 만들기","거북이 여러 개 만들어서 함께 움직이기"],
@@ -1634,7 +1673,7 @@ t.mainloop()`,
   next:["지금까지 배운 모든 함수를 모아서 미니 게임을 만들어요."]
 },
 {
-  slug:"10-mini-game", session:10, icon:"🎮",
+  slug:"10-mini-game", session:9, icon:"🎮",
   title:"미니 게임 만들기 - 터틀 피하기",
   prevReview:["거북이 모양, 색, 이동, 회전, 원, 채우기, 도장, 글씨","반복문(`for`), 함수(`def`)","키보드, 마우스, 타이머 이벤트"],
   learn:["지금까지 배운 함수를 모두 모아서 게임 하나를 완성해요.","게임 규칙: 빨간 적 거북이를 화살표 키로 피해 다녀요. 오래 버틸수록 점수가 올라가요.","적과 닿으면 게임이 끝나요."],
@@ -1834,7 +1873,7 @@ start_time = time.time()   # 게임이 시작된 시간을 저장`,
       { task:"그 외에도 원하는 기능을 자유롭게 추가해보세요. (예: 시간이 지날수록 적이 빨라지기, 목숨 여러 개 만들기 등)" }
     ]
   },
-  outro:["1차시부터 10차시까지 터틀 그래픽의 기본 함수를 모두 배웠어요.","반복문과 함수로 코드를 더 짧고 똑똑하게 쓰는 법도 배웠어요.","이제 배운 함수들을 조합해서 자신만의 그림과 게임을 자유롭게 만들어볼 수 있어요."]
+  outro:["1차시부터 9차시까지 터틀 그래픽의 기본 함수를 모두 배웠어요.","반복문과 함수로 코드를 더 짧고 똑똑하게 쓰는 법도 배웠어요.","이제 배운 함수들을 조합해서 자신만의 그림과 게임을 자유롭게 만들어볼 수 있어요."]
 },
 ];
 
@@ -1853,9 +1892,9 @@ const WORKSHEETS = [
 
 // 커리큘럼 목차용 카테고리 묶음 (session 번호 기준)
 const CURRICULUM_GROUPS = [
-  { title:"화면과 그리기", sessions:[1,2,3,4] },
-  { title:"좌표와 텍스트", sessions:[5,6] },
-  { title:"이벤트와 애니메이션", sessions:[7,7.5,8,9,10] }
+  { title:"화면과 그리기", sessions:[1,2,3] },
+  { title:"좌표와 텍스트", sessions:[4,5] },
+  { title:"이벤트와 애니메이션", sessions:[6,6.5,7,8,9] }
 ];
 
 /* ===== 이전 초안 데이터 (미사용, 완전 비활성화) =====
@@ -3131,6 +3170,11 @@ order.forEach(function(sess){
 
 document.getElementById("sideHome").onclick = showHome;
 
+// 좌측 목차 열고 닫기 핸들
+document.getElementById("navToggle").addEventListener("click", function(){
+  document.body.classList.toggle("nav-collapsed");
+});
+
 function setActiveSide(idx){
   document.querySelectorAll(".side-item").forEach(function(el){ el.classList.remove("active"); });
   if(idx != null){
@@ -3215,6 +3259,7 @@ function switchHomeTab(tab){
 function showHome(){
   setActiveSide(null);
   document.getElementById('sidebar').style.display = 'none';
+  document.getElementById('navToggle').style.display = 'none';
   document.getElementById('main').style.maxWidth = 'min(1200px, calc(100vw - 32px))';
   document.getElementById('main').style.margin = '0 auto';
   const doneList = getTurtleDone();
@@ -3348,6 +3393,7 @@ function openLesson(i){
 function showDetail(idx){
   const u = UNITS[idx];
   document.getElementById('sidebar').style.display = '';
+  document.getElementById('navToggle').style.display = '';
   document.getElementById('main').style.maxWidth = '';
   document.getElementById('main').style.margin = '';
   setActiveSide(idx);
