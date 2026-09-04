@@ -3236,7 +3236,7 @@ function showHome(){
           if (u.session !== sess) return;
           const key = 'u' + i;
           const isDone = doneList.indexOf(key) > -1;
-          html += '<div class="py-toc-lesson' + (isDone ? ' py-done' : '') + '" onclick="showDetail(' + i + ')">'
+          html += '<div class="py-toc-lesson' + (isDone ? ' py-done' : '') + '" onclick="openLesson(' + i + ')">'
             + '<span class="py-toc-lesson-title">' + escapeHtml(u.title) + '</span>'
             + '<span class="py-toc-lesson-icon card-complete-btn' + (isDone ? ' done' : '') + '" data-key="' + key + '" title="미션 완료 표시">' + (isDone ? '✓' : '➜') + '</span>'
             + '</div>';
@@ -3339,6 +3339,11 @@ function burstConfettiLocal(originEl){
     }
     setTimeout((function(el){ return function(){ el.remove(); }; })(p), dur + 60);
   }
+}
+
+function openLesson(i){
+  localStorage.setItem('turtle_open_lesson', i);
+  window.open('python_turtle.html', '_blank');
 }
 
 function showDetail(idx){
@@ -3613,7 +3618,13 @@ document.addEventListener("keydown", function(e){
   if(e.key === "Escape") document.getElementById("lightbox").classList.remove("show");
 });
 
-showHome();
+var _storedLesson = localStorage.getItem('turtle_open_lesson');
+if (_storedLesson !== null){
+  localStorage.removeItem('turtle_open_lesson');
+  showDetail(parseInt(_storedLesson));
+} else {
+  showHome();
+}
 
 // 로컬 데이터로 먼저 화면을 그린 뒤, 백그라운드에서 구글시트와 동기화
 // (다른 컴퓨터에서 완료/취소한 내용이 있으면 반영해서 다시 그림)
