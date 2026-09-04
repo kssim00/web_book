@@ -185,6 +185,19 @@ body {
   flex-shrink: 0;
   white-space: nowrap;
 }
+.topbar-version {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  letter-spacing: 0;
+  vertical-align: middle;
+}
 .topbar-tabs {
   display: flex;
   gap: 4px;
@@ -2628,7 +2641,7 @@ body.admin-mode .chapter-card-admin-bar { display: flex; }
 <!-- ══ MAIN APP ══ -->
 <div id="app">
 <div class="topbar">
-<div class="topbar-logo">코드앤 코딩 스튜디오</div>
+<div class="topbar-logo">코드앤 코딩 스튜디오<span class="topbar-version">v1</span></div>
 <div style="flex:1;"></div>
 <div class="topbar-right">
 <button class="gallery-back-nav-btn" id="galleryBackNavBtn" onclick="goBackToGalleryFromTopbar()"><span class="gallery-back-nav-arrow">←</span> 미션 갤러리로</button>
