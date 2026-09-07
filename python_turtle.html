@@ -3390,6 +3390,23 @@ function openLesson(i){
   window.open('python_turtle.html', '_blank');
 }
 
+// ── 목록으로 버튼 동작 결정
+// study_home.html 허브(iframe)에는 이미 목록이 떠 있으므로,
+// 허브에서 새 탭으로 열린 차시 탭에서는 '목록으로'를 누르면
+// 새로 목록을 그리지 않고 탭을 닫아 허브의 목록으로 돌아간다.
+// (iframe 안이거나, 새 탭이 아니라 직접 주소로 들어온 경우는 기존처럼 내부 목록을 보여준다.)
+function goBackToList(){
+  const isTopLevel = (window.top === window.self);
+  const openedAsTab = !!window.opener;
+  if (isTopLevel && openedAsTab){
+    window.close();
+    // 팝업 차단 등으로 close()가 무시되는 브라우저를 위한 안전장치
+    setTimeout(showHome, 300);
+  } else {
+    showHome();
+  }
+}
+
 function showDetail(idx){
   const u = UNITS[idx];
   document.getElementById('sidebar').style.display = '';
@@ -3578,7 +3595,7 @@ function showDetail(idx){
   }
 
   main.innerHTML = html;
-  document.getElementById("backBtn").onclick = showHome;
+  document.getElementById("backBtn").onclick = goBackToList;
   main.scrollTop = 0;
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
