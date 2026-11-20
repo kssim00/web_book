@@ -356,7 +356,7 @@ function hud() {
 function button(cls, text, fn) { const b = document.createElement('button'); b.className = 'btn ' + cls; b.textContent = text; b.addEventListener('click', fn); return b; }
 const INFO = {
   forest: {desc: () => '숲길을 걸으며 엔트리 미션을 하나씩 해결해요. 지금까지 미션 ' + S.progress + '개를 끝냈어요.', btns: () => [button('ok', '숲으로 들어가기', () => enter('forest'))]},
-  tower: {desc: () => 'COS 자격시험을 실제처럼 연습하는 곳이에요.', btns: () => [button('go2', '엔트리 시험 연습', () => window.open('../coden_edu/cos_entry_lab/index.html', '_blank')), button('go2', '스크래치 시험 연습', () => window.open('../coden_edu/cos_scratch_lab/index.html', '_blank'))]},
+  tower: {desc: () => 'COS 자격시험을 실제처럼 연습하는 곳이에요.', btns: () => [button('go2', '엔트리 시험 연습', () => window.open('https://kssim00.github.io/coden_edu/cos_entry_lab/index.html', '_blank')), button('go2', '스크래치 시험 연습', () => window.open('https://kssim00.github.io/coden_edu/cos_scratch_lab/index.html', '_blank'))]},
   cabin: {desc: () => 'COS Pro 문제를 AI 튜터와 함께 풀고, 실전 모의시험도 볼 수 있어요.', btns: () => [button('ok', '오두막으로 들어가기', () => enter('cabin'))]},
   sea: {desc: () => '바닷가를 걸으며 스크래치 미션을 해결해요. 지금까지 미션 ' + S.sea + '개를 끝냈어요.', btns: () => [button('ok', '바다로 들어가기', () => enter('sea'))]},
   volcano: {desc: () => '화산섬 속 연구소에서 파이썬을 배워요. 문법 트랙과 터틀 트랙, 두 갈래의 스킬 트리가 있어요.', btns: () => [button('ok', '연구소로 들어가기', () => enter('volcano'))]},
