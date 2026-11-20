@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파이썬 화산섬 연구소 (시안)</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#0e1220;--panel:#161c2e;--line:#2a3350;--text:#e6ebf7;--dim:#8a95b3;--g:#5cc8ff;--t:#ff9b4a;--b:#c58bff}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+body{min-height:100vh;background:radial-gradient(900px 420px at 50% -120px,rgba(255,110,50,.28),transparent 70%),repeating-linear-gradient(0deg,transparent 0 39px,rgba(255,255,255,.025) 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,255,255,.025) 39px 40px),var(--bg)}
+button{font:inherit;cursor:pointer}
+.mono{font-family:"JetBrains Mono","D2Coding","Consolas",monospace}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:12px 20px;background:rgba(14,18,32,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{margin-right:auto}
+.brand b{display:block;font-size:19px;font-weight:800;letter-spacing:.2px}
+.brand span{font-size:12px;color:var(--dim)}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 13px;font-size:14px;font-weight:700;color:var(--text)}
+.chip.btn:hover{border-color:var(--g)}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px;max-width:1240px;margin:0 auto;padding:18px 20px 60px}
+.stage{background:rgba(22,28,46,.55);border:1px solid var(--line);border-radius:18px;padding:8px 6px 20px;overflow:hidden}
+.tracks{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);margin:0 12px 4px}
+.tracks>div{padding:12px 6px 10px;text-align:center}
+.tracks b{font-size:17px;font-weight:800}
+.tracks small{display:block;font-size:12px;color:var(--dim);margin-top:2px}
+.tracks .bar{height:5px;border-radius:99px;background:#232b45;margin:8px auto 0;max-width:230px;overflow:hidden}
+.tracks .bar i{display:block;height:100%;width:0;border-radius:99px;transition:width .6s}
+svg{display:block;width:100%;height:auto}
+.trunk{fill:none;stroke:#27304c;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.trunk.on{stroke-width:5;transition:stroke-dashoffset .9s ease}
+.ch{font-size:12.5px;font-weight:700;fill:var(--dim);letter-spacing:.4px}
+.node{cursor:pointer}
+.node circle.c{fill:#141a2b;stroke:#313b5c;stroke-width:3;transition:fill .3s,stroke .3s}
+.node text.gl{font-size:12.5px;font-weight:700;fill:#56618a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.node text.tt{font-size:15px;font-weight:700;fill:#6f7a9c;dominant-baseline:central;pointer-events:none}
+.node text.st{font-size:11.5px;fill:#56618a;dominant-baseline:central;pointer-events:none}
+.node.open circle.c{stroke:var(--k)}
+.node.open text.gl{fill:var(--k)}
+.node.open text.tt{fill:var(--text)}
+.node.open text.st{fill:var(--k)}
+.node.done circle.c{fill:var(--k);stroke:var(--k)}
+.node.done text.gl{fill:#0e1220}
+.node.done text.tt{fill:#c9d2ea}
+.node.done text.st{fill:#7d88a8}
+.node .halo{fill:none;stroke:var(--k);stroke-width:2;opacity:0}
+.node.open.cur .halo{animation:halo 1.8s ease-out infinite}
+.node.sel circle.c{stroke:#fff;stroke-width:3.5}
+.node:hover circle.c{filter:brightness(1.25)}
+@keyframes halo{0%{r:27;opacity:.9}100%{r:44;opacity:0}}
+.pop{animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+.side{position:sticky;top:78px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+.tag{display:inline-block;font-size:12px;font-weight:800;border-radius:8px;padding:4px 10px;margin-bottom:10px;color:#0e1220}
+.side h2{font-size:22px;margin:0 0 4px;line-height:1.35}
+.side .code{font-size:13px;color:var(--dim);margin:0 0 12px}
+.side p{font-size:15px;line-height:1.65;margin:0 0 16px;color:#b9c2db}
+.col{display:flex;flex-direction:column;gap:9px}
+.b1{border:0;border-radius:12px;padding:13px 16px;font-size:16px;font-weight:800;color:#0e1220}
+.b2{border:1px solid var(--line);background:transparent;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:700;color:var(--text)}
+.b1:hover,.b2:hover{filter:brightness(1.12)}
+.b1:disabled{background:#2a3350!important;color:#6f7a9c;cursor:not-allowed}
+.note{font-size:13px;color:var(--dim);margin-top:12px;line-height:1.5}
+.foot{max-width:1240px;margin:-40px auto 30px;padding:0 20px;font-size:12px;color:#56618a;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.foot button{background:none;border:0;color:#6f7a9c;text-decoration:underline;font-size:12px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#e6ebf7;color:#0e1220;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .25s;z-index:30}
+.toast.show{opacity:1}
+.modal{position:fixed;inset:0;background:rgba(5,8,16,.78);display:none;align-items:center;justify-content:center;padding:14px;z-index:20}
+.modal.show{display:flex}
+.mbox{background:var(--bg);border:1px solid var(--line);border-radius:16px;width:min(900px,100%);height:min(780px,100%);display:flex;flex-direction:column;overflow:hidden}
+.mtop{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-weight:800;font-size:15px;border-bottom:1px solid var(--line)}
+.mbox iframe{flex:1;border:0;width:100%;background:var(--bg)}
+@media (max-width:900px){.wrap{grid-template-columns:1fr}.side{position:fixed;left:12px;right:12px;bottom:12px;top:auto;z-index:6;box-shadow:0 -8px 30px rgba(0,0,0,.5)}.wrap{padding-bottom:280px}.foot{margin-top:-250px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><b>파이썬 화산섬 연구소</b><span class="mono">PYTHON LAB · 스킬 트리</span></div>
+  <span class="chip" id="who"></span>
+  <span class="chip mono" id="pts">0 / 0</span>
+  <button class="chip btn" id="worldBtn">세계 지도</button>
+</header>
+
+<div class="wrap">
+  <div class="stage">
+    <div class="tracks">
+      <div><b style="color:var(--g)">문법 트랙</b><small class="mono" id="gCnt"></small><div class="bar"><i id="gBar" style="background:var(--g)"></i></div></div>
+      <div><b style="color:var(--t)">터틀 트랙</b><small class="mono" id="tCnt"></small><div class="bar"><i id="tBar" style="background:var(--t)"></i></div></div>
+    </div>
+    <svg id="tree" role="img" aria-label="파이썬 스킬 트리"></svg>
+  </div>
+  <aside class="side" id="side">
+    <span class="tag" id="sTag"></span>
+    <h2 id="sTitle"></h2>
+    <div class="code mono" id="sCode"></div>
+    <p id="sDesc"></p>
+    <div class="col">
+      <button class="b1" id="playBtn" style="background:var(--b);display:none">▶ 미리 해보기</button>
+      <button class="b1" id="openBtn">교재 열기</button>
+      <button class="b2" id="doneBtn"></button>
+    </div>
+    <div class="note" id="sNote"></div>
+  </aside>
+</div>
+<div class="foot"><span>칸을 누르면 오른쪽에 설명이 나와요. 앞 단계를 끝내면 다음 칸이 열립니다.</span><button id="resetBtn">시안용: 파이썬 진행 초기화</button></div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="mbox"><div class="mtop"><span id="mTitle"></span><button class="chip btn" id="mClose">닫기 ✕</button></div><iframe id="mFrame" title="미리 해보기"></iframe></div></div>
+
+<script src="lib/py_data.js"></script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const BASE = window.PYDATA.BASE;
+const el = (tag, attrs, parent, text) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; if (parent) parent.appendChild(e); return e; };
+
+const GRAMMAR = window.PYDATA.GRAMMAR, TURTLE = window.PYDATA.TURTLE, BONUS = window.PYDATA.BONUS;
+
+const KEY = 'studyhome_new_3d_demo';
+let S = {name: '탐험가'};
+try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = Object.assign(S, v); } catch (e) {}
+if (!S.py || typeof S.py !== 'object') S.py = {};
+const flatG = [].concat.apply([], GRAMMAR.map(c => c.items)), flatT = [].concat.apply([], TURTLE.map(c => c.items));
+S.py.g = Math.max(0, Math.min(flatG.length, S.py.g | 0)); S.py.t = Math.max(0, Math.min(flatT.length, S.py.t | 0));
+S.py.b = Array.isArray(S.py.b) ? S.py.b.filter(x => BONUS.some(b => b[0] === x)) : [];
+S.place = 'volcano';
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+if (S.started) save();
+$('who').textContent = S.name || '탐험가';
+
+/* 배치 */
+const VW = 780, XG = 150, XT = 500, TOP = 54, STEP = 78, CHGAP = 56, OFF = 0;
+const nodes = [];
+function layout(track, chapters, x, color) {
+  let y = TOP, idx = 0; const pts = [[x, 14]];
+  chapters.forEach(c => {
+    y += CHGAP; nodes.push({kind: 'ch', x, y: y - 42, text: c.ch});
+    c.items.forEach(it => { nodes.push({kind: 'node', track, idx, x, y, color, glyph: it[0], title: it[1], file: it[2], desc: it[3]}); pts.push([x, y]); y += STEP; idx++; });
+  });
+  return {pts, endY: y - STEP};
+}
+const LG = layout('g', GRAMMAR, XG, 'var(--g)'), LT = layout('t', TURTLE, XT, 'var(--t)');
+const BY = LT.endY + 104, bonusPts = [];
+nodes.push({kind: 'ch', x: XT, y: BY - 22, text: 'BONUS LAB  게임 만들기'});
+BONUS.forEach((b, i) => { const x = XT, y = BY + 22 + i * 70; nodes.push({kind: 'node', track: 'b', idx: i, id: b[0], x, y, color: 'var(--b)', glyph: b[0], title: b[1], file: b[2], desc: '배우는 것: ' + b[3], tagline: b[3]}); bonusPts.push([x, y]); });
+const BEND = BY + 22 + (BONUS.length - 1) * 70;
+const VH = Math.max(LG.endY, BEND) + 70;
+const svg = $('tree'); svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
+
+const line = pts => pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ');
+el('path', {class: 'trunk', d: line(LG.pts)}, svg); el('path', {class: 'trunk', d: line(LT.pts)}, svg);
+el('path', {class: 'trunk', d: 'M' + XT + ' ' + LT.endY + ' L' + XT + ' ' + BEND, 'stroke-dasharray': '2 12'}, svg);
+const onG = el('path', {class: 'trunk on', d: line(LG.pts), stroke: '#5cc8ff'}, svg), onT = el('path', {class: 'trunk on', d: line(LT.pts), stroke: '#ff9b4a'}, svg);
+const lenG = onG.getTotalLength(), lenT = onT.getTotalLength();
+[onG, onT].forEach((p, i) => { const L = i ? lenT : lenG; p.setAttribute('stroke-dasharray', L); p.setAttribute('stroke-dashoffset', L); });
+el('circle', {cx: XG, cy: 14, r: 7, fill: '#5cc8ff'}, svg); el('circle', {cx: XT, cy: 14, r: 7, fill: '#ff9b4a'}, svg);
+
+nodes.forEach(n => {
+  if (n.kind === 'ch') { el('text', {class: 'ch mono', x: n.x - 128, y: n.y}, svg, n.text); return; }
+  const g = el('g', {class: 'node', tabindex: 0, style: '--k:' + n.color + ';transform-box:fill-box;transform-origin:center'}, svg);
+  el('circle', {class: 'halo', cx: n.x, cy: n.y, r: 27}, g); el('circle', {class: 'c', cx: n.x, cy: n.y, r: 25}, g);
+  el('text', {class: 'gl mono', x: n.x, y: n.y + 1, style: n.glyph.length > 5 ? 'font-size:10.5px' : ''}, g, n.glyph);
+  { el('text', {class: 'tt', x: n.x + 40, y: n.y - 8}, g, n.title.length > 16 ? n.title.slice(0, 15) + '…' : n.title); n.stEl = el('text', {class: 'st mono', x: n.x + 40, y: n.y + 12}, g, ''); }
+  g.addEventListener('click', () => pick(n)); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(n); } });
+  n.g = g;
+});
+
+const real = nodes.filter(n => n.kind === 'node');
+const bonusOpen = () => S.py.t >= flatT.length;
+function stateOf(n) {
+  if (n.track === 'b') return S.py.b.includes(n.id) ? 'done' : (bonusOpen() ? 'open' : 'lock');
+  const p = S.py[n.track]; return n.idx < p ? 'done' : n.idx === p ? 'open' : 'lock';
+}
+let sel = null;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2200); }
+function render() {
+  real.forEach(n => {
+    const st = stateOf(n); n.g.setAttribute('class', 'node ' + st + (st === 'open' && n.track !== 'b' ? ' cur' : '') + (n === sel ? ' sel' : ''));
+    n.stEl.textContent = st === 'done' ? 'DONE' : st === 'open' ? (n.track === 'b' ? 'OPEN' : 'NOW') : 'LOCKED';
+  });
+  const frac = (pts, k, L) => { if (k <= 0) return L; const y = pts[Math.min(k, pts.length - 1)][1] - pts[0][1], tot = pts[pts.length - 1][1] - pts[0][1]; return L * (1 - y / tot); };
+  onG.setAttribute('stroke-dashoffset', frac(LG.pts, S.py.g, lenG)); onT.setAttribute('stroke-dashoffset', frac(LT.pts, S.py.t, lenT));
+  $('gCnt').textContent = S.py.g + ' / ' + flatG.length; $('tCnt').textContent = S.py.t + ' / ' + flatT.length + '  ·  BONUS ' + S.py.b.length + ' / ' + BONUS.length;
+  $('gBar').style.width = (S.py.g / flatG.length * 100) + '%'; $('tBar').style.width = (S.py.t / flatT.length * 100) + '%';
+  $('pts').textContent = (S.py.g + S.py.t + S.py.b.length) + ' / ' + real.length;
+  if (sel) panel();
+}
+function panel() {
+  const n = sel, st = stateOf(n), name = n.track === 'g' ? '문법 트랙' : n.track === 't' ? '터틀 트랙' : '보너스 게임';
+  $('sTag').textContent = name; $('sTag').style.background = n.color;
+  $('sTitle').textContent = n.title; $('sCode').textContent = n.track === 't' ? 'turtle · ' + (n.glyph === 'mini' ? '미니 프로젝트' : n.glyph + '차시') : n.track === 'b' ? 'turtle game · ' + n.glyph : 'python · ' + n.glyph;
+  $('sDesc').textContent = n.desc;
+  $('playBtn').style.display = n.track === 'b' ? 'block' : 'none';
+  const ob = $('openBtn'), db = $('doneBtn'); ob.style.background = n.color; ob.disabled = st === 'lock'; ob.textContent = st === 'lock' ? '잠겨 있어요' : (n.track === 'b' ? '만드는 방법 보기' : (st === 'done' ? '교재 다시 보기' : '교재 열기'));
+  if (n.track === 'b') ob.style.background = '#e6ebf7';
+  db.style.display = st === 'lock' ? 'none' : 'block'; db.textContent = st === 'done' ? '✓ 완료함 (누르면 취소)' : '완료로 표시';
+  $('sNote').textContent = st === 'lock' ? (n.track === 'b' ? '미리 해보기는 지금도 할 수 있어요. 만드는 방법은 터틀 트랙을 모두 끝내면 열려요.' : '앞 단계를 먼저 완료하면 열려요.') : '';
+}
+function pick(n) { sel = n; render(); }
+$('openBtn').addEventListener('click', () => {
+  if (!sel || stateOf(sel) === 'lock') return;
+  if (sel.track === 't') { location.href = '교재.html?t=' + sel.idx; return; }
+  if (sel.track === 'g') { location.href = '교재.html?i=' + sel.idx; return; }
+  window.open(BASE + sel.file, '_blank');
+});
+$('doneBtn').addEventListener('click', () => {
+  const n = sel; if (!n) return; const st = stateOf(n); let fl = null;
+  if (n.track === 'b') { if (st === 'done') S.py.b = S.py.b.filter(x => x !== n.id); else if (st === 'open') { S.py.b.push(n.id); fl = n; toast('보너스 게임 완료!'); } }
+  else if (st === 'open') { S.py[n.track]++; fl = n; const next = real.find(m => m.track === n.track && m.idx === n.idx + 1); if (next) { sel = next; toast('다음 칸이 열렸어요.'); setTimeout(() => next.g.scrollIntoView({behavior: 'smooth', block: 'center'}), 250); } else toast(n.track === 't' ? '터틀 트랙 완료! 보너스 게임이 열렸어요.' : '문법 트랙을 모두 끝냈어요!'); }
+  else if (st === 'done') { if (n.idx === S.py[n.track] - 1) S.py[n.track]--; else { toast('마지막으로 완료한 칸만 취소할 수 있어요.'); return; } }
+  save(); render(); if (fl) flash(fl);
+});
+function flash(n) { n.g.classList.remove('pop'); void n.g.getBoundingClientRect(); n.g.classList.add('pop'); }
+$('worldBtn').addEventListener('click', () => { location.href = '시작.html'; });
+$('playBtn').addEventListener('click', () => { if (!sel || sel.track !== 'b') return; $('mTitle').textContent = '미리 해보기 · ' + sel.title; $('mFrame').src = '터틀게임.html?g=' + sel.id; $('modal').classList.add('show'); });
+const closeModal = () => { $('modal').classList.remove('show'); $('mFrame').src = 'about:blank'; };
+$('mClose').addEventListener('click', closeModal);
+$('modal').addEventListener('click', e => { if (e.target === $('modal')) closeModal(); });
+$('resetBtn').addEventListener('click', () => { S.py = {g: 0, t: 0, b: []}; save(); sel = real[0]; render(); window.scrollTo({top: 0, behavior: 'smooth'}); });
+
+sel = real.find(n => n.track === 'g' && stateOf(n) === 'open') || real.find(n => n.track === 't' && stateOf(n) === 'open') || real[0];
+render();
+if (sel && sel.idx > 2) setTimeout(() => sel.g.scrollIntoView({block: 'center'}), 50);
+})();
+</script>
+</body>
+</html>

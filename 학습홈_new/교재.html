@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파이썬 교재</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0e1220;color:#e6ebf7;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+body{display:flex;flex-direction:column}
+button{font:inherit;cursor:pointer}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#161c2e;border-bottom:1px solid #2a3350;flex:0 0 auto}
+.bar.bottom{border-bottom:0;border-top:1px solid #2a3350;justify-content:space-between}
+.b{border:1px solid #2a3350;background:transparent;color:#e6ebf7;border-radius:10px;padding:9px 14px;font-size:14px;font-weight:700;white-space:nowrap}
+.b:hover{border-color:var(--k,#5cc8ff)}
+.b:disabled{opacity:.35;cursor:not-allowed;border-color:#2a3350}
+.go{border:0;background:var(--k,#5cc8ff);color:#0e1220;border-radius:10px;padding:10px 18px;font-size:15px;font-weight:800;white-space:nowrap}
+.go:hover{filter:brightness(1.1)}
+.mid{flex:1;min-width:0;text-align:center}
+.mid b{display:block;font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mid span{font-size:12px;color:#8a95b3;font-family:"JetBrains Mono","D2Coding","Consolas",monospace}
+.dots{display:flex;gap:5px;justify-content:center;flex:1;flex-wrap:wrap}
+.dots i{width:22px;height:6px;border-radius:99px;background:#2a3350}
+.dots i.done{background:var(--k,#5cc8ff)}.dots i.now{background:#fff}
+iframe{flex:1 1 auto;width:100%;border:0;background:#fff}
+.side{display:flex;gap:8px;align-items:center}
+@media (max-width:760px){.dots{display:none}.b .long{display:none}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <button class="b" id="treeBtn">← 스킬 트리</button>
+  <div class="mid"><b id="title"></b><span id="where"></span></div>
+  <button class="b" id="newTab">새 창으로 보기</button>
+</div>
+<iframe id="frame" title="파이썬 교재"></iframe>
+<div class="bar bottom">
+  <button class="b" id="prevBtn"></button>
+  <div class="dots" id="dots"></div>
+  <div class="side"><button class="go" id="nextBtn"></button></div>
+</div>
+<script src="lib/py_data.js"></script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const D = window.PYDATA, flat = [], Q = new URLSearchParams(location.search), TUR = Q.has('t'), PK = TUR ? 't' : 'g', QK = TUR ? 't' : 'i', COL = TUR ? '#ff9b4a' : '#5cc8ff';
+(TUR ? D.TURTLE : D.GRAMMAR).forEach(c => c.items.forEach(it => flat.push({ch: c.ch, glyph: it[0], title: it[1], file: it[2]})));
+document.documentElement.style.setProperty('--k', COL);
+const KEY = 'studyhome_new_3d_demo';
+let S = {};
+try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
+if (!S.py || typeof S.py !== 'object') S.py = {};
+S.py.g = S.py.g | 0; S.py.t = S.py.t | 0; if (!Array.isArray(S.py.b)) S.py.b = []; S.py[PK] = Math.max(0, Math.min(flat.length, S.py[PK]));
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+let i = parseInt(Q.get(QK), 10);
+if (isNaN(i) || i < 0 || i >= flat.length) i = Math.min(S.py[PK], flat.length - 1);
+if (i > S.py[PK]) i = Math.min(S.py[PK], flat.length - 1);
+const cur = flat[i], plain = TUR ? D.TURTLE_URL + '?lesson=' + i : D.BASE + cur.file, url = TUR ? plain + '&embed=1' : plain;
+document.title = cur.title + ' · 파이썬 교재';
+$('title').textContent = cur.title; $('where').textContent = (TUR ? '터틀 ' : '문법 ') + (i + 1) + ' / ' + flat.length + '  ·  ' + cur.ch.replace(/\s+/g, ' ');
+$('frame').src = url;
+flat.forEach((f, k) => { const d = document.createElement('i'); d.className = k === i ? 'now' : k < S.py[PK] ? 'done' : ''; d.title = f.title; $('dots').appendChild(d); });
+const go = k => { location.href = '교재.html?' + QK + '=' + k; };
+const prev = $('prevBtn'), next = $('nextBtn'), last = i === flat.length - 1, done = i < S.py[PK];
+prev.innerHTML = '← <span class="long"></span>'; prev.querySelector('span').textContent = i > 0 ? '이전: ' + flat[i - 1].title : '처음 교재예요'; prev.disabled = i === 0;
+prev.addEventListener('click', () => go(i - 1));
+next.textContent = last ? (done ? '스킬 트리로 돌아가기' : '✓ 완료하고 스킬 트리로') : (done ? '다음: ' + flat[i + 1].title + ' →' : '✓ 완료하고 다음: ' + flat[i + 1].title + ' →');
+next.addEventListener('click', () => { if (!done) { S.py[PK] = Math.max(S.py[PK], i + 1); save(); } if (last) location.href = '화산섬.html'; else go(i + 1); });
+$('treeBtn').addEventListener('click', () => { location.href = '화산섬.html'; });
+$('newTab').addEventListener('click', () => window.open(plain, '_blank'));
+})();
+</script>
+</body>
+</html>

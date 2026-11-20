@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>터틀 게임 미리 해보기</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#0e1220;color:#e6ebf7;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.wrap{width:min(820px,100vw);padding:14px}
+h1{font-size:21px;margin:0 0 4px;text-align:center}
+.sub{font-size:14.5px;text-align:center;margin:0 0 10px;color:#a9b4d0}
+.stage{position:relative;border-radius:14px;overflow:hidden;border:2px solid #c58bff;background:#fff;line-height:0;margin:0 auto}
+canvas{width:100%;height:auto;display:block;touch-action:none;outline:none}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(14,18,32,.82);line-height:1.5}
+.overlay.hide{display:none}
+.overlay p{margin:0;font-size:16px;font-weight:700;text-align:center;padding:0 18px;color:#e6ebf7}
+button{font:inherit;cursor:pointer}
+.go{border:0;border-radius:12px;padding:12px 30px;font-size:17px;font-weight:800;background:#c58bff;color:#0e1220}
+.go:hover{filter:brightness(1.1)}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:14px;gap:8px;color:#a9b4d0}
+.bar button{border:1px solid #2a3350;background:transparent;color:#e6ebf7;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:700;white-space:nowrap}
+.bar button:hover{border-color:#c58bff}
+.ask{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(14,18,32,.6);line-height:1.5}
+.ask.show{display:flex}
+.ask div{background:#fff;color:#1b2233;border-radius:14px;padding:18px;width:min(340px,90%)}
+.ask b{display:block;font-size:16px;margin-bottom:4px}
+.ask span{display:block;font-size:14px;margin-bottom:10px}
+.ask input{width:100%;font:inherit;font-size:17px;padding:9px 12px;border:2px solid #cfd6e6;border-radius:10px;margin-bottom:6px}
+.ask em{display:block;min-height:18px;font-style:normal;font-size:13px;color:#c92a2a;margin-bottom:6px}
+.err{display:none;margin-top:8px;font-size:13px;color:#ff9b9b;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="ttl"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="stage" id="stage">
+    <canvas id="cv" tabindex="0"></canvas>
+    <div class="ask" id="ask"><div><b id="askT"></b><span id="askP"></span><input id="askI" inputmode="numeric" autocomplete="off"><em id="askE"></em><button class="go" id="askB" style="width:100%">확인</button></div></div>
+    <div class="overlay" id="overlay"><p id="msg"></p><button class="go" id="startBtn">▶ 시작하기</button></div>
+  </div>
+  <div class="bar"><span id="hint"></span><button id="resetBtn">↺ 처음으로</button></div>
+  <div class="err" id="err"></div>
+</div>
+<script src="lib/skulpt.min.js"></script>
+<script src="lib/skulpt-stdlib.js"></script>
+<script src="lib/turtle_games.js"></script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const id = new URLSearchParams(location.search).get('g') || 'maze';
+const G = window.TURTLE_GAMES[id] || window.TURTLE_GAMES.maze;
+document.title = G.title + ' · 미리 해보기';
+$('ttl').textContent = G.title; $('sub').textContent = G.sub; $('msg').textContent = G.intro; $('hint').textContent = G.hint;
+const cv = $('cv'), ctx = cv.getContext('2d');
+const TK = {w: 960, h: 810, bg: '#ffffff', items: [], spr: {}, order: [], fills: {}, H: {keydown: {}, keyup: {}, click: [], tclick: {}, drag: []}, next: 1, dirty: true};
+let running = false;
+
+function size() {
+  const maxW = Math.min($('stage').parentElement.clientWidth - 0, 792), maxH = Math.max(260, window.innerHeight - 190);
+  const k = Math.min(maxW / TK.w, maxH / TK.h, 1.6), cw = Math.round(TK.w * k), ch = Math.round(TK.h * k), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  $('stage').style.width = cw + 'px'; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); cv._k = k * dpr; TK.dirty = true;
+}
+window.addEventListener('resize', size);
+
+const SHAPES = {
+  arrow: [[-10, 0], [10, 0], [0, 10]],
+  square: [[10, -10], [10, 10], [-10, 10], [-10, -10]],
+  triangle: [[10, -5.77], [0, 11.55], [-10, -5.77]],
+  classic: [[0, 0], [-5, -9], [0, -7], [5, -9]],
+  turtle: [[0, 16], [-2, 14], [-1, 10], [-4, 7], [-7, 9], [-9, 8], [-6, 5], [-7, 1], [-5, -3], [-8, -6], [-6, -8], [-4, -5], [0, -7], [4, -5], [6, -8], [8, -6], [5, -3], [7, 1], [6, 5], [9, 8], [7, 9], [4, 7], [1, 10], [2, 14]],
+  circle: Array.from({length: 24}, (_, i) => [10 * Math.cos(i / 24 * Math.PI * 2), 10 * Math.sin(i / 24 * Math.PI * 2)])
+};
+function shapePath(s) {
+  const pts = SHAPES[s.shape] || SHAPES.classic, a = (s.h - 90) * Math.PI / 180, c = Math.cos(a), sn = Math.sin(a);
+  ctx.beginPath();
+  pts.forEach((p, i) => { const x = p[0] * s.sx, y = p[1] * s.sy, wx = s.x + x * c - y * sn, wy = s.y + x * sn + y * c; if (i) ctx.lineTo(wx, -wy); else ctx.moveTo(wx, -wy); });
+  ctx.closePath(); ctx.fillStyle = s.fc; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = s.pc; ctx.stroke();
+}
+function draw() {
+  requestAnimationFrame(draw);
+  if (!TK.dirty) return; TK.dirty = false;
+  const k = cv._k; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = TK.bg; ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.setTransform(k, 0, 0, k, cv.width / 2, cv.height / 2); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const it of TK.items) {
+    if (it.k === 'l') { ctx.beginPath(); ctx.moveTo(it.x1, -it.y1); ctx.lineTo(it.x2, -it.y2); ctx.strokeStyle = it.c; ctx.lineWidth = it.w; ctx.stroke(); }
+    else if (it.k === 'd') { ctx.beginPath(); ctx.arc(it.x, -it.y, it.r, 0, 6.2832); ctx.fillStyle = it.c; ctx.fill(); }
+    else if (it.k === 't') { ctx.font = it.font; ctx.fillStyle = it.c; ctx.textAlign = it.al; ctx.textBaseline = 'bottom'; ctx.fillText(it.s, it.x, -it.y); }
+    else if (it.k === 's') shapePath(it);
+    else if (it.k === 'f' && it.pts) { ctx.beginPath(); for (let i = 0; i < it.pts.length; i += 2) { if (i) ctx.lineTo(it.pts[i], -it.pts[i + 1]); else ctx.moveTo(it.pts[i], -it.pts[i + 1]); } ctx.closePath(); ctx.fillStyle = it.c; ctx.fill(); }
+  }
+  for (const t of TK.order) { const s = TK.spr[t]; if (s && s.vis) shapePath(s); }
+}
+
+/* 시간 관리: 브라우저가 타이머를 늦춰도 실제 흐른 시간만큼 따라잡는다 */
+let queue = [], vt = performance.now(), pumping = false;
+function later(ms, fn) { const now = performance.now(); const base = Math.max(vt, now - 300); queue.push({due: base + ms, fn}); }
+async function pump() {
+  if (pumping) return; pumping = true;
+  try {
+    const t0 = performance.now();
+    for (;;) {
+      const now = performance.now(); let k = -1;
+      for (let i = 0; i < queue.length; i++) if (queue[i].due <= now && (k < 0 || queue[i].due < queue[k].due)) k = i;
+      if (k < 0 || now - t0 > 14) break;
+      const q = queue.splice(k, 1)[0]; vt = Math.max(vt, q.due); q.fn();
+      for (let i = 0; i < 60; i++) await null;
+    }
+  } finally { pumping = false; }
+}
+(function raf() { pump(); requestAnimationFrame(raf); })(); setInterval(pump, 5);
+
+function fail(e) { if (!running) return; const s = String(e && e.toString ? e.toString() : e); if (/SystemExit/.test(s)) return; $('err').style.display = 'block'; $('err').textContent = '실행 중 문제가 생겼어요: ' + s; }
+function call(fn, args) {
+  if (!running) return;
+  Sk.misceval.asyncToPromise(() => Sk.misceval.callsimOrSuspendArray(fn, (args || []).map(v => new Sk.builtin.float_(v)))).catch(fail);
+}
+const FONT = '"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+window.TKB = {
+  cmd(a) {
+    TK.dirty = true;
+    switch (a[0]) {
+      case 'setup': TK.w = a[1]; TK.h = a[2]; size(); break;
+      case 'bg': TK.bg = a[1]; break;
+      case 'title': break;
+      case 'spr': TK.spr[a[1]] = {x: a[2], y: a[3], h: a[4], shape: a[5], sx: a[6], sy: a[7], pc: a[8], fc: a[9], vis: a[10]}; break;
+      case 'line': TK.items.push({k: 'l', t: a[1], x1: a[2], y1: a[3], x2: a[4], y2: a[5], c: a[6], w: a[7]}); break;
+      case 'dot': TK.items.push({k: 'd', t: a[1], x: a[2], y: a[3], r: a[4] / 2, c: a[5]}); break;
+      case 'text': { const st = String(a[8] || ''), px = Math.max(8, Number(a[7]) || 8) * 1.333; TK.items.push({k: 't', t: a[1], x: a[2], y: a[3], s: a[4], al: a[5] === 'center' ? 'center' : a[5] === 'right' ? 'right' : 'left', font: (/bold/.test(st) || /bold/.test(a[6]) ? 'bold ' : '') + (/italic/.test(st) ? 'italic ' : '') + px + 'px ' + FONT, c: a[9]}); break; }
+      case 'stamp': TK.items.push({k: 's', t: a[1], x: a[2], y: a[3], h: a[4], shape: a[5], sx: a[6], sy: a[7], pc: a[8], fc: a[9]}); break;
+      case 'clear': TK.items = TK.items.filter(i => i.t !== a[1]); break;
+      case 'clearall': TK.items = []; break;
+      case 'fillstart': { const f = {k: 'f', t: a[1], pts: null, c: '#000'}; TK.fills[a[1]] = f; TK.items.push(f); break; }
+      case 'fillend': { const f = TK.fills[a[1]]; if (f) { f.pts = a[2]; f.c = a[3]; } break; }
+      case 'listen': cv.focus(); break;
+    }
+  },
+  newId() { const n = TK.next++; TK.order.push(n); return n; },
+  wait(ms) { return new Promise(r => later(ms, r)); },
+  frame() { return new Promise(r => later(1000 / 60, r)); },
+  on(kind, key, fn) { if (kind === 'keydown' || kind === 'keyup') TK.H[kind][key == null ? '*' : String(key)] = fn; else if (kind === 'tclick') TK.H.tclick[key] = fn; else TK.H[kind] = [fn]; },
+  timer(fn, ms) { later(Math.max(0, ms), () => call(fn)); },
+  ask(title, prompt, num) {
+    return new Promise(res => {
+      $('askT').textContent = title; $('askP').textContent = prompt; $('askI').value = ''; $('askE').textContent = ''; $('ask').classList.add('show'); $('askI').focus();
+      const ok = () => { const v = $('askI').value.trim(); if (num && (v === '' || isNaN(Number(v)))) { $('askE').textContent = '숫자를 입력해 주세요.'; return; } $('ask').classList.remove('show'); $('askB').onclick = null; $('askI').onkeydown = null; cv.focus(); res(num ? Number(v) : v); };
+      $('askB').onclick = ok; $('askI').onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') ok(); };
+    });
+  }
+};
+const BRIDGE = "var $builtinmodule = function (name) { var mod = {__name__: new Sk.builtin.str('_tk')}; var js = function (v) { return Sk.ffi.remapToJs(v); }; var none = Sk.builtin.none.none$; var susp = function (p) { return Sk.misceval.promiseToSuspension(p); };" +
+  "mod.c = new Sk.builtin.func(function () { var a = []; for (var i = 0; i < arguments.length; i++) a.push(js(arguments[i])); window.TKB.cmd(a); return none; });" +
+  "mod.mk = new Sk.builtin.func(function () { return new Sk.builtin.int_(window.TKB.newId()); });" +
+  "mod.wait = new Sk.builtin.func(function (ms) { return susp(window.TKB.wait(js(ms)).then(function () { return none; })); });" +
+  "mod.frame = new Sk.builtin.func(function () { return susp(window.TKB.frame().then(function () { return none; })); });" +
+  "mod.on = new Sk.builtin.func(function (kind, key, fn) { window.TKB.on(js(kind), js(key), fn); return none; });" +
+  "mod.timer = new Sk.builtin.func(function (fn, ms) { window.TKB.timer(fn, js(ms)); return none; });" +
+  "mod.ask = new Sk.builtin.func(function (t, p, num) { var n = js(num); return susp(window.TKB.ask(js(t), js(p), n).then(function (v) { return n ? new Sk.builtin.float_(v) : new Sk.builtin.str(v); })); });" +
+  "return mod; };";
+
+function toLogical(ev) { const r = cv.getBoundingClientRect(); return {px: (ev.clientX - r.left) / r.width * TK.w, py: (ev.clientY - r.top) / r.height * TK.h}; }
+cv.addEventListener('pointerdown', ev => {
+  ev.preventDefault(); cv.focus(); if (!running) return; try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
+  const q = toLogical(ev), x = q.px - TK.w / 2, y = TK.h / 2 - q.py;
+  for (let i = TK.order.length - 1; i >= 0; i--) { const t = TK.order[i], s = TK.spr[t], fn = TK.H.tclick[t]; if (fn && s && s.vis && Math.hypot(s.x - x, s.y - y) <= 11 * Math.max(Math.abs(s.sx), Math.abs(s.sy), 1) + 3) { call(fn, [x, y]); break; } }
+  TK.H.click.forEach(fn => call(fn, [x, y]));
+});
+cv.addEventListener('pointermove', ev => { if (!running || !(ev.buttons & 1)) return; const q = toLogical(ev); TK.H.drag.forEach(fn => call(fn, [q.px, q.py])); });
+const keyName = e => ({ArrowUp: 'Up', ArrowDown: 'Down', ArrowLeft: 'Left', ArrowRight: 'Right', ' ': 'space', Enter: 'Return', Escape: 'Escape'})[e.key] || e.key;
+document.addEventListener('keydown', e => { if (!running || $('ask').classList.contains('show')) return; const k = keyName(e); if (['Up', 'Down', 'Left', 'Right', 'space'].includes(k)) e.preventDefault(); const fn = TK.H.keydown[k] || TK.H.keydown[k.toLowerCase()] || TK.H.keydown['*']; if (fn) call(fn); });
+document.addEventListener('keyup', e => { if (!running || $('ask').classList.contains('show')) return; const k = keyName(e), fn = TK.H.keyup[k] || TK.H.keyup[k.toLowerCase()]; if (fn) call(fn); });
+
+function start() {
+  $('overlay').classList.add('hide'); running = true; cv.focus();
+  delete Sk.builtinFiles.files['src/lib/turtle.js']; delete Sk.builtinFiles.files['src/lib/turtle.py'];
+  Sk.builtinFiles.files['src/lib/turtle.py'] = window.TURTLE_PY; Sk.builtinFiles.files['src/lib/_tk.js'] = BRIDGE;
+  Sk.configure({output: () => {}, read: f => { if (Sk.builtinFiles === undefined || Sk.builtinFiles.files[f] === undefined) throw "File not found: '" + f + "'"; return Sk.builtinFiles.files[f]; }, __future__: Sk.python3, killableWhile: true, killableFor: true, yieldLimit: 60});
+  Sk.misceval.asyncToPromise(() => Sk.importMainWithBody('<stdin>', false, G.code, true)).catch(fail);
+}
+$('startBtn').addEventListener('click', start);
+$('resetBtn').addEventListener('click', () => location.reload());
+TK.w = G.w || 960; TK.h = G.h || 810; size(); requestAnimationFrame(draw);
+window.__TK = TK;
+})();
+</script>
+</body>
+</html>
