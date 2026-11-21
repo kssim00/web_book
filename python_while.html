@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CODE:N - 파이썬 While문 완전 정복</title>
+<title>while 반복문</title>
 <style>
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 
 :root{
   --bg:#faf9f6;
@@ -32,13 +32,14 @@ body{
   margin:0;
   background:var(--bg);
   color:var(--ink);
-  font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-family:'Pretendard Variable', Pretendard, 'Apple SD Gothic Neo', sans-serif;
   line-height:1.6;
   padding-left:252px;
   transition:padding-left 0.28s ease;
   word-break:keep-all;
   overflow-wrap:break-word;
 }
+button{font-family:inherit;}
 body.nav-collapsed{padding-left:0;}
 a{color:inherit;}
 
@@ -168,13 +169,6 @@ code:not(.py):not(.quiz-code){background:var(--accent-soft); color:var(--accent)
 .practice .tag{font-size:0.82rem; font-weight:800; color:var(--accent2); letter-spacing:0.5px; margin-bottom:6px;}
 .practice p{margin:4px 0 0; font-size:1.02rem;}
 .practice .io-example{background:var(--accent-soft); color:var(--ink); padding:12px 14px; border-radius:10px; font-family:'SF Mono',monospace; font-size:0.92rem; margin:12px 0; white-space:pre-wrap;}
-.code-editor{
-  width:100%; height:auto; margin:14px 0 10px; padding:16px 18px;
-  font-family:'SF Mono','Consolas','Menlo',monospace; font-size:1rem; line-height:1.7;
-  color:var(--code-ink); background:var(--code-bg); border:none; border-radius:14px;
-  resize:none; outline:none; white-space:pre; caret-color:var(--accent2); overflow-y:hidden;
-}
-.code-editor:focus{box-shadow:0 0 0 3px rgba(91,86,224,0.25);}
 .run-btn{
   background:var(--ink); color:#fff; border:none; padding:10px 20px; border-radius:50px;
   cursor:pointer; font-size:0.92rem; font-weight:700; font-family:inherit; transition:0.2s;
@@ -194,6 +188,36 @@ code:not(.py):not(.quiz-code){background:var(--accent-soft); color:var(--accent)
 .practice summary::before{content:"▸"; transition:transform 0.15s;}
 .practice details[open] summary::before{transform:rotate(90deg);}
 .practice details .code-card{margin-top:12px;}
+
+/* Quiz groups follow the print and string lessons. */
+.quiz-group{
+  background:#e8f8f1; border:1px solid #b9e4d3; border-radius:16px;
+  padding:clamp(16px, 4vw, 36px); margin:28px 0;
+}
+.quiz-heading{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  margin:0 0 16px; color:var(--ink); font-size:1.22rem; font-weight:800;
+}
+.quiz-badge{
+  background:var(--ink); color:#fff; border-radius:999px;
+  padding:4px 14px; font-size:0.8rem; line-height:1.4; font-weight:900;
+}
+.quiz-group > .quiz-card{
+  background:#fff; padding:20px clamp(14px, 2.2vw, 22px); margin:0;
+  box-shadow:0 1px 3px rgba(20,20,30,0.06);
+}
+.quiz-group > .quiz-card + .quiz-card,
+.quiz-group > .check-result + .quiz-card{margin-top:24px;}
+.quiz-group > .check-set-btn{margin-top:18px;}
+.quiz-group .quiz-code{border-radius:18px; overflow-x:auto;}
+.quiz-group .quiz-card > .quiz-code:has(+ .quiz-opts){margin-bottom:14px;}
+.quiz-group .quiz-opts label{
+  padding:7px 0; margin:0; font-size:1rem; overflow-wrap:anywhere;
+}
+.quiz-group .quiz-opts input[type="radio"]{
+  width:1.1em; height:1.1em; margin:0 10px 0 0;
+  vertical-align:-0.15em; accent-color:var(--accent);
+}
 
 /* quiz card */
 .quiz-card{
@@ -229,6 +253,7 @@ code:not(.py):not(.quiz-code){background:var(--accent-soft); color:var(--accent)
   text-align:center; font-size:1.02rem;
 }
 .check-result.show{display:block;}
+.check-result{position:relative;}
 
 /* chip-check: multi-select checkbox pills */
 .chip-check{
@@ -242,9 +267,9 @@ code:not(.py):not(.quiz-code){background:var(--accent-soft); color:var(--accent)
 
 /* code-per-checkbox grid */
 .code-check-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;}
-.code-check-card{border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--surface);}
+.code-check-card{display:flex; flex-direction:column; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--surface);}
 .code-check-card > label{display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--bg); font-weight:700; cursor:pointer; border-bottom:1px solid var(--line);}
-.code-check-card .quiz-code{margin:0; border-radius:0; font-size:0.86rem;}
+.code-check-card > .quiz-code{flex:1; margin:0; border-radius:0; font-size:0.86rem;}
 
 .blank-input{
   font-size:0.98rem; padding:5px 10px; border:1.5px solid var(--accent); border-radius:8px;
@@ -307,7 +332,117 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
   .compare-grid{grid-template-columns:1fr;}
   .code-check-grid{grid-template-columns:1fr;}
 }
+        .mission-hint { margin: 20px 0 0; padding: 0; border: 0; background: transparent; }
+        .mission-hint > summary { display: inline-flex; align-items: center; gap: 14px; padding: 7px 11px; border: 1px solid #dedbd6; border-radius: 7px; background: #faf9f7; color: #57534e; font-size: 14px; font-weight: 650; line-height: 1.5; cursor: pointer; list-style: none; }
+        .mission-hint > summary::-webkit-details-marker { display: none; }
+        .mission-hint > summary:hover { background: #f1efeb; }
+        .mission-hint > summary:focus-visible { outline: 2px solid #a8a29e; outline-offset: 3px; }
+        .hint-toggle::before { content: '+'; font-size: 16px; font-weight: 500; }
+        .mission-hint[open] .hint-toggle::before { content: '−'; }
+        .mission-hint-content { margin-top: 10px; padding: 16px 18px; border: 1px solid #e6e3de; border-radius: 10px; background: #faf9f7; color: #202124; font-size: 17px; line-height: 1.7; }
+        .mission-hint-content ol { margin: 0; padding-left: 22px; }
+        .mission-hint-content li + li { margin-top: 5px; }
+        .mission-hint-content .code-box-set { margin: 14px 0 0; }
+        .mission-output { margin: 16px 0; padding: 14px 20px; background: #f5f4f0; border: 1px solid #e9e7e1; border-radius: 10px; }
+        .mission-output-label { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; background: #fff; border: 1px solid #e5e3de; border-radius: 6px; color: #64748b; font-size: 12px !important; font-weight: 700; line-height: 1.5; }
+        .mission-output-arrow { display: inline-block; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 7px solid #64748b; }
+        .mission-output pre { margin: 7px 0 0; padding: 0; background: transparent; color: #171717; font-family: Consolas, 'Courier New', monospace; font-size: 17px; line-height: 1.7; tab-size: 8; overflow-x: auto; }
+        .mission-hint { margin-top: 12px; }
+.lesson-mission, .practice, .challenge-box {
+  margin: 24px 0; padding: 24px clamp(16px, 4vw, 28px);
+  border: 2px solid #202124; border-radius: 20px; background: #fff;
+}
+.mission-heading { display: flex; gap: 14px; align-items: center; }
+.mission-heading h3 { margin: 0; font-size: 23px; }
+.mission-tag-circle { background: #1b1b23; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+.lesson-mission > p { margin: 12px 0; font-size: 18px; }
+.lesson-mission .mission-output { margin: 12px 0; }
+.mission-hint:not([open]) .hint-open, .mission-hint[open] .hint-closed { display: none; }
+.while-example .code-card { margin: 0; box-shadow: none; }
+.while-example { min-width: 0; width: 100%; margin: 12px 0; }
+.run-btn { margin-top: 8px; padding: 5px 13px; border: 1px solid #e4ddfa; border-radius: 7px; background: #f0ecff; color: #5145a8; font-size: 13px; }
+.run-btn:hover { background: #e8e1fc; }
+.output-box { margin-top: 8px; background: #f3f2ed; }
+.quiz-code + .quiz-opts { padding-top: 14px; }
+@media (max-width: 600px) { .mission-heading { flex-wrap: wrap; gap: 8px; } }
+.mission-example-grid{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;
+}
+.mission-example-grid > div{display:flex; flex-direction:column; min-width:0;}
+.mission-example-grid > div > .mission-output:last-child{flex:1;}
+@media(max-width:600px){
+  .mission-example-grid{grid-template-columns:minmax(0,1fr);}
+}
+.code-card pre, .code-card code.py, .code-card code.py .c-kw,
+.quiz-code:not(label .quiz-code), .quiz-code:not(label .quiz-code) .c-kw{
+  font-family:'SF Mono',Consolas,Menlo,'JetBrains Mono',monospace;
+  font-weight:700;
+  font-variant-ligatures:none;
+}
+.code-card pre, .quiz-code:not(label .quiz-code){font-size:18px;}
+.code-card code.py{font-size:inherit;}
+.compare-grid .loop-control-label{
+  background:#fff0dc; color:var(--ink); padding:10px 14px; border-radius:8px;
+}
+.loop-control-label strong{color:#b42318; font-size:1.25em; font-weight:800;}
+.c-bracket-0{color:#ffc978;}
+.c-bracket-1{color:#ff7f9c;}
+.c-bracket-2{color:#7fd8ff;}
+.c-bracket-3{color:#b9f18c;}
+.code-check-card > .quiz-reason{
+  display:block; background:var(--surface); border:0; cursor:default;
+  color:var(--ink); font-size:0.95rem;
+}
+.quiz-reason textarea{
+  display:block; width:100%; margin-top:6px; padding:8px 10px;
+  border:1px solid var(--line); border-radius:8px; resize:vertical;
+  font:inherit; font-weight:400; color:inherit;
+}
+@media(min-width:901px){
+  .while-else-compare{row-gap:0;}
+  .while-else-compare > div{
+    display:grid; grid-template-rows:subgrid; grid-row:span 4; min-width:0;
+  }
+  .while-else-compare .while-example{display:contents;}
+  .while-else-compare .run-btn{justify-self:start;}
+}
+.quiz-output-options{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;
+}
+.quiz-output-options label{
+  display:flex; align-items:flex-start; gap:8px; padding:10px;
+  background:#f3f2ed; border-color:var(--line);
+}
+.quiz-output-options input[type="radio"]{flex:none; margin:3px 0 0;}
+.quiz-output-choice{white-space:pre-wrap; font-family:Consolas,monospace;}
+@media(max-width:600px){
+  .quiz-output-options{grid-template-columns:minmax(0,1fr);}
+}
+
+.loop-intro {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.loop-intro-card {
+  padding: clamp(16px, 3vw, 24px);
+  background: var(--surface);
+  border-top: 5px solid #c8785e;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(20, 20, 30, 0.06);
+}
+.loop-intro-card + .loop-intro-card { border-top-color: var(--ink); }
+.loop-intro-card h2 { margin: 0 0 8px; font-size: 1.2rem; }
+.loop-intro-card p { margin: 0; color: var(--sub); }
+.loop-intro-card p + p { margin-top: 5px; }
+.loop-intro-card .code-card,
+.loop-intro-card .code-wrapper { margin: 12px 0 0; padding: 12px 16px; box-shadow: none; }
+@media (max-width: 640px) {
+  .loop-intro { grid-template-columns: minmax(0, 1fr); }
+}
 </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -339,35 +474,35 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
   <section class="section hero" id="s0">
     <div class="eyebrow">PYTHON · 반복문</div>
     <h1>while문,<br>조건이 참인 동안 반복하기</h1>
-    <p class="desc">반복 <b>횟수가 정해지지 않았을 때</b> 사용하는 반복문이에요. 비밀번호가 맞을 때까지 입력받거나, 사용자가 종료할 때까지 메뉴를 보여줄 때 사용해요.</p>
-    <div class="callout"><span class="callout-title">💡 while문의 기본 구조</span>조건이 <b>True인 동안</b> 계속 반복하고, False가 되면 즉시 종료해요.</div>
-    <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">while 조건:
-    실행할 코드</code></pre>
+    <div class="loop-intro">
+      <div class="loop-intro-card">
+        <h2>while문이란?</h2>
+        <p><strong>조건이 참인 동안</strong> 같은 코드를 반복할 때 사용해요.</p>
+        <p>예를 들어 비밀번호가 틀리는 동안 다시 입력받을 수 있어요.</p>
+      </div>
+      <div class="loop-intro-card">
+        <h2>while문의 핵심 구조</h2>
+        <p>반복할 때마다 먼저 조건을 확인하고, 거짓이면 반복을 끝내요.</p>
+        <div class="code-card"><pre><code class="py">while 조건:
+    실행할 코드</code></pre></div>
+      </div>
     </div>
   </section>
 
   <section class="section" id="s1">
     <div class="eyebrow">CONCEPT 1</div>
     <h2 class="sec-title"><span class="sec-num">01</span>while문의 기본 구조</h2>
-    <p class="desc">아래 코드들을 보세요. for문과 무엇이 다른지 생각해보세요.</p>
+    <p class="desc"><code>i</code>를 1부터 세어요. <code>i</code>가 4가 되면 조건이 거짓이라 멈춰요.</p>
 
     <div class="code-result-pair">
-      <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">i = 1
-while i <= 3:
+      <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-1">i = 1
+while i &lt;= 3:
     print(i)
-    i += 1</code></pre>
-      </div>
-      <div class="pair-arrow">→</div>
-      <div class="result-chip">1
-2
-3</div>
+    i += 1</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-1" aria-expanded="false" onclick="runCode('while-demo-1','out-while-demo-1')">결과확인</button><div class="output-box" id="out-while-demo-1" aria-live="polite"></div></div>
     </div>
 
-    <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><code>while</code>은 <b>조건이 참(True)인 동안</b> 계속 반복해요.<br>조건이 거짓(False)이 되는 순간 반복이 끝나요.</div>
 
-    <p class="desc" style="margin:20px 0 0; max-width:none;">while문은 <b>3가지를 반드시 직접 작성</b>해야 해요.</p>
+    <p class="desc" style="margin:20px 0 0; max-width:none;">숫자를 세는 예제에서는 <b>시작값, 조건식, 값을 바꾸는 코드</b>를 확인해요.</p>
     <div class="compare-grid" style="grid-template-columns:1fr 1fr 1fr;">
       <div class="quiz-card" style="margin:0; text-align:center;">
         <div style="width:30px; height:30px; border-radius:50%; background:var(--accent2); color:#fff; font-weight:800; font-size:0.92rem; display:flex; align-items:center; justify-content:center; margin:0 auto 10px;">1</div>
@@ -389,28 +524,58 @@ while i <= 3:
       </div>
     </div>
 
-    <div class="callout warn"><span class="callout-title">⚠️ 주의하세요</span><b>③ 증가식을 빠뜨리면</b> 조건이 영원히 True가 되어 <b>무한루프</b>가 발생해요.<br><b>① 시작값을 선언하지 않으면</b> NameError가 발생해요.</div>
+    <div class="callout warn"><span class="callout-title">⚠️ 주의하세요</span>이 예제에서 <code>i += 1</code>을 빼면 <code>i</code>가 계속 1이라 반복이 끝나지 않아요.</div>
 
-    <div class="practice">
-      <div class="tag">✏️ EXAMPLE · 1부터 5까지 출력하기</div>
-      <p>3가지 요소(시작값, 조건식, 증가식)를 모두 직접 써서 1부터 5까지 출력해봅시다.</p>
-      <textarea class="code-editor" id="code-ex1"># 코드를 입력하세요</textarea>
-      <button class="run-btn" onclick="runCode('code-ex1','out-ex1')">실행하기</button>
-      <div class="output-box" id="out-ex1"></div>
-    </div>
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>1부터 5까지 출력하기</h3></header>
+      <p><code>while</code>문으로 1부터 5까지 한 줄에 하나씩 출력하세요.</p>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1
+2
+3
+4
+5</pre></div>
+      
+    </article>
 
-    <div class="practice">
-      <div class="tag">🎯 MISSION · 10부터 1까지 카운트다운</div>
-      <p>10부터 시작해서 1까지 거꾸로 출력하는 코드를 작성해보세요.</p>
-      <div class="io-example">출력 예: 10 9 8 7 6 5 4 3 2 1</div>
-      <details>
-        <summary>힌트 보기</summary>
-        <p style="margin-top:10px;">시작값은 10, 조건식은 1까지 출력해야 하므로 <code>&gt;=</code>를 사용하세요.<br>증가식은 숫자가 줄어야 하므로 <code>-=</code>를 사용하세요.</p>
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>10부터 1까지 카운트다운</h3></header>
+      <p><code>while</code>문으로 10부터 1까지 거꾸로 세어, 숫자를 공백으로 구분해 한 줄로 출력하세요.</p>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>10 9 8 7 6 5 4 3 2 1</pre></div>
+      <details class="mission-hint">
+        <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+        <div class="mission-hint-content">10에서 시작해, 숫자를 출력할 때마다 1씩 줄여 보세요. 1도 출력해야 해요.</div>
       </details>
-      <textarea class="code-editor" id="code-m1"># 코드를 입력하세요</textarea>
-      <button class="run-btn" onclick="runCode('code-m1','out-m1')">실행하기</button>
-      <div class="output-box" id="out-m1"></div>
-    </div>
+    </article>
+  <article class="lesson-mission">
+  <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>짝수만 출력하기</h3></header>
+  <p>while문으로 2부터 10까지 짝수를 공백으로 구분해 한 줄로 출력하세요.</p>
+  
+  <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>2 4 6 8 10</pre></div>
+</article>
+  <article class="lesson-mission">
+    <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>홀수만 출력하기</h3></header>
+    <p>빈칸 A와 B를 채워 1부터 9까지 홀수를 공백으로 구분해 한 줄에 출력하세요.</p>
+    <div class="quiz-code">i = <span class="blank-code">A</span>
+<span class="c-kw">while</span> i &lt;= <span class="c-num">9</span>:
+    <span class="c-bi">print</span>(i, end=<span class="c-str">' '</span>)
+    i += <span class="blank-code">B</span></div>
+    <p><label>A: <input type="text" class="blank-input" id="odd-step-a" inputmode="numeric"></label> &nbsp; <label>B: <input type="text" class="blank-input" id="odd-step-b" inputmode="numeric"></label></p>
+    <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1 3 5 7 9</pre></div>
+    <button class="quiz-check-btn" type="button" onclick="checkBlanksFlex('odd-step', [['1'],['2']], 'odd-step-fb')">정답 확인</button>
+    <div class="drill-feedback" id="odd-step-fb" role="status"></div>
+  </article>
+  <article class="lesson-mission">
+  <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>응원 문장 반복하기</h3></header>
+  <p>정수 하나를 입력받아 그 횟수만큼 <code>Go!</code>를 출력하세요.</p>
+  <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>3</pre></div>
+  <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>Go!
+Go!
+Go!</pre></div>
+  <details class="mission-hint">
+    <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+    <div class="mission-hint-content">출력할 때마다 지금까지 출력한 횟수를 하나씩 늘려 보세요.</div>
+  </details>
+</article>
   </section>
 
   <section class="section" id="s2">
@@ -425,22 +590,16 @@ while i <= 3:
     <p class="desc" style="max-width:none;">아래 코드는 몇 번 반복할지 미리 정해져 있지 않아요. 어떻게 동작할까요?</p>
 
     <div class="code-result-pair">
-      <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">score = int(input("점수 입력(-1 종료): "))
+      <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-2">score = int(input(&quot;점수 입력(-1 종료): &quot;))
 
 while score != -1:
-    print("입력된 점수:", score)
-    score = int(input("점수 입력(-1 종료): "))
+    print(&quot;입력된 점수:&quot;, score)
+    score = int(input(&quot;점수 입력(-1 종료): &quot;))
 
-print("입력 종료!")</code></pre>
-      </div>
-      <div class="pair-arrow">→</div>
-      <div class="result-chip" style="font-size:0.86rem;">입력된 점수: 90
-입력된 점수: 75
-입력 종료!</div>
+print(&quot;입력 종료!&quot;)</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-2" aria-expanded="false" onclick="runCode('while-demo-2','out-while-demo-2')">결과확인</button><div class="output-box" id="out-while-demo-2" aria-live="polite"></div></div>
     </div>
 
-    <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><b>반복 횟수를 미리 알 수 없을 때</b>, 특별한 값을 입력하면 반복을 멈추도록 약속해요.<br>이 특별한 값을 <b>보초값(Sentinel)</b>이라고 해요. 보초값은 <b>실제 데이터로 절대 나올 수 없는 값</b>으로 정해야 해요.</div>
+    <div class="callout"><span class="callout-title">💡 기억해요</span><b>반복 횟수를 미리 알 수 없을 때</b>, 특별한 값을 입력하면 반복을 멈추도록 약속해요.<br>이 특별한 값을 <b>보초값(Sentinel)</b>이라고 해요. 보초값은 <b>처리할 데이터와 겹치지 않는 값</b>으로 정해요.</div>
 
     <p class="desc" style="max-width:none;">보초값을 선택하는 원칙을 정리하면 다음과 같아요.</p>
     <table class="result-table">
@@ -452,49 +611,68 @@ print("입력 종료!")</code></pre>
 
     <div class="callout warn"><span class="callout-title">⚠️ 왜 while 전에 먼저 input을 받나요?</span>while 조건에서 score를 비교하려면 score가 이미 선언되어 있어야 해요. 처음부터 값이 없으면 NameError가 나요.</div>
 
+    <div class="quiz-group">
+      <h3 class="quiz-heading"><span class="quiz-badge">QUIZ</span>실전핵심퀴즈 (정답을 골라보세요)</h3>
     <div class="quiz-card">
-      <div class="quiz-q">✏️ EXAMPLE · 상황 ① 학생 시험 점수(0~100점) — 종료 신호로 적합한 값은?</div>
+      <div class="quiz-q">퀴즈 1. 학생 시험 점수(0~100점) — 종료 신호로 적합한 값은?</div>
       <div class="quiz-opts">
-        <label><input type="radio" name="s2q1" data-correct="0"> a) -1</label>
-        <label><input type="radio" name="s2q1"> b) 50</label>
-        <label><input type="radio" name="s2q1"> c) 100</label>
-        <label><input type="radio" name="s2q1"> d) 0</label>
+        <label><input type="radio" name="s2q1" data-correct="0">-1</label>
+        <label><input type="radio" name="s2q1">50</label>
+        <label><input type="radio" name="s2q1">100</label>
+        <label><input type="radio" name="s2q1">0</label>
       </div>
       <button class="quiz-check-btn" onclick="checkSingle('s2q1', this)">정답 확인</button>
+      <div class="drill-feedback" role="status"></div>
     </div>
 
     <div class="quiz-card">
-      <div class="quiz-q">✏️ EXAMPLE · 상황 ② 주사위 숫자(1~6) 입력 — 보초값으로 쓰면 안 되는 값은?</div>
+      <div class="quiz-q">퀴즈 2. 주사위 숫자(1~6) 입력 — 보초값으로 쓰면 안 되는 값은?</div>
       <div class="quiz-opts">
-        <label><input type="radio" name="s2q2"> a) 0</label>
-        <label><input type="radio" name="s2q2"> b) -1</label>
-        <label><input type="radio" name="s2q2" data-correct="2"> c) 4</label>
-        <label><input type="radio" name="s2q2"> d) 7</label>
+        <label><input type="radio" name="s2q2">0</label>
+        <label><input type="radio" name="s2q2">-1</label>
+        <label><input type="radio" name="s2q2" data-correct="2">4</label>
+        <label><input type="radio" name="s2q2">7</label>
       </div>
       <button class="quiz-check-btn" onclick="checkSingle('s2q2', this)">정답 확인</button>
+      <div class="drill-feedback" role="status"></div>
+    </div>
     </div>
 
-    <div class="practice">
-      <div class="tag">🎯 MISSION · 보초값 프로그램 완성하기</div>
-      <p>숫자를 계속 입력받아 더하다가 0을 입력하면 멈추고 합계를 출력하세요.</p>
-      <div class="io-example">숫자 입력 (0=종료) >> 10
-숫자 입력 (0=종료) >> 20
-숫자 입력 (0=종료) >> 0
-합계: 30</div>
-      <details>
-        <summary>힌트 보기</summary>
-        <p style="margin-top:10px;"><code>total = 0</code>으로 합계 변수를 만들고, <code>while True:</code>로 무한 반복을 시작하세요.<br>입력값이 0이면 반복을 끝내고, 아니면 total에 더하세요.</p>
-      </details>
-      <textarea class="code-editor" id="code-m2"># 코드를 입력하세요</textarea>
-      <button class="run-btn" onclick="runCode('code-m2','out-m2')">실행하기</button>
-      <div class="output-box" id="out-m2"></div>
-    </div>
+  <article class="lesson-mission">
+  <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>입력한 숫자의 합계와 개수 구하기</h3></header>
+  <p>정수를 한 줄에 하나씩 입력받으세요. 0을 입력하면 반복을 멈추고, 0 전까지 입력한 수의 합계와 개수를 출력하세요.</p>
+  <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>7
+4
+9
+0</pre></div>
+  <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>합계: 20
+입력한 개수: 3</pre></div>
+  <details class="mission-hint">
+    <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+    <div class="mission-hint-content">합계와 개수를 저장할 변수를 하나씩 만드세요. 0이 나오면 두 값을 바꾸기 전에 반복을 끝내세요.</div>
+  </details>
+</article>
+  <article class="lesson-mission">
+  <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>장바구니 금액 더하기</h3></header>
+  <p>상품 가격을 한 줄에 하나씩 입력받아 더하다가 <code>-1</code>을 입력하면 합계를 출력하세요.</p>
+  <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>1200
+2500
+600
+-1</pre></div>
+  <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>합계: 4300원</pre></div>
+  <details class="mission-hint">
+    <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+    <div class="mission-hint-content">가격을 입력받을 때마다 합계를 바꾸고, 종료 신호가 들어오면 합계를 출력해 보세요.</div>
+  </details>
+</article>
   </section>
 
   <section class="section" id="check1">
     <div class="eyebrow">CHECK 1</div>
     <h2 class="sec-title"><span class="sec-num">03</span>while 기초 &amp; 보초값</h2>
 
+    <div class="quiz-group">
+      <h3 class="quiz-heading"><span class="quiz-badge">QUIZ</span>실전핵심퀴즈 (정답을 골라보세요)</h3>
     <div class="quiz-card">
       <div class="quiz-q">Q1. while문의 핵심 동작 원리는?</div>
       <div class="quiz-opts">
@@ -534,129 +712,77 @@ while score != -1:
         <label><input type="radio" name="c1q4">'quit'</label>
       </div>
     </div>
-    <button class="check-set-btn" onclick="gradeCheck('c1', ['c1q1','c1q2','c1q3','c1q4'], 'c1-result')">채점하기</button>
-    <div class="check-result" id="c1-result"></div>
-
-    <div class="quiz-card" style="margin-top:32px;">
-      <div class="quiz-q">문제 1 — 에러 이유 찾기 &amp; 디버깅</div>
-      <p style="margin:0 0 10px;">아래 코드는 <code>5! 4! 3! 2! 1!</code>을 출력해야 합니다. 에러 이유를 선택하고, 코드를 수정해서 실행해보세요.</p>
+    <div class="quiz-card">
+      <div class="quiz-q">Q5. 에러 이유 찾기</div>
+      <p style="margin:0 0 10px;">아래 코드는 <code>5! 4! 3! 2! 1!</code>을 출력해야 합니다. 에러가 나는 이유를 고르세요.</p>
       <div class="quiz-code">count = 5
 while count > 0:
     print(count + "!")
     count -= 1</div>
       <div class="quiz-opts">
-        <label><input type="radio" name="bug2">a) while 조건이 잘못됨</label>
-        <label><input type="radio" name="bug2">b) count가 0부터 시작해야 함</label>
-        <label><input type="radio" name="bug2" data-correct="2">c) 정수와 문자열을 +로 합칠 수 없음</label>
-        <label><input type="radio" name="bug2">d) print 들여쓰기가 잘못됨</label>
+        <label><input type="radio" name="c1q5">while 조건이 잘못됨</label>
+        <label><input type="radio" name="c1q5">count가 0부터 시작해야 함</label>
+        <label><input type="radio" name="c1q5" data-correct="2">정수와 문자열을 +로 합칠 수 없음</label>
+        <label><input type="radio" name="c1q5">print 들여쓰기가 잘못됨</label>
       </div>
-      <button class="quiz-check-btn" onclick="checkSingle('bug2', this)">정답 확인</button>
-      <textarea class="code-editor" id="code-bug2" style="margin-top:14px;">count = 5
-while count > 0:
-    print(count + "!")
-    count -= 1</textarea>
-      <button class="run-btn" onclick="runCode('code-bug2','out-bug2')">실행하기</button>
-      <div class="output-box" id="out-bug2"></div>
-      <details>
-        <summary>정답 보기</summary>
-        <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">count = 5
-while count > 0:
-    print(f"{count}!")
-    count -= 1</code></pre>
-        </div>
-      </details>
+    </div>
+    <button class="check-set-btn" onclick="gradeCheck('c1', ['c1q1','c1q2','c1q3','c1q4','c1q5'], 'c1-result')">채점하기</button>
+    <div class="check-result" id="c1-result"></div>
     </div>
 
-    <div class="quiz-card">
-      <div class="quiz-q">문제 2 — 1부터 N까지 제곱 출력</div>
-      <p style="margin:0 0 10px;">정수 N을 입력받아 1부터 N까지 각 수의 제곱을 출력하세요.</p>
-      <div class="io-example">입력: 3
-출력:
-1의 제곱은 1
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>1부터 N까지 제곱 출력하기</h3></header>
+      <p>정수 N을 입력받아 1부터 N까지 각 수의 제곱을 출력하세요.</p>
+      <div class="mission-example-grid">
+        <div>
+      <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>3</pre></div>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1의 제곱은 1
 2의 제곱은 4
-3의 제곱은 9</div>
-      <details>
-        <summary>힌트 보기</summary>
-        <p style="margin-top:10px;">제곱은 <code>i ** 2</code>로 구할 수 있어요. 숫자와 문자를 함께 출력할 때는 <code>f-string</code>을 활용해보세요.</p>
-      </details>
-      <textarea class="code-editor" id="code-sq">n = int(input("N을 입력하세요: "))
-i = 1
-while i <= n:
-    # 여기를 완성하세요!
-    i += 1</textarea>
-      <button class="run-btn" onclick="runCode('code-sq','out-sq')">실행하기</button>
-      <div class="output-box" id="out-sq"></div>
-    </div>
-
-    <div class="quiz-card">
-      <div class="quiz-q">📖 상황 문제 — 문제 3. 1부터 100까지 누적 합계</div>
-      <p style="margin:0 0 10px;">1부터 100까지의 합계를 while문으로 구하세요. 결과는 <b>5050</b>이 나와야 합니다. 아래 순서도를 참고하면 흐름을 이해하기 쉬워요.</p>
-      <div style="display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;">
-        <div class="illust-card" style="flex:0 0 auto; margin:0; width:320px;">
-          <svg viewBox="0 0 215 460" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#6b6f76"/></marker>
-              <marker id="arG" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b56e0"/></marker>
-              <marker id="arR" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#ff6b57"/></marker>
-            </defs>
-            <rect x="55" y="8" width="90" height="30" rx="15" fill="#1c1c22"/>
-            <text x="100" y="28" text-anchor="middle" fill="white" font-size="12" font-weight="800">시작</text>
-            <line x1="100" y1="38" x2="100" y2="55" stroke="#6b6f76" stroke-width="1.5" marker-end="url(#arr)"/>
-            <rect x="28" y="55" width="144" height="30" rx="6" fill="#efeeff" stroke="#5b56e0" stroke-width="1.5"/>
-            <text x="100" y="75" text-anchor="middle" fill="#1c1c22" font-size="12" font-weight="800">i = 1, total = 0</text>
-            <line x1="100" y1="85" x2="100" y2="102" stroke="#6b6f76" stroke-width="1.5" marker-end="url(#arr)"/>
-            <polygon points="100,102 168,138 100,174 32,138" fill="#fdf3e2" stroke="#e2962c" stroke-width="1.5"/>
-            <text x="100" y="135" text-anchor="middle" fill="#1c1c22" font-size="11" font-weight="900">i &lt;= 100</text>
-            <text x="100" y="150" text-anchor="middle" fill="#1c1c22" font-size="10" font-weight="700">조건?</text>
-            <text x="78" y="192" text-anchor="middle" fill="#5b56e0" font-size="10" font-weight="800">True</text>
-            <line x1="100" y1="174" x2="100" y2="204" stroke="#5b56e0" stroke-width="1.5" marker-end="url(#arG)"/>
-            <rect x="28" y="204" width="144" height="30" rx="6" fill="#efeeff" stroke="#5b56e0" stroke-width="1.5"/>
-            <text x="100" y="224" text-anchor="middle" fill="#1c1c22" font-size="12" font-weight="800">total += i</text>
-            <line x1="100" y1="234" x2="100" y2="251" stroke="#6b6f76" stroke-width="1.5" marker-end="url(#arr)"/>
-            <rect x="28" y="251" width="144" height="30" rx="6" fill="#efeeff" stroke="#5b56e0" stroke-width="1.5"/>
-            <text x="100" y="271" text-anchor="middle" fill="#1c1c22" font-size="12" font-weight="800">i += 1</text>
-            <path d="M28,266 Q6,266 6,138 Q6,102 32,102" fill="none" stroke="#5b56e0" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arG)"/>
-            <path d="M168,138 Q198,138 198,340 L140,340" fill="none" stroke="#ff6b57" stroke-width="1.5" marker-end="url(#arR)"/>
-            <text x="175" y="128" text-anchor="start" fill="#ff6b57" font-size="11" font-weight="800">False</text>
-            <rect x="28" y="325" width="144" height="30" rx="6" fill="#e6f7ee" stroke="#1f9d63" stroke-width="1.5"/>
-            <text x="100" y="345" text-anchor="middle" fill="#1c1c22" font-size="12" font-weight="800">print(total)</text>
-            <line x1="100" y1="355" x2="100" y2="372" stroke="#6b6f76" stroke-width="1.5" marker-end="url(#arr)"/>
-            <rect x="55" y="372" width="90" height="30" rx="15" fill="#1c1c22"/>
-            <text x="100" y="392" text-anchor="middle" fill="white" font-size="12" font-weight="800">종료</text>
-          </svg>
+3의 제곱은 9</pre></div>
         </div>
-        <div style="flex:1; min-width:260px;">
-          <textarea class="code-editor" id="code-sum100" style="margin-top:0;">i = 1
-total = 0
-while i <= 100:
-    # 여기를 완성하세요!
-
-print(total)</textarea>
-          <button class="run-btn" onclick="runCode('code-sum100','out-sum100')">실행하기</button>
-          <div class="output-box" id="out-sum100"></div>
-          <div class="callout" style="margin-top:14px;">정답 결과값: <b style="font-size:1.1rem;">5050</b></div>
+        <div>
+      <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>5</pre></div>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1의 제곱은 1
+2의 제곱은 4
+3의 제곱은 9
+4의 제곱은 16
+5의 제곱은 25</pre></div>
         </div>
       </div>
-    </div>
-
-    <div class="quiz-card">
-      <div class="quiz-q">문제 4 — 1부터 100까지 짝수만 합산</div>
-      <p style="margin:0 0 10px;">1부터 100까지의 수 중 <b>짝수만</b> 더한 합계를 출력하세요.</p>
-      <div class="io-example">출력: 2550</div>
-      <details>
-        <summary>힌트 보기</summary>
-        <p style="margin-top:10px;">짝수는 <code>i % 2 == 0</code>으로 확인해요.</p>
+      <details class="mission-hint">
+        <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+        <div class="mission-hint-content">제곱을 구할 때는 <code>**</code> 연산자를 사용하세요.</div>
       </details>
-      <textarea class="code-editor" id="code-evensum">i = 1
-total = 0
-while i <= 100:
-    # 짝수만 더하세요!
-    i += 1
-print(total)</textarea>
-      <button class="run-btn" onclick="runCode('code-evensum','out-evensum')">실행하기</button>
-      <div class="output-box" id="out-evensum"></div>
-    </div>
+    </article>
+
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>1부터 100까지 전체 합과 짝수 합 구하기</h3></header>
+      <p><code>while</code>문으로 1부터 100까지의 <strong>전체 합</strong>과 <strong>짝수 합</strong>을 구해 아래와 같이 출력하세요.</p>
+      <div class="mission-conditions"><div class="mission-conditions-title">❇️ 조건</div><ol><li>현재 숫자는 <code>number</code>, 전체 합은 <code>total</code>, 짝수 합은 <code>even_total</code>에 저장하세요.</li></ol></div>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1~100까지의 합계를 계산해 줄게요.
+합: 5050
+짝수 합: 2550</pre></div>
+      <details class="mission-hint">
+        <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+        <div class="mission-hint-content">2로 나눈 나머지가 0인 수는 짝수예요.</div>
+      </details>
+    </article>
+
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>1부터 N까지 합 구하기</h3></header>
+      <p>양의 정수 N을 입력받고, <code>while</code>문으로 1부터 N까지의 합을 구해 출력하세요.</p>
+      <div class="mission-conditions"><div class="mission-conditions-title">❇️ 조건</div><ol><li>입력받은 수는 <code>n</code>, 현재 숫자는 <code>number</code>, 합계는 <code>total</code>에 저장하세요.</li></ol></div>
+      <div class="mission-example-grid">
+        <div>
+          <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>10</pre></div>
+          <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>합: 55</pre></div>
+        </div>
+        <div>
+          <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>100</pre></div>
+          <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>합: 5050</pre></div>
+        </div>
+      </div>
+    </article>
   </section>
 
   <section class="section" id="s3">
@@ -666,57 +792,79 @@ print(total)</textarea>
 
     <div class="compare-grid">
       <div>
-        <p class="col-label">break — 3을 만나는 순간 반복이 완전히 끝나요.</p>
-        <div class="code-card" style="margin:0;"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">i = 0
-while i < 5:
+        <p class="col-label loop-control-label"><strong>break</strong> — 3을 만나는 순간 반복이 완전히 끝나요.</p>
+        <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-4">i = 0
+while i &lt; 5:
     i += 1
     if i == 3:
         break
     print(i)
-print("반복 끝")</code></pre>
-        </div>
-        <div class="plain-output">1
-2
-반복 끝</div>
+print(&quot;반복 끝&quot;)</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-4" aria-expanded="false" onclick="runCode('while-demo-4','out-while-demo-4')">결과확인</button><div class="output-box" id="out-while-demo-4" aria-live="polite"></div></div>
       </div>
       <div>
-        <p class="col-label">continue — 3만 건너뛰고 반복은 계속돼요.</p>
-        <div class="code-card" style="margin:0;"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">i = 0
-while i < 5:
+        <p class="col-label loop-control-label"><strong>continue</strong> — 3만 건너뛰고 반복은 계속돼요.</p>
+        <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-5">i = 0
+while i &lt; 5:
     i += 1
     if i == 3:
         continue
     print(i)
-print("반복 끝")</code></pre>
-        </div>
-        <div class="plain-output">1
-2
-4
-5
-반복 끝</div>
+print(&quot;반복 끝&quot;)</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-5" aria-expanded="false" onclick="runCode('while-demo-5','out-while-demo-5')">결과확인</button><div class="output-box" id="out-while-demo-5" aria-live="polite"></div></div>
       </div>
     </div>
 
-    <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><code>break</code>: 반복문을 <b>완전히 종료</b>해요.<br><code>continue</code>: 이번 회만 <b>건너뛰고</b> 다음 반복으로 돌아가요.</div>
+    <div class="callout"><span class="callout-title">💡 기억해요</span><code>break</code>: 반복문을 <b>완전히 종료</b>해요.<br><code>continue</code>: <b>남은 코드를 건너뛰고</b> 다음 반복으로 넘어가요.</div>
 
+    <div class="quiz-group">
+      <h3 class="quiz-heading"><span class="quiz-badge">QUIZ</span>실전핵심퀴즈 (정답을 골라보세요)</h3>
     <div class="quiz-card">
-      <div class="quiz-q">✏️ EXAMPLE · 상황 ① 비밀번호가 맞으면 반복문을 완전히 끝낸다</div>
+      <div class="quiz-q">퀴즈 1. 비밀번호가 맞으면 반복문을 완전히 끝낸다</div>
       <div class="quiz-opts">
         <label><input type="radio" name="bc1" data-correct="0">break</label>
         <label><input type="radio" name="bc1">continue</label>
       </div>
       <button class="quiz-check-btn" onclick="checkSingle('bc1', this)">정답 확인</button>
+      <div class="drill-feedback" role="status"></div>
     </div>
     <div class="quiz-card">
-      <div class="quiz-q">✏️ EXAMPLE · 상황 ② 짝수만 출력하고, 홀수는 건너뛴다</div>
+      <div class="quiz-q">퀴즈 2. 짝수만 출력하고, 홀수는 건너뛴다</div>
       <div class="quiz-opts">
         <label><input type="radio" name="bc2">break</label>
         <label><input type="radio" name="bc2" data-correct="1">continue</label>
       </div>
       <button class="quiz-check-btn" onclick="checkSingle('bc2', this)">정답 확인</button>
+      <div class="drill-feedback" role="status"></div>
     </div>
+    </div>
+  <article class="lesson-mission">
+  <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>6을 만나면 멈추기</h3></header>
+  <p>1부터 숫자를 세다가 6을 만나면 <code>break</code>로 멈추세요. 6은 출력하지 않아요.</p>
+  
+  <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1
+2
+3
+4
+5</pre></div>
+  <details class="mission-hint">
+    <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+    <div class="mission-hint-content">숫자를 출력하기 전에 6인지 확인해 보세요.</div>
+  </details>
+</article>
+  <article class="lesson-mission">
+  <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>3의 배수 건너뛰기</h3></header>
+  <p>1부터 8까지 세면서 <code>continue</code>를 사용해 3의 배수만 건너뛰세요.</p>
+  
+  <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1
+2
+4
+5
+7
+8</pre></div>
+  <details class="mission-hint">
+    <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+    <div class="mission-hint-content">건너뛰는 경우에도 다음 숫자로 바뀌어야 해요. 값을 바꾸는 줄의 위치를 살펴보세요.</div>
+  </details>
+</article>
   </section>
 
   <section class="section" id="s4">
@@ -725,78 +873,86 @@ print("반복 끝")</code></pre>
     <p class="desc" style="max-width:none;">아래 코드는 어떻게 종료될까요?</p>
 
     <div class="code-result-pair">
-      <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">while True:
-    code = input("암호를 입력하세요: ")
-    if code == "1234":
-        print("정답! 탈출!")
+      <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-6">while True:
+    code = input(&quot;암호를 입력하세요: &quot;)
+    if code == &quot;1234&quot;:
+        print(&quot;정답! 탈출!&quot;)
         break
-    print("틀렸습니다. 다시 입력하세요.")</code></pre>
-      </div>
-      <div class="pair-arrow">→</div>
-      <div class="result-chip" style="font-size:0.8rem;">틀렸습니다. 다시 입력하세요.
-틀렸습니다. 다시 입력하세요.
-정답! 탈출!</div>
+    print(&quot;틀렸습니다. 다시 입력하세요.&quot;)</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-6" aria-expanded="false" onclick="runCode('while-demo-6','out-while-demo-6')">결과확인</button><div class="output-box" id="out-while-demo-6" aria-live="polite"></div></div>
     </div>
 
-    <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><code>while True:</code>로 일부러 무한 반복을 만들고, 원하는 조건이 되면 <code>break</code>로 탈출하는 패턴이에요.<br><b>몇 번 반복할지 미리 알 수 없을 때</b> 주로 사용해요.</div>
+    <div class="callout"><span class="callout-title">💡 기억해요</span><code>while True:</code>로 일부러 무한 반복을 만들고, 원하는 조건이 되면 <code>break</code>로 탈출하는 패턴이에요.<br><b>몇 번 반복할지 미리 알 수 없을 때</b> 주로 사용해요.</div>
 
     <div class="compare-grid">
       <div>
         <p class="col-label">while 조건식 — 끝나는 시점이 처음부터 정해진 경우</p>
-        <div class="code-card" style="margin:0;"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">i = 1
-while i <= 10:
+        <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-7">i = 1
+while i &lt;= 10:
     print(i)
-    i += 1</code></pre>
-        </div>
+    i += 1</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-7" aria-expanded="false" onclick="runCode('while-demo-7','out-while-demo-7')">결과확인</button><div class="output-box" id="out-while-demo-7" aria-live="polite"></div></div>
       </div>
       <div>
         <p class="col-label">while True + break — 끝나는 시점을 실행 중에 판단하는 경우</p>
-        <div class="code-card" style="margin:0;"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">while True:
+        <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-8">while True:
     pw = input()
-    if pw == "1234":
-        break</code></pre>
-        </div>
+    if pw == &quot;1234&quot;:
+        break</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-8" aria-expanded="false" onclick="runCode('while-demo-8','out-while-demo-8')">결과확인</button><div class="output-box" id="out-while-demo-8" aria-live="polite"></div></div>
       </div>
     </div>
 
+    <div class="quiz-group">
+      <h3 class="quiz-heading"><span class="quiz-badge">QUIZ</span>실전핵심퀴즈 (정답을 골라보세요)</h3>
     <div class="quiz-card">
-      <div class="quiz-q">✏️ EXAMPLE · 버그 찾기 — 아래 코드는 올바르게 작동하지 않습니다. 이유는 무엇일까요?</div>
+      <div class="quiz-q">퀴즈 1. 아래 코드는 올바르게 작동하지 않습니다. 이유는 무엇일까요?</div>
       <div class="quiz-code">while True:
     pw = input("비밀번호: ")
     print("완료")</div>
       <div class="quiz-opts">
-        <label><input type="radio" name="bug4">a) input()을 사용하면 안 된다</label>
-        <label><input type="radio" name="bug4">b) print()가 반복문 안에 있으면 안 된다</label>
-        <label><input type="radio" name="bug4" data-correct="2">c) break가 없어서 무한 반복된다</label>
-        <label><input type="radio" name="bug4">d) while True를 쓰면 안 된다</label>
+        <label><input type="radio" name="bug4">input()을 사용하면 안 된다</label>
+        <label><input type="radio" name="bug4">print()가 반복문 안에 있으면 안 된다</label>
+        <label><input type="radio" name="bug4" data-correct="2">break가 없어서 무한 반복된다</label>
+        <label><input type="radio" name="bug4">while True를 쓰면 안 된다</label>
       </div>
       <button class="quiz-check-btn" onclick="checkSingle('bug4', this)">정답 확인</button>
+      <div class="drill-feedback" role="status"></div>
+    </div>
     </div>
 
-    <div class="practice">
-      <div class="tag">🎯 MISSION · 폭탄 해제 코드</div>
-      <p>"해제"라고 입력할 때까지 계속 반복하는 코드를 작성해보세요.</p>
-      <div class="io-example">코드 입력 >> 틀려
-틀렸습니다! 다시 입력하세요.
-코드 입력 >> 해제
-폭탄이 해제되었습니다!</div>
-      <details>
-        <summary>힌트 보기</summary>
-        <p style="margin-top:10px;"><code>while True:</code>로 무한 반복을 만들고, 입력값이 "해제"와 같으면 반복을 끝내는 키워드를 사용하세요.<br>그렇지 않으면 "틀렸습니다!" 메시지를 출력하세요.</p>
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>암호명으로 경보 끄기</h3></header>
+      <p>게임 속 경보가 울렸어요. 실행 예시처럼 암호명을 물어보고, <code>파이썬</code>이 입력될 때까지 다시 물으세요. 올바른 암호명이 들어오면 경보를 끄고 반복을 끝내세요.</p>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 실행 예시</div><pre>암호명 입력 &gt;&gt; 자바
+암호명이 틀렸어요. 다시 시도하세요.
+암호명 입력 &gt;&gt; 파이썬
+해제 성공! 경보가 꺼졌어요.</pre></div>
+      <details class="mission-hint">
+        <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+        <div class="mission-hint-content">질문과 입력은 반복문 안에서 처리해 보세요.</div>
       </details>
-      <textarea class="code-editor" id="code-m3"># 코드를 입력하세요</textarea>
-      <button class="run-btn" onclick="runCode('code-m3','out-m3')">실행하기</button>
-      <div class="output-box" id="out-m3"></div>
-    </div>
+    </article>
+
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>우주선 출발 확인하기</h3></header>
+      <p>우주선이 발사대에서 기다리고 있어요. 관제실에 출발 준비가 되었는지 물어보고, <code>yes</code>가 입력될 때까지 다시 물으세요. 준비가 끝나면 출발 메시지를 출력하고 반복을 끝내세요.</p>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 실행 예시</div><pre>출발 준비가 완료되었나요? no
+아직 준비 중이군요. 기다릴게요.
+출발 준비가 완료되었나요? no
+아직 준비 중이군요. 기다릴게요.
+출발 준비가 완료되었나요? yes
+준비 완료! 우주선이 출발합니다!</pre></div>
+      <details class="mission-hint">
+        <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+        <div class="mission-hint-content">어떤 응답이 들어왔을 때 다음 질문을 멈춰야 하는지 생각해 보세요.</div>
+      </details>
+    </article>
   </section>
 
   <section class="section" id="check2">
     <div class="eyebrow">CHECK 2</div>
     <h2 class="sec-title"><span class="sec-num">06</span>break/continue &amp; 무한 루프</h2>
 
+    <div class="quiz-group">
+      <h3 class="quiz-heading"><span class="quiz-badge">QUIZ</span>실전핵심퀴즈 (정답을 골라보세요)</h3>
     <div class="quiz-card">
       <div class="quiz-q">Q1. 다음 중 무한 루프를 만드는 조건식은?</div>
       <div class="quiz-opts">
@@ -816,7 +972,7 @@ while i <= 10:
       </div>
     </div>
     <div class="quiz-card">
-      <div class="quiz-q">Q3. 이번 회만 건너뛰고 처음으로 돌아가는 키워드는?</div>
+      <div class="quiz-q">Q3. 이번 반복에서 남은 코드를 건너뛰고 다음 반복으로 넘어가는 키워드는?</div>
       <div class="quiz-opts">
         <label><input type="radio" name="c2q3">pass</label>
         <label><input type="radio" name="c2q3">return</label>
@@ -836,15 +992,20 @@ while i <= 10:
     <button class="check-set-btn" onclick="gradeCheck('c2', ['c2q1','c2q2','c2q3','c2q4'], 'c2-result')">채점하기</button>
     <div class="check-result" id="c2-result"></div>
 
-    <div class="quiz-card" style="margin-top:32px;">
-      <div class="quiz-q">문제 1 — 보초값으로 쓸 수 없는 값 모두 찾기</div>
-      <p style="margin:0 0 10px;">아래 코드에서 보초값으로 사용할 수 없는 값을 모두 선택하세요.<br><small style="color:var(--sub);">조건: <code>n &gt;= -13 and n &lt; 20</code></small></p>
+    <div class="quiz-card">
+      <div class="quiz-q">문제 1</div>
+      <p><strong><mark style="background:#ffebd2;color:inherit;border-radius:4px;padding:0.1em 0.25em;">보초값</mark>은 반복을 끝내기 위해 미리 정해 둔 입력값이에요.</strong> 아래 코드에서 <mark style="background:#ffebd2;color:inherit;border-radius:4px;padding:0.1em 0.25em;">보초값</mark>으로 쓸 수 <strong style="color:#b91c1c;text-decoration:underline;">없는</strong> 값을 6개 고르세요.</p>
+      <p style="margin:0 0 10px;"><small style="color:var(--sub);">조건: <code>n &gt;= -13 and n &lt; 20</code></small></p>
       <div class="quiz-code">n = 0
 while n >= -13 and n < 20:
     n = int(input('정수 입력: '))
-    if n > 0: print('양수')
-    elif n == 0: print('0')
-    else: print('음수')</div>
+
+    if n > 0:
+        print('양수')
+    elif n == 0:
+        print('0')
+    else:
+        print('음수')</div>
       <div style="margin-top:10px;">
         <label class="chip-check"><input type="checkbox" name="sentinel" value="-13"> -13</label>
         <label class="chip-check"><input type="checkbox" name="sentinel" value="-20"> -20</label>
@@ -863,75 +1024,83 @@ while n >= -13 and n < 20:
     </div>
 
     <div class="quiz-card">
-      <div class="quiz-q">문제 2 — 무한 반복하는 프로그램 모두 찾기</div>
-      <p style="margin:0 0 10px;">다음 중 무한 반복하는 프로그램을 모두 찾아 체크하세요.</p>
+      <div class="quiz-q">문제 2 — 무한 반복하는 프로그램 모두 찾기 <span class="quiz-badge" style="display:inline-block;">선생님께 확인받기</span></div>
+      <p style="margin:0 0 10px;">다음 중 무한 반복하는 프로그램을 <strong>모두</strong> 찾아 체크하세요. 각 코드 아래에 이유를 적고, 적은 이유를 선생님께 보여드려 확인받으세요.</p>
       <div class="code-check-grid">
         <div class="code-check-card">
-          <label><input type="checkbox" name="infinite" value="a"> a)</label>
-          <div class="quiz-code">a=1; n=1
-while a==n:
+          <label><input type="checkbox" aria-label="1번 프로그램이 무한 반복함" name="infinite" value="a"></label>
+          <div class="quiz-code">a = 1; n = 1
+while a == n:
     print(n)
-    a+=1</div>
+    a += 1</div>
+          <label class="quiz-reason">
+            <span>이유</span>
+            <textarea rows="2" placeholder="반복이 끝나는지, 그 이유를 적어 보세요."></textarea>
+          </label>
         </div>
         <div class="code-check-card">
-          <label><input type="checkbox" name="infinite" value="b"> b)</label>
-          <div class="quiz-code">n=1
+          <label><input type="checkbox" aria-label="2번 프로그램이 무한 반복함" name="infinite" value="b"></label>
+          <div class="quiz-code">n = 1
 while n:
     print(n)</div>
+          <label class="quiz-reason">
+            <span>이유</span>
+            <textarea rows="2" placeholder="반복이 끝나는지, 그 이유를 적어 보세요."></textarea>
+          </label>
         </div>
         <div class="code-check-card">
-          <label><input type="checkbox" name="infinite" value="c"> c)</label>
-          <div class="quiz-code">n='PYTHON'
+          <label><input type="checkbox" aria-label="3번 프로그램이 무한 반복함" name="infinite" value="c"></label>
+          <div class="quiz-code">n = 'PYTHON'
 while 'P' in n:
     print(n)
-    n=n+'!'</div>
+    n = n + '!'</div>
+          <label class="quiz-reason">
+            <span>이유</span>
+            <textarea rows="2" placeholder="반복이 끝나는지, 그 이유를 적어 보세요."></textarea>
+          </label>
         </div>
         <div class="code-check-card">
-          <label><input type="checkbox" name="infinite" value="d"> d)</label>
-          <div class="quiz-code">n='hello'
+          <label><input type="checkbox" aria-label="4번 프로그램이 무한 반복함" name="infinite" value="d"></label>
+          <div class="quiz-code">n = 'hello'
 while n:
     print(n)</div>
+          <label class="quiz-reason">
+            <span>이유</span>
+            <textarea rows="2" placeholder="반복이 끝나는지, 그 이유를 적어 보세요."></textarea>
+          </label>
         </div>
       </div>
       <button class="quiz-check-btn" onclick="checkMultiChoice('infinite', ['b','c','d'], 'infinite-fb')" style="margin-top:12px;">정답 확인</button>
       <div class="drill-feedback" id="infinite-fb"></div>
     </div>
+    </div>
 
-    <div class="quiz-card">
-      <div class="quiz-q">📖 상황 문제 — 문제 3. 1반부터 5반까지 호명하기</div>
-      <p style="margin:0 0 10px;">while문을 사용해 아래와 같이 출력하는 프로그램을 작성하세요.</p>
-      <div class="io-example">1반, 소리 질러~!
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>1반부터 5반까지 호명하기</h3></header>
+      <p>축제 시작을 알리는 프로그램을 만드세요. <code>while</code>문으로 1반부터 5반까지 차례로 부르고, 마지막에 축제 시작 안내를 출력하세요.</p>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1반, 소리 질러~!
 2반, 소리 질러~!
 3반, 소리 질러~!
 4반, 소리 질러~!
 5반, 소리 질러~!
 좋아요. 여러분은 축제를 즐길 자격이 있습니다.
-자, 그럼 축제를 시작해볼까요?</div>
-      <textarea class="code-editor" id="code-shout">n = 1
-while n <= 5:
-    # 여기를 완성하세요!
-    n += 1
-print("좋아요. 여러분은 축제를 즐길 자격이 있습니다.")
-print("자, 그럼 축제를 시작해볼까요?")</textarea>
-      <button class="run-btn" onclick="runCode('code-shout','out-shout')">실행하기</button>
-      <div class="output-box" id="out-shout"></div>
-    </div>
+자, 그럼 축제를 시작해볼까요?</pre></div>
+    </article>
 
-    <div class="quiz-card">
-      <div class="quiz-q">문제 4 — 범위 벗어남 에러 처리</div>
-      <p style="margin:0 0 10px;">-1부터 -10 사이의 숫자가 아닌 경우 "ERROR 범위 벗어남"을 출력하고 반복을 멈추세요.</p>
-      <div class="io-example">숫자 입력 >> -2 → -2
-숫자 입력 >> -10 → -10
-숫자 입력 >> 23 → 23
-ERROR 범위 벗어남</div>
-      <details>
-        <summary>힌트 보기</summary>
-        <p style="margin-top:10px;"><code>while True:</code>로 무한 반복을 시작하세요.<br>입력받은 숫자가 -1~-10 범위 안에 있으면 계속, 범위 밖이면 에러 메시지를 출력하고 반복을 끝내세요.<br>범위 조건: <code>-10 &lt;= n &lt;= -1</code></p>
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>입력한 정수의 범위 확인하기</h3></header>
+      <p>정수를 입력받아 범위를 확인하세요. <strong>-10부터 -1까지</strong>는 입력한 값을 출력하고 다시 입력받으세요. 범위를 벗어나면 <code>ERROR 범위 벗어남</code>을 출력하고 반복을 끝내세요.</p>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 실행 예시</div><pre>숫자 입력 &gt;&gt; -2
+-2
+숫자 입력 &gt;&gt; -10
+-10
+숫자 입력 &gt;&gt; 23
+ERROR 범위 벗어남</pre></div>
+      <details class="mission-hint">
+        <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+        <div class="mission-hint-content">-10과 -1도 범위에 포함돼요. 두 경계 중 어느 쪽을 벗어나면 반복을 끝내야 할지 생각해 보세요.</div>
       </details>
-      <textarea class="code-editor" id="code-range"># 코드를 입력하세요</textarea>
-      <button class="run-btn" onclick="runCode('code-range','out-range')">실행하기</button>
-      <div class="output-box" id="out-range"></div>
-    </div>
+    </article>
   </section>
 
   <section class="section" id="s5">
@@ -939,41 +1108,33 @@ ERROR 범위 벗어남</div>
     <h2 class="sec-title"><span class="sec-num">07</span>while — else</h2>
     <p class="desc" style="max-width:none;">두 코드를 비교해보세요. else가 언제 실행되고, 언제 실행되지 않나요?</p>
 
-    <div class="compare-grid">
+    <div class="compare-grid while-else-compare">
       <div>
-        <p class="col-label">조건이 False가 되어 정상 종료 → else 실행</p>
-        <div class="code-card" style="margin:0;"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">i = 1
-while i <= 3:
+        <p class="col-label loop-control-label">조건이 <strong>False</strong>가 되어 정상 종료 → else 실행</p>
+        <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-9">i = 1
+while i &lt;= 3:
     print(i)
     i += 1
 else:
-    print("정상 종료")</code></pre>
-        </div>
-        <div class="plain-output">1
-2
-3
-정상 종료</div>
+    print(&quot;정상 종료&quot;)</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-9" aria-expanded="false" onclick="runCode('while-demo-9','out-while-demo-9')">결과확인</button><div class="output-box" id="out-while-demo-9" aria-live="polite"></div></div>
       </div>
       <div>
-        <p class="col-label">break로 탈출 → else 실행되지 않음</p>
-        <div class="code-card" style="margin:0;"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">i = 1
-while i <= 3:
-    if i == 2: break
+        <p class="col-label loop-control-label"><strong>break</strong>로 탈출 → else 실행되지 않음</p>
+        <div class="while-example"><div class="code-card"><pre><code class="py" id="while-demo-10">i = 1
+while i &lt;= 3:
+    if i == 2:
+        break
     print(i)
     i += 1
 else:
-    print("정상 종료")</code></pre>
-        </div>
-        <div class="plain-output">1</div>
+    print(&quot;정상 종료&quot;)</code></pre></div><button class="run-btn" type="button" aria-controls="out-while-demo-10" aria-expanded="false" onclick="runCode('while-demo-10','out-while-demo-10')">결과확인</button><div class="output-box" id="out-while-demo-10" aria-live="polite"></div></div>
       </div>
     </div>
 
-    <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><code>else</code>는 while 조건이 <b>False가 되어 정상 종료</b>될 때 실행돼요.<br><code>break</code>로 탈출하면 <code>else</code>가 <b>실행되지 않아요.</b> 이 차이가 핵심이에요!</div>
+    <div class="callout"><span class="callout-title">💡 기억해요</span><code>else</code>는 while 조건이 <b>False가 되어 정상 종료</b>될 때 실행돼요.<br><code>break</code>로 탈출하면 <code>else</code>가 <b>실행되지 않아요.</b> 이 차이가 핵심이에요!</div>
 
     <div class="practice">
-      <div class="tag">🎯 MISSION · while-else 출력 예측하기</div>
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>while-else 출력 예측하기</h3></header>
       <p>아래 코드를 실행하면 어떤 결과가 출력될까요? 직접 예측해보세요.</p>
       <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
 <pre><code class="py">n = 3
@@ -988,12 +1149,35 @@ else:
       <button class="quiz-check-btn" onclick="checkPredict('we-predict', ['3 2 1 끝'], 'we-predict-fb')" style="margin-left:10px;">정답 확인</button>
       <div class="drill-feedback" id="we-predict-fb"></div>
     </div>
+  <article class="lesson-mission">
+  <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>끝까지 세면 완료 표시하기</h3></header>
+  <p>1부터 입력한 숫자까지 세되, 3을 만나면 멈추세요. 끝까지 셌을 때만 <code>완료!</code>를 출력하세요.</p>
+  <div class="mission-example-grid">
+    <div>
+  <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>2</pre></div>
+  <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1
+2
+완료!</pre></div>
+    </div>
+    <div>
+  <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>5</pre></div>
+  <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1
+2</pre></div>
+    </div>
+  </div>
+  <details class="mission-hint">
+    <summary><span class="hint-closed">💡 힌트 보기</span><span class="hint-open">💡 힌트 닫기</span><span class="hint-toggle" aria-hidden="true"></span></summary>
+    <div class="mission-hint-content">3을 만나면 <code>break</code>로 멈춰요. 정상 종료했을 때에만 나오는 문장은 어디에 두면 될까요?</div>
+  </details>
+</article>
   </section>
 
   <section class="section" id="check3">
     <div class="eyebrow">CHECK 3 · 심화</div>
     <h2 class="sec-title"><span class="sec-num">08</span>심화 코딩 문제</h2>
 
+    <div class="quiz-group">
+      <h3 class="quiz-heading"><span class="quiz-badge">QUIZ</span>실전핵심퀴즈</h3>
     <div class="quiz-card">
       <div class="quiz-q">Q1. 다음 코드의 실행 결과는?</div>
       <div class="quiz-code">i = 0
@@ -1012,7 +1196,8 @@ while i < 3:
       <div class="quiz-code">i = 0
 while i < 5:
     i += 1
-    if i == 3: break
+    if i == 3:
+        break
     print(i)</div>
       <div class="quiz-opts">
         <label><input type="radio" name="c3q2">1 2 3 4 5</label>
@@ -1026,7 +1211,8 @@ while i < 5:
       <div class="quiz-code">i = 0
 while i < 5:
     i += 1
-    if i == 3: continue
+    if i == 3:
+        continue
     print(i)</div>
       <div class="quiz-opts">
         <label><input type="radio" name="c3q3" data-correct="0">1 2 4 5</label>
@@ -1047,24 +1233,26 @@ while i < 5:
     <button class="check-set-btn" onclick="gradeCheck('c3', ['c3q1','c3q2','c3q3','c3q4'], 'c3-result')">채점하기</button>
     <div class="check-result" id="c3-result"></div>
 
-    <div class="quiz-card" style="margin-top:32px;">
+    <div class="quiz-card">
       <div class="quiz-q">문제 1 — break 코드, 올바른 출력 찾기</div>
       <div class="quiz-code">i = 0
 while True:
     print(i, '번째 반복')
     #break</div>
-      <div class="quiz-opts">
-        <label><input type="radio" name="bc-out1"> a)<div class="quiz-code" style="margin:4px 0 0; font-size:0.86rem;">0 번째 반복</div></label>
-        <label><input type="radio" name="bc-out1" data-correct="1"> b)<div class="quiz-code" style="margin:4px 0 0; font-size:0.86rem;">0 번째 반복
+      <p class="quiz-q">출력 결과로 올바른 것은 무엇인가요?</p>
+      <div class="quiz-opts quiz-output-options">
+        <label><input type="radio" name="bc-out1"><span class="quiz-output-choice">0 번째 반복</span></label>
+        <label><input type="radio" name="bc-out1" data-correct="1"><span class="quiz-output-choice">0 번째 반복
 0 번째 반복
 0 번째 반복
-… (무한)</div></label>
-        <label><input type="radio" name="bc-out1"> c)<div class="quiz-code" style="margin:4px 0 0; font-size:0.86rem;">0 번째 반복
+… (무한)</span></label>
+        <label><input type="radio" name="bc-out1"><span class="quiz-output-choice">0 번째 반복
 1 번째 반복
 2 번째 반복
-… (무한)</div></label>
+… (무한)</span></label>
       </div>
       <button class="quiz-check-btn" onclick="checkSingle('bc-out1', this)">정답 확인</button>
+      <div class="drill-feedback" role="status"></div>
     </div>
 
     <div class="quiz-card">
@@ -1073,9 +1261,12 @@ while True:
       <div class="quiz-code">sum = 0
 while True:
     n = int(input())
-    if n % 4 == 0: continue
-    elif n % 3 == 0: break
-    else: sum += n
+    if n % 4 == 0:
+        continue
+    elif n % 3 == 0:
+        break
+    else:
+        sum += n
 print(sum)</div>
       <div class="io-example">입력 순서: 2, 8, 5, 4, 10, 12, 6</div>
       <p>sum의 값은? <input type="number" id="sum-a" class="blank-input" placeholder="?"></p>
@@ -1110,93 +1301,73 @@ while <span class="blank-code">A</span>:
       <button class="quiz-check-btn" onclick="checkOddBlanks()">정답 확인</button>
       <div class="drill-feedback" id="odd-fb"></div>
     </div>
+    </div>
   </section>
 
   <section class="section" id="challenge">
     <div class="eyebrow">🚀 코딩 챌린지</div>
     <h2 class="sec-title"><span class="sec-num">09</span>코딩 챌린지</h2>
 
-    <div class="challenge-box">
-      <span class="challenge-badge">📖 상황 문제 · Mission 1</span>
-      <div class="challenge-title">NASA 로켓 발사 카운트다운</div>
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>NASA 로켓 발사 카운트다운</h3></header>
       <p>시작 숫자를 입력받아 1까지 출력하고 마지막에 "발사!"를 출력하세요.</p>
-      <div class="io-example">입력: 5  →  5 4 3 2 1
-발사!</div>
-      <textarea class="code-editor" id="code-ch1">n = int(input("시작 숫자를 입력하세요: "))
-while n >= 1:
-    # 여기를 완성하세요!
-    n -= 1
-print("발사!")</textarea>
-      <button class="run-btn" onclick="runCode('code-ch1','out-ch1')">실행하기</button>
-      <div class="output-box" id="out-ch1"></div>
-    </div>
+      <div class="mission-example-grid">
+        <div>
+          <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>5</pre></div>
+          <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>5 4 3 2 1
+발사!</pre></div>
+        </div>
+        <div>
+          <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>3</pre></div>
+          <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>3 2 1
+발사!</pre></div>
+        </div>
+      </div>
+    </article>
 
-    <div class="challenge-box">
-      <span class="challenge-badge">📖 상황 문제 · Mission 2</span>
-      <div class="challenge-title">수도 맞추기 메뉴</div>
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>수도 맞추기 메뉴</h3></header>
       <p>1.한국 2.미국 메뉴를 만들고 번호에 맞는 수도를 출력하세요. 0을 입력하면 종료합니다.</p>
-      <div class="io-example">1.한국  2.미국  0.종료
-번호 입력 >> 1 → 서울
-번호 입력 >> 2 → 워싱턴 D.C.
-번호 입력 >> 0 → 종료합니다.</div>
-      <textarea class="code-editor" id="code-ch2">while True:
-    print("1.한국  2.미국  0.종료")
-    num = int(input("번호 입력 >> "))
-    if num == 0:
-        print("종료합니다.")
-        break
-    elif num == 1:
-        # 수도 출력!
-        pass
-    elif num == 2:
-        # 수도 출력!
-        pass
-    else:
-        print("없는 번호입니다.")</textarea>
-      <button class="run-btn" onclick="runCode('code-ch2','out-ch2')">실행하기</button>
-      <div class="output-box" id="out-ch2"></div>
-    </div>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 실행 예시</div><pre>1.한국  2.미국  0.종료
+번호 입력 &gt;&gt; <strong style="color:#1d4ed8;">1</strong>
+서울
+번호 입력 &gt;&gt; <strong style="color:#1d4ed8;">2</strong>
+워싱턴 D.C.
+번호 입력 &gt;&gt; <strong style="color:#1d4ed8;">0</strong>
+종료합니다.</pre></div>
+      <small style="display:block;color:var(--sub);"><strong style="color:#1d4ed8;">파란색 숫자</strong>는 사용자가 입력한 값이에요.</small>
+    </article>
 
-    <div class="challenge-box">
-      <span class="challenge-badge">Mission 3</span>
-      <div class="challenge-title">양수/음수 판별기</div>
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>양수/음수 판별기</h3></header>
       <p>0을 입력할 때까지 숫자의 양수/음수를 계속 판별하세요.</p>
-      <div class="io-example">숫자 입력 (0=종료) >> 5  → 양수입니다.
-숫자 입력 (0=종료) >> -3 → 음수입니다.
-숫자 입력 (0=종료) >> 0  → 종료합니다.</div>
-      <textarea class="code-editor" id="code-ch3">while True:
-    n = int(input("숫자 입력 (0=종료) >> "))
-    if n == 0:
-        print("종료합니다.")
-        break
-    elif n > 0:
-        # 양수 메시지!
-        pass
-    else:
-        # 음수 메시지!
-        pass</textarea>
-      <button class="run-btn" onclick="runCode('code-ch3','out-ch3')">실행하기</button>
-      <div class="output-box" id="out-ch3"></div>
-    </div>
+      <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 실행 예시</div><pre>숫자 입력 (0=종료) &gt;&gt; <strong style="color:#1d4ed8;">5</strong>
+양수입니다.
+숫자 입력 (0=종료) &gt;&gt; <strong style="color:#1d4ed8;">-3</strong>
+음수입니다.
+숫자 입력 (0=종료) &gt;&gt; <strong style="color:#1d4ed8;">0</strong>
+종료합니다.</pre></div>
+      <small style="display:block;color:var(--sub);"><strong style="color:#1d4ed8;">파란색 숫자</strong>는 사용자가 입력한 값이에요.</small>
+    </article>
 
-    <div class="challenge-box">
-      <span class="challenge-badge">Mission 4</span>
-      <div class="challenge-title">제곱수 출력</div>
+    <article class="lesson-mission">
+      <header class="mission-heading"><span class="mission-tag-circle">MISSION</span><h3>제곱수 출력</h3></header>
       <p>N을 입력받아 1부터 N까지의 제곱수를 출력하세요.</p>
-      <div class="io-example">입력: 4
-출력:
-1의 제곱: 1
+      <div class="mission-example-grid">
+        <div>
+          <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>4</pre></div>
+          <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1의 제곱: 1
 2의 제곱: 4
 3의 제곱: 9
-4의 제곱: 16</div>
-      <textarea class="code-editor" id="code-ch4">N = int(input("N을 입력하세요: "))
-i = 1
-while i <= N:
-    # 제곱수 출력!
-    i += 1</textarea>
-      <button class="run-btn" onclick="runCode('code-ch4','out-ch4')">실행하기</button>
-      <div class="output-box" id="out-ch4"></div>
-    </div>
+4의 제곱: 16</pre></div>
+        </div>
+        <div>
+          <div class="mission-output"><div class="mission-output-label">⌨ 입력</div><pre>2</pre></div>
+          <div class="mission-output"><div class="mission-output-label"><span aria-hidden="true" class="mission-output-arrow"></span> 출력</div><pre>1의 제곱: 1
+2의 제곱: 4</pre></div>
+        </div>
+      </div>
+    </article>
   </section>
 
 </main>
@@ -1214,52 +1385,70 @@ while i <= N:
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function highlight(code){
   code = esc(code);
-  var token = /(#.*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(\d+\.?\d*)\b|\b(while|if|elif|else|break|continue|and|or|not|in|True|False|pass)\b|\b(print|int|input|len|range)\b/g;
-  return code.replace(token, function(m, cm, str, num, kw, bi){
+  var token = /(#.*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(\d+\.?\d*)\b|\b(while|if|elif|else|break|continue|and|or|not|in|True|False|pass)\b|\b(print|int|input|len|range)\b|([()\[\]{}])/g;
+  let depth = 0;
+  return code.replace(token, function(m, cm, str, num, kw, bi, bracket){
     if (cm) return '<span class="c-cm">'+cm+'</span>';
     if (str) return '<span class="c-str">'+str+'</span>';
     if (num) return '<span class="c-num">'+num+'</span>';
     if (kw) return '<span class="c-kw">'+kw+'</span>';
     if (bi) return '<span class="c-bi">'+bi+'</span>';
+    if (bracket) {
+      const opening = '([{'.includes(bracket);
+      if (!opening) depth = Math.max(0, depth - 1);
+      const level = depth % 4;
+      if (opening) depth++;
+      return '<span class="c-bracket-' + level + '">' + bracket + '</span>';
+    }
     return m;
   });
 }
-document.querySelectorAll('code.py').forEach(function(el){
-  el.innerHTML = highlight(el.textContent);
-});
-
-// ===== 코드 에디터 자동 높이 =====
-function autoGrow(el){
-  el.style.height = 'auto';
-  el.style.height = (el.scrollHeight + 2) + 'px';
-}
-document.querySelectorAll('.code-editor').forEach(function(el){
-  autoGrow(el);
-  el.addEventListener('input', function(){ autoGrow(el); });
-});
-window.addEventListener('load', function(){
-  document.querySelectorAll('.code-editor').forEach(autoGrow);
-});
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){
-  document.querySelectorAll('.code-editor').forEach(autoGrow);
+document.querySelectorAll('code.py, .quiz-code').forEach((element) => {
+  const blanks = Array.from(element.querySelectorAll('.blank-code'));
+  if (!blanks.length) {
+    element.innerHTML = highlight(element.textContent);
+    return;
+  }
+  const marker = /\b[A-D]\b/g;
+  const labels = new Set(blanks.map((blank) => blank.textContent));
+  element.innerHTML = highlight(element.textContent).replace(marker, (letter) =>
+    labels.has(letter) ? '<span class="blank-code">' + letter + '</span>' : letter
+  );
 });
 
 // ===== 퀴즈 =====
 function checkSingle(name, btn) {
-  const radios = document.getElementsByName(name);
-  let picked = null, correctIdx = -1;
-  radios.forEach((r, i) => {
-    if (r.hasAttribute('data-correct')) correctIdx = i;
-    if (r.checked) picked = i;
-    const label = r.closest('label');
-    label.classList.remove('correct', 'wrong');
+  const radios = Array.from(document.getElementsByName(name));
+  const picked = radios.find(radio => radio.checked);
+  const feedback = btn.nextElementSibling;
+  radios.forEach(radio => radio.closest('label').classList.remove('correct', 'wrong'));
+
+  feedback.classList.add('show');
+  if (!picked) {
+    feedback.textContent = '먼저 답을 선택해 주세요.';
+    feedback.style.background = 'var(--accent-soft)';
+    feedback.style.color = 'var(--ink)';
+  } else {
+    const correct = radios.find(radio => radio.hasAttribute('data-correct'));
+    const isCorrect = picked === correct;
+    if (isCorrect) picked.closest('label').classList.add('correct');
+    if (!isCorrect) picked.closest('label').classList.add('wrong');
+    feedback.textContent = isCorrect ? '정답이에요!' : '틀렸어요. 다시 풀어 보세요.';
+    feedback.style.background = isCorrect ? 'var(--good-soft)' : 'var(--bad-soft)';
+    feedback.style.color = isCorrect ? 'var(--good)' : 'var(--bad)';
+    if (isCorrect) celebrateCorrectAnswer();
+  }
+}
+
+function celebrateCorrectAnswer() {
+  if (typeof window.confetti !== 'function') return;
+  window.confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { x: 0.5, y: 0.5 },
+    colors: ['#2AC1A5', '#2d79f0', '#ff6b6b', '#fcc419'],
+    disableForReducedMotion: true
   });
-  radios.forEach((r, i) => {
-    const label = r.closest('label');
-    if (i === correctIdx) label.classList.add('correct');
-    else if (i === picked) label.classList.add('wrong');
-  });
-  if (picked === null) { alert('먼저 답을 선택해주세요!'); return; }
 }
 
 function gradeCheck(setName, names, resultId) {
@@ -1276,7 +1465,7 @@ function gradeCheck(setName, names, resultId) {
     if (isCorrect) correct++;
     radios.forEach((r, i) => {
       const label = r.closest('label');
-      if (i === correctIdx) label.classList.add('correct');
+      if (i === picked && isCorrect) label.classList.add('correct');
       else if (i === picked) label.classList.add('wrong');
     });
   });
@@ -1285,7 +1474,8 @@ function gradeCheck(setName, names, resultId) {
   const pct = Math.round((correct / names.length) * 100);
   resultEl.style.background = pct >= 75 ? 'var(--good-soft)' : 'var(--bad-soft)';
   resultEl.style.color = pct >= 75 ? 'var(--good)' : 'var(--bad)';
-  resultEl.textContent = `${names.length}문제 중 ${correct}문제 정답! (${pct}점)`;
+  resultEl.textContent = `${names.length}문제 중 ${correct}문제 정답! (${pct}점)` + (correct < names.length ? ' 틀린 문제를 다시 풀어 보세요.' : '');
+  if (correct === names.length) celebrateCorrectAnswer();
 }
 
 function checkBlanks(prefix, answers, feedbackId) {
@@ -1310,9 +1500,10 @@ function checkBlanks(prefix, answers, feedbackId) {
   if (allCorrect) {
     fb.style.background = 'var(--good-soft)'; fb.style.color = 'var(--good)';
     fb.textContent = '🎉 정답입니다!';
+    celebrateCorrectAnswer();
   } else {
     fb.style.background = 'var(--bad-soft)'; fb.style.color = 'var(--bad)';
-    fb.textContent = '다시 한 번 확인해보세요. (정답: ' + answers.join(', ') + ')';
+    fb.textContent = '틀렸어요. 다시 풀어 보세요.';
   }
 }
 
@@ -1333,6 +1524,7 @@ function checkBlanksFlex(prefix, answerSets, feedbackId) {
   if (allCorrect) {
     fb.style.background = 'var(--good-soft)'; fb.style.color = 'var(--good)';
     fb.textContent = '🎉 완벽합니다!';
+    celebrateCorrectAnswer();
   } else {
     fb.style.background = 'var(--bad-soft)'; fb.style.color = 'var(--bad)';
     fb.textContent = '다시 한 번 확인해보세요.';
@@ -1352,25 +1544,26 @@ function checkMultiChoice(name, correct, feedbackId) {
     const label = b.closest('label');
     label.classList.remove('correct', 'wrong');
     const shouldBeChecked = correct.includes(b.value);
-    if (shouldBeChecked && b.checked) label.classList.add('correct');
+    if (ok && b.checked) label.classList.add('correct');
     else if (!shouldBeChecked && b.checked) label.classList.add('wrong');
-    else if (shouldBeChecked && !b.checked) label.classList.add('wrong');
   });
   const fb = document.getElementById(feedbackId);
   fb.classList.add('show');
   fb.style.background = ok ? 'var(--good-soft)' : 'var(--bad-soft)';
   fb.style.color = ok ? 'var(--good)' : 'var(--bad)';
-  fb.textContent = ok ? '✅ 완벽합니다!' : '❌ 정답: ' + correct.join(', ');
+  fb.textContent = ok ? '✅ 완벽합니다!' : '틀렸어요. 다시 풀어 보세요.';
+  if (ok) celebrateCorrectAnswer();
 }
 
 function checkPredict(inputId, accepted, feedbackId) {
-  const raw = document.getElementById(inputId).value.trim().toLowerCase().replace(/\s+/g, '');
-  const ok = accepted.some(a => a.toLowerCase().replace(/\s+/g, '') === raw);
+  const raw = document.getElementById(inputId).value.trim();
+  const ok = accepted.includes(raw);
   const fb = document.getElementById(feedbackId);
   fb.classList.add('show');
   fb.style.background = ok ? 'var(--good-soft)' : 'var(--bad-soft)';
   fb.style.color = ok ? 'var(--good)' : 'var(--bad)';
-  fb.textContent = ok ? '✅ 정답! n이 3→2→1로 줄며 출력되고, else 블록에서 "끝"이 출력돼요.' : '❌ 다시 예측해보세요. (힌트: n=3, 2, 1 순서로 출력 후 else 실행)';
+  fb.textContent = ok ? '✅ 정답! n이 3→2→1로 줄며 출력되고, else 블록에서 "끝"이 출력돼요.' : '다시 확인해 보세요. end가 만드는 공백과 반복이 끝난 뒤의 출력을 살펴보세요.';
+  if (ok) celebrateCorrectAnswer();
 }
 
 // ===== 사이드바 토글 (데스크톱: nav-collapsed / 모바일: nav-open) =====
@@ -1463,45 +1656,77 @@ async function initPyodide() {
 }
 initPyodide();
 
+let runningCode = false;
+
 async function runCode(editorId, outputId) {
   const editor = document.getElementById(editorId);
-  const outEl = document.getElementById(outputId);
-  outEl.style.display = 'block';
-
-  if (!pyodideReady) {
-    outEl.textContent = '⏳ 파이썬 환경을 아직 불러오는 중입니다. 잠시 후 다시 눌러주세요.';
+  const output = document.getElementById(outputId);
+  const button = document.querySelector(`.run-btn[aria-controls="${outputId}"]`);
+  if (button.getAttribute('aria-expanded') === 'true') {
+    output.style.display = 'none';
+    button.textContent = '결과확인';
+    button.setAttribute('aria-expanded', 'false');
     return;
   }
-
-  const code = editor.value;
-  outEl.textContent = '⏳ 실행 중...';
-
+  if (runningCode) return;
+  output.style.display = 'block';
+  button.textContent = '결과 숨기기';
+  button.setAttribute('aria-expanded', 'true');
+  if (!pyodideReady) {
+    output.textContent = '파이썬 환경을 불러오는 중이에요.';
+    return;
+  }
+  runningCode = true;
+  button.disabled = true;
+  output.textContent = '실행 중…';
   try {
-    pyodide.globals.set('__cn_prompt', (p) => window.prompt(p ?? '') ?? '');
-    await pyodide.runPythonAsync(
-      "import sys, io, builtins\n" +
-      "builtins.input = lambda p='': __cn_prompt(p)\n" +
-      "sys.stdout = io.StringIO()\n"
-    );
-    let errMsg = null;
-    try {
-      await pyodide.runPythonAsync(code);
-    } catch (runErr) {
-      errMsg = runErr.message.split('\n').filter(l => l.trim()).slice(-1)[0] || String(runErr);
-    }
-    const out = await pyodide.runPythonAsync(
-      "__cn_out = sys.stdout.getvalue()\n" +
-      "sys.stdout = sys.__stdout__\n" +
-      "__cn_out"
-    );
-    let finalText = out || '';
-    if (errMsg) finalText += (finalText ? '\n' : '') + '❌ 오류: ' + errMsg;
-    outEl.textContent = finalText || '(출력 없음)';
-  } catch (e) {
-    outEl.textContent = '❌ 오류: ' + e.message;
+    pyodide.globals.set('__cn_source', editor.textContent);
+    pyodide.globals.set('__cn_prompt', (message) => window.prompt(message));
+    output.textContent = await pyodide.runPythonAsync(`
+import builtins
+import contextlib
+import io
+import sys
+
+def __cn_run(source, prompt):
+    remaining = 10000
+    output = io.StringIO()
+
+    def read_input(message=""):
+        answer = prompt(str(message))
+        if answer is None:
+            raise EOFError("입력을 취소했어요.")
+        return str(answer)
+
+    def limit(frame, event, arg):
+        nonlocal remaining
+        if frame.f_code.co_filename == "<while-example>" and event == "line":
+            remaining -= 1
+            if remaining <= 0:
+                raise RuntimeError("반복이 너무 길어요. 조건과 값이 바뀌는 줄을 확인하세요.")
+        return limit
+
+    environment = {"__builtins__": dict(vars(builtins), input=read_input)}
+    previous_trace = sys.gettrace()
+    try:
+        with contextlib.redirect_stdout(output):
+            sys.settrace(limit)
+            exec(compile(source, "<while-example>", "exec"), environment)
+    except Exception as error:
+        output.write(f"❌ {type(error).__name__}: {error}")
+    finally:
+        sys.settrace(previous_trace)
+    return output.getvalue() or "(출력 없음)"
+
+__cn_run(__cn_source, __cn_prompt)
+`);
+  } catch (error) {
+    output.textContent = '❌ 오류: ' + error.message;
+  } finally {
+    button.disabled = false;
+    runningCode = false;
   }
 }
 </script>
 </body>
 </html>
-                                

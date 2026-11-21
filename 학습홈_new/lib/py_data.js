@@ -16,11 +16,16 @@ const GRAMMAR = [
   {ch: 'LV.4  자료형', items: [
     ['utf', '유니코드와 문자열', 'python_unicode.html', '컴퓨터가 글자를 숫자로 저장하는 방식을 알아봐요.'],
     ['( )', '튜플 (tuple)', 'python_tuple.html', '바꿀 수 없는 묶음, 튜플을 써 봐요.'],
-    ['{ }', '집합 (set)', 'python_set.html', '중복 없는 묶음, 집합으로 계산해요.']]},
+    ['{ }', '집합 (set)', 'python_set.html', '중복 없는 묶음, 집합으로 계산해요.'],
+    ['dict', '딕셔너리 (dict) 1', 'python_dict.html', '이름표(key)와 값(value)을 짝지어 저장해요.'],
+    ['dict²', '딕셔너리 (dict) 2', 'python_dict2.html', '사전처럼 단어를 찾아보며 딕셔너리를 다시 익혀요.'],
+    ['dict⁴', '딕셔너리 (dict) 4', 'python_dict4.html', '딕셔너리를 만들고 key로 value를 찾는 연습을 해요.']]},
   {ch: 'LV.5  함수와 클래스', items: [
     ['def', '함수 (function)', 'python_function.html', '자주 쓰는 코드를 함수로 묶어 재사용해요.'],
     ['class', '클래스 (class)', 'python_class.html', 'RPG 캐릭터를 만들며 클래스를 배워요.'],
-    ['class²', '클래스 두 번째 이야기', 'python_class2.html', '동물원·성적표 예제로 클래스를 한 번 더 다져요.']]}
+    ['class²', '클래스 두 번째 이야기', 'python_class2.html', '동물원·성적표 예제로 클래스를 한 번 더 다져요.']]},
+  {ch: 'LV.6  자격증 준비', items: [
+    ['COS', 'COS Pro 2급 준비', 'COS2급준비.html', '내장함수와 컴프리헨션으로 COS Pro 2급을 준비해요.']]}
 ];
 const TURTLE = [
   {ch: 'LV.1  화면과 그리기', items: [
