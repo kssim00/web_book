@@ -41,6 +41,10 @@ svg{display:block;width:100%;height:auto}
 .node.open text.gl{fill:var(--k)}
 .node.open text.tt{fill:var(--text)}
 .node.open text.st{fill:var(--k)}
+.node.ahead circle.c{stroke:#3d4870}
+.node.ahead text.gl{fill:#8a95b3}
+.node.ahead text.tt{fill:#aab3cc}
+.node.ahead text.st{fill:#6f7a9c}
 .node.done circle.c{fill:var(--k);stroke:var(--k)}
 .node.done text.gl{fill:#0e1220}
 .node.done text.tt{fill:#c9d2ea}
@@ -168,17 +172,16 @@ nodes.forEach(n => {
 });
 
 const real = nodes.filter(n => n.kind === 'node');
-const bonusOpen = () => S.py.t >= flatT.length;
 function stateOf(n) {
-  if (n.track === 'b') return S.py.b.includes(n.id) ? 'done' : (bonusOpen() ? 'open' : 'lock');
-  const p = S.py[n.track]; return n.idx < p ? 'done' : n.idx === p ? 'open' : 'lock';
+  if (n.track === 'b') return S.py.b.includes(n.id) ? 'done' : 'open';
+  const p = S.py[n.track]; return n.idx < p ? 'done' : n.idx === p ? 'open' : 'ahead';
 }
 let sel = null;
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2200); }
 function render() {
   real.forEach(n => {
     const st = stateOf(n); n.g.setAttribute('class', 'node ' + st + (st === 'open' && n.track !== 'b' ? ' cur' : '') + (n === sel ? ' sel' : ''));
-    n.stEl.textContent = st === 'done' ? 'DONE' : st === 'open' ? (n.track === 'b' ? 'OPEN' : 'NOW') : 'LOCKED';
+    n.stEl.textContent = st === 'done' ? 'DONE' : st === 'open' ? (n.track === 'b' ? 'OPEN' : 'NOW') : 'OPEN';
   });
   const frac = (pts, k, L) => { if (k <= 0) return L; const y = pts[Math.min(k, pts.length - 1)][1] - pts[0][1], tot = pts[pts.length - 1][1] - pts[0][1]; return L * (1 - y / tot); };
   onG.setAttribute('stroke-dashoffset', frac(LG.pts, S.py.g, lenG)); onT.setAttribute('stroke-dashoffset', frac(LT.pts, S.py.t, lenT));
@@ -193,14 +196,14 @@ function panel() {
   $('sTitle').textContent = n.title; $('sCode').textContent = n.track === 't' ? 'turtle · ' + (n.glyph === 'mini' ? '미니 프로젝트' : n.glyph + '차시') : n.track === 'b' ? 'turtle game · ' + n.glyph : 'python · ' + n.glyph;
   $('sDesc').textContent = n.desc;
   $('playBtn').style.display = n.track === 'b' ? 'block' : 'none';
-  const ob = $('openBtn'), db = $('doneBtn'); ob.style.background = n.color; ob.disabled = st === 'lock'; ob.textContent = st === 'lock' ? '잠겨 있어요' : (n.track === 'b' ? '만드는 방법 보기' : (st === 'done' ? '교재 다시 보기' : '교재 열기'));
+  const ob = $('openBtn'), db = $('doneBtn'); ob.style.background = n.color; ob.disabled = false; ob.textContent = (n.track === 'b' ? '만드는 방법 보기' : (st === 'done' ? '교재 다시 보기' : '교재 열기'));
   if (n.track === 'b') ob.style.background = '#e6ebf7';
-  db.style.display = st === 'lock' ? 'none' : 'block'; db.textContent = st === 'done' ? '✓ 완료함 (누르면 취소)' : '완료로 표시';
-  $('sNote').textContent = st === 'lock' ? (n.track === 'b' ? '미리 해보기는 지금도 할 수 있어요. 만드는 방법은 터틀 트랙을 모두 끝내면 열려요.' : '앞 단계를 먼저 완료하면 열려요.') : '';
+  db.style.display = st === 'ahead' ? 'none' : 'block'; db.textContent = st === 'done' ? '✓ 완료함 (누르면 취소)' : '완료로 표시';
+  $('sNote').textContent = st === 'ahead' ? '아직 진도 전인 교재예요. 자유롭게 열어 볼 수 있고, 완료 표시는 NOW 칸부터 순서대로 해요.' : '';
 }
 function pick(n) { sel = n; render(); }
 $('openBtn').addEventListener('click', () => {
-  if (!sel || stateOf(sel) === 'lock') return;
+  if (!sel) return;
   if (sel.track === 't') { location.href = '교재.html?t=' + sel.idx; return; }
   if (sel.track === 'g') { location.href = '교재.html?i=' + sel.idx; return; }
   window.open(BASE + sel.file, '_blank');
@@ -208,7 +211,7 @@ $('openBtn').addEventListener('click', () => {
 $('doneBtn').addEventListener('click', () => {
   const n = sel; if (!n) return; const st = stateOf(n); let fl = null;
   if (n.track === 'b') { if (st === 'done') S.py.b = S.py.b.filter(x => x !== n.id); else if (st === 'open') { S.py.b.push(n.id); fl = n; toast('보너스 게임 완료!'); } }
-  else if (st === 'open') { S.py[n.track]++; fl = n; const next = real.find(m => m.track === n.track && m.idx === n.idx + 1); if (next) { sel = next; toast('다음 칸이 열렸어요.'); setTimeout(() => next.g.scrollIntoView({behavior: 'smooth', block: 'center'}), 250); } else toast(n.track === 't' ? '터틀 트랙 완료! 보너스 게임이 열렸어요.' : '문법 트랙을 모두 끝냈어요!'); }
+  else if (st === 'open') { S.py[n.track]++; fl = n; const next = real.find(m => m.track === n.track && m.idx === n.idx + 1); if (next) { sel = next; toast('진도가 다음 칸으로 넘어갔어요.'); setTimeout(() => next.g.scrollIntoView({behavior: 'smooth', block: 'center'}), 250); } else toast(n.track === 't' ? '터틀 트랙을 모두 끝냈어요!' : '문법 트랙을 모두 끝냈어요!'); }
   else if (st === 'done') { if (n.idx === S.py[n.track] - 1) S.py[n.track]--; else { toast('마지막으로 완료한 칸만 취소할 수 있어요.'); return; } }
   save(); render(); if (fl) flash(fl);
 });
