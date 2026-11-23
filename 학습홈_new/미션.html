@@ -9,55 +9,67 @@
 <link rel="apple-touch-icon" href="favicon-180.png">
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#eef6e6;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#23401a}
+html,body{margin:0;min-height:100%;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#23401a}
+html{background:#e7f6d9}
+body{background:linear-gradient(#bfe6ff,#e7f6d9 420px,#e7f6d9) no-repeat}
 button{font:inherit;cursor:pointer}
-.page{max-width:780px;margin:0 auto;padding:22px 20px 40px}
-.top{display:flex;align-items:center;gap:12px;margin:0 0 14px}
-.back{border:0;background:rgba(255,255,255,.75);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:700;color:#3b6d11}
-.tag{font-size:12px;font-weight:800;color:#3b6d11;background:#d9efc4;border-radius:999px;padding:3px 10px}
-h1{font-size:22px;margin:0;font-weight:900}
-.pill{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:10px 18px;font-size:14.5px;font-weight:800;text-decoration:none}
-.pill.ent{background:#fff;color:#2c5a0f;box-shadow:0 0 0 1.5px #a9d68a inset}
-.pill.ok{background:#5aa62a;color:#fff}
-.pill.ok.done{background:#d9efc4;color:#3b6d11}
-.pill.soft{background:#f1f8ea;color:#3b6d11}
-.sheet{background:#fff;border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(40,70,20,.12)}
-.hero{display:flex;gap:16px;align-items:stretch}
-.prev{width:220px;flex-shrink:0;border-radius:14px;overflow:hidden;background:#eef6e6;position:relative;aspect-ratio:4/3}
-.prev iframe{position:absolute;left:0;top:0;width:760px;height:570px;border:0;transform:scale(.2895);transform-origin:0 0;pointer-events:none}
-.prev button{position:absolute;inset:0;border:0;background:transparent}
-.goal{flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center}
-.goal p{margin:0;font-size:15px;line-height:1.65;color:#3d5a2a}
-.steps{margin:18px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
-.step{border-radius:14px;background:#f6faf1;padding:12px 14px;transition:background .2s,box-shadow .2s}
-.step.cur{background:#ecf7e1;box-shadow:0 0 0 1.5px #a9d68a inset}
-.row{display:flex;gap:10px;align-items:center;cursor:pointer}
-.ck{width:24px;height:24px;border-radius:7px;border:2px solid #a9d68a;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:900}
-.ck:hover{border-color:#5aa62a}
-.step.done .ck{background:#5aa62a;border-color:#5aa62a}
-.step.done .st{color:#7a9468;text-decoration:line-through;text-decoration-color:#b9d6a3}
-.st{font-size:15px;font-weight:800;flex:1}
-.now{font-size:11.5px;font-weight:800;color:#fff;background:#5aa62a;border-radius:999px;padding:2px 8px}
-.body{display:none;margin:10px 0 2px 34px}
-.step.open .body{display:block}
-.say{margin:0 0 10px;font-size:14.5px;line-height:1.65;color:#3d5a2a}
-.note{margin:0 0 10px;font-size:13.5px;line-height:1.7;color:#4b6a37;background:#fff;border-radius:10px;padding:8px 12px}
-.tools{display:flex;gap:6px;flex-wrap:wrap}
-.tools button{border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800}
-.tools .h{background:#fff6d6;color:#7a5600}
-.tools .k{background:#fff;color:#3b6d11;box-shadow:0 0 0 1px #c6e3ad inset}
-.hint{display:none;margin:8px 0 0;font-size:14px;line-height:1.6;color:#6a5310;background:#fff9e6;border-radius:12px;padding:10px 12px}
-.step.hint-on .hint{display:block}
-.code{display:none;flex-wrap:wrap;gap:16px;margin:10px 0 0;padding:14px;border-radius:14px;background:#fff}
-.step.code-on .code{display:flex}
-.ans{display:none;flex-wrap:wrap;gap:16px;margin:10px 0 0;padding:14px;border-radius:14px;background:#fff;box-shadow:0 0 0 1.5px #ffd84a inset}
-.step.ans-on .ans{display:flex}
-.ans .lab{width:100%;font-size:12px;font-weight:800;color:#8a6a00;margin:-2px 0 -6px}
+.page{max-width:820px;margin:0 auto;padding:18px 16px 44px}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.back{border:0;background:rgba(255,255,255,.85);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:800;color:#2f5a14}
+.tag{font-size:13px;font-weight:900;color:#fff;background:#5aa62a;border-radius:999px;padding:4px 11px}
 .tbadge{margin-left:auto;font-size:12px;font-weight:800;color:#7a5600;background:#ffe9a8;border-radius:999px;padding:4px 10px}
-.tools .a{background:#fff3c4;color:#7a5600}
+/* 진도 길 */
+.dots{display:flex;align-items:center;margin:16px 4px 14px}
+.dots button{width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#8aa476;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(40,80,20,.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0}
+.dots button.d{background:#5aa62a;color:#fff}
+.dots button.c{background:#ffcf3f;color:#5a3d00;box-shadow:0 0 0 5px rgba(255,207,63,.35)}
+.dots button.star{cursor:default}
+.dots i{flex:1;height:5px;background:#fff;border-radius:3px;margin:0 4px}
+.dots i.d{background:#5aa62a}
+/* 카드 */
+.sheet{background:#fff;border-radius:26px;padding:24px 24px 20px;box-shadow:0 16px 40px rgba(40,80,20,.16)}
+h1{font-size:28px;margin:0 0 10px;font-weight:900;line-height:1.3}
+.goal{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:16px;line-height:1.7;color:#5a4a2c;margin:0 0 18px;padding:12px 16px;background:#fff6dc;border-radius:14px;border-left:5px solid #ffb347}
+.goal p{margin:0;flex:1;min-width:240px}
+.play{border:0;border-radius:999px;padding:9px 16px;font-weight:900;font-size:14px;background:#fff;color:#c4621a;box-shadow:0 0 0 1.5px #ffcf9a inset;white-space:nowrap}
+.needs{display:flex;flex-direction:column;gap:6px;margin:0 0 14px}
+.need{display:flex;gap:10px;align-items:flex-start;border-radius:14px;padding:10px 14px;font-size:14.5px;line-height:1.55;background:#fff6d6;color:#6a4b00}
+.need .i{font-size:20px;line-height:1.2}
+.need b{font-weight:800}
+/* 단계 */
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.step{border-radius:18px;padding:14px 16px;background:#fff;box-shadow:0 0 0 1.5px #e4eedb inset}
+.step.cur{box-shadow:0 0 0 2.5px #ffcf3f inset,0 8px 20px rgba(200,150,30,.15)}
+.step.done{background:#f5f9f0}
+.row{display:flex;align-items:center;gap:10px;cursor:pointer}
+.num{width:34px;height:34px;border-radius:11px;background:#8fbf6a;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex-shrink:0}
+.step.cur .num{background:#ffb02e}
+.step.done .num{background:#5aa62a}
+.st{font-size:18px;font-weight:900;flex:1}
+.step.done .st{color:#6f8a5c}
+.stamp{font-size:13.5px;font-weight:900;color:#d0661a;border:2.5px solid #d0661a;border-radius:8px;padding:2px 8px;transform:rotate(-8deg);background:#fff}
+.now{font-size:12.5px;font-weight:900;background:#ffcf3f;color:#5a3d00;border-radius:999px;padding:3px 11px}
+.body{display:none;margin:12px 0 2px 44px}
+.step.open .body{display:block}
+.say{margin:0 0 12px;font-size:16.5px;line-height:1.7;color:#3d5a2a}
+.note{margin:0 0 12px;font-size:14px;line-height:1.7;color:#4b6a37;background:#f3f9ec;border-radius:12px;padding:10px 14px}
+.tabs{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+.tabs button{flex:1;min-width:140px;border:0;border-radius:14px;padding:11px;font-weight:900;font-size:15px;background:#f3f6ee;color:#4b6a37}
+.tabs .h.on{background:#fff6d6;color:#7a5600;box-shadow:0 0 0 2px #ffd84a inset}
+.tabs .k.on{background:#eef7ff;color:#1b5f8a;box-shadow:0 0 0 2px #8fd0f5 inset}
+.tabs .a{flex:0 0 auto;min-width:0;background:#fff3c4;color:#7a5600}
+.tabs .a.on{box-shadow:0 0 0 2px #ffd84a inset}
+.panel{border-radius:16px;background:#fafcf7;padding:14px;margin:0 0 10px}
+.panel.hint{font-size:16px;line-height:1.7;color:#6a5310;background:#fffaea}
+.panel.code{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.panel.ans{display:flex;flex-wrap:wrap;gap:16px;box-shadow:0 0 0 1.5px #ffd84a inset;background:#fffdf3}
+.ans .lab{width:100%;font-size:12px;font-weight:800;color:#8a6a00;margin:-2px 0 -6px}
+.okb{display:block;width:100%;border:0;border-radius:999px;padding:13px 20px;font-weight:900;font-size:17px;background:#5aa62a;color:#fff;margin-top:4px}
+.okb.re{background:#f1f5ec;color:#4b6a37;font-size:14.5px;padding:10px}
+/* 블록 */
 .pile{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 12px;max-width:100%}
 .pile>*{transform:rotate(var(--r,0deg))}
-.c.hollow .in{min-width:110px;min-height:22px;background:#fff;border:1.5px dashed rgba(255,255,255,.0);box-shadow:inset 0 0 0 1.5px #d7e9c6}
+.c.hollow .in{min-width:110px;min-height:22px;background:#fff;box-shadow:inset 0 0 0 1.5px #d7e9c6}
 .obj{font-size:12px;font-weight:800;color:#5b7a48;margin:0 0 4px;min-height:1px}
 .stack{display:inline-flex;flex-direction:column;align-items:flex-start}
 .b{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:7px;color:#fff;font-size:13.5px;font-weight:700;line-height:1.2;white-space:nowrap}
@@ -73,31 +85,31 @@ h1{font-size:22px;margin:0;font-weight:900}
 .c .foot{padding:5px 12px;min-width:70px}
 .c .in{margin-left:14px;padding:2px 2px 2px 0;background:#fff;border-radius:0 6px 6px 0;display:flex;flex-direction:column;align-items:flex-start}
 .start{background:#2fae51}.flow{background:#14b6d9}.move{background:#a34ee8}.look{background:#ee4f84}.sound{background:#7cb300}.judge{background:#4a63f0}
-.needs{display:flex;flex-direction:column;gap:6px;margin:0 0 14px}
-.need{display:flex;gap:10px;align-items:flex-start;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.55;background:#fff6d6;color:#6a4b00}
-.need .i{font-size:20px;line-height:1.2}
-.need b{font-weight:800}
-.bar{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;flex-wrap:wrap}
-.count{font-size:13px;color:#5b7a48;font-weight:700}
+/* 아래 */
+.bar{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:12px 22px;font-size:15.5px;font-weight:900;text-decoration:none}
+.pill.ent{background:#fff;color:#2c5a0f;box-shadow:0 0 0 1.5px #a9d68a inset}
+.pill.ok{background:linear-gradient(90deg,#ff8f5a,#ffb347);color:#fff}
+.pill.ok.done{background:#d9efc4;color:#3b6d11}
+.count{font-size:13.5px;color:#5b7a48;font-weight:800}
 .modal{position:fixed;inset:0;background:rgba(20,32,14,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
 .modal.on{display:flex}
-.modal .box{width:min(800px,100%);background:#fff;border-radius:20px;overflow:hidden}
+.modal .box{width:min(860px,100%);background:#fff;border-radius:20px;overflow:hidden}
 .modal .mh{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-weight:800}
 .modal .mh button{border:0;background:#eef6e6;border-radius:999px;width:32px;height:32px}
-.modal iframe{width:100%;height:min(600px,72vh);border:0;display:block}
+.modal iframe{width:100%;height:min(620px,75vh);border:0;display:block}
 .empty{text-align:center;padding:60px 20px;font-size:16px;line-height:1.8;color:#4b6a37}
-@media (max-width:640px){.hero{flex-direction:column}.prev{width:100%}.prev iframe{transform:scale(.45)}.body{margin-left:0}}
+@media (max-width:640px){.body{margin-left:0}.sheet{padding:18px 14px}h1{font-size:23px}.dots button{width:32px;height:32px}}
 </style>
 </head>
 <body>
 <div class="page">
-  <div class="top"><button class="back" id="backBtn">← 숲길</button><span class="tag" id="tag"></span><h1 id="title"></h1></div>
+  <div class="top"><button class="back" id="backBtn">← 숲길</button><span class="tag" id="tag"></span></div>
+  <div class="dots" id="dots"></div>
   <div class="sheet" id="sheet">
+    <h1 id="title"></h1>
     <div class="needs" id="needs" hidden></div>
-    <div class="hero">
-      <div class="prev"><iframe id="prevFrame" tabindex="-1" title="완성작 미리 보기"></iframe><button data-play title="완성작 크게 해보기"></button></div>
-      <div class="goal"><p id="goal"></p><div><button class="pill soft" data-play>▶ 완성작 해보기</button></div></div>
-    </div>
+    <div class="goal"><p id="goal"></p><button class="play" data-play hidden>▶ 완성작 다시 해보기</button></div>
     <ol class="steps" id="steps"></ol>
     <div class="bar">
       <a class="pill ent" href="https://playentry.org/ws/new" target="_blank" rel="noopener">엔트리 열기 ↗</a>
@@ -107,7 +119,7 @@ h1{font-size:22px;margin:0;font-weight:900}
   </div>
 </div>
 <div class="modal" id="modal"><div class="box"><div class="mh"><span id="mTitle"></span><button id="mClose" aria-label="닫기">×</button></div><iframe id="mFrame" title="완성작"></iframe></div></div>
-<script>/* 자료 파일은 고칠 때마다 바로 보이게 매번 새로 받아 온다 */ document.write('<script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script>');</script>
+<script>/* 자료 파일은 고칠 때마다 바로 보이게 매번 새로 받아 온다 */ document.write('<script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script><script src="lib/entry_previews.js?t=' + Date.now() + '"><\/script>');</script>
 <script>
 (() => {
 const $ = id => document.getElementById(id);
@@ -121,7 +133,7 @@ $('backBtn').addEventListener('click', () => { location.href = FOREST + '?at=' +
 $('tag').textContent = F2 && NLAB ? NLAB : '미션 ' + (K + 1);
 if (!M) { $('title').textContent = '준비 중인 미션'; $('sheet').innerHTML = '<div class="empty">이 미션의 안내는 아직 준비 중이에요.<br>숲길로 돌아가 다른 미션을 해 봐요.</div>'; return; }
 document.title = M.title + ' · 엔트리 미션';
-$('title').textContent = M.title; $('goal').innerHTML = M.goal;
+$('title').textContent = M.title; $('goal').innerHTML = '🎯 ' + M.goal;
 /* 준비물 안내: 미션 자료의 needs 에 camera·mic·sound 를 적으면 맨 위에 나옴 */
 const NEEDS = {
   camera: ['📷', '<b>카메라를 써요.</b> 처음에 "카메라를 사용할까요?"가 뜨면 꼭 <b>허용</b>을 눌러요. 얼굴(몸)이 화면에 잘 보이게 밝은 곳에 앉아요.'],
@@ -130,8 +142,10 @@ const NEEDS = {
 };
 const nd = String(M.needs || '').split(/[\s,]+/).filter(k => NEEDS[k]);
 if (nd.length) { $('needs').hidden = false; $('needs').innerHTML = nd.map(k => '<div class="need"><span class="i">' + NEEDS[k][0] + '</span><span>' + NEEDS[k][1] + '</span></div>').join(''); }
-if (M.preview) $('prevFrame').src = M.preview;
-else { document.querySelector('.prev').remove(); document.querySelectorAll('[data-play]').forEach(b => b.remove()); } $('mTitle').textContent = '완성작 해보기 · ' + M.title;
+/* 완성작: 손으로 만든 미리보기가 있으면 그것, 없으면 .ent 완성작을 엔트리로 재생 */
+const PV = M.preview || ((window.ENTRY_PREVIEWS || []).indexOf(ID) >= 0 ? '엔트리미리보기.html?f=' + encodeURIComponent('2_미리해보기/엔트리/' + ID + '.ent') + '&t=' + encodeURIComponent(M.title) : '');
+if (PV) document.querySelector('[data-play]').hidden = false;
+$('mTitle').textContent = '완성작 해보기 · ' + M.title;
 
 /* 단계 체크 저장 (미션별) */
 let ALL = {}; try { const v = JSON.parse(localStorage.getItem(SKEY)); if (v && typeof v === 'object') ALL = v; } catch (e) {}
@@ -174,42 +188,48 @@ const pileHTML = (groups, seed) => groups.map((g, gi) => {
 const TEACHER = (() => { try { return localStorage.getItem('학습홈_admin') === '1'; } catch (e) { return false; } })();
 const codeHTML = groups => groups.map(g => '<div><p class="obj">' + esc(g.obj || '') + '</p><div class="stack">' + g.code.map(block).join('') + '</div></div>').join('');
 
-/* 단계 목록: 아직 안 끝낸 첫 단계가 저절로 펼쳐짐. 힌트 먼저, 블록은 눌러야 보임 */
+/* 단계 목록: 아직 안 끝낸 첫 단계가 저절로 펼쳐짐. 힌트·블록 조각은 탭을 눌러야 보임 */
 let openK = null; const ui = {};
 const cur = () => { const k = done.indexOf(false); return k < 0 ? -1 : k; };
 function draw() {
-  const c = cur(), o = openK === null ? c : openK;
+  const c = cur(), o = openK === null ? c : openK, N = M.steps.length;
+  $('dots').innerHTML = M.steps.map((s, i) => (i ? '<i class="' + (done[i - 1] ? 'd' : '') + '"></i>' : '') + '<button data-go="' + i + '" title="' + esc(s.t) + '" class="' + (done[i] ? 'd' : i === c ? 'c' : '') + '">' + (done[i] ? '✓' : i + 1) + '</button>').join('') +
+    '<i class="' + (c < 0 ? 'd' : '') + '"></i><button class="star' + (c < 0 ? ' d' : '') + '" title="미션 완료">⭐</button>';
   $('steps').innerHTML = M.steps.map((s, i) => {
-    const u = ui[i] || {}, cls = ['step', done[i] && 'done', i === c && 'cur', i === o && 'open', u.h && 'hint-on', u.c && 'code-on', u.a && 'ans-on'].filter(Boolean).join(' ');
-    return '<li class="' + cls + '" data-i="' + i + '"><div class="row"><span class="ck" data-ck title="다 했으면 체크">' + (done[i] ? '✓' : '') + '</span><span class="st">' + (i + 1) + '. ' + esc(s.t) + '</span>' + (i === c ? '<span class="now">지금</span>' : '') + '</div>' +
+    const u = ui[i] || {}, cls = ['step', done[i] && 'done', i === c && 'cur', i === o && 'open'].filter(Boolean).join(' ');
+    const tab = u.t || '';
+    return '<li class="' + cls + '" data-i="' + i + '"><div class="row"><span class="num">' + (i + 1) + '</span><span class="st">' + esc(s.t) + '</span>' + (done[i] ? '<span class="stamp">통과!</span>' : i === c ? '<span class="now">지금 여기</span>' : '') + '</div>' +
       '<div class="body"><p class="say">' + esc(s.say) + '</p>' + (s.note ? '<p class="note">' + s.note + '</p>' : '') +
-      '<div class="tools">' + (s.hint ? '<button class="h" data-h>💡 힌트</button>' : '') + (s.code ? '<button class="k" data-c>' + (u.c ? '조각 접기' : '🧩 블록 조각') + '</button>' : '') + (s.code && TEACHER ? '<button class="a" data-a>' + (u.a ? '정답 접기' : '✅ 정답') + '</button>' : '') + '</div>' +
-      (s.hint ? '<p class="hint">' + esc(s.hint) + '</p>' : '') + (s.code ? '<div class="code">' + pileHTML(s.code, i + 1) + '</div>' : '') +
-      (s.code && TEACHER ? '<div class="ans"><p class="lab">정답 (원장님 화면에만 보여요)</p>' + codeHTML(s.code) + '</div>' : '') + '</div></li>';
+      ((s.hint || s.code) ? '<div class="tabs">' + (s.hint ? '<button class="h' + (tab === 'h' ? ' on' : '') + '" data-t="h">💡 힌트 보기</button>' : '') + (s.code ? '<button class="k' + (tab === 'k' ? ' on' : '') + '" data-t="k">🧩 블록 조각 보기</button>' : '') + (s.code && TEACHER ? '<button class="a' + (tab === 'a' ? ' on' : '') + '" data-t="a">✅ 정답</button>' : '') + '</div>' : '') +
+      (tab === 'h' && s.hint ? '<div class="panel hint">' + esc(s.hint) + '</div>' : '') +
+      (tab === 'k' && s.code ? '<div class="panel code">' + pileHTML(s.code, i + 1) + '</div>' : '') +
+      (tab === 'a' && s.code && TEACHER ? '<div class="panel ans"><p class="lab">정답 (원장님 화면에만 보여요)</p>' + codeHTML(s.code) + '</div>' : '') +
+      '<button class="okb' + (done[i] ? ' re' : '') + '" data-ck>' + (done[i] ? '↩ 다시 하기' : (i === N - 1 ? '⭐ 다 했어요! 마지막 단계 끝' : '✓ 다 했어요! 다음 단계 ›')) + '</button></div></li>';
   }).join('');
-  const n = done.filter(Boolean).length; $('count').textContent = n + ' / ' + M.steps.length + ' 단계';
+  const n = done.filter(Boolean).length; $('count').textContent = n + ' / ' + N + ' 단계';
 }
 $('steps').addEventListener('click', e => {
   const li = e.target.closest('[data-i]'); if (!li) return; const i = +li.dataset.i;
-  if (e.target.closest('[data-ck]')) { done[i] = !done[i]; saveSteps(); openK = null; }
-  else if (e.target.closest('[data-h]')) { ui[i] = Object.assign({}, ui[i], {h: !(ui[i] && ui[i].h)}); }
-  else if (e.target.closest('[data-c]')) { ui[i] = Object.assign({}, ui[i], {c: !(ui[i] && ui[i].c)}); }
-  else if (e.target.closest('[data-a]')) { ui[i] = Object.assign({}, ui[i], {a: !(ui[i] && ui[i].a)}); }
+  if (e.target.closest('[data-ck]')) { done[i] = !done[i]; saveSteps(); openK = null; draw(); if (done[i]) { const c = cur(); if (c < 0) $('doneBtn').scrollIntoView({behavior: 'smooth', block: 'center'}); else { const t = document.querySelector('[data-i="' + c + '"]'); if (t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); } } return; }
+  const t = e.target.closest('[data-t]');
+  if (t) { ui[i] = Object.assign({}, ui[i]); ui[i].t = ui[i].t === t.dataset.t ? '' : t.dataset.t; }
   else if (e.target.closest('.row')) { const o = openK === null ? cur() : openK; openK = o === i ? -2 : i; }
   else return;
   draw();
 });
+$('dots').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (!b) return; openK = +b.dataset.go; draw(); const t = document.querySelector('[data-i="' + openK + '"]'); if (t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); });
 
 /* 완료 버튼: 지금 차례 미션이면 숲길로 돌아가 완료 처리, 이미 끝낸 미션이면 그냥 돌아가기 */
 const E = (S.entry && S.entry.done) || {};
 const isDone = F2 ? !!E[ID] : K < prog, isNow = F2 ? !isDone : K === prog;
-$('doneBtn').textContent = isNow ? '✓ 미션 완료' : (isDone ? '✓ 완료한 미션' : '숲길로 ›');
+$('doneBtn').textContent = isNow ? '⭐ 미션 완료' : (isDone ? '✓ 완료한 미션' : '숲길로 ›');
 if (isDone) $('doneBtn').classList.add('done');
 $('doneBtn').addEventListener('click', () => { location.href = FOREST + (isNow ? '?done=' : '?at=') + (F2 ? ID : K); });
 
 /* 완성작 해보기 */
-document.addEventListener('click', e => { if (M.preview && e.target.closest('[data-play]')) { $('mFrame').src = M.preview; $('modal').classList.add('on'); } });
+document.addEventListener('click', e => { if (PV && e.target.closest('[data-play]')) { $('mFrame').src = PV; $('modal').classList.add('on'); } });
 $('mClose').addEventListener('click', () => { $('modal').classList.remove('on'); $('mFrame').src = 'about:blank'; });
+$('modal').addEventListener('click', e => { if (e.target.id === 'modal') $('mClose').click(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('mClose').click(); });
 if (TEACHER) { const t = document.createElement('span'); t.className = 'tbadge'; t.textContent = '🔑 선생님'; t.title = '선생님 모드: 블록이 있는 단계에 ✅ 정답 버튼이 보여요'; document.querySelector('.top').appendChild(t); }
 draw();
