@@ -106,7 +106,7 @@ h1{font-size:22px;margin:0;font-weight:900}
   </div>
 </div>
 <div class="modal" id="modal"><div class="box"><div class="mh"><span id="mTitle"></span><button id="mClose" aria-label="닫기">×</button></div><iframe id="mFrame" title="완성작"></iframe></div></div>
-<script src="lib/entry_missions.js"></script>
+<script>/* 자료 파일은 고칠 때마다 바로 보이게 매번 새로 받아 온다 */ document.write('<script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script>');</script>
 <script>
 (() => {
 const $ = id => document.getElementById(id);
@@ -129,7 +129,8 @@ const NEEDS = {
 };
 const nd = String(M.needs || '').split(/[\s,]+/).filter(k => NEEDS[k]);
 if (nd.length) { $('needs').hidden = false; $('needs').innerHTML = nd.map(k => '<div class="need"><span class="i">' + NEEDS[k][0] + '</span><span>' + NEEDS[k][1] + '</span></div>').join(''); }
-$('prevFrame').src = M.preview; $('mTitle').textContent = '완성작 해보기 · ' + M.title;
+if (M.preview) $('prevFrame').src = M.preview;
+else { document.querySelector('.prev').remove(); document.querySelectorAll('[data-play]').forEach(b => b.remove()); } $('mTitle').textContent = '완성작 해보기 · ' + M.title;
 
 /* 단계 체크 저장 (미션별) */
 let ALL = {}; try { const v = JSON.parse(localStorage.getItem(SKEY)); if (v && typeof v === 'object') ALL = v; } catch (e) {}
@@ -198,7 +199,7 @@ if (isDone) $('doneBtn').classList.add('done');
 $('doneBtn').addEventListener('click', () => { location.href = FOREST + (isNow ? '?done=' : '?at=') + K; });
 
 /* 완성작 해보기 */
-document.addEventListener('click', e => { if (e.target.closest('[data-play]')) { $('mFrame').src = M.preview; $('modal').classList.add('on'); } });
+document.addEventListener('click', e => { if (M.preview && e.target.closest('[data-play]')) { $('mFrame').src = M.preview; $('modal').classList.add('on'); } });
 $('mClose').addEventListener('click', () => { $('modal').classList.remove('on'); $('mFrame').src = 'about:blank'; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('mClose').click(); });
 if (TEACHER) { const t = document.createElement('span'); t.className = 'tbadge'; t.textContent = '🔑 선생님'; t.title = '선생님 모드: 블록이 있는 단계에 ✅ 정답 버튼이 보여요'; document.querySelector('.top').appendChild(t); }
