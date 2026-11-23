@@ -61,6 +61,20 @@ button{font:inherit;cursor:pointer}
 .toast.show{opacity:1}
 .nogl{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:18px;line-height:1.7;background:#f4f8ec}
 @media (max-width:720px){.intro{align-items:flex-end;justify-content:center}.card{right:16px;top:auto;bottom:16px;transform:translate(0,130%)}.card.show{transform:translate(0,0)}.logo{font-size:18px}}
+.tKey{position:fixed;left:16px;bottom:16px;z-index:20;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.55);font-size:15px;display:none;align-items:center;justify-content:center;opacity:.55;transition:opacity .2s,background .2s;padding:0}
+.tKey:hover{opacity:1;background:rgba(255,255,255,.9)}
+body.map-on .tKey{display:flex}
+body.teacher .tKey{opacity:1;background:#ffe9a8;box-shadow:0 0 0 2px #f2c94c}
+.tLog{position:fixed;inset:0;z-index:45;display:none;align-items:center;justify-content:center;background:rgba(20,30,15,.35)}
+.tLog.on{display:flex}
+.tLog .box{width:min(300px,calc(100vw - 32px));background:rgba(255,253,247,.98);border-radius:20px;padding:20px;box-shadow:0 14px 40px rgba(20,40,10,.3)}
+.tLog b{display:block;font-size:17px;margin-bottom:10px}
+.tLog input{width:100%;border:2px solid #dfe6d6;border-radius:12px;padding:10px 12px;font-size:16px;font:inherit;outline:none}
+.tLog input:focus{border-color:#ff8f5a}
+.tLog input.bad{border-color:#e5484d;animation:tShake .35s}
+@keyframes tShake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.tLog .row{display:flex;gap:8px;margin-top:12px}
+.tLog .row button{flex:1;border:0;border-radius:999px;padding:10px;font-weight:800}
 </style>
 </head>
 <body>
@@ -98,6 +112,8 @@ button{font:inherit;cursor:pointer}
   </div>
 </div>
 
+<button class="tKey" id="tKey" title="선생님" aria-label="선생님 로그인">🔑</button>
+<div class="tLog" id="tLog"><div class="box"><b id="tTitle">선생님 로그인</b><input type="password" id="tPw" placeholder="비밀번호" autocomplete="off"><div class="row"><button id="tCancel" style="background:#eef2e8;color:#3d5230">취소</button><button id="tOk" style="background:linear-gradient(90deg,#ff8f5a,#ffb347);color:#fff">확인</button></div></div></div>
 <div class="toast" id="toast"></div>
 <div class="fade" id="fade"></div>
 <div class="nogl" id="nogl">이 컴퓨터에서는 3D 화면을 띄울 수 없어요.<br>같은 폴더의 '모험지도_시안.html'을 열어 주세요.</div>
@@ -453,7 +469,7 @@ COLORS.forEach((c, i) => { const b = document.createElement('button'); b.style.b
 HAIRS.forEach((h, i) => { const b = document.createElement('button'); b.textContent = h; b.addEventListener('click', () => { S.hair = i; introUI(); }); $('hs').appendChild(b); });
 function introUI() { [...$('sw').children].forEach((b, i) => b.classList.toggle('on', i === S.color)); [...$('hs').children].forEach((b, i) => b.classList.toggle('on', i === S.hair)); styleHero(); }
 function showIntro(edit) {
-  closeCard(); mode = 'intro'; placeHero(); snap = true; $('intro').classList.remove('hide'); $('hud').style.display = 'none'; $('goBtn').style.display = 'none';
+  closeCard(); document.body.classList.remove('map-on'); mode = 'intro'; placeHero(); snap = true; $('intro').classList.remove('hide'); $('hud').style.display = 'none'; $('goBtn').style.display = 'none';
   $('iTitle').textContent = edit ? '탐험가 바꾸기' : (S.started ? S.name + ', 다시 왔구나!' : '탐험을 시작해요!');
   $('iDesc').textContent = edit ? '이름과 모습을 바꿀 수 있어요.' : (S.started ? '이름을 확인하고 세계 지도로 가요.' : '이름을 쓰고 나만의 탐험가를 만들어 보세요.');
   $('nm').value = S.name; $('err').textContent = '';
@@ -464,6 +480,7 @@ function begin() {
   S.name = name; S.started = true; save(); showMap();
 }
 function showMap() {
+  document.body.classList.add('map-on');
   $('intro').classList.add('hide'); $('hud').style.display = 'flex'; $('goBtn').style.display = 'block'; mode = 'map'; placeHero(); hud();
 }
 $('startBtn').addEventListener('click', begin);
@@ -509,6 +526,25 @@ function frame() {
   clouds.forEach(c => { c.position.x += c.userData.v * dt; if (c.position.x > 340) c.position.x = -340; });
   renderer.render(scene, camera);
 }
+
+/* 선생님 로그인: 지도 왼쪽 아래 🔑. 예전 학습홈과 같은 표시(학습홈_admin)를 써서 미션 화면 정답 등이 보인다 */
+const T_PW = 'admin', T_KEY = '학습홈_admin';
+const isT = () => { try { return localStorage.getItem(T_KEY) === '1'; } catch (e) { return false; } };
+const paintT = () => { document.body.classList.toggle('teacher', isT()); $('tKey').title = isT() ? '선생님 모드 켜짐 · 누르면 꺼요' : '선생님 로그인'; };
+const closeT = () => { $('tLog').classList.remove('on'); $('tPw').value = ''; };
+$('tKey').addEventListener('click', () => {
+  if (isT()) { try { localStorage.removeItem(T_KEY); } catch (e) {} paintT(); toast('선생님 모드를 껐어요.'); return; }
+  $('tLog').classList.add('on'); setTimeout(() => $('tPw').focus(), 50);
+});
+const tryT = () => {
+  if ($('tPw').value === T_PW) { try { localStorage.setItem(T_KEY, '1'); } catch (e) {} closeT(); paintT(); toast('선생님 모드가 켜졌어요. 미션 화면에서 정답이 보여요.'); }
+  else { const i = $('tPw'); i.classList.remove('bad'); void i.offsetWidth; i.classList.add('bad'); i.value = ''; }
+};
+$('tOk').addEventListener('click', tryT);
+$('tCancel').addEventListener('click', closeT);
+$('tPw').addEventListener('keydown', e => { if (e.key === 'Enter') tryT(); if (e.key === 'Escape') closeT(); });
+$('tLog').addEventListener('click', e => { if (e.target.id === 'tLog') closeT(); });
+paintT();
 introUI(); pinText();
 // 다른 지역에서 '세계 지도' 버튼으로 돌아온 경우(?map=1)엔 이름 입력을 건너뛰고 바로 지도로. 처음 열 때는 기존처럼 입장 화면
 if (new URLSearchParams(location.search).get('map') === '1' && S.started && S.name) { showIntro(false); showMap(); history.replaceState(null, '', location.pathname); }
