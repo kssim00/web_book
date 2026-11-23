@@ -461,7 +461,9 @@ function showIntro(edit) {
 function begin() {
   const name = $('nm').value.trim();
   if (!name) { $('err').textContent = '이름을 먼저 써 주세요.'; $('nm').focus(); return; }
-  S.name = name; S.started = true; save();
+  S.name = name; S.started = true; save(); showMap();
+}
+function showMap() {
   $('intro').classList.add('hide'); $('hud').style.display = 'flex'; $('goBtn').style.display = 'block'; mode = 'map'; placeHero(); hud();
 }
 $('startBtn').addEventListener('click', begin);
@@ -507,7 +509,10 @@ function frame() {
   clouds.forEach(c => { c.position.x += c.userData.v * dt; if (c.position.x > 340) c.position.x = -340; });
   renderer.render(scene, camera);
 }
-introUI(); pinText(); showIntro(false);
+introUI(); pinText();
+// 다른 지역에서 '세계 지도' 버튼으로 돌아온 경우(?map=1)엔 이름 입력을 건너뛰고 바로 지도로. 처음 열 때는 기존처럼 입장 화면
+if (new URLSearchParams(location.search).get('map') === '1' && S.started && S.name) { showIntro(false); showMap(); history.replaceState(null, '', location.pathname); }
+else showIntro(false);
 frame();
 })();
 </script>

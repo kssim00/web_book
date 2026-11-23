@@ -549,7 +549,7 @@ function openList() {
   $('listModal').classList.add('show');
 }
 function closeList() { $('listModal').classList.remove('show'); }
-$('listBtn').addEventListener('click', openList); $('worldBtn').addEventListener('click', () => { location.href = '시작.html'; }); $('listClose').addEventListener('click', closeList);
+$('listBtn').addEventListener('click', openList); $('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; }); $('listClose').addEventListener('click', closeList);
 $('closeBtn').addEventListener('click', closePreview);
 $('modal').addEventListener('click', e => { if (e.target === $('modal')) closePreview(); });
 $('listModal').addEventListener('click', e => { if (e.target === $('listModal')) closeList(); });

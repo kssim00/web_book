@@ -217,7 +217,7 @@ $('doneBtn').addEventListener('click', () => {
   save(); render(); if (fl) flash(fl);
 });
 function flash(n) { n.g.classList.remove('pop'); void n.g.getBoundingClientRect(); n.g.classList.add('pop'); }
-$('worldBtn').addEventListener('click', () => { location.href = '시작.html'; });
+$('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; });
 $('beachBtn').addEventListener('click', () => { location.href = '해변.html'; });
 $('playBtn').addEventListener('click', () => { if (!sel || sel.track !== 'b') return; $('mTitle').textContent = '미리 해보기 · ' + sel.title; $('mFrame').src = '터틀게임.html?g=' + sel.id; $('modal').classList.add('show'); });
 const closeModal = () => { $('modal').classList.remove('show'); $('mFrame').src = 'about:blank'; };

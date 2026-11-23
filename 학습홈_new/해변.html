@@ -381,7 +381,7 @@ BONUS.forEach(b => {
 const closeModal = () => { $('modal').classList.remove('show'); $('mFrame').src = 'about:blank'; };
 $('mClose').addEventListener('click', closeModal);
 $('modal').addEventListener('click', e => { if (e.target === $('modal')) closeModal(); });
-$('worldBtn').addEventListener('click', () => { location.href = '시작.html'; });
+$('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; });
 $('labBtn').addEventListener('click', () => { location.href = '화산섬.html'; });
 
 /* 그리기 반복 */

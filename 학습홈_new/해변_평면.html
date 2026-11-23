@@ -313,7 +313,7 @@ BONUS.forEach(b => {
 const closeModal = () => { $('modal').classList.remove('show'); $('mFrame').src = 'about:blank'; };
 $('mClose').addEventListener('click', closeModal);
 $('modal').addEventListener('click', e => { if (e.target === $('modal')) closeModal(); });
-$('worldBtn').addEventListener('click', () => { location.href = '시작.html'; });
+$('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; });
 $('labBtn').addEventListener('click', () => { location.href = '화산섬.html'; });
 
 /* ===== 입장 장면: 바다에서 올라와 지금 할 차례까지 걸어오기 ===== */

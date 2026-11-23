@@ -215,7 +215,7 @@ function select(id) {
   $('card').classList.add('show'); $('say').textContent = id === 'tutor' ? '같이 문제 풀어 볼까?' : '실전처럼 도전해 봐!';
 }
 function closeCard() { selected = null; SPOTS.forEach(s => s.el.classList.remove('on')); $('card').classList.remove('show'); $('say').textContent = '어서 와! 하고 싶은 것을 눌러 봐.'; }
-$('worldBtn').addEventListener('click', () => { if (leaving) return; leaving = true; $('fade').classList.add('on'); setTimeout(() => { location.href = '시작.html'; }, 550); });
+$('worldBtn').addEventListener('click', () => { if (leaving) return; leaving = true; $('fade').classList.add('on'); setTimeout(() => { location.href = '시작.html?map=1'; }, 550); });
 
 function resize() { const w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 window.addEventListener('resize', resize); resize();
