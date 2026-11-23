@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>엔트리 미션</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#eef6e6;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#23401a}
+button{font:inherit;cursor:pointer}
+.page{max-width:780px;margin:0 auto;padding:22px 20px 40px}
+.top{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+.back{border:0;background:rgba(255,255,255,.75);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:700;color:#3b6d11}
+.tag{font-size:12px;font-weight:800;color:#3b6d11;background:#d9efc4;border-radius:999px;padding:3px 10px}
+h1{font-size:22px;margin:0;font-weight:900}
+.pill{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:10px 18px;font-size:14.5px;font-weight:800;text-decoration:none}
+.pill.ent{background:#fff;color:#2c5a0f;box-shadow:0 0 0 1.5px #a9d68a inset}
+.pill.ok{background:#5aa62a;color:#fff}
+.pill.ok.done{background:#d9efc4;color:#3b6d11}
+.pill.soft{background:#f1f8ea;color:#3b6d11}
+.sheet{background:#fff;border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(40,70,20,.12)}
+.hero{display:flex;gap:16px;align-items:stretch}
+.prev{width:220px;flex-shrink:0;border-radius:14px;overflow:hidden;background:#eef6e6;position:relative;aspect-ratio:4/3}
+.prev iframe{position:absolute;left:0;top:0;width:760px;height:570px;border:0;transform:scale(.2895);transform-origin:0 0;pointer-events:none}
+.prev button{position:absolute;inset:0;border:0;background:transparent}
+.goal{flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.goal p{margin:0;font-size:15px;line-height:1.65;color:#3d5a2a}
+.steps{margin:18px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.step{border-radius:14px;background:#f6faf1;padding:12px 14px;transition:background .2s,box-shadow .2s}
+.step.cur{background:#ecf7e1;box-shadow:0 0 0 1.5px #a9d68a inset}
+.row{display:flex;gap:10px;align-items:center;cursor:pointer}
+.ck{width:24px;height:24px;border-radius:7px;border:2px solid #a9d68a;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:900}
+.ck:hover{border-color:#5aa62a}
+.step.done .ck{background:#5aa62a;border-color:#5aa62a}
+.step.done .st{color:#7a9468;text-decoration:line-through;text-decoration-color:#b9d6a3}
+.st{font-size:15px;font-weight:800;flex:1}
+.now{font-size:11.5px;font-weight:800;color:#fff;background:#5aa62a;border-radius:999px;padding:2px 8px}
+.body{display:none;margin:10px 0 2px 34px}
+.step.open .body{display:block}
+.say{margin:0 0 10px;font-size:14.5px;line-height:1.65;color:#3d5a2a}
+.note{margin:0 0 10px;font-size:13.5px;line-height:1.7;color:#4b6a37;background:#fff;border-radius:10px;padding:8px 12px}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tools button{border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800}
+.tools .h{background:#fff6d6;color:#7a5600}
+.tools .k{background:#fff;color:#3b6d11;box-shadow:0 0 0 1px #c6e3ad inset}
+.hint{display:none;margin:8px 0 0;font-size:14px;line-height:1.6;color:#6a5310;background:#fff9e6;border-radius:12px;padding:10px 12px}
+.step.hint-on .hint{display:block}
+.code{display:none;flex-wrap:wrap;gap:16px;margin:10px 0 0;padding:14px;border-radius:14px;background:#fff}
+.step.code-on .code{display:flex}
+.obj{font-size:12px;font-weight:800;color:#5b7a48;margin:0 0 4px;min-height:1px}
+.stack{display:inline-flex;flex-direction:column;align-items:flex-start}
+.b{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:7px;color:#fff;font-size:13.5px;font-weight:700;line-height:1.2;white-space:nowrap}
+.stack>*+*,.in>*+*{margin-top:2px}
+.b.hat{border-radius:16px 16px 7px 7px;padding-top:9px}
+.v{display:inline-block;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:700}
+.v.sel{border-radius:5px}
+.v.bool{border-radius:4px;background:#8fa2ff;color:#fff;padding:2px 6px}
+.v.bool .v{font-size:12px}
+.c{display:flex;flex-direction:column;align-items:flex-start;border-radius:7px}
+.c .head,.c .foot{padding:7px 12px;color:#fff;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.c .foot{padding:5px 12px;min-width:70px}
+.c .in{margin-left:14px;padding:2px 2px 2px 0;background:#fff;border-radius:0 6px 6px 0;display:flex;flex-direction:column;align-items:flex-start}
+.start{background:#2fae51}.flow{background:#14b6d9}.move{background:#a34ee8}.look{background:#ee4f84}.sound{background:#7cb300}.judge{background:#4a63f0}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;flex-wrap:wrap}
+.count{font-size:13px;color:#5b7a48;font-weight:700}
+.modal{position:fixed;inset:0;background:rgba(20,32,14,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modal.on{display:flex}
+.modal .box{width:min(800px,100%);background:#fff;border-radius:20px;overflow:hidden}
+.modal .mh{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-weight:800}
+.modal .mh button{border:0;background:#eef6e6;border-radius:999px;width:32px;height:32px}
+.modal iframe{width:100%;height:min(600px,72vh);border:0;display:block}
+.empty{text-align:center;padding:60px 20px;font-size:16px;line-height:1.8;color:#4b6a37}
+@media (max-width:640px){.hero{flex-direction:column}.prev{width:100%}.prev iframe{transform:scale(.45)}.body{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top"><button class="back" id="backBtn">← 숲길</button><span class="tag" id="tag"></span><h1 id="title"></h1></div>
+  <div class="sheet" id="sheet">
+    <div class="hero">
+      <div class="prev"><iframe id="prevFrame" tabindex="-1" title="완성작 미리 보기"></iframe><button data-play title="완성작 크게 해보기"></button></div>
+      <div class="goal"><p id="goal"></p><div><button class="pill soft" data-play>▶ 완성작 해보기</button></div></div>
+    </div>
+    <ol class="steps" id="steps"></ol>
+    <div class="bar">
+      <a class="pill ent" href="https://playentry.org/ws/new" target="_blank" rel="noopener">엔트리 열기 ↗</a>
+      <span class="count" id="count"></span>
+      <button class="pill ok" id="doneBtn"></button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal"><div class="box"><div class="mh"><span id="mTitle"></span><button id="mClose" aria-label="닫기">×</button></div><iframe id="mFrame" title="완성작"></iframe></div></div>
+<script src="lib/entry_missions.js"></script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const Q = new URLSearchParams(location.search), ID = Q.get('id'), K = parseInt(Q.get('k'), 10) || 0;
+const FOREST = '탐험_3D_시안.html';
+const M = (window.ENTRY_MISSIONS || {})[ID];
+const KEY = 'studyhome_new_3d_demo', SKEY = 'studyhome_new_entry_steps';
+let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
+const prog = S.progress | 0;
+$('backBtn').addEventListener('click', () => { location.href = FOREST + '?at=' + K; });
+$('tag').textContent = '미션 ' + (K + 1);
+if (!M) { $('title').textContent = '준비 중인 미션'; $('sheet').innerHTML = '<div class="empty">이 미션의 안내는 아직 준비 중이에요.<br>숲길로 돌아가 다른 미션을 해 봐요.</div>'; return; }
+document.title = M.title + ' · 엔트리 미션';
+$('title').textContent = M.title; $('goal').innerHTML = M.goal;
+$('prevFrame').src = M.preview; $('mTitle').textContent = '완성작 해보기 · ' + M.title;
+
+/* 단계 체크 저장 (미션별) */
+let ALL = {}; try { const v = JSON.parse(localStorage.getItem(SKEY)); if (v && typeof v === 'object') ALL = v; } catch (e) {}
+const done = M.steps.map((_, i) => !!(ALL[ID] && ALL[ID][i]));
+const saveSteps = () => { ALL[ID] = done; try { localStorage.setItem(SKEY, JSON.stringify(ALL)); } catch (e) {} };
+
+/* 블록 그리기 */
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function inline(t) {
+  let h = esc(t);
+  h = h.replace(/\[([^\]]*)\]/g, '<span class="v">$1</span>').replace(/\{([^}]*)\}/g, '<span class="v sel">$1</span>');
+  return h.replace(/&lt;(.*?)&gt;/g, '<span class="v bool">$1</span>');
+}
+function block(x) {
+  if (Array.isArray(x)) { const m = x[0].match(/^(\w+)[:^](.*)$/); return '<div class="c ' + m[1] + '"><div class="head">' + inline(m[2]) + '</div><div class="in">' + x[1].map(block).join('') + '</div><div class="foot"></div></div>'; }
+  const m = x.match(/^(\w+)([:^])(.*)$/); return '<span class="b ' + m[1] + (m[2] === '^' ? ' hat' : '') + '">' + inline(m[3]) + '</span>';
+}
+const codeHTML = groups => groups.map(g => '<div><p class="obj">' + esc(g.obj || '') + '</p><div class="stack">' + g.code.map(block).join('') + '</div></div>').join('');
+
+/* 단계 목록: 아직 안 끝낸 첫 단계가 저절로 펼쳐짐. 힌트 먼저, 블록은 눌러야 보임 */
+let openK = null; const ui = {};
+const cur = () => { const k = done.indexOf(false); return k < 0 ? -1 : k; };
+function draw() {
+  const c = cur(), o = openK === null ? c : openK;
+  $('steps').innerHTML = M.steps.map((s, i) => {
+    const u = ui[i] || {}, cls = ['step', done[i] && 'done', i === c && 'cur', i === o && 'open', u.h && 'hint-on', u.c && 'code-on'].filter(Boolean).join(' ');
+    return '<li class="' + cls + '" data-i="' + i + '"><div class="row"><span class="ck" data-ck title="다 했으면 체크">' + (done[i] ? '✓' : '') + '</span><span class="st">' + (i + 1) + '. ' + esc(s.t) + '</span>' + (i === c ? '<span class="now">지금</span>' : '') + '</div>' +
+      '<div class="body"><p class="say">' + esc(s.say) + '</p>' + (s.note ? '<p class="note">' + s.note + '</p>' : '') +
+      '<div class="tools">' + (s.hint ? '<button class="h" data-h>💡 힌트</button>' : '') + (s.code ? '<button class="k" data-c>' + (u.c ? '블록 접기' : '🧩 블록 보기') + '</button>' : '') + '</div>' +
+      (s.hint ? '<p class="hint">' + esc(s.hint) + '</p>' : '') + (s.code ? '<div class="code">' + codeHTML(s.code) + '</div>' : '') + '</div></li>';
+  }).join('');
+  const n = done.filter(Boolean).length; $('count').textContent = n + ' / ' + M.steps.length + ' 단계';
+}
+$('steps').addEventListener('click', e => {
+  const li = e.target.closest('[data-i]'); if (!li) return; const i = +li.dataset.i;
+  if (e.target.closest('[data-ck]')) { done[i] = !done[i]; saveSteps(); openK = null; }
+  else if (e.target.closest('[data-h]')) { ui[i] = Object.assign({}, ui[i], {h: !(ui[i] && ui[i].h)}); }
+  else if (e.target.closest('[data-c]')) { ui[i] = Object.assign({}, ui[i], {c: !(ui[i] && ui[i].c)}); }
+  else if (e.target.closest('.row')) { const o = openK === null ? cur() : openK; openK = o === i ? -2 : i; }
+  else return;
+  draw();
+});
+
+/* 완료 버튼: 지금 차례 미션이면 숲길로 돌아가 완료 처리, 이미 끝낸 미션이면 그냥 돌아가기 */
+const isNow = K === prog, isDone = K < prog;
+$('doneBtn').textContent = isNow ? '✓ 미션 완료' : (isDone ? '✓ 완료한 미션' : '숲길로 ›');
+if (isDone) $('doneBtn').classList.add('done');
+$('doneBtn').addEventListener('click', () => { location.href = FOREST + (isNow ? '?done=' : '?at=') + K; });
+
+/* 완성작 해보기 */
+document.addEventListener('click', e => { if (e.target.closest('[data-play]')) { $('mFrame').src = M.preview; $('modal').classList.add('on'); } });
+$('mClose').addEventListener('click', () => { $('modal').classList.remove('on'); $('mFrame').src = 'about:blank'; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('mClose').click(); });
+draw();
+})();
+</script>
+</body>
+</html>
