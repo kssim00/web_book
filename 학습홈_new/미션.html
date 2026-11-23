@@ -72,6 +72,10 @@ h1{font-size:22px;margin:0;font-weight:900}
 .c .foot{padding:5px 12px;min-width:70px}
 .c .in{margin-left:14px;padding:2px 2px 2px 0;background:#fff;border-radius:0 6px 6px 0;display:flex;flex-direction:column;align-items:flex-start}
 .start{background:#2fae51}.flow{background:#14b6d9}.move{background:#a34ee8}.look{background:#ee4f84}.sound{background:#7cb300}.judge{background:#4a63f0}
+.needs{display:flex;flex-direction:column;gap:6px;margin:0 0 14px}
+.need{display:flex;gap:10px;align-items:flex-start;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.55;background:#fff6d6;color:#6a4b00}
+.need .i{font-size:20px;line-height:1.2}
+.need b{font-weight:800}
 .bar{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;flex-wrap:wrap}
 .count{font-size:13px;color:#5b7a48;font-weight:700}
 .modal{position:fixed;inset:0;background:rgba(20,32,14,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
@@ -88,6 +92,7 @@ h1{font-size:22px;margin:0;font-weight:900}
 <div class="page">
   <div class="top"><button class="back" id="backBtn">← 숲길</button><span class="tag" id="tag"></span><h1 id="title"></h1></div>
   <div class="sheet" id="sheet">
+    <div class="needs" id="needs" hidden></div>
     <div class="hero">
       <div class="prev"><iframe id="prevFrame" tabindex="-1" title="완성작 미리 보기"></iframe><button data-play title="완성작 크게 해보기"></button></div>
       <div class="goal"><p id="goal"></p><div><button class="pill soft" data-play>▶ 완성작 해보기</button></div></div>
@@ -116,6 +121,14 @@ $('tag').textContent = '미션 ' + (K + 1);
 if (!M) { $('title').textContent = '준비 중인 미션'; $('sheet').innerHTML = '<div class="empty">이 미션의 안내는 아직 준비 중이에요.<br>숲길로 돌아가 다른 미션을 해 봐요.</div>'; return; }
 document.title = M.title + ' · 엔트리 미션';
 $('title').textContent = M.title; $('goal').innerHTML = M.goal;
+/* 준비물 안내: 미션 자료의 needs 에 camera·mic·sound 를 적으면 맨 위에 나옴 */
+const NEEDS = {
+  camera: ['📷', '<b>카메라를 써요.</b> 처음에 "카메라를 사용할까요?"가 뜨면 꼭 <b>허용</b>을 눌러요. 얼굴(몸)이 화면에 잘 보이게 밝은 곳에 앉아요.'],
+  mic: ['🎤', '<b>마이크를 써요.</b> 처음에 "마이크를 사용할까요?"가 뜨면 꼭 <b>허용</b>을 눌러요. 또박또박 말해요.'],
+  sound: ['🔊', '<b>소리가 나요.</b> 이어폰을 끼고 해요.']
+};
+const nd = String(M.needs || '').split(/[\s,]+/).filter(k => NEEDS[k]);
+if (nd.length) { $('needs').hidden = false; $('needs').innerHTML = nd.map(k => '<div class="need"><span class="i">' + NEEDS[k][0] + '</span><span>' + NEEDS[k][1] + '</span></div>').join(''); }
 $('prevFrame').src = M.preview; $('mTitle').textContent = '완성작 해보기 · ' + M.title;
 
 /* 단계 체크 저장 (미션별) */
