@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 · 미션지 미니멀</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1d2a16;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.pick{position:sticky;top:0;z-index:50;display:flex;gap:6px;justify-content:center;align-items:center;padding:9px;background:#111;color:#fff;flex-wrap:wrap;font-size:13px}
+.pick button{border-radius:999px;padding:6px 14px;font-weight:700;background:#2a2a2a;color:#bbb}
+.pick button.on{background:#fff;color:#111}
+.pick small{width:100%;text-align:center;color:#999}
+.v{display:none;min-height:calc(100vh - 60px)}.v.on{display:block}
+/* 블록 공통 */
+.obj{font-size:11.5px;font-weight:700;color:#8a9580;margin:0 0 6px}
+.pile{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 10px}
+.pile>*{transform:rotate(var(--r,0deg))}
+.b{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:6px;color:#fff;font-size:12.5px;font-weight:600;line-height:1.2;white-space:nowrap}
+.b.hat{border-radius:14px 14px 6px 6px;padding-top:8px}
+.vv{display:inline-block;background:#fff;color:#333;border-radius:999px;padding:1px 8px;font-size:11.5px;font-weight:600}
+.vv.blank{min-width:28px;height:17px;vertical-align:middle;padding:0}
+.c{display:flex;flex-direction:column;align-items:flex-start;border-radius:6px}
+.c .head,.c .foot{padding:6px 11px;color:#fff;font-size:12.5px;font-weight:600;display:flex;gap:5px;white-space:nowrap}
+.c .foot{padding:4px 11px;min-width:60px}
+.c .in{margin-left:12px;min-width:100px;min-height:20px;background:#fff;box-shadow:inset 0 0 0 1px #e3e8dd}
+.start{background:#2fae51}.flow{background:#14b6d9}.move{background:#a34ee8}.look{background:#ee4f84}.sound{background:#7cb300}.judge{background:#4a63f0}
+
+/* ── 1. 체크리스트 ── */
+#A{background:#f4f6f1;padding:40px 18px 60px}
+#A .w{max-width:640px;margin:0 auto}
+#A .back{font-size:13px;color:#7b8770;font-weight:600}
+#A .eyebrow{margin:22px 0 6px;font-size:13px;font-weight:700;color:#5aa62a}
+#A h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px}
+#A .goal{margin:10px 0 0;font-size:15px;color:#6b7762;line-height:1.6}
+#A .meta{display:flex;align-items:center;gap:12px;margin:22px 0 10px}
+#A .bar{flex:1;height:4px;border-radius:2px;background:#e1e7da;overflow:hidden}#A .bar i{display:block;height:100%;background:#5aa62a}
+#A .meta span{font-size:12.5px;color:#8a9580;font-weight:600}
+#A .play{font-size:13px;font-weight:700;color:#3b6d11}
+#A .list{background:#fff;border-radius:18px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(40,60,20,.06)}
+#A .it{border-top:1px solid #eef1ea}#A .it:first-child{border-top:0}
+#A .ih{display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:pointer}
+#A .ck{width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 2px #cfd8c5;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;transition:.15s}
+#A .ck:hover{box-shadow:inset 0 0 0 2px #5aa62a}
+#A .it.d .ck{background:#5aa62a;box-shadow:none}
+#A .tt{flex:1;font-size:16px;font-weight:700}
+#A .it.d .tt{color:#a5ae9c}
+#A .it.nw .tt:after{content:'지금';margin-left:8px;font-size:11px;font-weight:700;color:#5aa62a;background:#eaf5df;border-radius:999px;padding:2px 7px;vertical-align:2px}
+#A .ib{display:none;padding:0 20px 20px 58px}
+#A .it.o .ib{display:block}
+#A .say{margin:0;font-size:15px;line-height:1.65;color:#48543e}
+#A .links{display:flex;gap:16px;margin-top:12px}
+#A .links button{font-size:13px;font-weight:700;color:#7b8770;padding:0}
+#A .links button.on{color:#1d2a16}
+#A .pane{margin-top:12px;padding:14px;border-radius:12px;background:#f7f9f4;font-size:14px;line-height:1.65;color:#48543e}
+#A .pane.code{display:flex;flex-wrap:wrap;gap:14px}
+#A .foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+#A .ghost{font-size:14px;font-weight:700;color:#3b6d11}
+#A .done{font-size:14px;font-weight:700;background:#1d2a16;color:#fff;border-radius:999px;padding:10px 20px}
+
+/* ── 2. 한 장씩 ── */
+#B{background:#fff;padding:36px 18px 60px}
+#B .w{max-width:620px;margin:0 auto}
+#B .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#8a9580;font-weight:600}
+#B .seg{display:flex;gap:6px;margin:26px 0 30px}
+#B .seg i{flex:1;height:4px;border-radius:2px;background:#eceee8}
+#B .seg i.d{background:#5aa62a}#B .seg i.c{background:#b9dd96}
+#B .n{font-size:13px;font-weight:700;color:#5aa62a}
+#B h2{margin:6px 0 12px;font-size:32px;font-weight:800;letter-spacing:-.7px;line-height:1.25}
+#B .say{margin:0;font-size:17px;line-height:1.7;color:#48543e}
+#B .chips{display:flex;gap:8px;margin:26px 0 0}
+#B .chips button{font-size:13.5px;font-weight:700;color:#48543e;border-radius:999px;padding:8px 14px;box-shadow:inset 0 0 0 1px #e1e6db}
+#B .chips button.on{background:#1d2a16;color:#fff;box-shadow:none}
+#B .pane{margin-top:14px;padding:16px;border-radius:14px;background:#f6f8f3;font-size:15px;line-height:1.7;color:#48543e}
+#B .pane.code{display:flex;flex-wrap:wrap;gap:14px}
+#B .nav{display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:20px;border-top:1px solid #f0f2ec}
+#B .nav .p{font-size:14px;font-weight:700;color:#8a9580}
+#B .nav .ok{font-size:14.5px;font-weight:700;background:#5aa62a;color:#fff;border-radius:999px;padding:10px 20px}
+#B .goal{margin-top:34px;font-size:13px;color:#9aa391;line-height:1.6}
+
+/* ── 3. 노트 ── */
+#C{background:#fbfaf6;padding:40px 18px 60px}
+#C .w{max-width:720px;margin:0 auto;display:grid;grid-template-columns:180px 1fr;gap:40px}
+#C .side{position:sticky;top:70px;align-self:start}
+#C .back{font-size:13px;color:#8a8573;font-weight:600}
+#C .sl{margin:22px 0 0;padding:0;list-style:none}
+#C .sl li{display:flex;gap:10px;align-items:center;padding:7px 0;font-size:14px;font-weight:600;color:#a39f8f;cursor:pointer}
+#C .sl li b{width:20px;height:20px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1.5px #d5d1c3;flex-shrink:0}
+#C .sl li.d{color:#6f8a5c}#C .sl li.d b{background:#5aa62a;color:#fff;box-shadow:none}
+#C .sl li.nw{color:#1d2a16}#C .sl li.nw b{box-shadow:inset 0 0 0 2px #1d2a16}
+#C .sl li.s{color:#1d2a16}
+#C .play{margin-top:20px;font-size:13px;font-weight:700;color:#c4621a}
+#C .eyebrow{font-size:12.5px;font-weight:700;color:#a39f8f;letter-spacing:.3px}
+#C h1{margin:4px 0 8px;font-size:26px;font-weight:800;letter-spacing:-.5px}
+#C .goal{margin:0 0 30px;font-size:14.5px;color:#7c7766;line-height:1.65}
+#C .stp{padding:22px 0;border-top:1px solid #ece9df}
+#C .stp h3{margin:0 0 8px;font-size:18px;font-weight:800;display:flex;align-items:center;gap:10px}
+#C .stp h3 em{font-style:normal;font-size:12px;color:#a39f8f;font-weight:700}
+#C .stp.d h3{color:#a39f8f}
+#C .say{margin:0;font-size:15px;line-height:1.7;color:#57523f}
+#C .row{display:flex;align-items:center;gap:14px;margin-top:12px}
+#C .row button{font-size:13px;font-weight:700;color:#8a8573}
+#C .row button.on{color:#1d2a16;text-decoration:underline;text-underline-offset:4px}
+#C .row .ok{margin-left:auto;color:#3b6d11}
+#C .row .ok.d{color:#a39f8f}
+#C .pane{margin-top:12px;padding:14px;border-radius:10px;background:#f3f1e9;font-size:14px;line-height:1.65;color:#57523f}
+#C .pane.code{display:flex;flex-wrap:wrap;gap:14px;background:#fff;box-shadow:inset 0 0 0 1px #ece9df}
+#C .done{margin-top:24px;font-size:14px;font-weight:700;background:#1d2a16;color:#fff;border-radius:999px;padding:10px 20px}
+@media (max-width:700px){#C .w{grid-template-columns:1fr}#C .side{position:static}#A .ib{padding-left:20px}}
+</style>
+</head>
+<body>
+<div class="pick"><button data-v="A" class="on">1. 체크리스트</button><button data-v="B">2. 한 장씩</button><button data-v="C">3. 노트</button><small id="desc"></small></div>
+<div class="v on" id="A"></div><div class="v" id="B"></div><div class="v" id="C"></div>
+<script>document.write('<script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script>');</script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const DESC = {A: '할 일 목록처럼 동그라미를 눌러 체크. 지금 단계만 한 문장 펼쳐짐. 힌트·블록은 작은 글자 버튼.', B: '한 화면에 한 단계. 큰 제목 + 한 문장. 버튼은 작은 알약 모양 두 개와 "다음" 하나뿐.', C: '왼쪽에 단계 목차, 오른쪽에 읽기 쉬운 글. 버튼 없이 글자 링크만. 깔끔한 노트 느낌.'};
+const ID = new URLSearchParams(location.search).get('id') || 'w1_2', M = window.ENTRY_MISSIONS[ID], N = M.steps.length, LAB = '1-2';
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const strip = s => String(s).replace(/<[^>]+>/g, '');
+const inline = t => esc(t).replace(/\[ \]/g, '<span class="vv blank"></span>').replace(/\[([^\]]*)\]/g, '<span class="vv">$1</span>').replace(/\{([^}]*)\}/g, '<span class="vv">$1</span>');
+const block = x => { if (Array.isArray(x)) { const m = x[0].match(/^(\w+)[:^](.*)$/); return '<div class="c ' + m[1] + '"><div class="head">' + inline(m[2]) + '</div><div class="in"></div><div class="foot"></div></div>'; } const m = x.match(/^(\w+)([:^])(.*)$/); return '<span class="b ' + m[1] + (m[2] === '^' ? ' hat' : '') + '">' + inline(m[3]) + '</span>'; };
+const pieces = (l, o) => { l.forEach(x => { if (Array.isArray(x)) { o.push([x[0], []]); pieces(x[1], o); } else o.push(x); }); return o; };
+const shuffle = (a, s) => { const r = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const uniq = l => { const k = x => (Array.isArray(x) ? x[0] : x).replace(/\[[^\]]*\]/g, '[ ]'), seen = new Set(), o = []; l.forEach(x => { const kk = k(x); if (!seen.has(kk)) { seen.add(kk); o.push(Array.isArray(x) ? [kk, []] : (l.filter(y => k(y) === kk).length > 1 ? kk : x)); } }); return o; };
+const pile = (g, s) => g.map(gr => '<div><p class="obj">' + esc(gr.obj || '') + '</p><div class="pile">' + shuffle(uniq(pieces(gr.code, [])), s * 31 + 3).map((x, i) => block(x).replace(/^<(\w+) /, '<$1 style="--r:' + ((i * 37 + s * 13) % 5 - 2) * .6 + 'deg" ')).join('') + '</div></div>').join('');
+const hintTxt = s => (s.hint ? esc(s.hint) : '') + (s.note ? '<br><span style="opacity:.75">' + strip(s.note) + '</span>' : '');
+const done = M.steps.map((_, i) => i === 0); const cur = () => { const k = done.indexOf(false); return k < 0 ? N : k; };
+const ui = {};
+
+let aO = null;
+function A() { const c = cur(), o = aO === null ? c : aO, n = done.filter(Boolean).length;
+  $('A').innerHTML = '<div class="w"><button class="back">← 숲길</button><p class="eyebrow">' + LAB + ' 미션</p><h1>' + esc(M.title.split(' (')[0]) + '</h1><p class="goal">' + strip(M.goal) + '</p>' +
+  '<div class="meta"><div class="bar"><i style="width:' + n / N * 100 + '%"></i></div><span>' + n + ' / ' + N + '</span><button class="play">▶ 완성작</button></div><div class="list">' +
+  M.steps.map((s, i) => { const t = ui['A' + i]; return '<div class="it' + (done[i] ? ' d' : '') + (i === c ? ' nw' : '') + (i === o ? ' o' : '') + '" data-i="' + i + '"><div class="ih"><span class="ck" data-ck>' + (done[i] ? '✓' : '') + '</span><span class="tt">' + esc(s.t) + '</span></div><div class="ib"><p class="say">' + esc(s.say) + '</p>' +
+    '<div class="links">' + (s.hint || s.note ? '<button data-t="h" class="' + (t === 'h' ? 'on' : '') + '">힌트</button>' : '') + (s.code ? '<button data-t="k" class="' + (t === 'k' ? 'on' : '') + '">블록 조각</button>' : '') + '</div>' +
+    (t === 'h' ? '<div class="pane">' + hintTxt(s) + '</div>' : t === 'k' ? '<div class="pane code">' + pile(s.code, i + 1) + '</div>' : '') + '</div></div>'; }).join('') +
+  '</div><div class="foot"><button class="ghost">엔트리 열기 ↗</button><button class="done">미션 완료</button></div></div>'; }
+$('A').addEventListener('click', e => { const it = e.target.closest('[data-i]'); if (!it) return; const i = +it.dataset.i, t = e.target.closest('[data-t]');
+  if (e.target.closest('[data-ck]')) { done[i] = !done[i]; aO = null; } else if (t) ui['A' + i] = ui['A' + i] === t.dataset.t ? '' : t.dataset.t; else if (e.target.closest('.ih')) { const o = aO === null ? cur() : aO; aO = o === i ? -1 : i; } else return; all(); });
+
+let bI = null;
+function B() { const c = cur(), i = bI === null ? Math.min(c, N - 1) : bI, s = M.steps[i], t = ui['B' + i];
+  $('B').innerHTML = '<div class="w"><div class="top"><button>← 숲길</button><span>' + LAB + ' · ' + esc(M.title.split(' (')[0]) + '</span><button style="color:#3b6d11;font-weight:700">▶ 완성작</button></div>' +
+  '<div class="seg">' + M.steps.map((x, k) => '<i class="' + (done[k] ? 'd' : k === i ? 'c' : '') + '"></i>').join('') + '</div>' +
+  '<div class="n">' + (i + 1) + ' / ' + N + '</div><h2>' + esc(s.t) + '</h2><p class="say">' + esc(s.say) + '</p>' +
+  '<div class="chips">' + (s.hint || s.note ? '<button data-t="h" class="' + (t === 'h' ? 'on' : '') + '">💡 힌트</button>' : '') + (s.code ? '<button data-t="k" class="' + (t === 'k' ? 'on' : '') + '">🧩 블록 조각</button>' : '') + '</div>' +
+  (t === 'h' ? '<div class="pane">' + hintTxt(s) + '</div>' : t === 'k' ? '<div class="pane code">' + pile(s.code, i + 1) + '</div>' : '') +
+  '<div class="nav"><button class="p" data-go="' + (i - 1) + '"' + (i ? '' : ' style="visibility:hidden"') + '>‹ 이전</button><button class="ok" data-ok="' + i + '">' + (i === N - 1 ? '미션 완료 ⭐' : '다 했어요 →') + '</button></div>' +
+  '<p class="goal">🎯 ' + strip(M.goal) + '</p></div>'; }
+$('B').addEventListener('click', e => { const g = e.target.closest('[data-go]'), t = e.target.closest('[data-t]'), ok = e.target.closest('[data-ok]'), i = bI === null ? Math.min(cur(), N - 1) : bI;
+  if (g) bI = +g.dataset.go; else if (t) ui['B' + i] = ui['B' + i] === t.dataset.t ? '' : t.dataset.t; else if (ok) { done[+ok.dataset.ok] = true; bI = Math.min(+ok.dataset.ok + 1, N - 1); } else return; all(); });
+
+function C() { const c = cur();
+  $('C').innerHTML = '<div class="w"><aside class="side"><button class="back">← 숲길</button><ul class="sl">' + M.steps.map((s, i) => '<li data-j="' + i + '" class="' + (done[i] ? 'd' : i === c ? 'nw' : '') + '"><b>' + (done[i] ? '✓' : i + 1) + '</b>' + esc(s.t.split(':')[0]) + '</li>').join('') + '</ul><button class="play">▶ 완성작 해보기</button></aside>' +
+  '<main><div class="eyebrow">' + LAB + ' 미션</div><h1>' + esc(M.title.split(' (')[0]) + '</h1><p class="goal">' + strip(M.goal) + '</p>' +
+  M.steps.map((s, i) => { const t = ui['C' + i]; return '<section class="stp' + (done[i] ? ' d' : '') + '" id="cs' + i + '" data-i="' + i + '"><h3><em>' + (i + 1) + '</em>' + esc(s.t) + '</h3><p class="say">' + esc(s.say) + '</p><div class="row">' +
+    (s.hint || s.note ? '<button data-t="h" class="' + (t === 'h' ? 'on' : '') + '">힌트</button>' : '') + (s.code ? '<button data-t="k" class="' + (t === 'k' ? 'on' : '') + '">블록 조각</button>' : '') + '<button class="ok' + (done[i] ? ' d' : '') + '" data-ck>' + (done[i] ? '✓ 했어요' : '○ 다 했으면 체크') + '</button></div>' +
+    (t === 'h' ? '<div class="pane">' + hintTxt(s) + '</div>' : t === 'k' ? '<div class="pane code">' + pile(s.code, i + 1) + '</div>' : '') + '</section>'; }).join('') +
+  '<button class="done">미션 완료</button></main></div>'; }
+$('C').addEventListener('click', e => { const j = e.target.closest('[data-j]'); if (j) { document.getElementById('cs' + j.dataset.j).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  const it = e.target.closest('[data-i]'); if (!it) return; const i = +it.dataset.i, t = e.target.closest('[data-t]');
+  if (e.target.closest('[data-ck]')) done[i] = !done[i]; else if (t) ui['C' + i] = ui['C' + i] === t.dataset.t ? '' : t.dataset.t; else return; all(); });
+
+function all() { A(); B(); C(); }
+document.querySelector('.pick').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; document.querySelectorAll('.pick [data-v]').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('.v').forEach(x => x.classList.toggle('on', x.id === b.dataset.v)); $('desc').textContent = DESC[b.dataset.v]; scrollTo(0, 0); });
+$('desc').textContent = DESC.A; all();
+})();
+</script>
+</body>
+</html>
