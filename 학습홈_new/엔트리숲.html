@@ -64,9 +64,10 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .st{font-size:14px;font-weight:800;padding:12px 14px;border-radius:14px;background:#f6faf1;line-height:1.6}
 .cont{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);border:0;border-radius:999px;padding:15px 30px;font-size:18px;font-weight:900;color:#fff;background:linear-gradient(90deg,#ff7f50,#ffb347);box-shadow:0 10px 26px rgba(200,90,20,.35);z-index:4;text-align:center;line-height:1.2}
 .cont small{display:block;font-size:12.5px;font-weight:700;opacity:.92;margin-top:3px}
-body.zoom .cont{display:none}
+body.map.zoom .cont{display:none}
 .all{position:fixed;left:18px;bottom:18px;z-index:4;display:none}
-body.zoom .all{display:block}
+body.map.zoom .all{display:block}
+.vbtn.on{background:#ffe9a8}
 .toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);background:rgba(30,45,22,.94);color:#fff;padding:12px 22px;border-radius:999px;font-size:15px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;white-space:nowrap}
 .toast.show{opacity:1}
 .nogl{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:18px;line-height:1.7;background:#f4f8ec;z-index:20}
@@ -81,7 +82,8 @@ body.zoom .all{display:block}
   <span class="pill" id="who"></span>
   <span class="pill">⭐ <span id="stars">0</span></span>
   <span class="sp"></span>
-  <button class="pill" id="worldBtn">🗺️ 세계 지도</button>
+  <button class="pill vbtn" id="viewBtn">🗺️ 숲 지도</button>
+  <button class="pill" id="worldBtn">🌍 세계 지도</button>
 </div>
 <button class="cont" id="contBtn"></button>
 <button class="pill all" id="allBtn">← 숲 전체 보기</button>
@@ -124,7 +126,9 @@ const T = THREE, canvas = $('gl');
 let renderer; try { renderer = new T.WebGLRenderer({canvas, antialias: true}); } catch (e) { $('nogl').style.display = 'flex'; return; }
 renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
 const scene = new T.Scene(); scene.background = new T.Color('#bfe6f3');
-const cam = new T.OrthographicCamera(-1, 1, 1, -1, 1, 600);
+const cam = new T.OrthographicCamera(-1, 1, 1, -1, 1, 600), pcam = new T.PerspectiveCamera(50, 1, .5, 600);
+let VIEW = 'walk', snapW = true;
+scene.fog = new T.Fog('#bfe6f3', 70, 190);
 const OFF = new T.Vector3(0, 150, 120);
 scene.add(new T.HemisphereLight(0xeaf6ff, 0x5c7a3a, 1.15));
 const sun = new T.DirectionalLight(0xfff1d6, 2.4); sun.position.set(-70, 140, 60); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
@@ -279,21 +283,40 @@ const hero = new T.Group(); scene.add(hero); const H = {};
   if (S.hair === 3) { add(new T.SphereGeometry(0.16, 10, 8), -0.4, 0.02, -0.08); add(new T.SphereGeometry(0.16, 10, 8), 0.4, 0.02, -0.08); }
 })();
 hero.scale.setScalar(2.1);
-let hu = NU[curNode().id] || 0, htu = hu, walking = false, onArrive = null;
+let hu = NU[curNode().id] || 0, walking = false, optN = null, ho = 0, actQ = [], onArrive = null;
+const hdir = new T.Vector3(0, 0, -1), hdirT = new T.Vector3(0, 0, -1);
 function heroAtNode(n) { const r = radius(n); return new T.Vector3(n.x + r * .15, 0, n.z + r * .55); }
-function placeHero() {
-  const p = route.getPointAt(Math.max(0, Math.min(1, hu))), q = route.getPointAt(Math.max(0, Math.min(1, hu + (htu >= hu ? .002 : -.002))));
-  if (!walking) { const n = PATHN.find(n => Math.abs(NU[n.id] - hu) < 1e-6); if (n) { const v = heroAtNode(n); p.x = v.x; p.z = v.z; hero.rotation.y = 0; } }
-  else hero.rotation.y = Math.atan2(q.x - p.x, q.z - p.z);
-  hero.position.set(p.x, Hgt(p.x, p.z) + .15, p.z);
+const atNodeU = () => PATHN.find(n => Math.abs(NU[n.id] - hu) < 1e-6);
+function heroXZ() {
+  if (optN) { const a = heroAtNode(byId[optN.from]), b = heroAtNode(optN); return a.lerp(b, ho); }
+  const n = atNodeU(); if (n && !walking) return heroAtNode(n);
+  const p = route.getPointAt(Math.max(0, Math.min(1, hu))); return new T.Vector3(p.x, 0, p.z);
 }
-function walkTo(u, fn) { htu = u; onArrive = fn || null; walking = Math.abs(u - hu) > 1e-6; if (!walking && fn) fn(); }
+function placeHero() {
+  const p = heroXZ(); hero.position.set(p.x, Hgt(p.x, p.z) + .15, p.z);
+  if (!walking) { const n = optN && ho > .99 ? optN : atNodeU(); if (n) hdirT.set(n.x - p.x, 0, n.z - p.z).normalize(); }
+  hdir.lerp(hdirT, .12).normalize(); hero.rotation.y = Math.atan2(hdir.x, hdir.z);
+}
+/* 공터로 걸어가기: 선택 길이면 본길 공터까지 간 뒤 징검돌로 */
+function walkToNode(n, fn) {
+  actQ = []; if (optN && optN !== n) actQ.push({k: 'o', to: 0});
+  const main = n.opt ? byId[n.from] : n;
+  if (!(optN === n && ho > .99)) { actQ.push({k: 'r', u: NU[main.id]}); if (n.opt) actQ.push({k: 'o', to: 1, n}); }
+  onArrive = fn || null; walking = actQ.length > 0; if (!walking && fn) { onArrive = null; fn(); }
+}
+function teleport(n) { actQ = []; walking = false; if (n.opt) { hu = NU[byId[n.from].id]; optN = n; ho = 1; } else { hu = NU[n.id]; optN = null; ho = 0; } }
+function stepHero(dt) {
+  const a = actQ[0]; if (!a) return;
+  if (a.k === 'r') { const sp = 26 / route.getLength() * dt, d = a.u - hu; const q = route.getPointAt(Math.max(0, Math.min(1, hu + Math.sign(d || 1) * .003))), p = route.getPointAt(Math.max(0, Math.min(1, hu))); hdirT.set(q.x - p.x, 0, q.z - p.z).normalize(); if (Math.abs(d) <= sp) { hu = a.u; actQ.shift(); } else hu += Math.sign(d) * sp; }
+  else { if (a.n) optN = a.n; const A = heroAtNode(byId[optN.from]), B = heroAtNode(optN), L = A.distanceTo(B), sp = 9 / L * dt, d = a.to - ho; hdirT.copy(B).sub(A).normalize().multiplyScalar(Math.sign(d) || 1); if (Math.abs(d) <= sp) { ho = a.to; actQ.shift(); if (ho === 0) optN = null; } else ho += Math.sign(d) * sp; }
+  if (!actQ.length) { walking = false; if (onArrive) { const f = onArrive; onArrive = null; f(); } }
+}
 
 /* ── 카메라 ── */
 const camT = new T.Vector3(2, 0, -4), camTT = camT.clone(); let zoom = 1, zoomT = 1, snap = true;
 function resize() {
   const w = window.innerWidth, h = window.innerHeight, a = w / h; renderer.setSize(w, h, false);
-  const hh = Math.max(70, 124 / a); cam.left = -hh * a; cam.right = hh * a; cam.top = hh; cam.bottom = -hh; cam.updateProjectionMatrix();
+  const hh = Math.max(70, 124 / a); cam.left = -hh * a; cam.right = hh * a; cam.top = hh; cam.bottom = -hh; cam.updateProjectionMatrix(); pcam.aspect = a; pcam.updateProjectionMatrix();
 }
 window.addEventListener('resize', resize); resize();
 
@@ -301,7 +324,7 @@ window.addEventListener('resize', resize); resize();
 const pinEls = {};
 C.forEach(n => {
   const b = document.createElement('button'); b.className = 'pin' + (n.zone === 'ai' ? ' ai' : '') + (n.opt ? ' opt' : '') + (n.zone === 'gate' ? ' gate' : '');
-  b.innerHTML = '<b></b><small></small>'; b.addEventListener('click', () => select(n.id)); $('pins').appendChild(b); pinEls[n.id] = b;
+  b.innerHTML = '<b></b><small></small>'; b.addEventListener('click', () => goNode(n.id)); $('pins').appendChild(b); pinEls[n.id] = b;
 });
 const meEl = document.createElement('div'); meEl.className = 'me'; $('pins').appendChild(meEl);
 function paintPins() {
@@ -325,7 +348,7 @@ const BM = {done: flat('#ff9b4a'), now: flat('#fff27a', {emissive: '#ffcc00', em
 let sel = null;
 const DEV = {camera: '📷', mic: '🎤', sound: '🔊'};
 function select(id) {
-  sel = id; const n = byId[id]; zoomT = n.zone === 'gate' ? 2.4 : 2.6; camTT.set(n.x + 16, 0, n.z + 4); document.body.classList.add('zoom');
+  sel = id; const n = byId[id]; if (VIEW === 'map') { zoomT = n.zone === 'gate' ? 2.4 : 2.6; camTT.set(n.x + 16, 0, n.z + 4); document.body.classList.add('zoom'); }
   const tag = $('cTag'); tag.className = 'tag' + (n.zone === 'ai' ? ' ai' : n.zone === 'gate' ? ' gate' : n.opt ? ' opt' : '');
   tag.textContent = n.zone === 'ai' ? '심화·인공지능 숲' : n.zone === 'gate' ? '관문' : n.opt ? '선택 길 · 복습' : '기초 숲';
   $('card').classList.toggle('ai', n.zone === 'ai');
@@ -348,7 +371,16 @@ function select(id) {
   $('card').classList.add('show'); paintPins();
 }
 function overview() { sel = null; zoomT = 1; camTT.set(2, 0, -4); document.body.classList.remove('zoom'); $('card').classList.remove('show'); paintPins(); }
-$('cClose').addEventListener('click', overview); $('allBtn').addEventListener('click', overview);
+function closeCard() { if (VIEW === 'map') overview(); else { sel = null; $('card').classList.remove('show'); paintPins(); } }
+/* 걷기 화면: 이름표를 누르면 걸어가서 카드를 연다 · 숲 지도: 다가가서 카드 */
+function goNode(id) { if (VIEW === 'map') { select(id); return; } $('card').classList.remove('show'); sel = null; paintPins(); walkToNode(byId[id], () => select(id)); }
+function setView(v) {
+  VIEW = v; document.body.classList.toggle('map', v === 'map'); $('viewBtn').classList.toggle('on', v === 'map'); $('viewBtn').textContent = v === 'map' ? '🚶 걷기 화면' : '🗺️ 숲 지도';
+  scene.fog.near = v === 'map' ? 2000 : 70; scene.fog.far = v === 'map' ? 3000 : 190; snapW = true;
+  if (v === 'map') { const id = sel; overview(); if (id) select(id); }
+}
+$('viewBtn').addEventListener('click', () => setView(VIEW === 'map' ? 'walk' : 'map'));
+$('cClose').addEventListener('click', closeCard); $('allBtn').addEventListener('click', overview);
 $('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; });
 $('contBtn').addEventListener('click', () => { const id = nowId(); if (!id) return; if (hasSheet(id)) location.href = '미션.html?id=' + id + '&f=2&n=' + encodeURIComponent(nodeOf(id).ms.find(m => m[0] === id)[1]); else select(nodeOf(id).id); });
 
@@ -357,7 +389,7 @@ function finish(id) {
   if (isDone(id)) return; const from = curNode(); S.entry.done[id] = 1; save();
   toast('⭐ 미션 완료! 별을 하나 얻었어요.'); burst(nodeOf(id));
   const to = curNode(); paintPins(); if (sel) select(sel);
-  if (to !== from && NU[to.id] !== undefined) setTimeout(() => walkTo(NU[to.id]), 900);
+  if (to !== from) setTimeout(() => { $('card').classList.remove('show'); sel = null; walkToNode(to, () => select(to.id)); }, 1100);
 }
 /* 반짝이 */
 const spark = []; function burst(n) { for (let i = 0; i < 26; i++) { const m = new T.Mesh(new T.BoxGeometry(.4, .4, .1), new T.MeshBasicMaterial({color: ['#ff9b4a', '#ffd84a', '#7fd39a', '#6cc4ee', '#f59ac4'][i % 5]})); m.position.set(n.x, Hgt(n.x, n.z) + 4, n.z); m.userData.v = new T.Vector3((rnd() - .5) * 16, 10 + rnd() * 8, (rnd() - .5) * 16); m.userData.l = 1.6; scene.add(m); spark.push(m); } }
@@ -366,13 +398,14 @@ const spark = []; function burst(n) { for (let i = 0; i < 26; i++) { const m = n
 const Q = new URLSearchParams(location.search), DONE = Q.get('done'), AT = Q.get('at');
 paintPins();
 placeHero();
-if (DONE && nodeOf(DONE)) { setTimeout(() => finish(DONE), 600); }
-else if (AT && nodeOf(AT)) select(nodeOf(AT).id);
+if (DONE && nodeOf(DONE)) { teleport(nodeOf(DONE)); placeHero(); setTimeout(() => finish(DONE), 700); }
+else if (AT && nodeOf(AT)) { teleport(nodeOf(AT)); placeHero(); select(nodeOf(AT).id); }
 if (DONE || AT) history.replaceState(null, '', location.pathname);
 S.place = 'forest'; save();
 
 /* ── 그리기 ── */
 const clock = new T.Clock(), tmp = new T.Vector3(); let time = 0;
+const wPos = new T.Vector3(), wLook = new T.Vector3(), wPosT = new T.Vector3(), wLookT = new T.Vector3();
 function frame() {
   requestAnimationFrame(frame); const dt = Math.min(clock.getDelta(), .05); time += dt;
   /* 카메라 */
@@ -380,11 +413,20 @@ function frame() {
   cam.zoom = zoom; cam.updateProjectionMatrix(); cam.position.copy(camT).add(OFF); cam.lookAt(camT);
   /* 탐험가 */
   if (walking) {
-    const sp = 40 / route.getLength() * dt, d = htu - hu;
-    if (Math.abs(d) <= sp) { hu = htu; walking = false; if (onArrive) { const f = onArrive; onArrive = null; f(); } } else hu += Math.sign(d) * sp;
+    stepHero(dt);
     H.legs.forEach((l, i) => { l.rotation.x = Math.sin(time * 12 + i * Math.PI) * .6; }); H.arms.forEach((a, i) => { a.rotation.x = Math.sin(time * 12 + i * Math.PI + Math.PI) * .5; });
   } else { H.legs.forEach(l => { l.rotation.x = 0; }); H.arms.forEach((a, i) => { a.rotation.x = Math.sin(time * 2 + i) * .08; }); }
   placeHero();
+  /* 걷기 화면 카메라: 탐험가 뒤에서 따라감 (카드가 열리면 탐험가가 왼쪽에 오게) */
+  if (VIEW === 'walk') {
+    const hp = hero.position, side = new T.Vector3(-hdir.z, 0, hdir.x), cardOn = $('card').classList.contains('show') && window.innerWidth > 720;
+    wPosT.copy(hp).addScaledVector(hdir, -17).add(new T.Vector3(0, 11, 0)); wLookT.copy(hp).addScaledVector(hdir, 7).add(new T.Vector3(0, 2.5, 0));
+    if (cardOn) { wPosT.addScaledVector(side, 5); wLookT.addScaledVector(side, 6); }
+    if (wPosT.y < Hgt(wPosT.x, wPosT.z) + 4) wPosT.y = Hgt(wPosT.x, wPosT.z) + 4;
+    const kw = snapW ? 1 : 1 - Math.exp(-dt * 2.4); wPos.lerp(wPosT, kw); wLook.lerp(wLookT, kw); snapW = false;
+    pcam.position.copy(wPos); pcam.lookAt(wLook);
+  }
+  const VC = VIEW === 'walk' ? pcam : cam;
   /* 움직이는 것들 */
   boards.forEach(b => { if (stOf(b.id) === 'now') b.mesh.position.y = 2.8 + Math.sin(time * 4) * .18; else b.mesh.position.y = 2.8; });
   C.forEach(n => { const u = nodeG[n.id].userData; if (u.spin) u.spin.rotation.y = time * .8; if (u.ring) u.ring.forEach((r, i) => { const t = (time * .5 + i / 3) % 1; r.scale.setScalar(1 + t * 3); r.material.opacity = .7 * (1 - t); }); if (u.doors) { u.doors.forEach((d, i) => { const tgt = u.open ? (i ? 1.6 : -1.6) : 0; d.rotation.y += (tgt - d.rotation.y) * Math.min(1, dt * 2); }); } });
@@ -392,15 +434,15 @@ function frame() {
   mist.forEach(m => { m.material.opacity = .55 * mistA; m.visible = mistA > .01; m.position.x += Math.sin(time * .2 + m.userData.p) * dt * .6; });
   for (let i = spark.length - 1; i >= 0; i--) { const s = spark[i]; s.userData.v.y -= 30 * dt; s.position.addScaledVector(s.userData.v, dt); s.rotation.x += dt * 6; s.userData.l -= dt; if (s.userData.l <= 0) { scene.remove(s); spark.splice(i, 1); } }
   water.position.y = -.25 + Math.sin(time) * .05;
-  renderer.render(scene, cam);
+  renderer.render(scene, VC);
   /* 이름표 위치 */
   const W = window.innerWidth, Hh = window.innerHeight;
   C.forEach(n => {
     const b = pinEls[n.id], top = n.zone === 'gate' ? (n.small ? 10.5 : 14.5) : (n.zone === 'ai' || n.id === 'sg' ? 9 : 4.5);
-    tmp.set(n.x, Hgt(n.x, n.z) + top, n.z).project(cam); const x = (tmp.x * .5 + .5) * W, y = (-tmp.y * .5 + .5) * Hh;
-    b.style.left = x + 'px'; b.style.top = y + 'px'; b.classList.toggle('hide', x < -60 || x > W + 60 || y < 40 || y > Hh + 40);
+    tmp.set(n.x, Hgt(n.x, n.z) + top, n.z); const far = VIEW === 'walk' && tmp.distanceTo(pcam.position) > 95; tmp.project(VC); const x = (tmp.x * .5 + .5) * W, y = (-tmp.y * .5 + .5) * Hh;
+    b.style.left = x + 'px'; b.style.top = y + 'px'; b.classList.toggle('hide', far || tmp.z > 1 || x < -60 || x > W + 60 || y < 40 || y > Hh + 40);
   });
-  tmp.copy(hero.position); tmp.y += 5.2; tmp.project(cam); meEl.style.left = ((tmp.x * .5 + .5) * W) + 'px'; meEl.style.top = ((-tmp.y * .5 + .5) * Hh) + 'px';
+  tmp.copy(hero.position); tmp.y += 5.2; tmp.project(VC); meEl.style.display = VIEW === 'walk' && walking ? 'none' : ''; meEl.style.left = ((tmp.x * .5 + .5) * W) + 'px'; meEl.style.top = ((-tmp.y * .5 + .5) * Hh) + 'px';
 }
 frame();
 })();
