@@ -112,13 +112,13 @@ h1{font-size:22px;margin:0;font-weight:900}
 (() => {
 const $ = id => document.getElementById(id);
 const Q = new URLSearchParams(location.search), ID = Q.get('id'), K = parseInt(Q.get('k'), 10) || 0;
-const FOREST = '탐험_3D_시안.html';
+const F2 = Q.get('f') === '2', FOREST = F2 ? '엔트리숲.html' : '탐험_3D_시안.html', NLAB = Q.get('n');
 const M = (window.ENTRY_MISSIONS || {})[ID];
 const KEY = 'studyhome_new_3d_demo', SKEY = 'studyhome_new_entry_steps';
 let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
 const prog = S.progress | 0;
-$('backBtn').addEventListener('click', () => { location.href = FOREST + '?at=' + K; });
-$('tag').textContent = '미션 ' + (K + 1);
+$('backBtn').addEventListener('click', () => { location.href = FOREST + '?at=' + (F2 ? ID : K); });
+$('tag').textContent = F2 && NLAB ? NLAB : '미션 ' + (K + 1);
 if (!M) { $('title').textContent = '준비 중인 미션'; $('sheet').innerHTML = '<div class="empty">이 미션의 안내는 아직 준비 중이에요.<br>숲길로 돌아가 다른 미션을 해 봐요.</div>'; return; }
 document.title = M.title + ' · 엔트리 미션';
 $('title').textContent = M.title; $('goal').innerHTML = M.goal;
@@ -201,10 +201,11 @@ $('steps').addEventListener('click', e => {
 });
 
 /* 완료 버튼: 지금 차례 미션이면 숲길로 돌아가 완료 처리, 이미 끝낸 미션이면 그냥 돌아가기 */
-const isNow = K === prog, isDone = K < prog;
+const E = (S.entry && S.entry.done) || {};
+const isDone = F2 ? !!E[ID] : K < prog, isNow = F2 ? !isDone : K === prog;
 $('doneBtn').textContent = isNow ? '✓ 미션 완료' : (isDone ? '✓ 완료한 미션' : '숲길로 ›');
 if (isDone) $('doneBtn').classList.add('done');
-$('doneBtn').addEventListener('click', () => { location.href = FOREST + (isNow ? '?done=' : '?at=') + K; });
+$('doneBtn').addEventListener('click', () => { location.href = FOREST + (isNow ? '?done=' : '?at=') + (F2 ? ID : K); });
 
 /* 완성작 해보기 */
 document.addEventListener('click', e => { if (M.preview && e.target.closest('[data-play]')) { $('mFrame').src = M.preview; $('modal').classList.add('on'); } });
