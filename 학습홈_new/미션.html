@@ -65,6 +65,7 @@ h1{font-size:22px;margin:0;font-weight:900}
 .b.hat{border-radius:16px 16px 7px 7px;padding-top:9px}
 .v{display:inline-block;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:700}
 .v.sel{border-radius:5px}
+.v.blank{min-width:30px;height:19px;vertical-align:middle;padding:0}
 .v.bool{border-radius:4px;background:#8fa2ff;color:#fff;padding:2px 6px}
 .v.bool .v{font-size:12px}
 .c{display:flex;flex-direction:column;align-items:flex-start;border-radius:7px}
@@ -141,6 +142,7 @@ const saveSteps = () => { ALL[ID] = done; try { localStorage.setItem(SKEY, JSON.
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 function inline(t) {
   let h = esc(t);
+  h = h.replace(/\[ \]/g, '<span class="v blank"></span>');
   h = h.replace(/\[([^\]]*)\]/g, '<span class="v">$1</span>').replace(/\{([^}]*)\}/g, '<span class="v sel">$1</span>');
   return h.replace(/&lt;(.*?)&gt;/g, '<span class="v bool">$1</span>');
 }
@@ -156,8 +158,14 @@ function shuffle(a, seed) {
   if (b.length > 1 && b.every((x, i) => x === a[i])) b.push(b.shift());
   return b;
 }
+/* 같은 블록은 한 번만: 숫자만 다른 블록은 하나로 합치고 숫자 칸을 비운다 */
+function uniq(list) {
+  const key = x => (Array.isArray(x) ? x[0] : x).replace(/\[[^\]]*\]/g, '[]'), seen = new Map(), out = [];
+  list.forEach(x => { const k = key(x); if (!seen.has(k)) { seen.set(k, out.length); out.push(x); } else { const i = seen.get(k), y = out[i], ys = Array.isArray(y) ? y[0] : y, xs = Array.isArray(x) ? x[0] : x; if (ys !== xs) out[i] = Array.isArray(y) ? [k, []] : k.replace(/\[\]/g, '[ ]'); } });
+  return out.map(x => Array.isArray(x) ? [x[0].replace(/\[\]/g, '[ ]'), x[1]] : x);
+}
 const pileHTML = (groups, seed) => groups.map((g, gi) => {
-  const ps = shuffle(pieces(g.code, []), seed * 31 + gi * 7 + 3);
+  const ps = shuffle(uniq(pieces(g.code, [])), seed * 31 + gi * 7 + 3);
   return '<div style="max-width:100%"><p class="obj">' + esc(g.obj || '') + '</p><div class="pile">' + ps.map((x, i) => {
     const h = Array.isArray(x) ? block(x).replace('class="c ', 'class="c hollow ') : block(x);
     return h.replace(/^<(\w+) /, '<$1 style="--r:' + (((i * 37 + seed * 13) % 5) - 2) + 'deg" ');
