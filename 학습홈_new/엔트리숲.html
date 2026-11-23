@@ -94,7 +94,7 @@ body.card-on .cont{display:none}
 </div></div>
 <div class="nogl" id="nogl">이 컴퓨터에서는 3D 화면을 띄울 수 없어요.</div>
 <script src="lib/three.min.js"></script>
-<script>document.write('<script src="lib/entry_course.js?t=' + Date.now() + '"><\/script><script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script>');</script>
+<script>document.write('<script src="lib/entry_course.js?t=' + Date.now() + '"><\/script><script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script><script src="lib/entry_previews.js?t=' + Date.now() + '"><\/script>');</script>
 <script>
 (() => {
 const $ = id => document.getElementById(id), T = THREE;
@@ -262,14 +262,16 @@ function makePins() {
 const DEV = {camera: '📷 카메라', mic: '🎤 마이크', sound: '🔊 소리'};
 function btn(cls, text, fn) { const b = document.createElement('button'); b.className = 'btn ' + cls; b.textContent = text; b.addEventListener('click', fn); return b; }
 function openMission(i) { const it = L[i]; location.href = '미션.html?id=' + it.id + '&f=2&n=' + encodeURIComponent(label(it)); }
-let pvI = -1;
+let pvI = -1; const PVL = window.ENTRY_PREVIEWS || [];
+function pvUrl(it) { const m = MS[it.id]; if (m && m.preview) return m.preview; return PVL.indexOf(it.id) >= 0 ? '엔트리미리보기.html?f=' + encodeURIComponent('2_미리해보기/엔트리/' + it.id + '.ent') + '&t=' + encodeURIComponent(it.no + ' ' + it.t) : ''; }
 function openPv(i) {
-  const it = L[i], m = MS[it.id] || {}; pvI = i;
+  const it = L[i], url = pvUrl(it); pvI = i;
   $('pvTitle').textContent = '▶ 미리 해보기 · ' + it.no + ' ' + it.t;
-  const has = !!m.preview; $('pvFrame').style.display = has ? '' : 'none'; $('pvNone').style.display = has ? 'none' : '';
-  $('pvFrame').src = has ? m.preview : 'about:blank';
+  const has = !!url; $('pvFrame').style.display = has ? '' : 'none'; $('pvNone').style.display = has ? 'none' : '';
+  $('pvFrame').src = has ? url : 'about:blank';
+  $('pvGo').style.display = MS[it.id] ? '' : 'none';
   const d = (it.needs || '').split(' ').filter(Boolean).map(x => DEV[x]).join(' · ');
-  $('pvDev').textContent = d ? d + ' 필요해요' : (has ? '완성된 모습을 먼저 해 보고, 미션지로 만들어 봐요.' : '');
+  $('pvDev').textContent = d ? d + ' 필요해요' : (has ? (MS[it.id] ? '완성된 모습을 먼저 해 보고, 미션지로 만들어 봐요.' : '완성된 모습을 먼저 해 봐요. (미션지는 준비 중)') : '');
   $('pv').classList.add('show');
 }
 function closePv() { $('pv').classList.remove('show'); $('pvFrame').src = 'about:blank'; pvI = -1; }
@@ -291,6 +293,7 @@ function showCard(i) {
     box.appendChild(btn('go', '▶ 미리 해보기', () => openPv(i)));
   } else {
     $('cDesc').textContent = it.sub + ' — 미션지는 준비 중이에요.';
+    if (pvUrl(it)) box.appendChild(btn('go', '▶ 미리 해보기', () => openPv(i)));
     if (st === 'now') box.appendChild(btn('ok', '✓ 수업에서 다 했어요', () => finish(it.id)));
   }
   $('card').classList.add('show'); document.body.classList.add('card-on'); pinEls.forEach(e => e.b.classList.toggle('sel', e.i === i));
