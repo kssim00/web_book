@@ -59,6 +59,15 @@ body.card-on .cont{display:none}
 .toast.show{opacity:1}
 .nogl{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:18px;line-height:1.7;background:#f4f8ec;z-index:20}
 @media (max-width:720px){.seg button{padding:6px 9px}.logo{display:none}.card{top:auto;bottom:12px}}
+.pv{position:fixed;inset:0;background:rgba(15,30,10,.62);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.pv.show{display:flex}
+.pv .box{background:#f7fbf1;border-radius:22px;width:min(860px,100%);height:min(700px,100%);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.pv .top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px 10px 18px;font-weight:800;font-size:16px;background:#fff}
+.pv .top button{border:0;background:#eef2e8;border-radius:999px;padding:8px 14px;font-weight:700}
+.pv iframe{flex:1;border:0;width:100%;background:#fff}
+.pv .none{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#5b6b50;font-size:15px;text-align:center;padding:20px}
+.pv .none b{font-size:44px}
+.pv .bot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;background:#fff;font-size:13.5px;color:#5b6b50}
 </style>
 </head>
 <body>
@@ -77,6 +86,12 @@ body.card-on .cont{display:none}
 <button class="cont" id="contBtn"></button>
 <aside class="card" id="card"><button class="x" id="cClose" aria-label="닫기">✕</button><span class="tag" id="cTag"></span><h2 id="cTitle"></h2><p id="cDesc"></p><div class="dev" id="cDev"></div><div class="cb" id="cBtns"></div></aside>
 <div class="toast" id="toast"></div>
+<div class="pv" id="pv"><div class="box">
+  <div class="top"><span id="pvTitle"></span><button id="pvClose">닫기 ✕</button></div>
+  <iframe id="pvFrame" title="미리 해보기"></iframe>
+  <div class="none" id="pvNone"><b>🎬</b>이 미션은 미리 해보기를 준비 중이에요.<br>미션지에서 바로 시작해요!</div>
+  <div class="bot"><span id="pvDev">완성된 모습을 먼저 해 보고, 미션지로 만들어 봐요.</span><button class="btn go" id="pvGo">📄 미션지 열기</button></div>
+</div></div>
 <div class="nogl" id="nogl">이 컴퓨터에서는 3D 화면을 띄울 수 없어요.</div>
 <script src="lib/three.min.js"></script>
 <script>document.write('<script src="lib/entry_course.js?t=' + Date.now() + '"><\/script><script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script>');</script>
@@ -247,6 +262,20 @@ function makePins() {
 const DEV = {camera: '📷 카메라', mic: '🎤 마이크', sound: '🔊 소리'};
 function btn(cls, text, fn) { const b = document.createElement('button'); b.className = 'btn ' + cls; b.textContent = text; b.addEventListener('click', fn); return b; }
 function openMission(i) { const it = L[i]; location.href = '미션.html?id=' + it.id + '&f=2&n=' + encodeURIComponent(label(it)); }
+let pvI = -1;
+function openPv(i) {
+  const it = L[i], m = MS[it.id] || {}; pvI = i;
+  $('pvTitle').textContent = '▶ 미리 해보기 · ' + it.no + ' ' + it.t;
+  const has = !!m.preview; $('pvFrame').style.display = has ? '' : 'none'; $('pvNone').style.display = has ? 'none' : '';
+  $('pvFrame').src = has ? m.preview : 'about:blank';
+  const d = (it.needs || '').split(' ').filter(Boolean).map(x => DEV[x]).join(' · ');
+  $('pvDev').textContent = d ? d + ' 필요해요' : (has ? '완성된 모습을 먼저 해 보고, 미션지로 만들어 봐요.' : '');
+  $('pv').classList.add('show');
+}
+function closePv() { $('pv').classList.remove('show'); $('pvFrame').src = 'about:blank'; pvI = -1; }
+$('pvClose').addEventListener('click', closePv);
+$('pv').addEventListener('click', e => { if (e.target.id === 'pv') closePv(); });
+$('pvGo').addEventListener('click', () => { if (pvI >= 0) openMission(pvI); });
 function showCard(i) {
   sel = i; const it = L[i], st = stOf(i), box = $('cBtns'); box.innerHTML = '';
   const tag = $('cTag'); tag.className = 'tag' + (st === 'done' && !it.gate ? ' done' : it.gate ? ' gate' : it.rev ? ' rev' : it.ai ? ' ai' : '');
@@ -259,7 +288,7 @@ function showCard(i) {
     box.appendChild(btn('go', '🗼 COS 시험 연습 하러 가기', () => window.open('https://kssim00.github.io/coden_edu/cos_entry_lab/index.html', '_blank')));
     if (TEACHER()) box.appendChild(btn('t', passed(it) ? '🔑 합격 표시 지우기' : '🔑 합격 표시하기 (선생님)', () => { S.entry[k] = !passed(it); save(); paint(); showCard(i); if (S.entry[k]) { toast(k === 'cos3' ? '🏅 COS 3급 합격! 다음 길이 열렸어요.' : '🎖️ COS 2급 합격!'); const ni = nowIdx(); if (ni > i) setTimeout(() => goTo(ni), 1200); } }));
   } else if (MS[it.id]) {
-    box.appendChild(btn('go', '📄 미션지 열기', () => openMission(i)));
+    box.appendChild(btn('go', '▶ 미리 해보기', () => openPv(i)));
   } else {
     $('cDesc').textContent = it.sub + ' — 미션지는 준비 중이에요.';
     if (st === 'now') box.appendChild(btn('ok', '✓ 수업에서 다 했어요', () => finish(it.id)));
@@ -279,13 +308,13 @@ function finish(id) {
 }
 const spark = []; function burst(p) { for (let k = 0; k < 28; k++) { const m = new T.Mesh(new T.BoxGeometry(.4, .4, .1), new T.MeshBasicMaterial({color: ['#ff9b4a', '#ffd84a', '#7fd39a', '#6cc4ee', '#f59ac4'][k % 5]})); m.position.set(p.x, p.y + 4, p.z); m.userData.v = new T.Vector3((rnd() - .5) * 14, 9 + rnd() * 8, (rnd() - .5) * 14); m.userData.l = 1.6; scene.add(m); spark.push(m); } }
 /* 버튼 */
-$('contBtn').addEventListener('click', () => { const ni = nowIdx(); if (ni < 0) return; if (MS[L[ni].id] && Math.abs(hu - U[ni]) < 1e-4) openMission(ni); else goTo(ni); });
+$('contBtn').addEventListener('click', () => { const ni = nowIdx(); if (ni < 0) return; if (MS[L[ni].id] && Math.abs(hu - U[ni]) < 1e-4) { showCard(ni); openPv(ni); } else goTo(ni); });
 $('meBtn').addEventListener('click', () => { zoomT = 0; });
 $('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; });
 $('seg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.v === VIEW) return; const keep = heroI, card = sel; build(b.dataset.v); placeAt(keep); if (card >= 0) showCard(card); });
 $('zr').addEventListener('input', e => { zoomT = e.target.value / 100; });
 $('zin').addEventListener('click', () => { zoomT = Math.max(0, zoomT - .25); }); $('zout').addEventListener('click', () => { zoomT = Math.min(1, zoomT + .25); });
-addEventListener('wheel', e => { if (e.target.closest && e.target.closest('.card')) return; zoomT = Math.max(0, Math.min(1, zoomT + e.deltaY * .0012)); }, {passive: true});
+addEventListener('wheel', e => { if (e.target.closest && e.target.closest('.card, .pv')) return; zoomT = Math.max(0, Math.min(1, zoomT + e.deltaY * .0012)); }, {passive: true});
 function resize() { renderer.setSize(innerWidth, innerHeight, false); cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
 
