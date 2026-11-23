@@ -50,6 +50,14 @@ h1{font-size:22px;margin:0;font-weight:900}
 .step.hint-on .hint{display:block}
 .code{display:none;flex-wrap:wrap;gap:16px;margin:10px 0 0;padding:14px;border-radius:14px;background:#fff}
 .step.code-on .code{display:flex}
+.ans{display:none;flex-wrap:wrap;gap:16px;margin:10px 0 0;padding:14px;border-radius:14px;background:#fff;box-shadow:0 0 0 1.5px #ffd84a inset}
+.step.ans-on .ans{display:flex}
+.ans .lab{width:100%;font-size:12px;font-weight:800;color:#8a6a00;margin:-2px 0 -6px}
+.tbadge{margin-left:auto;font-size:12px;font-weight:800;color:#7a5600;background:#ffe9a8;border-radius:999px;padding:4px 10px}
+.tools .a{background:#fff3c4;color:#7a5600}
+.pile{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 12px;max-width:100%}
+.pile>*{transform:rotate(var(--r,0deg))}
+.c.hollow .in{min-width:110px;min-height:22px;background:#fff;border:1.5px dashed rgba(255,255,255,.0);box-shadow:inset 0 0 0 1.5px #d7e9c6}
 .obj{font-size:12px;font-weight:800;color:#5b7a48;margin:0 0 4px;min-height:1px}
 .stack{display:inline-flex;flex-direction:column;align-items:flex-start}
 .b{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:7px;color:#fff;font-size:13.5px;font-weight:700;line-height:1.2;white-space:nowrap}
@@ -126,6 +134,22 @@ function block(x) {
   if (Array.isArray(x)) { const m = x[0].match(/^(\w+)[:^](.*)$/); return '<div class="c ' + m[1] + '"><div class="head">' + inline(m[2]) + '</div><div class="in">' + x[1].map(block).join('') + '</div><div class="foot"></div></div>'; }
   const m = x.match(/^(\w+)([:^])(.*)$/); return '<span class="b ' + m[1] + (m[2] === '^' ? ' hat' : '') + '">' + inline(m[3]) + '</span>';
 }
+/* 블록 조각: 조립하지 않고 흩어서 보여 줌. 반복·만일 블록은 안쪽을 비워 둔다. 섞는 순서는 단계마다 늘 같게 */
+function pieces(list, out) { list.forEach(x => { if (Array.isArray(x)) { out.push([x[0], []]); pieces(x[1], out); } else out.push(x); }); return out; }
+function shuffle(a, seed) {
+  const r = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+  if (b.length > 1 && b.every((x, i) => x === a[i])) b.push(b.shift());
+  return b;
+}
+const pileHTML = (groups, seed) => groups.map((g, gi) => {
+  const ps = shuffle(pieces(g.code, []), seed * 31 + gi * 7 + 3);
+  return '<div style="max-width:100%"><p class="obj">' + esc(g.obj || '') + '</p><div class="pile">' + ps.map((x, i) => {
+    const h = Array.isArray(x) ? block(x).replace('class="c ', 'class="c hollow ') : block(x);
+    return h.replace(/^<(\w+) /, '<$1 style="--r:' + (((i * 37 + seed * 13) % 5) - 2) + 'deg" ');
+  }).join('') + '</div></div>';
+}).join('');
+const TEACHER = (() => { try { return localStorage.getItem('학습홈_admin') === '1'; } catch (e) { return false; } })();
 const codeHTML = groups => groups.map(g => '<div><p class="obj">' + esc(g.obj || '') + '</p><div class="stack">' + g.code.map(block).join('') + '</div></div>').join('');
 
 /* 단계 목록: 아직 안 끝낸 첫 단계가 저절로 펼쳐짐. 힌트 먼저, 블록은 눌러야 보임 */
@@ -134,11 +158,12 @@ const cur = () => { const k = done.indexOf(false); return k < 0 ? -1 : k; };
 function draw() {
   const c = cur(), o = openK === null ? c : openK;
   $('steps').innerHTML = M.steps.map((s, i) => {
-    const u = ui[i] || {}, cls = ['step', done[i] && 'done', i === c && 'cur', i === o && 'open', u.h && 'hint-on', u.c && 'code-on'].filter(Boolean).join(' ');
+    const u = ui[i] || {}, cls = ['step', done[i] && 'done', i === c && 'cur', i === o && 'open', u.h && 'hint-on', u.c && 'code-on', u.a && 'ans-on'].filter(Boolean).join(' ');
     return '<li class="' + cls + '" data-i="' + i + '"><div class="row"><span class="ck" data-ck title="다 했으면 체크">' + (done[i] ? '✓' : '') + '</span><span class="st">' + (i + 1) + '. ' + esc(s.t) + '</span>' + (i === c ? '<span class="now">지금</span>' : '') + '</div>' +
       '<div class="body"><p class="say">' + esc(s.say) + '</p>' + (s.note ? '<p class="note">' + s.note + '</p>' : '') +
-      '<div class="tools">' + (s.hint ? '<button class="h" data-h>💡 힌트</button>' : '') + (s.code ? '<button class="k" data-c>' + (u.c ? '블록 접기' : '🧩 블록 보기') + '</button>' : '') + '</div>' +
-      (s.hint ? '<p class="hint">' + esc(s.hint) + '</p>' : '') + (s.code ? '<div class="code">' + codeHTML(s.code) + '</div>' : '') + '</div></li>';
+      '<div class="tools">' + (s.hint ? '<button class="h" data-h>💡 힌트</button>' : '') + (s.code ? '<button class="k" data-c>' + (u.c ? '조각 접기' : '🧩 블록 조각') + '</button>' : '') + (s.code && TEACHER ? '<button class="a" data-a>' + (u.a ? '정답 접기' : '✅ 정답') + '</button>' : '') + '</div>' +
+      (s.hint ? '<p class="hint">' + esc(s.hint) + '</p>' : '') + (s.code ? '<div class="code">' + pileHTML(s.code, i + 1) + '</div>' : '') +
+      (s.code && TEACHER ? '<div class="ans"><p class="lab">정답 (원장님 화면에만 보여요)</p>' + codeHTML(s.code) + '</div>' : '') + '</div></li>';
   }).join('');
   const n = done.filter(Boolean).length; $('count').textContent = n + ' / ' + M.steps.length + ' 단계';
 }
@@ -147,6 +172,7 @@ $('steps').addEventListener('click', e => {
   if (e.target.closest('[data-ck]')) { done[i] = !done[i]; saveSteps(); openK = null; }
   else if (e.target.closest('[data-h]')) { ui[i] = Object.assign({}, ui[i], {h: !(ui[i] && ui[i].h)}); }
   else if (e.target.closest('[data-c]')) { ui[i] = Object.assign({}, ui[i], {c: !(ui[i] && ui[i].c)}); }
+  else if (e.target.closest('[data-a]')) { ui[i] = Object.assign({}, ui[i], {a: !(ui[i] && ui[i].a)}); }
   else if (e.target.closest('.row')) { const o = openK === null ? cur() : openK; openK = o === i ? -2 : i; }
   else return;
   draw();
@@ -162,6 +188,7 @@ $('doneBtn').addEventListener('click', () => { location.href = FOREST + (isNow ?
 document.addEventListener('click', e => { if (e.target.closest('[data-play]')) { $('mFrame').src = M.preview; $('modal').classList.add('on'); } });
 $('mClose').addEventListener('click', () => { $('modal').classList.remove('on'); $('mFrame').src = 'about:blank'; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('mClose').click(); });
+if (TEACHER) { const t = document.createElement('span'); t.className = 'tbadge'; t.textContent = '🔑 선생님'; t.title = '선생님 모드: 블록이 있는 단계에 ✅ 정답 버튼이 보여요'; document.querySelector('.top').appendChild(t); }
 draw();
 })();
 </script>
