@@ -13,6 +13,10 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
 #ov.hide{display:none}
 .b{font:inherit;font-size:18px;font-weight:800;border:0;border-radius:999px;padding:12px 30px;background:#3b6d11;color:#fff;cursor:pointer}
 .bar{display:flex;gap:10px;align-items:center;font-size:14px;color:#4a6b3c}
+#scn{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:100%}
+#scn button{font:inherit;font-size:13.5px;font-weight:700;border:2px solid #b9d3a3;background:#fff;color:#3b6d11;border-radius:999px;padding:5px 12px;cursor:pointer}
+#scn button.on{background:#3b6d11;border-color:#3b6d11;color:#fff}
+#scn:empty{display:none}
 .bar .s{font-size:15px;padding:8px 18px;background:#fff;color:#3b6d11;border:2px solid #3b6d11}
 #entryContainer{position:fixed;left:-99999px;top:0;width:1200px;height:800px;visibility:hidden}
 </style>
@@ -25,6 +29,7 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
 <div id="wrap">
   <p id="ttl"></p>
   <div id="stageBox"><div id="ov"><span id="ovMsg">엔트리 작품을 불러오는 중이에요…<br><small>인터넷 연결이 필요해요</small></span></div></div>
+  <div id="scn"></div>
   <div class="bar"><button class="b s" id="runBtn">▶ 시작하기</button><button class="b s" id="stopBtn">■ 멈추기</button><span id="hint"></span></div>
 </div>
 <div id="entryContainer"></div>
@@ -122,9 +127,16 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
     try{ Entry.stage.updateBoundRect && Entry.stage.updateBoundRect(); }catch(e){}
     try{ Entry.stage.selectObject && Entry.stage.selectObject(null); }catch(e){}
     try{ Entry.stage.handle.setVisible(false); Entry.stage.update(); }catch(e){}
-    $('ovMsg').innerHTML = '<button class="b" id="bigRun">▶ 시작하기</button>';
+    var scs = (Entry.scene.getScenes && Entry.scene.getScenes()) || [];
+    if (scs.length > 1) {
+      $('scn').innerHTML = '<span style="font-size:13px;font-weight:700;align-self:center">🎬 장면</span>';
+      scs.forEach(function(sc, k){ var b = document.createElement('button'); b.textContent = (k + 1) + '. ' + sc.name; b.onclick = function(){ stop(); try{ Entry.scene.selectScene(sc); }catch(e){} $('ovMsg').innerHTML = '<b>' + sc.name + '</b><button class="b" id="bigRun">▶ 이 장면 시작하기</button>'; $('bigRun').onclick = run; $('ov').classList.remove('hide'); mark(); }; b.dataset.k = k; $('scn').appendChild(b); });
+      setInterval(mark, 400); mark();
+    }
+    $('ovMsg').innerHTML = (scs.length > 1 ? '<span>장면이 ' + scs.length + '개 있어요. 아래에서 골라 볼 수도 있어요.</span>' : '') + '<button class="b" id="bigRun">▶ 시작하기</button>';
     $('bigRun').onclick = run;
   }
+  function mark(){ try{ var cur = Entry.scene.selectedScene, scs = Entry.scene.getScenes(); [].forEach.call(document.querySelectorAll('#scn button'), function(b){ b.classList.toggle('on', scs[+b.dataset.k] === cur); }); }catch(e){} }
   function run(){ $('ov').classList.add('hide'); try{ if(Entry.engine.state !== 'stop') Entry.engine.toggleStop(); Entry.engine.toggleRun(); }catch(e){ console.error(e); } }
   function stop(){ try{ if(Entry.engine.state !== 'stop') Entry.engine.toggleStop(); }catch(e){} }
   $('runBtn').onclick = run; $('stopBtn').onclick = stop;
