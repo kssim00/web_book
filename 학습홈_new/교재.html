@@ -52,14 +52,16 @@ document.title = cur.title + ' · 파이썬 교재';
 $('frame').src = url;
 $('pos').textContent = (i + 1) + ' / ' + flat.length;
 $('pos').title = (TUR ? '터틀 ' : '문법 ') + cur.ch.replace(/\s+/g, ' ') + ' · ' + cur.title;
+const BEACH = TUR && S.pyAt === 'beach', HOMEURL = BEACH ? '해변.html?back=1' : '화산섬.html', HOMENAME = BEACH ? '해변길' : '스킬 트리';
+if (BEACH) { $('treeBtn').textContent = '← 해변길'; $('treeBtn').title = '해변길로 돌아가기'; }
 const go = k => { location.href = '교재.html?' + QK + '=' + k; };
 const prev = $('prevBtn'), next = $('nextBtn'), last = i === flat.length - 1, isNow = i === S.py[PK];
 prev.title = i > 0 ? '이전: ' + flat[i - 1].title : '처음 교재예요'; prev.disabled = i === 0;
 prev.addEventListener('click', () => go(i - 1));
-next.textContent = last ? (isNow ? '✓ 완료하고 스킬 트리로' : '스킬 트리로 ›') : (isNow ? '✓ 완료하고 다음 ›' : '다음 ›');
-next.title = last ? '스킬 트리로 돌아가기' : '다음: ' + flat[i + 1].title;
-next.addEventListener('click', () => { if (isNow) { S.py[PK] = i + 1; save(); } if (last) location.href = '화산섬.html'; else go(i + 1); });
-$('treeBtn').addEventListener('click', () => { location.href = '화산섬.html'; });
+next.textContent = last ? (isNow ? '✓ 완료하고 ' + HOMENAME + '로' : HOMENAME + '로 ›') : (isNow ? '✓ 완료하고 다음 ›' : '다음 ›');
+next.title = last ? HOMENAME + '로 돌아가기' : '다음: ' + flat[i + 1].title;
+next.addEventListener('click', () => { if (isNow) { S.py[PK] = i + 1; save(); } if (last) location.href = HOMEURL; else go(i + 1); });
+$('treeBtn').addEventListener('click', () => { location.href = HOMEURL; });
 $('newTab').addEventListener('click', () => window.open(plain, '_blank'));
 })();
 </script>

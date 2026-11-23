@@ -153,7 +153,9 @@ function inst(geo, mat, list, shadow) {
 }
 
 /* 장소 */
-const P = {forest: [-52, 6], tower: [6, -40], cabin: [2, 26], sea: [78, 16], volcano: [118, -92], teacher: [-30, 58]};
+const P = {forest: [-52, 6], tower: [6, -40], cabin: [2, 26], sea: [78, 16], volcano: [118, -92], teacher: [-30, 58], maker: [50, -20], isle: [-134, -62]};
+/* 바다 위 작은 섬: [x, z, 반지름] */
+const ISLETS = [[-134, -62, 26]];
 const HOME = [30, 46];
 const PATH = [[-92, 30], [-78, 16], [-62, 22], [-50, 8], [-36, 14], [-24, 2], [-10, 10], [2, 20]];
 const curve = new T.CatmullRomCurve3(PATH.map(p => new T.Vector3(p[0], 0, p[1])));
@@ -175,6 +177,7 @@ function heightAt(x, z) {
   y = Math.max(y, 42 * Math.max(0, 1 - vd / 40) + (vd < 46 ? 2.2 * smooth(46, 36, vd) - 1 : -5));
   const td = Math.hypot(x - P.teacher[0], z - (P.teacher[1] + 22));
   y = Math.max(y, 3.2 * smooth(13, 5, td) - 1.2);
+  for (const il of ISLETS) y = Math.max(y, 5.2 * smooth(il[2], il[2] * 0.45, Math.hypot(x - il[0], z - il[1])) - 1.2);
   return y;
 }
 (() => {
@@ -287,6 +290,58 @@ const smoke = [];
   box(g, new T.CylinderGeometry(1.3, 1.3, 2.2, 8), win, 0, 16.6, 0);
   box(g, new T.ConeGeometry(2.2, 2.2, 10), flat('#e8483b'), 0, 18.8, 0);
 })();
+
+/* ===== 추가 지역: 메이커 공방 마을(앱인벤터·3D 모델링), 비밀의 섬(마인크래프트·로블록스) ===== */
+const spin = [], spinY = [], bob = [];
+function gear(parent, r, col, x, y, z) {
+  const g = new T.Group(); g.position.set(x, y, z); parent.add(g);
+  box(g, new T.CylinderGeometry(r, r, 0.7, 16).rotateX(Math.PI / 2), flat(col), 0, 0, 0);
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; box(g, new T.BoxGeometry(r * 0.5, r * 0.5, 0.7), flat(col), Math.cos(a) * r, Math.sin(a) * r, 0).rotation.z = a; }
+  box(g, new T.CylinderGeometry(r * 0.3, r * 0.3, 0.9, 10).rotateX(Math.PI / 2), flat('#3d4852'), 0, 0, 0);
+  spin.push(g); return g;
+}
+function base(x, z, s, ry) { const g = new T.Group(); g.position.set(x, heightAt(x, z) - 0.3, z); g.scale.setScalar(s); g.rotation.y = ry || 0; scene.add(g); return g; }
+function mkApp(g, ox) {
+  box(g, new T.BoxGeometry(8, 5, 6), flat('#8b5cf6'), ox, 2.5, 0);
+  box(g, new T.BoxGeometry(8.6, 0.7, 6.6), flat('#6d43d8'), ox, 5.3, 0);
+  box(g, new T.CylinderGeometry(0.7, 0.9, 5, 8), flat('#8d8f94'), ox - 2.6, 7.5, -1.5);
+  box(g, new T.BoxGeometry(1.4, 2.4, 0.2), flat('#4a2f8a'), ox, 1.2, 3.05);
+  box(g, new T.BoxGeometry(1.3, 1.2, 0.15), win, ox - 2.6, 3, 3.05); box(g, new T.BoxGeometry(1.3, 1.2, 0.15), win, ox + 2.6, 3, 3.05);
+  gear(g, 2.2, '#ffd23f', ox + 2.2, 7.8, 3.2); gear(g, 1.3, '#ff8a3d', ox - 1.1, 7.0, 3.2);
+  box(g, new T.CylinderGeometry(0.2, 0.2, 1.6, 6), flat('#7c5433'), ox + 6.2, 0.8, 2);
+  box(g, new T.BoxGeometry(2.2, 3.8, 0.4), flat('#2b2f3a'), ox + 6.2, 3.4, 2); box(g, new T.BoxGeometry(1.8, 3, 0.1), win, ox + 6.2, 3.5, 2.25);
+}
+function mk3D(g, ox) {
+  box(g, new T.BoxGeometry(7, 4.2, 5.5), flat('#f2c38a'), ox, 2.1, 0);
+  const r = box(g, new T.ConeGeometry(5.6, 3, 4), flat('#f97316'), ox, 5.7, 0); r.rotation.y = Math.PI / 4; r.scale.set(1, 1, 0.85);
+  box(g, new T.BoxGeometry(1.3, 2.3, 0.2), flat('#7a4b2a'), ox, 1.15, 2.8);
+  box(g, new T.BoxGeometry(1.2, 1.1, 0.15), win, ox - 2.2, 2.4, 2.8); box(g, new T.BoxGeometry(1.2, 1.1, 0.15), win, ox + 2.2, 2.4, 2.8);
+  box(g, new T.CylinderGeometry(3.6, 4, 0.8, 12), flat('#cfd6da'), ox + 8, 0.4, 1.5);
+  box(g, new T.BoxGeometry(2.2, 2.2, 2.2), flat('#3f8fe4'), ox + 6.8, 1.9, 0.6);
+  box(g, new T.ConeGeometry(1.3, 2.8, 12), flat('#2f9e6e'), ox + 9.5, 2.2, 0.6);
+  box(g, new T.IcosahedronGeometry(1.2, 1), flat('#e8483b'), ox + 8.2, 2.0, 3.1);
+  spinY.push(box(g, new T.TorusGeometry(1.5, 0.45, 8, 18), flat('#ffd23f'), ox + 8, 6, 1.5));
+}
+function mkBlocks(g, ox, oz) {
+  const cols = ['#5fae4a', '#8a5a34', '#6cc24f', '#9aa3a8'];
+  [[0, 0, 0], [2, 0, 0], [0, 0, 2], [2, 0, 2], [-2, 0, 0], [4, 0, 0], [4, 0, 2], [-2, 0, 2], [0, 2, 0], [2, 2, 0], [0, 2, 2], [2, 2, 2], [0, 4, 0], [2, 4, 0]].forEach((b, i) => box(g, new T.BoxGeometry(2, 2, 2), flat(b[1] >= 2 ? cols[i % 2 ? 0 : 2] : cols[i % 4]), ox + b[0], 1 + b[1], oz + b[2]));
+}
+function mkObby(g, ox, oz) {
+  const cs = ['#ff5a4a', '#ffd23f', '#4cc9f0', '#8b5cf6', '#2f9e6e', '#ff8a3d'];
+  for (let i = 0; i < 6; i++) { const p = box(g, new T.BoxGeometry(2.2, 0.5, 2.2), flat(cs[i]), ox + i * 2.6, 1.6 + i * 1.3, oz + Math.sin(i * 1.3) * 1.8); p.userData.y = p.position.y; bob.push(p); }
+  box(g, new T.CylinderGeometry(0.1, 0.1, 3, 5), flat('#555'), ox + 13, 10.2, oz - 1.7); box(g, new T.BoxGeometry(1.8, 1, 0.1), lam('#ff5a4a'), ox + 14, 11.2, oz - 1.7);
+}
+function mkHall(g) {
+  box(g, new T.BoxGeometry(9, 5, 6.5), flat('#c9b08a'), 0, 2.5, 0);
+  const r = box(g, new T.ConeGeometry(7, 3.6, 4), flat('#be4bdb'), 0, 6.8, 0); r.rotation.y = Math.PI / 4; r.scale.set(1, 1, 0.8);
+  box(g, new T.BoxGeometry(1.8, 2.8, 0.2), flat('#7a4b2a'), 0, 1.4, 3.3);
+  [-3, 3].forEach(x => { box(g, new T.BoxGeometry(1.1, 2.6, 0.12), lam('#be4bdb'), x, 3.2, 3.32); box(g, new T.BoxGeometry(0.7, 0.7, 0.14), win, x, 3.6, 3.36); });
+}
+(function anim() { requestAnimationFrame(anim); const t = performance.now() / 1000; spin.forEach((g, i) => { g.rotation.z = t * (i % 2 ? -1.3 : 0.8); }); spinY.forEach(o => { o.rotation.y = t; o.rotation.x = t * 0.6; }); bob.forEach((p, i) => { p.position.y = p.userData.y + Math.sin(t * 1.5 + i) * 0.25; }); })();
+const openBook = f => () => window.open('../' + f, '_blank');
+(() => { const g = base(P.maker[0], P.maker[1], 1.35, -0.3); mkApp(g, -7); mk3D(g, 9); })();
+(() => { const g = base(P.isle[0], P.isle[1], 1.5, 0.4); mkBlocks(g, -6, -2); mkObby(g, 0, 3);
+  for (let i = 0; i < 6; i++) box(g, new T.BoxGeometry(1.8, 0.35, 3.4), flat(i % 2 ? '#a8754a' : '#b98252'), 9 + i * 1.9, 0.2, 9); })();
 const clouds = [];
 for (let i = 0; i < 14; i++) {
   const g = new T.Group(), m = new T.MeshLambertMaterial({color: '#ffffff', emissive: '#9fb4c6', emissiveIntensity: 0.3});
@@ -332,6 +387,8 @@ const PLACES = [
   {id: 'cabin', name: 'AI 튜터 오두막', at: [P.cabin[0] + 9, 15, P.cabin[1] + 2], focus: P.cabin},
   {id: 'sea', name: '스크래치 바다', at: [P.sea[0] + 6, 12, P.sea[1]], focus: P.sea},
   {id: 'volcano', name: '파이썬 화산섬', at: [P.volcano[0] - 6, 30, P.volcano[1] + 30], focus: P.volcano},
+  {id: 'maker', name: '메이커 공방 마을', sub: '앱인벤터 · 3D 모델링', at: [P.maker[0], 24, P.maker[1]], focus: P.maker},
+  {id: 'isle', name: '비밀의 섬', sub: '마인크래프트 · 로블록스', at: [P.isle[0], 28, P.isle[1]], focus: P.isle},
   {id: 'teacher', name: '교사용 등대', at: [P.teacher[0], 26, P.teacher[1] + 22], focus: [P.teacher[0], P.teacher[1] + 22]}
 ];
 PLACES.forEach(pl => {
@@ -342,7 +399,7 @@ PLACES.forEach(pl => {
 function pinText() {
   const z = (n, id) => (S.place === id ? '지금 여기 · ' : '') + (n >= REAL ? '미션 ' + REAL + '개 완료' : '미션 ' + (n + 1) + ' / ' + REAL);
   const t = {forest: z(S.progress, 'forest'), tower: '시험 연습', cabin: 'AI 과외 · 모의시험', sea: z(S.sea, 'sea'), volcano: (S.place === 'volcano' ? '지금 여기 · ' : '') + '문법 ' + S.py.g + '/15 · 터틀 ' + S.py.t + '/10', teacher: '원장님 전용'};
-  PLACES.forEach(pl => { pl.el.children[1].textContent = t[pl.id]; pl.el.classList.toggle('here', pl.id === S.place); });
+  PLACES.forEach(pl => { pl.el.children[1].textContent = t[pl.id] || pl.sub || ''; pl.el.classList.toggle('here', pl.id === S.place); });
   flags.forEach((f, k) => f.material.color.set(k >= REAL ? '#a9b3a2' : k < S.progress ? '#2f9e6e' : k === S.progress ? '#f5b921' : '#a9b3a2'));
 }
 
@@ -353,7 +410,7 @@ function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add
 function hud() {
   $('who').textContent = S.name; $('stars').textContent = S.progress + S.sea + S.py.g + S.py.t + S.py.b.length;
   const zn = S.place === 'sea' ? '스크래치 바다' : '엔트리 숲', zp = S.place === 'sea' ? S.sea : S.progress;
-  $('goSub').textContent = S.place === 'volcano' ? '파이썬 화산섬 · 스킬 트리' : (zp >= REAL ? zn + ' · 다음 미션 준비 중' : zn + ' · 미션 ' + (zp + 1));
+  $('goSub').textContent = S.place === 'volcano' ? (S.pyAt === 'beach' ? '거북이 해변길 · 터틀' : '파이썬 화산섬 · 스킬 트리') : (zp >= REAL ? zn + ' · 다음 미션 준비 중' : zn + ' · 미션 ' + (zp + 1));
   pinText();
 }
 function button(cls, text, fn) { const b = document.createElement('button'); b.className = 'btn ' + cls; b.textContent = text; b.addEventListener('click', fn); return b; }
@@ -369,7 +426,9 @@ const INFO = {
   tower: {desc: () => 'COS 자격시험을 실제처럼 연습하는 곳이에요.', btns: () => [button('go2', '엔트리 시험 연습', () => window.open('https://kssim00.github.io/coden_edu/cos_entry_lab/index.html', '_blank')), button('go2', '스크래치 시험 연습', () => window.open(SCRATCH_EXAM[SCRATCH_EXAM_USE], '_blank'))]},
   cabin: {desc: () => 'COS Pro 문제를 AI 튜터와 함께 풀고, 실전 모의시험도 볼 수 있어요.', btns: () => [button('ok', '오두막으로 들어가기', () => enter('cabin'))]},
   sea: {desc: () => '바닷가를 걸으며 스크래치 미션을 해결해요. 지금까지 미션 ' + S.sea + '개를 끝냈어요.', btns: () => [button('ok', '바다로 들어가기', () => enter('sea'))]},
-  volcano: {desc: () => '화산섬 속 연구소에서 파이썬을 배워요. 문법 트랙과 터틀 트랙, 두 갈래의 스킬 트리가 있어요.', btns: () => [button('ok', '연구소로 들어가기', () => enter('volcano'))]},
+  volcano: {desc: () => '화산섬 기슭의 거북이 해변길에서 터틀을, 화산섬 속 연구소에서 문법을 배워요. 실전 프로젝트(Ursina 3D 게임) 교재도 여기서 열 수 있어요.', btns: () => [button('ok', '거북이 해변길 (터틀)', () => enter('beach')), button('ok', '연구소로 들어가기 (문법)', () => enter('volcano')), button('go2', '실전 프로젝트 교재 열기', openBook('python_ursina.html'))]},
+  maker: {desc: () => '무언가를 직접 만들어 내는 마을이에요. 보라색 연구소에서는 앱인벤터로 앱을, 주황 지붕 공방에서는 틴커캐드로 3D 작품을 만들어요.', btns: () => [button('ok', '앱인벤터 교실 열기', openBook('앱인벤터_웹교재.html')), button('ok', '3D 모델링 교재 열기', openBook('틴커캐드_웹교재.html'))]},
+  isle: {desc: () => '바다 건너 숨겨진 섬이에요. 마인크래프트를 파이썬으로 움직이고, 로블록스 점프맵을 직접 만들어요.', btns: () => [button('go2', '마인크래프트 파이썬', openBook('마인크래프트_파이썬_코딩_학습지.html')), button('go2', '로블록스 점프맵 · 기초', openBook('로블록스_점프맵_기초.html')), button('go2', '로블록스 점프맵 · 타워형', openBook('로블록스_점프맵_타워형.html')), button('go2', '로블록스 점프맵 · 구조물 꾸미기', openBook('로블록스_점프맵_구조물꾸미기.html'))]},
   teacher: {desc: () => '원장님 전용 공간이에요. 수업자료와 자주 쓰는 링크가 들어갈 자리예요.', btns: () => []}
 };
 function select(id) {
@@ -384,10 +443,10 @@ function select(id) {
 }
 function closeCard() { selected = null; PLACES.forEach(p => p.el.classList.remove('on')); $('card').classList.remove('show'); if (mode === 'map') $('goBtn').style.display = 'block'; }
 function enter(zone) {
-  if (leaving) return; leaving = true; selected = zone; $('card').classList.remove('show'); $('goBtn').style.display = 'none';
-  setTimeout(() => $('fade').classList.add('on'), 700); setTimeout(() => { location.href = zone === 'cabin' ? '오두막.html' : zone === 'volcano' ? '화산섬.html' : FOREST + (zone === 'sea' ? '?zone=sea' : ''); }, 1350);
+  if (leaving) return; leaving = true; selected = zone === 'beach' ? 'volcano' : zone; $('card').classList.remove('show'); $('goBtn').style.display = 'none';
+  setTimeout(() => $('fade').classList.add('on'), 700); setTimeout(() => { location.href = zone === 'cabin' ? '오두막.html' : zone === 'beach' ? '해변.html' : zone === 'volcano' ? '화산섬.html' : FOREST + (zone === 'sea' ? '?zone=sea' : ''); }, 1350);
 }
-$('goBtn').addEventListener('click', () => enter(S.place));
+$('goBtn').addEventListener('click', () => enter(S.place === 'volcano' && S.pyAt === 'beach' ? 'beach' : S.place));
 
 /* 입장 화면 */
 COLORS.forEach((c, i) => { const b = document.createElement('button'); b.style.background = c; b.setAttribute('aria-label', '옷 색 ' + (i + 1)); b.addEventListener('click', () => { S.color = i; introUI(); }); $('sw').appendChild(b); });

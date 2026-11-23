@@ -84,6 +84,7 @@ svg{display:block;width:100%;height:auto}
   <div class="brand"><b>파이썬 화산섬 연구소</b><span class="mono">PYTHON LAB · 스킬 트리</span></div>
   <span class="chip" id="who"></span>
   <span class="chip mono" id="pts">0 / 0</span>
+  <button class="chip btn" id="beachBtn">거북이 해변길</button>
   <button class="chip btn" id="worldBtn">세계 지도</button>
 </header>
 
@@ -129,7 +130,7 @@ if (!S.py || typeof S.py !== 'object') S.py = {};
 const flatG = [].concat.apply([], GRAMMAR.map(c => c.items)), flatT = [].concat.apply([], TURTLE.map(c => c.items));
 S.py.g = Math.max(0, Math.min(flatG.length, S.py.g | 0)); S.py.t = Math.max(0, Math.min(flatT.length, S.py.t | 0));
 S.py.b = Array.isArray(S.py.b) ? S.py.b.filter(x => BONUS.some(b => b[0] === x)) : [];
-S.place = 'volcano';
+S.place = 'volcano'; S.pyAt = 'lab';
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 if (S.started) save();
 $('who').textContent = S.name || '탐험가';
@@ -217,6 +218,7 @@ $('doneBtn').addEventListener('click', () => {
 });
 function flash(n) { n.g.classList.remove('pop'); void n.g.getBoundingClientRect(); n.g.classList.add('pop'); }
 $('worldBtn').addEventListener('click', () => { location.href = '시작.html'; });
+$('beachBtn').addEventListener('click', () => { location.href = '해변.html'; });
 $('playBtn').addEventListener('click', () => { if (!sel || sel.track !== 'b') return; $('mTitle').textContent = '미리 해보기 · ' + sel.title; $('mFrame').src = '터틀게임.html?g=' + sel.id; $('modal').classList.add('show'); });
 const closeModal = () => { $('modal').classList.remove('show'); $('mFrame').src = 'about:blank'; };
 $('mClose').addEventListener('click', closeModal);
