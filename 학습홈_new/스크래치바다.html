@@ -143,6 +143,7 @@ let SUN, WATER, WBASE, BOATS = [], scene, curve, SAMP, U, P, hero, H, signs, lms
 let yaw = 0, yawT = 0, pit = 1, pitT = 1, zoom = 0, zoomT = 0, snap = true, hu = 0, walking = null, sel = -1;
 
 function build(v) {
+  if (v === 'C') { zoomT = zoom = 1; camF0 = true; } else if (VIEW === 'C' && scene) { zoomT = zoom = 0; }
   VIEW = v; S.scratch.view = v; save(); rs = 7; scene = new T.Scene();
   document.querySelectorAll('#seg button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   /* ── 섬 세계 (2026-11-24 원장님 선택: 시안_바다풍경.html C) — 미션 5~8개마다 섬 하나, 섬 사이 나무다리. 바닷길·보드판 둘 다 같은 섬 ── */
@@ -413,18 +414,17 @@ let keyDir = 0, keyBack = false; const keysDown = {};
 const KEYD = {ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1};
 function keyBusy(e) { return $('pv').classList.contains('show') || /INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || ''); }
 function keyStop() { let b = 0, m = 9; U.forEach((u, i) => { const d = Math.abs(u - hu); if (d < m) { m = d; b = i; } }); heroI = b; if (m * curve.getLength() < 3.5) walking = {to: U[b], i: b, then: () => showCard(b)}; }
-addEventListener('keydown', e => { const d = KEYD[e.key]; if (!d || e.ctrlKey || e.altKey || e.metaKey || keyBusy(e)) return; e.preventDefault(); keysDown[e.key] = d; keyDir = d; if (sel >= 0) hideCard(); walking = null; if (zoomT > .5) zoomT = .12; });
+addEventListener('keydown', e => { const d = KEYD[e.key]; if (!d || e.ctrlKey || e.altKey || e.metaKey || keyBusy(e)) return; e.preventDefault(); keysDown[e.key] = d; keyDir = d; if (sel >= 0) hideCard(); walking = null; if (zoomT > .5 && VIEW !== 'C') zoomT = .12; });
 addEventListener('keyup', e => { if (!(e.key in keysDown)) return; delete keysDown[e.key]; const rest = Object.values(keysDown); keyDir = rest.length ? rest[rest.length - 1] : 0; if (!keyDir) keyStop(); });
 addEventListener('blur', () => { for (const k in keysDown) delete keysDown[k]; if (keyDir) { keyDir = 0; keyStop(); } });
 /* 보드판: 칸에서 칸으로 통통 뛰기 */
 function hopY() { let i = 0; while (i < N - 2 && U[i + 1] < hu) i++; const f = (hu - U[i]) / (U[i + 1] - U[i]); return Math.sin(Math.PI * Math.max(0, Math.min(1, f))) * 2.6; }
-/* 보드판 카메라: 말이 움직이는 동안 판은 가만히. 말이 멈췄는데 화면 가장자리(또는 카드 밑)에 있으면 그때 한 번만 천천히 따라감 */
-const camF = new T.Vector3(), camB = new T.Vector3(), camS = new T.Vector3(); let camGo = false;
+/* 보드판 카메라: 판은 늘 가만히 (2026-11-24 원장님: 말이 움직일 때 판이 같이 움직이면 안 됨). 보드판은 판 전체가 보이는 화면에서 시작하고, 가까이 당겨도 말을 따라가지 않음. '내 위치'를 누를 때만 말 쪽으로 옮김 */
+const camF = new T.Vector3(), camB = new T.Vector3(); let camGo = false, camF0 = true;
 function camFocus(moving) {
   camB.set(hero.position.x, HEIGHT(hero.position.x, hero.position.z) + .95, hero.position.z);
-  if (snap) { camF.copy(camB); camGo = false; return camF; }
-  if (!moving && !camGo) { camS.copy(camB).project(cam); const co = sel >= 0 && innerWidth > 720; if (camS.x < -.62 || camS.x > (co ? .25 : .62) || camS.y > .55 || camS.y < -.5) camGo = true; }
-  if (camGo && !moving) { camF.lerp(camB, .07); if (camF.distanceToSquared(camB) < .05) camGo = false; }
+  if (camF0 || zoom > .97) { camF.copy(camB); camF0 = false; camGo = false; }   /* 판 전체를 볼 때는 초점을 말에 맞춰 둠(화면은 안 변함) → 거기서 당기면 말 쪽으로 확대 */
+  if (camGo) { camF.lerp(camB, .1); if (camF.distanceToSquared(camB) < .05) camGo = false; }
   return camF;
 }
 function placeAt(i) { heroI = i; hu = U[i]; walking = null; keyBack = false; }
@@ -434,7 +434,7 @@ function goTo(i, then) { hideCard();
   if (walking && walking.i === i) { skipWalk(); return; }
   /* 선생님 로그인(🔑) 중에는 걷지 않고 바로 이동 */
   if (TEACHER()) { placeAt(i); snap = true; (then || (() => showCard(i)))(); return; }
-  if (zoomT > .5) zoomT = .12; walking = {to: U[i], i, then: then || (() => showCard(i))}; }
+  if (zoomT > .5 && VIEW !== 'C') zoomT = .12; walking = {to: U[i], i, then: then || (() => showCard(i))}; }
 function finish(id) {
   if (S.scratch.done[id]) return; const i = IDX[id]; S.scratch.done[id] = 1; save(); paint(); hideCard();
   toast('⭐ 미션 완료! 별을 하나 얻었어요.'); burst(P[i]);
@@ -443,7 +443,7 @@ function finish(id) {
 const spark = []; function burst(p) { for (let k = 0; k < 28; k++) { const m = new T.Mesh(new T.BoxGeometry(.4, .4, .1), new T.MeshBasicMaterial({color: ['#ff9b4a', '#ffd84a', '#7fd39a', '#6cc4ee', '#f59ac4'][k % 5]})); m.position.set(p.x, p.y + 4, p.z); m.userData.v = new T.Vector3((rnd() - .5) * 14, 9 + rnd() * 8, (rnd() - .5) * 14); m.userData.l = 1.6; scene.add(m); spark.push(m); } }
 /* 버튼 */
 $('contBtn').addEventListener('click', () => { const ni = nowIdx(); if (ni < 0) return; if (MS[L[ni].id] && Math.abs(hu - U[ni]) < 1e-4) { showCard(ni); openPv(ni); } else goTo(ni); });
-$('meBtn').addEventListener('click', () => { zoomT = 0; yawT = 0; pitT = 1; camGo = true; });
+$('meBtn').addEventListener('click', () => { zoomT = VIEW === 'C' ? .35 : 0; yawT = 0; pitT = 1; camGo = true; });
 $('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; });
 $('seg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.v === VIEW) return; const keep = heroI, card = sel; build(b.dataset.v); placeAt(keep); if (card >= 0) showCard(card); });
 $('zr').addEventListener('input', e => { zoomT = e.target.value / 100; });
@@ -476,8 +476,8 @@ function frame() {
   const cd = VIEW === 'C' ? CDIR : dir, side = new T.Vector3(-cd.z, 0, cd.x), cardOn = sel >= 0 && innerWidth > 720;   /* 보드판은 카메라가 돌지 않고 늘 같은 쪽에서 봄 */
   const hpos = VIEW === 'C' ? camFocus(moving) : hero.position;
   const fP = hpos.clone().addScaledVector(cd, VIEW === 'C' ? -30 : -15).addScaledVector(side, VIEW === 'C' ? 0 : cardOn ? 7 : 3).add(new T.Vector3(0, 9, 0)), fL = hpos.clone().addScaledVector(cd, VIEW === 'C' ? 4 : 8).addScaledVector(side, VIEW === 'C' ? 0 : cardOn ? 7 : 0).add(new T.Vector3(0, 2, 0));
-  const span = Math.max(EXT.x, EXT.z * 1.3) + (VIEW === 'C' ? 45 : 80), oL = CENTER.clone(), oP = oL.clone().add(new T.Vector3(0, span * .9, span * .72));
-  if (cardOn) { oL.x += span * .12; oP.x += span * .12; }
+  const span = Math.max(EXT.x, EXT.z * 1.3) + (VIEW === 'C' ? 12 : 80), oL = CENTER.clone(), oP = oL.clone().add(new T.Vector3(0, span * .9, span * .72));
+  if (cardOn || VIEW === 'C') { oL.x += span * .12; oP.x += span * .12; }   /* 보드판은 카드 자리를 늘 비워 둠(카드가 열려도 판이 안 밀리게) */
   /* 확대·축소: 거리를 곱셈으로 늘려 막대 한 칸마다 비슷하게 멀어지게 (2026-11-24 원장님: 격차가 너무 큼) */
   const ZR = Math.max(4, span * 1.15 / 17), z = (Math.pow(ZR, zoom) - 1) / (ZR - 1);
   yaw += (yawT - yaw) * Math.min(1, dt * 10); pit += (pitT - pit) * Math.min(1, dt * 10);
