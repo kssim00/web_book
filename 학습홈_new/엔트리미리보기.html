@@ -110,7 +110,7 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
     var entries = parseTar(fflate.gunzipSync(new Uint8Array(await r.arrayBuffer())));
     var pe = entries.filter(function(e){ return /(^|\/)project\.json$/.test(e.name); })[0];
     var byRel = {};
-    entries.forEach(function(e){ var m = e.name.match(ASSET_RE); if(!m) return; var ext = (e.name.split('.').pop()||'').toLowerCase(); byRel[m[0]] = URL.createObjectURL(new Blob([e.data], {type: MIME[ext]||'application/octet-stream'})); });
+    entries.forEach(function(e){ var m = e.name.match(ASSET_RE); if(!m) return; var ext = (e.name.split('.').pop()||'').toLowerCase(); byRel[m[0]] = URL.createObjectURL(new Blob([e.data], {type: MIME[ext]||'application/octet-stream'})) + (/\/sound\//i.test(m[0]) ? '#s.' + ext : ''); }); /* 소리는 끝에 #s.mp3 를 붙여야 엔트리 소리 엔진(createjs)이 소리 파일로 알아봄 — 없으면 소리가 안 나고 소리 블록에서 오류 */
     var MEDIA_RE = /\/images\/media\/([^\/\\?#]+)$/, ASSETLIKE = /\.(?:png|jpe?g|gif|svg|bmp|mp3|wav|ogg)(?:[?#].*)?$/i;
     function localize(s){
       if(s.indexOf('blob:')===0 || s.indexOf('data:')===0 || !ASSETLIKE.test(s)) return s;
@@ -141,6 +141,9 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
     (project.objects||[]).forEach(function(o){ ((o.sprite&&o.sprite.pictures)||[]).forEach(function(p){ var f=p.fileurl||''; if(f.indexOf('blob:')===0){ p.thumbUrl=f; p.thumbnail=f; } }); });
     Entry.creationChangedEvent = new Entry.Event(window);
     Entry.init($('entryContainer'), {type:'workspace', libDir:'https://playentry.org/lib', entryDir:'/entry-js', resourcePath:'https://playentry.org/', textCodingEnable:false});
+    /* 벽(화면 끝) 그림을 같은 사이트 사본(lib/entry_bound.png)으로 바꿈 — playentry.org 그림 그대로면 브라우저가 "다른 사이트 그림"으로 보고
+       "화면 끝에 닿으면 튕기기"가 벽에 닿는 순간 오류(경고: 빨간색으로 표시된 블록을 확인해 주세요)가 난다 */
+    await new Promise(function(ok){ var im = new Image(); im.onload = im.onerror = function(){ try{ var w = Entry.stage.wall; ['up','down','left','right'].forEach(function(k){ var sp = w && w[k]; if (!sp) return; if ('image' in sp) sp.image = im; else if (sp.texture && window.PIXI) sp.texture = PIXI.Texture.from(im); }); }catch(e){} ok(); }; im.src = 'lib/entry_bound.png'; });
     await Entry.loadProject(project);
     var cv = document.querySelector('#entryContainer canvas#entryCanvas') || document.querySelector('#entryContainer canvas');
     window.__cv = cv;
