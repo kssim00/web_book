@@ -333,7 +333,16 @@ let tap3 = {i: -1, t: 0, n: 0};
 $('gl').addEventListener('pointermove', e => { if (e.pointerType !== 'mouse' || (drag && drag.moved)) return; $('gl').style.cursor = pickSign(e) >= 0 ? 'pointer' : ''; });
 /* 걷기 */
 let heroI = 0;
-function placeAt(i) { heroI = i; hu = U[i]; walking = null; }
+/* 방향키로 걷기: ↑·→ 는 앞으로(다음 미션 쪽), ↓·← 는 뒤로. 누르고 있는 동안 길을 따라 걷고, 떼면 그 자리에 섬.
+   팻말 가까이에서 떼면 그 팻말 앞까지 걸어가 카드를 엶. 미리 해보기 창이 열려 있으면(작품이 방향키를 씀) 움직이지 않음 */
+let keyDir = 0, keyBack = false; const keysDown = {};
+const KEYD = {ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1};
+function keyBusy(e) { return $('pv').classList.contains('show') || /INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || ''); }
+function keyStop() { let b = 0, m = 9; U.forEach((u, i) => { const d = Math.abs(u - hu); if (d < m) { m = d; b = i; } }); heroI = b; if (m * curve.getLength() < 3.5) walking = {to: U[b], i: b, then: () => showCard(b)}; }
+addEventListener('keydown', e => { const d = KEYD[e.key]; if (!d || e.ctrlKey || e.altKey || e.metaKey || keyBusy(e)) return; e.preventDefault(); keysDown[e.key] = d; keyDir = d; if (sel >= 0) hideCard(); walking = null; if (zoomT > .5) zoomT = .12; });
+addEventListener('keyup', e => { if (!(e.key in keysDown)) return; delete keysDown[e.key]; const rest = Object.values(keysDown); keyDir = rest.length ? rest[rest.length - 1] : 0; if (!keyDir) keyStop(); });
+addEventListener('blur', () => { for (const k in keysDown) delete keysDown[k]; if (keyDir) { keyDir = 0; keyStop(); } });
+function placeAt(i) { heroI = i; hu = U[i]; walking = null; keyBack = false; }
 /* 걷기 건너뛰기: 걷는 도중 한 번 더 누르면(같은 팻말이나 빈 곳) 남은 길을 건너뛰고 바로 도착 */
 function skipWalk() { if (!walking) return; const w = walking; placeAt(w.i); snap = true; if (w.then) w.then(); }
 function goTo(i, then) { hideCard();
@@ -371,9 +380,10 @@ const clock = new T.Clock(), tmp = new T.Vector3(), dir = new T.Vector3(0, 0, -1
 function frame() {
   requestAnimationFrame(frame); const dt = Math.min(clock.getDelta(), .05); time += dt;
   let moving = false;
-  if (walking) { const sp = 20 / curve.getLength() * dt, d = walking.to - hu; if (Math.abs(d) <= sp) { hu = walking.to; heroI = walking.i; const f = walking.then; walking = null; if (f) f(); } else { hu += Math.sign(d) * sp; moving = true; } }
+  if (walking) { keyBack = false; const sp = 20 / curve.getLength() * dt, d = walking.to - hu; if (Math.abs(d) <= sp) { hu = walking.to; heroI = walking.i; const f = walking.then; walking = null; if (f) f(); } else { hu += Math.sign(d) * sp; moving = true; } }
+  else if (keyDir) { const sp = 20 / curve.getLength() * dt, lo = Math.min.apply(null, U), hi = Math.max.apply(null, U), nu = Math.max(lo, Math.min(hi, hu + keyDir * sp)); moving = nu !== hu; hu = nu; keyBack = keyDir < 0; }
   const p = curve.getPointAt(Math.max(0, Math.min(1, hu))), t = curve.getTangentAt(Math.max(0, Math.min(1, hu))).setY(0).normalize();
-  if (walking && walking.to < hu) t.negate();
+  if (walking ? walking.to < hu : keyBack) t.negate();
   dir.lerp(t, snap ? 1 : .1).normalize(); hero.position.set(p.x, HEIGHT(p.x, p.z) + (VIEW === 'C' ? 1.3 : .2) + (moving ? Math.abs(Math.sin(time * 10)) * .15 : 0), p.z); hero.rotation.y = Math.atan2(dir.x, dir.z);
   H.legs.forEach((l, i) => { l.rotation.x = moving ? Math.sin(time * 10 + i * Math.PI) * .6 : 0; }); H.arms.forEach((a, i) => { a.rotation.x = moving ? Math.sin(time * 10 + i * Math.PI + Math.PI) * .5 : Math.sin(time * 2 + i) * .06; });
   /* 카메라: 0 = 탐험가 뒤, 1 = 숲 전체 */
