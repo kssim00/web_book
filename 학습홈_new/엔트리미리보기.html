@@ -36,6 +36,25 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
   <div class="bar"><button class="b s" id="tgBtn">▶ 시작하기</button><button class="b s" id="reBtn" style="border-color:#c9d8bb;color:#5b7a48">↺ 처음부터</button></div>
 </div>
 <div id="entryContainer"></div>
+<script>
+/* 작품 화면(무대)에 그려지는 엔트리 기본 그림(대답 입력 확인 버튼·리스트 손잡이·슬라이더·벽 등)은 같은 사이트 사본(lib/entry_img)으로 바꿔 불러옴.
+   playentry.org 그림을 그대로 쓰면 작품을 클릭할 때 "다른 사이트 그림" 오류가 나서 클릭·경고 문제가 생김 */
+(function(){
+  var PRE = 'https://playentry.org/lib/entry-js/images/', LOCAL = new URL('lib/entry_img/', location.href).href;
+  var LIST = ['stage/submit.png','stage/rotate.png','stage_list_resize_handle.png','stage_variable_slider.png','ic-audio-sensing-mic.svg','_1x1.png','media/bound.png'];
+  var d = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+  /* 얼굴 인식 AI 모델: 엔트리는 "지금 주소/lib/entry-js/weights" 에서 찾는데 학습홈 주소엔 없음 → lib/entry_weights 사본으로 돌려줌
+     (엔트리 사이트 파일은 다른 사이트에서 받아 갈 수 없게 막혀 있음). 작업용 보조 프로그램(Worker) 안의 요청도 똑같이 바꿈 */
+  var WFROM = location.origin + '/lib/entry-js/weights/', WTO = new URL('lib/entry_weights/', location.href).href;
+  var of = window.fetch; window.fetch = function(u, o){ try{ var s = typeof u === 'string' ? u : (u && u.url) || ''; if (s.indexOf(WFROM) === 0) u = WTO + s.slice(WFROM.length); }catch(e){} return of.call(this, u, o); };
+  var OW = window.Worker; if (OW) { window.Worker = function(url, opt){ try{ var s = String(url); if (s.indexOf('blob:') === 0 && !(opt && opt.type === 'module')) {
+      var pre = 'var __F=' + JSON.stringify(WFROM) + ',__T=' + JSON.stringify(WTO) + ',__f=self.fetch;self.fetch=function(u,o){try{var s=typeof u==="string"?u:(u&&u.url)||"";if(s.indexOf(__F)===0)u=__T+s.slice(__F.length)}catch(e){}return __f.call(this,u,o)};\n';
+      var x = new XMLHttpRequest(); x.open('GET', s, false); x.send(); /* 원래 코드 앞에 주소 바꾸기만 붙임 (원래 주소는 곧 지워져서 미리 읽어 둠) */
+      url = URL.createObjectURL(new Blob([pre + x.responseText], {type: 'text/javascript'})); } }catch(e){} return new OW(url, opt); }; window.Worker.prototype = OW.prototype; }
+  Object.defineProperty(HTMLImageElement.prototype, 'src', { configurable: true, enumerable: d.enumerable, get: d.get,
+    set: function(v){ try{ var u = String(v); if (u.indexOf(PRE) === 0 && LIST.indexOf(u.slice(PRE.length)) >= 0) v = LOCAL + u.slice(PRE.length); }catch(e){} d.set.call(this, v); } });
+})();
+</script>
 <script src="https://playentry.org/lib/entry-js/extern/lang/ko.js"></script>
 <script src="https://playentry.org/lib/lodash/lodash.min.js"></script>
 <script src="https://playentry.org/js/ws/locales.js"></script>
@@ -114,12 +133,30 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
     var MEDIA_RE = /\/images\/media\/([^\/\\?#]+)$/, ASSETLIKE = /\.(?:png|jpe?g|gif|svg|bmp|mp3|wav|ogg)(?:[?#].*)?$/i;
     function localize(s){
       if(s.indexOf('blob:')===0 || s.indexOf('data:')===0 || !ASSETLIKE.test(s)) return s;
-      var n = s; try{ n = decodeURIComponent(s); }catch(e){} n = n.replace(/\\/g,'/'); if(n.indexOf('/')<0) return s;
+      var n = s; try{ n = decodeURIComponent(s); }catch(e){} n = n.replace(/\\/g,'/').replace(/[?#].*$/,''); if(n.indexOf('/')<0) return s;
       var m = n.match(ASSET_RE), u = m && byRel[m[0]];
       if(!u){ var mm = n.match(MEDIA_RE); if(mm && window.__MEDIA && window.__MEDIA[mm[1]]) u = window.__MEDIA[mm[1]]; }
       return u || s;
     }
     var project = mapStrings(JSON.parse(TD.decode(pe.data)), localize);
+    /* 작품 파일 안에 없는 소리·그림(엔트리 기본 "강아지 짖는소리", 엔트리봇 기본 그림, 파일명만 적힌 소리 등)은
+       엔트리 사이트에서 받아 같은 사이트 주소(blob)로 바꿈 — 그냥 두면 소리가 안 나거나 "빨간색 블록" 경고가 남 */
+    await (function(){
+      var jobs = [];
+      function fixOne(a, snd){
+        var u = a.fileurl || '', r = null;
+        if (u.indexOf('blob:') === 0) return;
+        if (u.indexOf('data:audio') === 0) r = u;
+        else if (u.indexOf('data:') === 0) return;
+        else { var m = u.match(/\/images\/media\/([^\/?#]+)$/);
+          if (m) r = 'https://playentry.org/lib/entry-js/images/media/' + m[1];
+          else if (!u && a.filename) { var f = a.filename; r = 'https://playentry.org/uploads/' + f.slice(0,2) + '/' + f.slice(2,4) + '/' + (snd ? f + (a.ext || '.mp3') : 'image/' + f + '.' + (a.imageType === 'svg' ? 'svg' : 'png')); } }
+        if (!r) return;
+        jobs.push(fetch(r).then(function(x){ return x.ok ? x.blob() : null; }).then(function(bl){ if (!bl) return; var bu = URL.createObjectURL(bl); if (snd) a.fileurl = bu + '#s.mp3'; else { a.fileurl = bu; a.thumbUrl = bu; } }).catch(function(){}));
+      }
+      (project.objects||[]).forEach(function(o){ var sp = o.sprite || {}; (sp.pictures||[]).forEach(function(p){ fixOne(p, false); }); (sp.sounds||[]).forEach(function(x){ fixOne(x, true); }); });
+      return Promise.all(jobs);
+    })();
     /* 장면마다 어떤 키·클릭으로 움직이는지 찾아 아래에 안내 (예: 2-1 학습하기는 스페이스·화살표 키) */
     (function(){
       var KN = {32:'스페이스',37:'←',38:'↑',39:'→',40:'↓',13:'엔터'};
@@ -150,7 +187,8 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
     $('stageBox').appendChild(cv);
     try{ Entry.stage.updateBoundRect && Entry.stage.updateBoundRect(); }catch(e){}
     try{ Entry.stage.selectObject && Entry.stage.selectObject(null); }catch(e){}
-    try{ Entry.stage.handle.setVisible(false); Entry.stage.update(); }catch(e){}
+    /* 작품을 클릭하면 편집용 선택 테두리(회전 손잡이)가 켜지는데, 그 그림이 playentry.org 것이라 클릭할 때마다 "다른 사이트 그림" 오류가 남 → 아예 끔 */
+    try{ var H = Entry.stage.handle; H.setVisible(false); H.setVisible = function(){}; var hc = H.container; if (hc) { hc.visible = false; hc.mouseEnabled = false; hc.mouseChildren = false; } Entry.stage.update(); }catch(e){}
     var scs = (Entry.scene.getScenes && Entry.scene.getScenes()) || [];
     if (scs.length > 1) {
       $('scn').innerHTML = '<span style="font-size:13px;font-weight:700;align-self:center">🎬 장면</span>';
