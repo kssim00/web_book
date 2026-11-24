@@ -7,7 +7,7 @@
 html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#23401a;overflow:hidden}
 #wrap{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px}
 #ttl{font-size:20px;font-weight:800;margin:0}
-#stageBox{position:relative;width:min(100%, calc((100vh - 120px) * 1.778));aspect-ratio:16/9;border:3px solid #3b6d11;border-radius:16px;overflow:hidden;background:#fff}
+#stageBox{position:relative;width:min(100%, calc((100vh - 150px) * 1.778));aspect-ratio:16/9;border:3px solid #3b6d11;border-radius:16px;overflow:hidden;background:#fff}
 #stageBox canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
 #ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(255,255,255,.55);z-index:5;text-align:center;font-weight:700;font-size:16px;padding:16px}
 #ov.hide{display:none}
@@ -17,7 +17,7 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
 #scn button{font:inherit;font-size:13.5px;font-weight:700;border:2px solid #b9d3a3;background:#fff;color:#3b6d11;border-radius:999px;padding:5px 12px;cursor:pointer}
 #scn button.on{background:#3b6d11;border-color:#3b6d11;color:#fff}
 #scn:empty{display:none}
-#hint{font-size:14.5px;font-weight:800;color:#c76a00}
+#hint{font-size:16px;font-weight:800;color:#c76a00;margin:-4px 0 -2px}
 #hint:empty{display:none}
 .bar .s{font-size:15px;padding:8px 18px;background:#fff;color:#3b6d11;border:2px solid #3b6d11}
 #entryContainer{position:fixed;left:-99999px;top:0;width:1200px;height:800px;visibility:hidden}
@@ -30,9 +30,10 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
 
 <div id="wrap">
   <p id="ttl"></p>
+  <div id="hint"></div>
   <div id="stageBox"><div id="ov"><span id="ovMsg">엔트리 작품을 불러오는 중이에요…<br><small>인터넷 연결이 필요해요</small></span></div></div>
   <div id="scn"></div>
-  <div class="bar"><button class="b s" id="tgBtn">▶ 시작하기</button><button class="b s" id="reBtn" style="border-color:#c9d8bb;color:#5b7a48">↺ 처음부터</button><span id="hint"></span></div>
+  <div class="bar"><button class="b s" id="tgBtn">▶ 시작하기</button><button class="b s" id="reBtn" style="border-color:#c9d8bb;color:#5b7a48">↺ 처음부터</button></div>
 </div>
 <div id="entryContainer"></div>
 <script src="https://playentry.org/lib/entry-js/extern/lang/ko.js"></script>
