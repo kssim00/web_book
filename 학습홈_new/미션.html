@@ -51,8 +51,8 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 .chip:hover,.chip.on{border-bottom-color:currentColor}
 .pane{margin-top:12px;padding:16px;border-radius:14px;background:#f7f9f4;font-size:16px;line-height:1.7;color:#3f4b36}
 .pane.h{background:#fffbea}
-.pane.code{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
-.pane.ans{display:flex;flex-wrap:wrap;gap:16px;background:#fffdf3;box-shadow:inset 0 0 0 1.5px #f2c94c}
+.pane.code{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;overflow-x:auto}
+.pane.ans{display:flex;flex-wrap:wrap;gap:16px;overflow-x:auto;background:#fffdf3;box-shadow:inset 0 0 0 1.5px #f2c94c}
 .pane .sub{display:block;margin-top:6px;font-size:14.5px;color:#7b6a3a}
 .ans .lab{width:100%;font-size:12px;font-weight:800;color:#8a6a00;margin:-2px 0 -6px}
 .okrow{display:flex;justify-content:flex-end;margin-top:16px}
@@ -73,9 +73,10 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 .c{display:flex;flex-direction:column;align-items:flex-start;border-radius:7px}
 .c .head,.c .foot{padding:7px 12px;color:#fff;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .c .foot{padding:5px 12px;min-width:70px}
+.c .head.mid{padding:5px 12px}
 .c .in{margin-left:14px;padding:2px 2px 2px 0;background:#fff;border-radius:0 6px 6px 0;display:flex;flex-direction:column;align-items:flex-start}
 .c.hollow .in{min-width:110px;min-height:22px;box-shadow:inset 0 0 0 1.5px #e3e8dd}
-.start{background:#2fae51}.flow{background:#14b6d9}.move{background:#a34ee8}.look{background:#ee4f84}.sound{background:#7cb300}.judge{background:#4a63f0}
+.start{background:#2fae51}.flow{background:#14b6d9}.move{background:#a34ee8}.look{background:#ee4f84}.sound{background:#7cb300}.judge{background:#4a63f0}.calc{background:#f0a21a}.data{background:#d94fd0}.func{background:#d9661c}.ai{background:#1f9e8f}.brush{background:#e8901c}
 /* 아래 */
 .foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:10px}
 .done{border-radius:999px;padding:11px 22px;font-size:15px;font-weight:700;background:#1d2a16;color:#fff}
@@ -148,11 +149,11 @@ function inline(t) {
   return h.replace(/&lt;(.*?)&gt;/g, '<span class="v bool">$1</span>');
 }
 function block(x) {
-  if (Array.isArray(x)) { const m = x[0].match(/^(\w+)[:^](.*)$/); return '<div class="c ' + m[1] + '"><div class="head">' + inline(m[2]) + '</div><div class="in">' + x[1].map(block).join('') + '</div><div class="foot"></div></div>'; }
+  if (Array.isArray(x)) { const m = x[0].match(/^(\w+)[:^](.*)$/); return '<div class="c ' + m[1] + '"><div class="head">' + inline(m[2]) + '</div><div class="in">' + x[1].map(block).join('') + '</div>' + (x.length > 3 ? '<div class="head mid">' + inline(x[2]) + '</div><div class="in">' + x[3].map(block).join('') + '</div>' : '') + '<div class="foot"></div></div>'; }
   const m = x.match(/^(\w+)([:^])(.*)$/); return '<span class="b ' + m[1] + (m[2] === '^' ? ' hat' : '') + '">' + inline(m[3]) + '</span>';
 }
 /* 블록 조각: 조립하지 않고 흩어서 보여 줌. 반복·만일 블록은 안쪽을 비워 둔다. 섞는 순서는 단계마다 늘 같게 */
-function pieces(list, out) { list.forEach(x => { if (Array.isArray(x)) { out.push([x[0], []]); pieces(x[1], out); } else out.push(x); }); return out; }
+function pieces(list, out) { list.forEach(x => { if (Array.isArray(x)) { out.push(x.length > 3 ? [x[0], [], x[2], []] : [x[0], []]); pieces(x[1], out); if (x.length > 3) pieces(x[3], out); } else out.push(x); }); return out; }
 function shuffle(a, seed) {
   const r = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
   const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
@@ -162,8 +163,8 @@ function shuffle(a, seed) {
 /* 같은 블록은 한 번만: 숫자만 다른 블록은 하나로 합치고 숫자 칸을 비운다 */
 function uniq(list) {
   const key = x => (Array.isArray(x) ? x[0] : x).replace(/\[[^\]]*\]/g, '[]'), seen = new Map(), out = [];
-  list.forEach(x => { const k = key(x); if (!seen.has(k)) { seen.set(k, out.length); out.push(x); } else { const i = seen.get(k), y = out[i], ys = Array.isArray(y) ? y[0] : y, xs = Array.isArray(x) ? x[0] : x; if (ys !== xs) out[i] = Array.isArray(y) ? [k, []] : k.replace(/\[\]/g, '[ ]'); } });
-  return out.map(x => Array.isArray(x) ? [x[0].replace(/\[\]/g, '[ ]'), x[1]] : x);
+  list.forEach(x => { const k = key(x); if (!seen.has(k)) { seen.set(k, out.length); out.push(x); } else { const i = seen.get(k), y = out[i], ys = Array.isArray(y) ? y[0] : y, xs = Array.isArray(x) ? x[0] : x; if (ys !== xs) out[i] = Array.isArray(y) ? [k, ...y.slice(1)] : k.replace(/\[\]/g, '[ ]'); } });
+  return out.map(x => Array.isArray(x) ? [x[0].replace(/\[\]/g, '[ ]'), ...x.slice(1)] : x);
 }
 const pileHTML = (groups, seed) => groups.map((g, gi) => {
   const ps = shuffle(uniq(pieces(g.code, [])), seed * 31 + gi * 7 + 3);
