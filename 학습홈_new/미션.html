@@ -112,7 +112,7 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 (() => {
 const $ = id => document.getElementById(id);
 const Q = new URLSearchParams(location.search), ID = Q.get('id'), K = parseInt(Q.get('k'), 10) || 0;
-const F2 = Q.get('f') === '2', FOREST = F2 ? '엔트리숲.html' : '탐험_3D_시안.html', NLAB = Q.get('n');
+const F2 = Q.get('f') === '2', FOREST = F2 ? '엔트리숲.html' : '탐험_3D.html', NLAB = Q.get('n');
 const M = (window.ENTRY_MISSIONS || {})[ID];
 const KEY = 'studyhome_new_3d_demo', SKEY = 'studyhome_new_entry_steps';
 let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}

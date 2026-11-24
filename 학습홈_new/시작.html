@@ -116,7 +116,7 @@ body.teacher .tKey{opacity:1;background:#ffe9a8;box-shadow:0 0 0 2px #f2c94c}
 <div class="tLog" id="tLog"><div class="box"><b id="tTitle">선생님 로그인</b><input type="password" id="tPw" placeholder="비밀번호" autocomplete="off"><div class="row"><button id="tCancel" style="background:#eef2e8;color:#3d5230">취소</button><button id="tOk" style="background:linear-gradient(90deg,#ff8f5a,#ffb347);color:#fff">확인</button></div></div></div>
 <div class="toast" id="toast"></div>
 <div class="fade" id="fade"></div>
-<div class="nogl" id="nogl">이 컴퓨터에서는 3D 화면을 띄울 수 없어요.<br>같은 폴더의 '모험지도_시안.html'을 열어 주세요.</div>
+<div class="nogl" id="nogl">이 컴퓨터에서는 3D 화면을 띄울 수 없어요.<br>같은 폴더의 '모험지도.html'을 열어 주세요.</div>
 
 <script src="lib/three.min.js"></script>
 <script>
@@ -124,7 +124,7 @@ body.teacher .tKey{opacity:1;background:#ffe9a8;box-shadow:0 0 0 2px #f2c94c}
 const $ = id => document.getElementById(id);
 if (!window.THREE) { $('nogl').style.display = 'flex'; return; }
 const T = THREE;
-const REAL = 4, FOREST = '탐험_3D_시안.html', FOREST2 = '엔트리숲.html';
+const REAL = 4, FOREST = '탐험_3D.html', FOREST2 = '엔트리숲.html';
 const SD = () => { try { return Object.keys(S.scratch.done).filter(k => S.scratch.done[k]).length; } catch (e) { return 0; } };
 const ED = () => { try { return Object.keys(S.entry.done).filter(k => S.entry.done[k]).length; } catch (e) { return 0; } };
 const COLORS = ['#ff8a70', '#ffc94d', '#7fd39a', '#6cc4ee', '#8f9df2', '#c79bf2', '#f59ac4', '#f3f1ea'];
