@@ -13,14 +13,15 @@
 html,body{margin:0;min-height:100%;background:#f4f6f1;font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1d2a16;-webkit-font-smoothing:antialiased}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 /* 위 고정 줄: 숲길 · 완성작 해보기 */
-.topbar{position:sticky;top:0;z-index:20;background:rgba(244,246,241,.92);backdrop-filter:blur(8px)}
-.topbar .in{max-width:680px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:10px}
-.plain{display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1d2a16;border-radius:999px;padding:11px 20px;font-size:16px;font-weight:700;text-decoration:none;box-shadow:inset 0 0 0 1.5px #d9e0d1}
-.plain:hover{box-shadow:inset 0 0 0 1.5px #9fb08f}
-.playb{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:#5aa62a;color:#fff;border-radius:999px;padding:11px 20px;font-size:16px;font-weight:800}
-.playb:hover{background:#4d9322}
+.topbar .in{max-width:680px;margin:0 auto;padding:28px 18px 0;display:flex;align-items:center;gap:10px}
+.backl{font-size:15px;font-weight:700;color:#5f6b56;padding:4px 0}
+.backl:hover{color:#1d2a16}
+.ghost{font-size:15px;font-weight:700;color:#3b6d11;text-decoration:none}
+.ghost:hover{text-decoration:underline;text-underline-offset:4px}
+.playl{font-size:15px;font-weight:800;color:#3b6d11;white-space:nowrap}
+.playl:hover{text-decoration:underline;text-underline-offset:4px}
 .tbadge{font-size:12px;font-weight:800;color:#7a5600;background:#ffe9a8;border-radius:999px;padding:4px 10px}
-.page{max-width:680px;margin:0 auto;padding:10px 18px 60px}
+.page{max-width:680px;margin:0 auto;padding:0 18px 60px}
 .eyebrow{margin:14px 0 6px;font-size:14px;font-weight:800;color:#5aa62a}
 h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 .goal{margin:10px 0 0;font-size:16px;color:#5f6b56;line-height:1.65}
@@ -44,12 +45,10 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 .ib{display:none;padding:0 22px 22px 64px}
 .it.o .ib{display:block}
 .say{margin:0;font-size:17px;line-height:1.7;color:#3f4b36}
-.chips{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:9px 16px;font-size:15px;font-weight:800}
-.chip.h{background:#fff6d6;color:#8a5a00;box-shadow:inset 0 0 0 1.5px #ffd970}
-.chip.k{background:#e9f5ff;color:#1b5f8a;box-shadow:inset 0 0 0 1.5px #9fd2f3}
-.chip.a{background:#fff3c4;color:#7a5600;box-shadow:inset 0 0 0 1.5px #f2c94c}
-.chip.on{box-shadow:inset 0 0 0 2.5px currentColor}
+.chips{display:flex;gap:18px;margin-top:12px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:15px;font-weight:800;padding:2px 0;border-bottom:2px solid transparent}
+.chip.h{color:#a86a00}.chip.k{color:#1b6fa8}.chip.a{color:#8a6a00}
+.chip:hover,.chip.on{border-bottom-color:currentColor}
 .pane{margin-top:12px;padding:16px;border-radius:14px;background:#f7f9f4;font-size:16px;line-height:1.7;color:#3f4b36}
 .pane.h{background:#fffbea}
 .pane.code{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
@@ -57,7 +56,8 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 .pane .sub{display:block;margin-top:6px;font-size:14.5px;color:#7b6a3a}
 .ans .lab{width:100%;font-size:12px;font-weight:800;color:#8a6a00;margin:-2px 0 -6px}
 .okrow{display:flex;justify-content:flex-end;margin-top:16px}
-.ok{border-radius:999px;padding:9px 18px;font-size:15px;font-weight:800;background:#1d2a16;color:#fff}
+.ok{border-radius:999px;padding:7px 14px;font-size:14px;font-weight:700;color:#3b6d11;box-shadow:inset 0 0 0 1.5px #bcd5a6}
+.ok:hover{background:#5aa62a;color:#fff;box-shadow:none}
 /* 블록 */
 .obj{font-size:12px;font-weight:700;color:#8a9580;margin:0 0 6px}
 .pile{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 12px;max-width:100%}
@@ -78,36 +78,34 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 .start{background:#2fae51}.flow{background:#14b6d9}.move{background:#a34ee8}.look{background:#ee4f84}.sound{background:#7cb300}.judge{background:#4a63f0}
 /* 아래 */
 .foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:10px}
-.done{border-radius:999px;padding:12px 24px;font-size:16px;font-weight:800;background:#1d2a16;color:#fff}
+.done{border-radius:999px;padding:11px 22px;font-size:15px;font-weight:700;background:#1d2a16;color:#fff}
 .done.was{background:#e3ead9;color:#4b6a37}
 /* 완성작 창 */
 .modal{position:fixed;inset:0;background:rgba(20,28,14,.6);display:flex;align-items:center;justify-content:center;z-index:60;padding:18px;visibility:hidden;opacity:0;transition:opacity .15s}
 .modal.on{visibility:visible;opacity:1}
 .modal .box{width:min(900px,100%);background:#fff;border-radius:22px;overflow:hidden;display:flex;flex-direction:column}
 .modal .mh{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-weight:800;font-size:16px}
+.mclose{font-size:14px;font-weight:700;border-radius:999px;padding:7px 14px;background:#f1f4ed}
 .modal iframe{width:100%;height:min(640px,76vh);border:0;display:block}
 .empty{text-align:center;padding:60px 20px;font-size:17px;line-height:1.8;color:#4b6a37}
-@media (max-width:600px){.ib{padding-left:22px}h1{font-size:25px}.plain,.playb{padding:10px 14px;font-size:15px}}
+@media (max-width:600px){.ib{padding-left:22px}h1{font-size:25px}}
 </style>
 </head>
 <body>
-<div class="topbar"><div class="in">
-  <button class="plain" id="backBtn">← 숲길로</button>
-  <button class="playb" data-play hidden>▶ 완성작 해보기</button>
-</div></div>
+<div class="topbar"><div class="in"><button class="backl" id="backBtn">← 숲길</button></div></div>
 <div class="page" id="page">
   <p class="eyebrow" id="tag"></p>
   <h1 id="title"></h1>
   <p class="goal" id="goal"></p>
   <div class="needs" id="needs" hidden></div>
-  <div class="meta"><div class="bar"><i id="barI"></i></div><span id="count"></span></div>
+  <div class="meta"><div class="bar"><i id="barI"></i></div><span id="count"></span><button class="playl" data-play hidden>▶ 완성작</button></div>
   <ol class="list" id="steps"></ol>
   <div class="foot">
-    <a class="plain" href="https://playentry.org/ws/new" target="_blank" rel="noopener">엔트리 열기 ↗</a>
+    <a class="ghost" href="https://playentry.org/ws/new" target="_blank" rel="noopener">엔트리 열기 ↗</a>
     <button class="done" id="doneBtn"></button>
   </div>
 </div>
-<div class="modal" id="modal"><div class="box"><div class="mh"><span id="mTitle"></span><button class="plain" id="mClose" style="padding:8px 16px;font-size:15px">닫기 ✕</button></div><iframe id="mFrame" title="완성작"></iframe></div></div>
+<div class="modal" id="modal"><div class="box"><div class="mh"><span id="mTitle"></span><button class="mclose" id="mClose">닫기 ✕</button></div><iframe id="mFrame" title="완성작"></iframe></div></div>
 <script>/* 자료 파일은 고칠 때마다 바로 보이게 매번 새로 받아 온다 */ document.write('<script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script><script src="lib/entry_previews.js?t=' + Date.now() + '"><\/script>');</script>
 <script>
 (() => {
@@ -190,7 +188,7 @@ function draw() {
       (t === 'h' ? '<div class="pane h">' + (s.hint ? esc(s.hint) : '') + (s.note ? '<span class="sub">' + s.note + '</span>' : '') + '</div>' : '') +
       (t === 'k' && s.code ? '<div class="pane code">' + pileHTML(s.code, i + 1) + '</div>' : '') +
       (t === 'a' && s.code && TEACHER ? '<div class="pane ans"><p class="lab">정답 (원장님 화면에만 보여요)</p>' + codeHTML(s.code) + '</div>' : '') +
-      (done[i] ? '' : '<div class="okrow"><button class="ok" data-ck>' + (i === N - 1 ? '다 했어요 ⭐' : '다 했어요 ✓') + '</button></div>') + '</div></li>';
+      (done[i] ? '' : '<div class="okrow"><button class="ok" data-ck>' + '다 했어요 ✓' + '</button></div>') + '</div></li>';
   }).join('');
   const n = done.filter(Boolean).length; $('count').textContent = n + ' / ' + N; $('barI').style.width = (n / N * 100) + '%';
 }
@@ -218,7 +216,7 @@ const closeM = () => { $('modal').classList.remove('on'); try { const w = $('mFr
 $('mClose').addEventListener('click', closeM);
 $('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeM(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeM(); });
-if (TEACHER) { const t = document.createElement('span'); t.className = 'tbadge'; t.textContent = '🔑 선생님'; t.title = '선생님 모드: 블록이 있는 단계에 ✅ 정답이 보여요'; document.querySelector('.topbar .in').insertBefore(t, document.querySelector('[data-play]')); }
+if (TEACHER) { const t = document.createElement('span'); t.className = 'tbadge'; t.textContent = '🔑 선생님'; t.title = '선생님 모드: 블록이 있는 단계에 ✅ 정답이 보여요'; t.style.marginLeft = 'auto'; document.querySelector('.topbar .in').appendChild(t); }
 draw();
 })();
 </script>
