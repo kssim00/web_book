@@ -473,47 +473,21 @@ ul.desc-list{font-size:1.02rem; color:var(--ink); line-height:1.9; margin:8px 0 
     <h2 class="sec-title"><span class="sec-num">01</span>유니코드(Unicode)란?</h2>
     <p class="desc">컴퓨터는 문자를 숫자로 저장합니다. 아래 코드를 실행하면 어떤 결과가 나올까요?</p>
 
-    <div class="code-result-pair">
 <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">print(ord('a'))</code></pre>
+<pre><code class="py">print(ord('a'))   # 97
+print(ord('A'))   # 65
+print(ord('0'))   # 48</code></pre>
 </div>
-      <div class="pair-arrow">→</div><div class="result-chip">97</div>
-    </div>
-    <div class="code-result-pair">
-<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">print(ord('A'))</code></pre>
-</div>
-      <div class="pair-arrow">→</div><div class="result-chip">65</div>
-    </div>
-    <div class="code-result-pair">
-<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">print(ord('0'))</code></pre>
-</div>
-      <div class="pair-arrow">→</div><div class="result-chip">48</div>
-    </div>
 
     <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><b>문자마다 고유한 번호가 있습니다.</b> 이 번호를 <b>아스키(ASCII) 코드</b>라고 부릅니다.<br><code>ord()</code>는 문자를 넣으면 그 번호를 돌려주는 함수입니다.</div>
 
     <p class="desc" style="margin-top:28px;">반대로, 번호를 넣으면 문자가 나오는 함수도 있습니다.</p>
 
-    <div class="code-result-pair">
 <div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">print(chr(97))</code></pre>
+<pre><code class="py">print(chr(97))   # a
+print(chr(65))   # A
+print(chr(48))   # 0</code></pre>
 </div>
-      <div class="pair-arrow">→</div><div class="result-chip">a</div>
-    </div>
-    <div class="code-result-pair">
-<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">print(chr(65))</code></pre>
-</div>
-      <div class="pair-arrow">→</div><div class="result-chip">A</div>
-    </div>
-    <div class="code-result-pair">
-<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
-<pre><code class="py">print(chr(48))</code></pre>
-</div>
-      <div class="pair-arrow">→</div><div class="result-chip">0</div>
-    </div>
 
     <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><code>chr()</code>는 번호를 넣으면 그에 해당하는 문자를 돌려주는 함수입니다.<br><code>ord()</code>와 <code>chr()</code>는 서로 반대 방향으로 동작합니다.</div>
 
