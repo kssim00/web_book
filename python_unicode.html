@@ -1,953 +1,1019 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODE:N - 파이썬 유니코드와 변환 함수 완전 정복</title>
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
-    <style>
-        :root {
-            --primary: #6c63ff;
-            --primary-light: #ede9ff;
-            --secondary: #1a1a2e;
-            --accent: #00d4aa;
-            --bg-color: #f4f5fb;
-            --card-bg: #ffffff;
-            --code-bg: #16213e;
-            --text-main: #1a1a2e;
-            --text-muted: #6b7280;
-            --code-text: #e2e8f0;
-            --code-kw: #f472b6;
-            --code-fn: #60a5fa;
-            --code-st: #fbbf24;
-            --code-nm: #34d399;
-            --code-cm: #9ca3af;
-        }
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0; padding: 0;
-            font-size: 1rem; line-height: 1.6;
-        }
-        .container { max-width: 1100px; margin: 0 auto; padding: 33px 22px; }
-        header { text-align: center; margin-bottom: 40px; }
-        .brand-badge {
-            background: var(--secondary); color: #fff; padding: 4px 15px;
-            border-radius: 50px; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;
-        }
-        h1 { font-size: 2.2rem; font-weight: 900; color: var(--secondary); margin: 15px 0 5px 0; letter-spacing: -1px; }
-        .intro { font-size: 1.1rem; color: var(--text-muted); font-weight: 500; }
-        section {
-            background: var(--card-bg); border-radius: 16px; padding: 30px;
-            margin-bottom: 40px; border: 1px solid #e1e4e8;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        h2 {
-            font-size: 1.6rem; color: var(--primary); margin-bottom: 25px;
-            font-weight: 800; border-left: 6px solid var(--secondary);
-            padding-left: 15px; line-height: 1.2;
-        }
-        h3 { font-size: 1.05rem; font-weight: 800; color: var(--secondary); margin: 20px 0 10px; }
-        p { margin-bottom: 15px; font-size: 1rem; word-break: keep-all; }
-        code {
-            background: #ede9ff; color: #6c63ff; padding: 2px 6px;
-            border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.92em;
-        }
-        .code-wrapper {
-            background-color: var(--code-bg); border-radius: 12px; padding: 20px;
-            margin: 16px 0; border-left: 6px solid var(--primary); overflow-x: auto;
-        }
-        pre {
-            margin: 0; font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.95rem; font-weight: 500; color: var(--code-text);
-            line-height: 1.7; white-space: pre;
-        }
-        .kw { color: var(--code-kw); }
-        .fn { color: var(--code-fn); }
-        .st { color: var(--code-st); }
-        .nm { color: var(--code-nm); }
-        .cm { color: var(--code-cm); font-weight: 400; font-size: 0.88rem; font-style: italic; }
-        .output {
-            background: #f1f2f6; border-radius: 8px; padding: 14px 16px;
-            font-family: 'Consolas', monospace; font-size: 0.9rem; color: #2d3436;
-            border: 1px dashed #b2bec3; margin-top: 12px; white-space: pre-wrap;
-        }
-        .output::before { content: "💻 실행 결과:"; display: block; font-weight: bold; margin-bottom: 5px; color: var(--primary); font-size: 0.85rem; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CODE:N - 파이썬 유니코드와 변환 함수 완전 정복</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 
-        /* Code + Result pair */
-        .code-result-pair {
-            display: flex; gap: 14px; align-items: stretch; margin: 14px 0; flex-wrap: wrap;
-        }
-        .code-result-pair .code-wrapper { flex: 1; min-width: 240px; margin: 0; }
-        .arrow-col {
-            display: flex; align-items: center; padding-top: 0;
-            font-size: 1.4rem; color: var(--primary); flex-shrink: 0;
-        }
-        .result-box {
-            flex: 0 0 110px; background: #0f172a; border-radius: 12px;
-            padding: 16px 20px; font-family: 'Consolas', monospace;
-            font-size: 1.2rem; color: var(--accent); font-weight: 900;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid #2e3a52;
-        }
+:root{
+  --bg:#faf9f6;
+  --surface:#ffffff;
+  --ink:#1c1c22;
+  --sub:#6b6f76;
+  --line:#e9e6df;
+  --accent:#5b56e0;
+  --accent-soft:#efeeff;
+  --accent2:#ff6b57;
+  --code-bg:#1b1b23;
+  --code-ink:#e7e5f3;
+  --good:#1f9d63;
+  --good-soft:#e6f7ee;
+  --bad:#e0483f;
+  --bad-soft:#fdecea;
+  --warn:#e2962c;
+  --warn-soft:#fdf3e2;
+  --radius:18px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  line-height:1.6;
+  padding-left:252px;
+  transition:padding-left 0.28s ease;
+  word-break:keep-all; overflow-wrap:break-word;
+}
+body.nav-collapsed{padding-left:0;}
+a{color:inherit;}
 
-        /* Tip Box */
-        .tip-box {
-            background: linear-gradient(135deg, #e0f7f4, #d4edfa);
-            border-left: 6px solid var(--accent); border-radius: 0 12px 12px 0;
-            padding: 18px 20px; margin: 20px 0; color: #065f46;
-        }
-        .tip-title { font-weight: 800; font-size: 1rem; margin-bottom: 6px; }
+/* sidebar */
+.sidebar{
+  position:fixed; top:0; left:0; bottom:0; width:252px;
+  background:var(--surface); border-right:1px solid var(--line);
+  padding:26px 18px; display:flex; flex-direction:column;
+  z-index:60; overflow-y:auto;
+  transition:transform 0.28s ease;
+}
+body.nav-collapsed .sidebar{transform:translateX(-100%);}
+.sidebar-top{display:flex; align-items:center; gap:8px; margin-bottom:20px; flex-wrap:wrap;}
+.brand{
+  font-weight:800; font-size:0.8rem; letter-spacing:0.5px;
+  background:var(--ink); color:#fff; padding:5px 12px; border-radius:50px;
+}
+.edition-tag{
+  font-size:0.75rem; font-weight:700; color:var(--accent);
+  background:var(--accent-soft); padding:5px 11px; border-radius:50px;
+}
+.sidebar nav{display:flex; flex-direction:column; gap:2px; flex:1; margin-top:6px;}
+.sidebar nav a{
+  display:flex; align-items:baseline; gap:10px; padding:9px 10px; border-radius:10px;
+  font-size:0.85rem; color:var(--sub); text-decoration:none; font-weight:600;
+}
+.sidebar nav a span.n{font-size:0.7rem; font-weight:800; color:#c9c6bd; width:16px; flex-shrink:0;}
+.sidebar nav a:hover{background:var(--accent-soft); color:var(--accent);}
+.sidebar nav a.active{background:var(--accent); color:#fff;}
+.sidebar nav a.active span.n{color:rgba(255,255,255,0.7);}
 
-        /* Drill Boxes */
-        .drill-together {
-            background-color: #f0eeff; border: 1px solid #c4b5fd;
-            border-left: 5px solid var(--primary); border-radius: 12px;
-            padding: 20px; margin-top: 25px;
-        }
-        .drill-solo {
-            background-color: #e6fdf8; border: 1px solid #99e9d8;
-            border-left: 5px solid var(--accent); border-radius: 12px;
-            padding: 20px; margin-top: 25px;
-        }
-        .drill-together h3, .drill-solo h3 { margin-top: 0; font-weight: 800; font-size: 1rem; color: var(--secondary); }
-        details {
-            margin-top: 15px; background: white; padding: 15px;
-            border-radius: 8px; border: 1px solid #ddd; cursor: pointer;
-        }
-        summary { font-weight: bold; font-size: 1rem; color: var(--secondary); list-style: none; display: flex; align-items: center; gap: 8px; }
-        .answer-content { margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; color: #6b7280; font-size: 0.95rem; }
-        .answer-content strong { color: var(--primary); }
+.nav-toggle{
+  position:fixed; top:50%; left:252px; z-index:70;
+  width:15px; height:52px; transform:translateY(-50%);
+  border-radius:0 8px 8px 0; border:none; border-left:none;
+  background:var(--line); color:var(--sub);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; padding:0; font-size:0.68rem; line-height:1;
+  opacity:0.55; transition:left 0.28s ease, opacity 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+.nav-toggle:hover{opacity:1; background:var(--accent-soft); color:var(--accent);}
+.nav-toggle::after{content:"‹";}
+body.nav-collapsed .nav-toggle{left:0;}
+body.nav-collapsed .nav-toggle::after{content:"›";}
 
-        /* Code Editor */
-        .code-editor {
-            min-height: 220px; height: auto; width: 100%;
-            font-size: 0.95rem; line-height: 1.7;
-            border: 2px solid #2e3a52; border-radius: 8px;
-            margin: 10px 0; padding: 14px 16px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            white-space: pre; resize: vertical; outline: none;
-            background-color: #16213e; color: #e2e8f0;
-            caret-color: #6c63ff; overflow-y: hidden; display: block;
-        }
-        .code-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108,99,255,0.15); overflow-y: auto; }
-        .run-btn {
-            background: var(--secondary); color: white; border: none;
-            padding: 10px 22px; border-radius: 8px; cursor: pointer;
-            font-size: 0.95rem; font-weight: bold; transition: 0.3s;
-        }
-        .run-btn:hover { background: var(--primary); }
-        .output-area {
-            background: #f1f2f6; padding: 12px; border-radius: 8px;
-            font-family: 'Consolas', monospace; margin-top: 10px;
-            white-space: pre-wrap; font-size: 0.9rem; min-height: 40px; border: 1px solid #eee;
-        }
+/* layout */
+main{max-width:780px; margin:0 auto; padding:0 24px;}
+.section{
+  padding:72px 0; border-top:1px solid var(--line);
+  scroll-margin-top:70px;
+}
+.section:first-of-type{border-top:none;}
+.hero{padding:64px 0 56px; border-top:none;}
 
-        /* Blank Input */
-        .blank-input {
-            font-size: 0.95rem; padding: 3px 8px; border: 2px solid var(--primary);
-            border-radius: 6px; width: 110px; text-align: center;
-            font-family: 'Consolas', monospace; font-weight: 700; outline: none;
-            margin: 0 5px; background-color: #fff; transition: background-color 0.3s;
-        }
-        .drill-feedback { margin-top: 15px; font-weight: bold; font-size: 0.95rem; padding: 12px; border-radius: 8px; display: none; }
-        .drill-feedback.show { display: block; }
+.eyebrow{
+  display:inline-block; font-size:0.86rem; font-weight:800; letter-spacing:0.6px;
+  color:var(--accent2); text-transform:uppercase; margin-bottom:10px;
+}
+.sec-num{font-size:0.86rem; font-weight:800; color:#c9c6bd; margin-right:8px;}
+h2.sec-title{
+  font-size:2.1rem; font-weight:800; margin:0 0 14px; letter-spacing:-0.5px;
+}
+.hero h1{
+  font-size:2.7rem; font-weight:800; margin:0 0 16px; letter-spacing:-1px; line-height:1.3;
+}
+.desc{font-size:1.15rem; color:var(--sub); margin:0 0 24px; max-width:640px;}
+.desc b{color:var(--ink); font-weight:700;}
+h3.sub-title{font-size:1.15rem; font-weight:800; margin:28px 0 10px;}
 
-        /* Challenge Box */
-        .challenge-box {
-            background: #fdfefe; border: 2px solid var(--secondary);
-            border-radius: 12px; padding: 22px; margin-bottom: 25px;
-        }
-        .challenge-badge {
-            background: var(--secondary); color: white; padding: 3px 10px;
-            border-radius: 6px; font-weight: bold; font-size: 0.8rem;
-            display: inline-block; margin-bottom: 10px;
-        }
-        .challenge-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; color: var(--secondary); }
-        .io-example {
-            background: #f1f2f6; padding: 12px; border-radius: 6px;
-            font-family: 'Consolas', monospace; margin: 10px 0;
-            font-size: 0.9rem; white-space: pre; line-height: 1.7;
-        }
-        .story-badge {
-            display: inline-block; background: #fff3cd; color: #856404;
-            border: 1px solid #ffc107; border-radius: 20px;
-            padding: 4px 12px; font-size: 0.82rem; font-weight: 700; margin-bottom: 10px;
-        }
+/* code card */
+.code-card{
+  background:var(--code-bg); border-radius:var(--radius);
+  padding:22px 24px; margin:20px 0; overflow-x:auto;
+  box-shadow:0 14px 34px rgba(20,20,30,0.16);
+}
+.code-dots{display:flex; gap:6px; margin-bottom:14px;}
+.code-dots span{width:9px; height:9px; border-radius:50%; background:#3a3a46;}
+pre{margin:0; font-family:'SF Mono','Consolas','Menlo',monospace; font-size:1.02rem; color:var(--code-ink); line-height:1.7; white-space:pre;}
+.c-kw{color:#ff7f9c; font-weight:600;}
+.c-bi{color:#7fd8ff;}
+.c-str{color:#b9f18c;}
+.c-num{color:#ffc978;}
+.c-cm{color:#7a7d8c; font-style:italic;}
+code:not(.py):not(.quiz-code){background:var(--accent-soft); color:var(--accent); padding:2px 7px; border-radius:5px; font-family:'SF Mono','Consolas',monospace; font-size:0.92em; font-weight:600;}
 
-        /* ord-chr direction diagram */
-        .diagram-wrap {
-            display: flex; align-items: center; justify-content: center;
-            gap: 0; margin: 28px 0; flex-wrap: wrap;
-        }
-        .diagram-box {
-            background: var(--secondary); color: white;
-            border-radius: 14px; padding: 18px 32px; text-align: center; min-width: 120px;
-        }
-        .diagram-box .db-label { font-size: 0.78rem; color: #94a3b8; margin-bottom: 4px; }
-        .diagram-box .db-val { font-size: 1.4rem; font-weight: 900; font-family: 'Consolas', monospace; }
-        .diagram-arrows {
-            display: flex; flex-direction: column; gap: 8px;
-            align-items: center; margin: 0 18px;
-        }
-        .diagram-arrow {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 0.85rem; font-weight: 700; white-space: nowrap;
-        }
-        .fn-tag {
-            background: var(--primary-light); color: var(--primary);
-            padding: 4px 12px; border-radius: 20px;
-            font-family: 'Consolas', monospace; font-size: 0.85rem;
-        }
-        .fn-tag-acc {
-            background: #e6fdf8; color: var(--accent);
-            padding: 4px 12px; border-radius: 20px;
-            font-family: 'Consolas', monospace; font-size: 0.85rem;
-        }
+.code-result-pair{display:flex; align-items:center; gap:18px; margin:20px 0; flex-wrap:wrap;}
+.code-result-pair .code-card{flex:1; min-width:260px; margin:0;}
+.pair-arrow{font-size:1.4rem; color:var(--accent); font-weight:800; flex-shrink:0;}
+.result-chip{
+  flex:0 0 auto; min-width:120px; background:var(--ink); border-radius:14px;
+  padding:16px 20px; font-family:'SF Mono',monospace; font-size:1.02rem; color:#7fe6c8;
+  font-weight:800; display:flex; align-items:center; justify-content:center;
+  white-space:pre; line-height:1.5; text-align:center;
+}
 
-        /* Unicode Table */
-        .unicode-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        .unicode-table th, .unicode-table td {
-            border: 1px solid #e5e7eb; padding: 9px 12px; text-align: center; font-size: 0.92rem;
-        }
-        .unicode-table th { background: var(--primary-light); color: var(--primary); font-weight: 800; }
-        .unicode-table td:first-child { font-family: 'Consolas', monospace; font-weight: 700; font-size: 1rem; }
-        .unicode-table tr:hover td { background: #f8f7ff; }
+/* callouts */
+.callout{
+  background:var(--accent-soft); border-radius:14px; padding:16px 18px;
+  font-size:1.02rem; color:var(--ink); margin:16px 0;
+}
+.callout b{color:var(--accent);}
+.callout .callout-title{font-weight:800; margin-bottom:6px; display:block;}
+.callout.warn{background:var(--warn-soft); color:#7a5210;}
+.callout.warn b, .callout.warn .callout-title{color:var(--warn);}
+.callout.warn code{background:#fff; color:var(--warn);}
 
-        /* Quiz */
-        .quiz-item { background: white; padding: 20px; border-radius: 12px; border: 1px solid #dfe6e9; margin-bottom: 20px; }
-        .quiz-question { font-weight: bold; margin-bottom: 15px; font-size: 1.05rem; }
-        .quiz-options label { display: block; padding: 10px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; border-radius: 6px; margin-bottom: 3px; }
-        .quiz-options label:hover { background: #f0eeff; }
-        .btn-check {
-            background: var(--secondary); color: white; border: none;
-            padding: 15px 30px; font-size: 1.1rem; border-radius: 12px;
-            cursor: pointer; width: 100%; font-weight: bold; transition: 0.3s;
-        }
-        .btn-check:hover { background: var(--primary); }
+/* result table */
+.result-table{width:100%; border-collapse:collapse; margin:16px 0; font-size:1rem; background:var(--surface); border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(20,20,30,0.05);}
+.result-table th, .result-table td{padding:11px 14px; border-bottom:1px solid var(--line); text-align:left;}
+.result-table th{color:#fff; background:var(--ink); font-weight:700; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.3px;}
+.result-table tr:last-child td{border-bottom:none;}
+.result-table tr.hl td{background:var(--accent-soft);}
+.result-table .yes{color:var(--good); font-weight:700;}
+.result-table .no{color:var(--bad); font-weight:700;}
 
-        footer { text-align: center; padding: 40px 0; color: var(--text-muted); border-top: 1px solid #dcdde1; margin-top: 50px; font-size: 0.9rem; }
+/* trace table */
+.trace-table{width:100%; border-collapse:collapse; margin:14px 0; font-size:0.95rem; font-family:'SF Mono',monospace; background:var(--surface); border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(20,20,30,0.05);}
+.trace-table th{background:var(--ink); color:#fff; padding:10px 12px; font-weight:700; font-size:0.8rem; font-family:'Pretendard',sans-serif;}
+.trace-table td{padding:10px 12px; border-bottom:1px solid var(--line); text-align:center;}
+.trace-table tr:last-child td{border-bottom:none;}
 
-        /* Side Nav */
-        nav {
-            width: 264px; height: 100vh; background: white;
-            border-right: 1px solid #e1e8ed; position: fixed; top: 0; left: 0;
-            padding: 33px 16px; box-sizing: border-box;
-            overflow-y: auto; overflow-x: hidden; z-index: 100;
-            transition: width 0.3s ease, padding 0.3s ease;
-        }
-        nav.collapsed { width: 0; padding: 0; }
-        nav.collapsed * { opacity: 0; pointer-events: none; }
-        nav h2 {
-            font-size: 1rem; color: var(--primary); margin: 0 0 20px 0; font-weight: 800;
-            border: none; border-bottom: 2px solid var(--primary-light);
-            padding: 0 0 12px 0; white-space: nowrap;
-        }
-        nav ul { list-style: none; padding: 0; margin: 0; }
-        nav li {
-            padding: 10px 14px; border-radius: 8px; margin-bottom: 4px;
-            cursor: pointer; transition: 0.2s; color: var(--text-muted);
-            font-size: 0.88rem; font-weight: 600; line-height: 1.4; white-space: nowrap;
-        }
-        nav li:hover { background: var(--primary-light); color: var(--primary); }
-        nav li.active { background: var(--primary); color: white; }
-        nav li.nav-check { padding-left: 10px; color: var(--accent); font-size: 0.82rem; }
-        nav li.nav-check::before { content: "✔"; display: inline-block; margin-right: 7px; font-size: 0.75rem; color: var(--accent); }
-        nav li.nav-check:hover { background: #e6fdf8; color: #059669; }
-        nav li.nav-check.active { background: var(--accent); color: white; }
-        nav li.nav-check.active::before { color: white; }
-        #nav-toggle {
-            position: fixed; top: 50%; left: 264px; transform: translateY(-50%);
-            width: 20px; height: 56px; background: var(--primary);
-            border: none; border-radius: 0 8px 8px 0; cursor: pointer;
-            z-index: 200; display: flex; align-items: center; justify-content: center;
-            transition: left 0.3s ease, background 0.2s;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1); padding: 0;
-        }
-        #nav-toggle:hover { background: #4f46e5; }
-        #nav-toggle svg { transition: transform 0.3s ease; }
-        #nav-toggle.collapsed-btn { left: 0; }
-        #nav-toggle.collapsed-btn svg { transform: rotate(180deg); }
-        html { font-size: 110%; }
-        body { padding-left: 264px; transition: padding-left 0.3s ease; }
-        body.nav-collapsed { padding-left: 0; }
-    </style>
+/* practice */
+.practice{
+  border:1.5px dashed #d8d4c8; border-radius:16px; padding:20px 22px; margin:22px 0;
+  background:#fffdf9;
+}
+.practice .tag{font-size:0.82rem; font-weight:800; color:var(--accent2); letter-spacing:0.5px; margin-bottom:6px;}
+.practice p{margin:4px 0 0; font-size:1.02rem;}
+.practice .io-example{background:var(--accent-soft); color:var(--ink); padding:12px 14px; border-radius:10px; font-family:'SF Mono',monospace; font-size:0.92rem; margin:12px 0; white-space:pre-wrap;}
+.practice details{margin-top:14px;}
+.practice summary{
+  cursor:pointer; font-size:0.94rem; font-weight:700; color:var(--accent);
+  list-style:none; display:inline-flex; align-items:center; gap:6px;
+}
+.practice summary::-webkit-details-marker{display:none;}
+.practice summary::before{content:"▸"; transition:transform 0.15s;}
+.practice details[open] summary::before{transform:rotate(90deg);}
+.practice details .code-card{margin-top:12px;}
+.practice .blank-input{margin:10px 4px 0 0;}
+
+/* quiz card (single, one-click) */
+.quiz-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:16px;
+  padding:20px 22px; margin:18px 0; box-shadow:0 6px 18px rgba(20,20,30,0.05);
+}
+.quiz-q{font-weight:700; font-size:1.05rem; margin-bottom:14px;}
+.quiz-opt-btns{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+.quiz-opt-btn{
+  background:var(--surface); border:1.5px solid var(--line); color:var(--ink);
+  padding:8px 16px; border-radius:8px; font-size:0.95rem; font-family:inherit;
+  cursor:pointer; font-weight:600; transition:0.15s;
+}
+.quiz-opt-btn:hover{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.quiz-opt-btn:disabled{cursor:default;}
+.quiz-opt-btn.correct{background:var(--good-soft); border-color:var(--good); color:var(--good);}
+.quiz-opt-btn.wrong{background:var(--bad-soft); border-color:var(--bad); color:var(--bad);}
+.quiz-fb{font-size:0.95rem; padding:10px 14px; border-radius:10px; display:none; font-weight:600; margin-top:4px;}
+.quiz-fb.show{display:block;}
+.quiz-fb.ok{background:var(--good-soft); color:var(--good);}
+.quiz-fb.no{background:var(--bad-soft); color:var(--bad);}
+
+/* quiz card (radio, grouped final quiz) */
+.quiz-opts label{
+  display:block; padding:10px 12px; border-radius:10px; cursor:pointer; font-size:0.98rem;
+  margin-bottom:4px; transition:0.15s; border:1px solid transparent;
+}
+.quiz-opts label:hover{background:var(--accent-soft);}
+.quiz-opts label.correct{background:var(--good-soft); color:var(--good); font-weight:700; border-color:var(--good);}
+.quiz-opts label.wrong{background:var(--bad-soft); color:var(--bad); font-weight:700; border-color:var(--bad);}
+.quiz-check-btn{
+  background:none; border:1.5px solid var(--accent); color:var(--accent); padding:8px 18px;
+  border-radius:50px; font-size:0.88rem; font-weight:700; cursor:pointer; margin-top:6px; font-family:inherit;
+}
+.quiz-check-btn:hover{background:var(--accent-soft);}
+
+.check-set-btn{
+  background:var(--ink); color:#fff; border:none; padding:14px 0; width:100%; border-radius:50px;
+  font-size:1.02rem; font-weight:700; cursor:pointer; margin-top:8px; font-family:inherit; transition:0.2s;
+}
+.check-set-btn:hover{background:var(--accent);}
+
+/* final score card */
+.final-score{
+  text-align:center; padding:36px 24px; background:var(--accent-soft);
+  border:2px solid var(--accent); border-radius:20px; margin-top:24px; display:none;
+}
+.final-score.show{display:block;}
+.final-score-num{font-size:3rem; font-weight:800; color:var(--accent); line-height:1;}
+.final-score-msg{font-size:1.05rem; color:var(--ink); margin-top:10px; font-weight:700;}
+.btn-retry{
+  display:block; margin:12px auto 0; background:transparent; color:var(--sub);
+  border:1.5px solid var(--line); padding:9px 26px; border-radius:20px;
+  font-size:0.95rem; cursor:pointer; font-family:inherit; transition:0.2s;
+}
+.btn-retry:hover{border-color:var(--accent); color:var(--accent);}
+
+.drill-feedback{margin-top:14px; font-weight:700; font-size:0.96rem; padding:12px 14px; border-radius:10px; display:none;}
+.drill-feedback.show{display:block;}
+.blank-input{
+  font-size:0.98rem; padding:5px 10px; border:1.5px solid var(--accent); border-radius:8px;
+  width:150px; text-align:center; font-family:'SF Mono',monospace; font-weight:700;
+  outline:none; margin:2px 4px; background:#fff; color:var(--ink);
+}
+
+/* challenge box */
+.challenge-box{
+  background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:22px 24px;
+  margin-bottom:22px; box-shadow:0 6px 18px rgba(20,20,30,0.05);
+}
+.challenge-badge{
+  display:inline-block; background:var(--accent); color:#fff; padding:4px 12px; border-radius:50px;
+  font-weight:800; font-size:0.78rem; margin-bottom:10px;
+}
+.challenge-badge.hard{background:var(--accent2);}
+.challenge-title{font-size:1.1rem; font-weight:800; margin-bottom:8px;}
+.challenge-box .io-example{background:var(--accent-soft); padding:11px 14px; border-radius:10px; font-family:'SF Mono',monospace; font-size:0.9rem; margin:10px 0; white-space:pre-wrap;}
+.challenge-box details{margin-top:10px;}
+.challenge-box summary{cursor:pointer; font-size:0.94rem; font-weight:700; color:var(--accent); list-style:none; display:inline-flex; align-items:center; gap:6px;}
+.challenge-box summary::-webkit-details-marker{display:none;}
+.challenge-box summary::before{content:"▸"; transition:transform 0.15s;}
+.challenge-box details[open] summary::before{transform:rotate(90deg);}
+
+/* index visualization */
+.idx-viz{display:flex; margin:18px 0; border-radius:14px; overflow:hidden; background:var(--code-bg);}
+.idx-cell{flex:1; text-align:center; border-right:1px solid rgba(255,255,255,0.08);}
+.idx-cell:last-child{border-right:none;}
+.idx-val{padding:14px 6px; font-family:'SF Mono',monospace; font-size:1.05rem; font-weight:700; color:var(--code-ink);}
+.idx-pos{padding:5px 4px; font-size:0.78rem; font-family:'SF Mono',monospace; color:#7fd8ff; font-weight:700; border-top:1px solid rgba(255,255,255,0.08);}
+.idx-neg{padding:3px 4px 8px; font-size:0.75rem; font-family:'SF Mono',monospace; color:#ffc978;}
+
+.summary-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+.summary-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px;
+  box-shadow:0 6px 18px rgba(20,20,30,0.05);
+}
+.summary-card code{font-family:'SF Mono',monospace; font-weight:700; color:var(--accent); font-size:1.05rem;}
+.summary-card p{margin:8px 0 0; font-size:0.96rem; color:var(--sub);}
+
+footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center;}
+.next-card{
+  background:var(--ink); color:#fff; border-radius:20px; padding:32px 28px;
+  display:flex; flex-direction:column; align-items:center; gap:14px; margin-bottom:28px;
+}
+.next-card p{margin:0; color:#c9c8d6; font-size:1.05rem;}
+.next-card a.btn{
+  background:#fff; color:var(--ink); font-weight:800; padding:12px 22px; border-radius:50px;
+  text-decoration:none; font-size:1rem;
+}
+.copyright{color:#a8a49a; font-size:0.8rem;}
+
+@media (max-width:900px){
+  body{padding-left:0;}
+  .sidebar{transform:translateX(-100%); box-shadow:0 0 40px rgba(20,20,30,0.18);}
+  body.nav-open .sidebar{transform:translateX(0);}
+  .nav-toggle{left:0;}
+  .nav-toggle::after{content:"›";}
+  body.nav-open .nav-toggle{left:252px;}
+  body.nav-open .nav-toggle::after{content:"‹";}
+}
+@media (max-width:640px){
+  .hero h1{font-size:2.1rem;}
+  h2.sec-title{font-size:1.7rem;}
+  .summary-grid{grid-template-columns:1fr;}
+  .idx-viz{flex-wrap:wrap;}
+}
+
+/* ===== 추가 컴포넌트 (튜플 교재 디자인 기준) ===== */
+.summary-grid.three{grid-template-columns:repeat(3,1fr);}
+.summary-card .card-title{display:block; font-weight:800; font-size:1.05rem; color:var(--ink);}
+.code-card.sm pre{font-size:0.9rem;}
+.challenge-box details .code-card{margin-top:12px;}
+.challenge-box p{margin:0 0 10px; font-size:1.02rem;}
+.hint{margin-top:10px; font-size:0.96rem; padding:12px 14px; border-radius:10px; background:var(--accent-soft); color:var(--ink);}
+ul.desc-list{font-size:1.02rem; color:var(--ink); line-height:1.9; margin:8px 0 14px; padding-left:22px;}
+
+/* 실행 결과(고정) */
+.output-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:14px 18px; margin:-6px 0 20px; font-family:'SF Mono','Consolas','Menlo',monospace;
+  font-size:0.98rem; line-height:1.6; white-space:pre; overflow-x:auto; color:var(--ink);
+  box-shadow:0 6px 18px rgba(20,20,30,0.05);
+}
+.output-card.labeled::before{
+  content:"실행 결과"; display:block; font-family:'Pretendard',sans-serif; font-size:0.74rem;
+  font-weight:800; letter-spacing:0.4px; color:var(--accent); margin-bottom:6px;
+}
+
+/* 코드 실행기 */
+.run-card{margin:14px 0 4px;}
+.code-editor{
+  display:block; width:100%; min-height:110px; resize:vertical;
+  background:var(--code-bg); color:var(--code-ink); border:none; outline:none;
+  border-radius:var(--radius); padding:18px 20px; tab-size:4;
+  font-family:'SF Mono','Consolas','Menlo',monospace; font-size:1rem; line-height:1.7;
+  white-space:pre; overflow-x:auto; box-shadow:0 14px 34px rgba(20,20,30,0.16);
+}
+.code-editor:focus{box-shadow:0 0 0 3px var(--accent-soft), 0 14px 34px rgba(20,20,30,0.16);}
+.run-btn{
+  background:var(--accent); color:#fff; border:none; padding:9px 22px; border-radius:50px;
+  font-size:0.92rem; font-weight:700; cursor:pointer; margin-top:10px; font-family:inherit; transition:0.2s;
+}
+.run-btn:hover{background:var(--ink);}
+.output-area{
+  margin-top:10px; background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:14px 18px; font-family:'SF Mono','Consolas','Menlo',monospace; font-size:0.98rem;
+  line-height:1.6; white-space:pre-wrap; word-break:break-all; color:var(--ink);
+}
+.output-area:empty{display:none;}
+.output-area.err{color:var(--bad); background:var(--bad-soft); border-color:var(--bad);}
+
+.vs-label{font-size:0.82rem; font-weight:800; color:var(--accent); margin:14px 0 -10px;}
+/* 빈칸 코드 */
+.blank-code{
+  background:var(--accent-soft); border-radius:12px; padding:14px 18px; margin:12px 0;
+  font-family:'SF Mono','Consolas','Menlo',monospace; font-size:0.98rem; line-height:2.5;
+  white-space:pre-wrap; color:var(--ink);
+}
+.blank-code .blank-input{margin:0 2px;}
+.blank-code .cm{color:var(--sub); font-style:italic;}
+.blank-input.w60{width:60px;} .blank-input.w80{width:80px;} .blank-input.w120{width:120px;} .blank-input.w180{width:180px;}
+
+.trace-table td.hl-cell{background:var(--accent-soft); color:var(--accent); font-weight:800;}
+.trace-table td.note{font-family:'Pretendard',sans-serif; font-size:0.88rem; color:var(--sub); text-align:left;}
+
+/* 별 찍기 */
+.mini-btn{
+  display:inline-flex; align-items:center; gap:4px; vertical-align:middle;
+  background:none; border:1.5px solid var(--accent); color:var(--accent);
+  padding:4px 12px; border-radius:50px; font-size:0.78rem; font-weight:700;
+  cursor:pointer; font-family:inherit; letter-spacing:0;
+}
+.mini-btn:hover{background:var(--accent-soft);}
+.star-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0;}
+.star-item{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 6px 18px rgba(20,20,30,0.05); min-width:0;}
+.star-head{display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; font-size:1rem; margin-bottom:10px;}
+.star-item .output-card{margin:0 0 10px; box-shadow:none; background:var(--bg);}
+.star-item .code-card{margin:0; padding:16px 18px; box-shadow:none;}
+.star-tip{font-size:0.86rem; color:var(--sub); margin:8px 0 0;}
+.star-head .hint-btn{display:none;}
+.star-grid.codes-hidden .hint-btn{display:inline-flex;}
+.star-grid.codes-hidden .star-code{display:none;}
+.star-grid.codes-hidden .star-item.open .star-code{display:block;}
+
+/* 나란히 비교 */
+.compare-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0; align-items:start;}
+.compare-box{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 6px 18px rgba(20,20,30,0.05); min-width:0;}
+.compare-box.a{border-top:4px solid var(--accent);}
+.compare-box.b{border-top:4px solid var(--accent2);}
+.compare-box.good{border-top:4px solid var(--good);}
+.compare-box.bad{border-top:4px solid var(--bad);}
+.compare-title{font-weight:800; font-size:1.05rem; margin-bottom:6px;}
+.compare-box.a .compare-title{color:var(--accent);} .compare-box.b .compare-title{color:var(--accent2);}
+.compare-box.good .compare-title{color:var(--good);} .compare-box.bad .compare-title{color:var(--bad);}
+.compare-box p{margin:0 0 10px; font-size:0.96rem; color:var(--sub);}
+.compare-box .code-card{margin:0; padding:16px 18px; box-shadow:none;}
+.compare-box .code-card pre{font-size:0.82rem;}
+.compare-note{font-size:0.86rem; color:var(--sub); margin:8px 0 0 !important; font-weight:600;}
+
+/* 2차원 리스트 */
+.matrix{display:inline-grid; grid-template-columns:auto repeat(3,64px); gap:6px; align-items:center; margin:18px auto 6px;}
+.matrix .lab{font-family:'SF Mono',monospace; font-size:0.82rem; font-weight:700; color:var(--sub); padding-right:6px;}
+.matrix .cell{background:var(--code-bg); color:var(--code-ink); border-radius:10px; padding:12px 0; text-align:center; font-family:'SF Mono',monospace; font-weight:700;}
+.matrix .cell.on{background:var(--accent2); color:#fff;}
+.center-note{font-size:0.85rem; color:var(--sub); text-align:center; margin:4px 0 20px;}
+
+/* 변환 다이어그램 */
+.conv-diagram{display:flex; align-items:center; justify-content:center; gap:22px; margin:26px 0; flex-wrap:wrap;}
+.conv-box{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px 30px; text-align:center; box-shadow:0 6px 18px rgba(20,20,30,0.05);}
+.conv-box.dark{background:var(--code-bg); border-color:var(--code-bg);}
+.conv-box .lab{font-size:0.78rem; font-weight:800; color:var(--sub); letter-spacing:0.4px;}
+.conv-box .val{font-family:'SF Mono',monospace; font-size:1.6rem; font-weight:800; color:var(--accent);}
+.conv-box.dark .lab{color:#9a9bb0;} .conv-box.dark .val{color:#7fe6c8;}
+.conv-arrows{display:flex; flex-direction:column; gap:8px; font-family:'SF Mono',monospace; font-weight:800; font-size:0.95rem;}
+.conv-arrows .to{color:var(--accent);} .conv-arrows .back{color:var(--accent2);}
+
+/* 벤 다이어그램 */
+.venn-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0;}
+.venn-item{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px 14px; text-align:center; box-shadow:0 6px 18px rgba(20,20,30,0.05);}
+.venn-svg{width:100%; max-width:170px; height:auto;}
+.venn-circle{fill:none; stroke:var(--accent); stroke-width:2;}
+.venn-fill{fill:var(--accent); stroke:var(--accent); stroke-width:2; fill-opacity:0.85;}
+.venn-diff{fill:var(--accent);}
+.venn-label{display:block; font-weight:800; font-size:1.05rem; margin-top:8px; color:var(--accent);}
+.venn-desc{display:block; font-size:0.94rem; color:var(--sub); margin-top:4px;}
+
+.quiz-code{display:block; background:var(--accent-soft); color:var(--ink); padding:10px 14px; border-radius:10px; margin-top:8px; font-family:'SF Mono','Consolas',monospace; font-size:0.92rem; font-weight:500; white-space:pre; line-height:1.6;}
+.story-badge{display:inline-block; background:var(--accent-soft); color:var(--accent); padding:4px 12px; border-radius:50px; font-weight:800; font-size:0.78rem; margin:0 6px 10px 0;}
+.rule-box{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin:10px 0; font-size:0.98rem; line-height:1.9;}
+.section-sep{border:none; border-top:1px solid var(--line); margin:30px 0;}
+
+@media (max-width:640px){
+  .summary-grid.three, .star-grid, .compare-grid, .venn-grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
 <body>
 
-<button id="nav-toggle" onclick="toggleNav()" title="메뉴 접기/펼치기">
-    <svg width="10" height="16" viewBox="0 0 10 16" fill="white">
-        <polyline points="8,2 2,8 8,14" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-</button>
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기/닫기"></button>
 
-<nav>
-    <h2>유니코드 완전 정복</h2>
-    <ul>
-        <li onclick="goToSection('top')" id="nav-top" class="active">개요</li>
-        <li onclick="goToSection('sec1')" id="nav-sec1">1. 유니코드란?</li>
-        <li onclick="goToSection('sec2')" id="nav-sec2">2. 문자 → 숫자: ord()</li>
-        <li onclick="goToSection('sec3')" id="nav-sec3">3. 숫자 → 문자: chr()</li>
-        <li onclick="goToSection('check1')" id="nav-check1" class="nav-check">Check 1</li>
-        <li onclick="goToSection('sec4')" id="nav-sec4">4. 알파벳 출력 &amp; 암호</li>
-        <li onclick="goToSection('sec5')" id="nav-sec5">5. for문 활용 응용</li>
-        <li onclick="goToSection('check2')" id="nav-check2" class="nav-check">Check 2</li>
-        <li onclick="goToSection('sec-challenge')" id="nav-challenge">🚀 실전 챌린지</li>
-        <li onclick="goToSection('check3')" id="nav-check3" class="nav-check">Check 3 (최종)</li>
-    </ul>
-</nav>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="brand">CODE:N</span>
+    <span class="edition-tag">유니코드 (ord · chr)</span>
+  </div>
+  <nav>
+    <a href="#top"><span class="n">00</span>개요</a>
+    <a href="#ch1"><span class="n">01</span>유니코드란?</a>
+    <a href="#ch2"><span class="n">02</span>문자 → 숫자: ord()</a>
+    <a href="#ch3"><span class="n">03</span>숫자 → 문자: chr()</a>
+    <a href="#ch4"><span class="n">04</span>Check 1</a>
+    <a href="#ch5"><span class="n">05</span>알파벳 출력·암호</a>
+    <a href="#ch6"><span class="n">06</span>for문 활용 응용</a>
+    <a href="#ch7"><span class="n">07</span>Check 2</a>
+    <a href="#ch8"><span class="n">08</span>실전 챌린지</a>
+    <a href="#ch9"><span class="n">09</span>최종 퀴즈</a>
+  </nav>
+</aside>
 
-<div class="container">
-    <header>
-        <span class="brand-badge">CODE:N ACADEMY</span>
-        <h1>유니코드와 문자 변환 (ord, chr)</h1>
-        <p class="intro">컴퓨터가 문자를 저장하는 방법 — 숫자와 문자를 자유롭게 변환해봅시다.</p>
-    </header>
+<main>
+  <section class="section hero" id="top">
+    <div class="eyebrow">PYTHON · 유니코드</div>
+    <h1>유니코드와 문자 변환,<br>ord()와 chr()</h1>
+    <p class="desc">컴퓨터가 문자를 저장하는 방법 — <b>숫자와 문자를 자유롭게 변환</b>해봅시다.</p>
 
-    <!-- ══ 1. 귀납적 도입 ══ -->
-    <section id="sec1">
-        <h2>1. 유니코드(Unicode)란?</h2>
-        <p>컴퓨터는 문자를 숫자로 저장합니다. 아래 코드를 실행하면 어떤 결과가 나올까요?</p>
+    <div class="summary-grid" style="margin-top:8px;">
+      <div class="summary-card"><code>ord()</code><p>문자를 넣으면 그 <b>번호</b>를 돌려줍니다. <code>ord('A')</code> → <code>65</code></p></div>
+      <div class="summary-card"><code>chr()</code><p>번호를 넣으면 그 <b>문자</b>를 돌려줍니다. <code>chr(65)</code> → <code>'A'</code></p></div>
+    </div>
+  </section>
 
-        <div class="code-result-pair">
-            <div class="code-wrapper"><pre><span class="fn">print</span>(<span class="fn">ord</span>(<span class="st">'a'</span>))</pre></div>
-            <div class="arrow-col">→</div>
-            <div class="result-box">97</div>
-        </div>
-        <div class="code-result-pair">
-            <div class="code-wrapper"><pre><span class="fn">print</span>(<span class="fn">ord</span>(<span class="st">'A'</span>))</pre></div>
-            <div class="arrow-col">→</div>
-            <div class="result-box">65</div>
-        </div>
-        <div class="code-result-pair">
-            <div class="code-wrapper"><pre><span class="fn">print</span>(<span class="fn">ord</span>(<span class="st">'0'</span>))</pre></div>
-            <div class="arrow-col">→</div>
-            <div class="result-box">48</div>
-        </div>
+  <section class="section" id="ch1">
+    <div class="eyebrow">CONCEPT 1</div>
+    <h2 class="sec-title"><span class="sec-num">01</span>유니코드(Unicode)란?</h2>
+    <p class="desc">컴퓨터는 문자를 숫자로 저장합니다. 아래 코드를 실행하면 어떤 결과가 나올까요?</p>
 
-        <div class="tip-box" style="margin-top:22px;">
-            <p class="tip-title">💡 알 수 있는 것</p>
-            <p style="margin:0;"><strong>문자마다 고유한 번호가 있습니다.</strong> 이 번호를 <strong>아스키(ASCII) 코드</strong>라고 부릅니다.<br>
-            <code>ord()</code>는 문자를 넣으면 그 번호를 돌려주는 함수입니다.</p>
-        </div>
+    <div class="code-result-pair">
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(ord('a'))</code></pre>
+</div>
+      <div class="pair-arrow">→</div><div class="result-chip">97</div>
+    </div>
+    <div class="code-result-pair">
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(ord('A'))</code></pre>
+</div>
+      <div class="pair-arrow">→</div><div class="result-chip">65</div>
+    </div>
+    <div class="code-result-pair">
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(ord('0'))</code></pre>
+</div>
+      <div class="pair-arrow">→</div><div class="result-chip">48</div>
+    </div>
 
-        <p style="margin-top:28px;">반대로, 번호를 넣으면 문자가 나오는 함수도 있습니다.</p>
+    <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><b>문자마다 고유한 번호가 있습니다.</b> 이 번호를 <b>아스키(ASCII) 코드</b>라고 부릅니다.<br><code>ord()</code>는 문자를 넣으면 그 번호를 돌려주는 함수입니다.</div>
 
-        <div class="code-result-pair">
-            <div class="code-wrapper"><pre><span class="fn">print</span>(<span class="fn">chr</span>(<span class="nm">97</span>))</pre></div>
-            <div class="arrow-col">→</div>
-            <div class="result-box">a</div>
-        </div>
-        <div class="code-result-pair">
-            <div class="code-wrapper"><pre><span class="fn">print</span>(<span class="fn">chr</span>(<span class="nm">65</span>))</pre></div>
-            <div class="arrow-col">→</div>
-            <div class="result-box">A</div>
-        </div>
-        <div class="code-result-pair">
-            <div class="code-wrapper"><pre><span class="fn">print</span>(<span class="fn">chr</span>(<span class="nm">48</span>))</pre></div>
-            <div class="arrow-col">→</div>
-            <div class="result-box">0</div>
-        </div>
+    <p class="desc" style="margin-top:28px;">반대로, 번호를 넣으면 문자가 나오는 함수도 있습니다.</p>
 
-        <div class="tip-box" style="margin-top:22px;">
-            <p class="tip-title">💡 알 수 있는 것</p>
-            <p style="margin:0;"><code>chr()</code>는 번호를 넣으면 그에 해당하는 문자를 돌려주는 함수입니다.<br>
-            <code>ord()</code>와 <code>chr()</code>는 서로 반대 방향으로 동작합니다.</p>
-        </div>
+    <div class="code-result-pair">
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(chr(97))</code></pre>
+</div>
+      <div class="pair-arrow">→</div><div class="result-chip">a</div>
+    </div>
+    <div class="code-result-pair">
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(chr(65))</code></pre>
+</div>
+      <div class="pair-arrow">→</div><div class="result-chip">A</div>
+    </div>
+    <div class="code-result-pair">
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(chr(48))</code></pre>
+</div>
+      <div class="pair-arrow">→</div><div class="result-chip">0</div>
+    </div>
 
-        <!-- 방향 다이어그램 -->
-        <div class="diagram-wrap">
-            <div class="diagram-box">
-                <div class="db-label">문자</div>
-                <div class="db-val">'A'</div>
-            </div>
-            <div class="diagram-arrows">
-                <div class="diagram-arrow">
-                    <span class="fn-tag">ord()</span>
-                    <span style="font-size:1.2rem; color:var(--primary);">→</span>
-                </div>
-                <div class="diagram-arrow">
-                    <span style="font-size:1.2rem; color:var(--accent);">←</span>
-                    <span class="fn-tag-acc">chr()</span>
-                </div>
-            </div>
-            <div class="diagram-box" style="background:#16213e; border:2px solid #2e3a52;">
-                <div class="db-label">번호</div>
-                <div class="db-val" style="color:var(--accent);">65</div>
-            </div>
-        </div>
+    <div class="callout"><span class="callout-title">💡 알 수 있는 것</span><code>chr()</code>는 번호를 넣으면 그에 해당하는 문자를 돌려주는 함수입니다.<br><code>ord()</code>와 <code>chr()</code>는 서로 반대 방향으로 동작합니다.</div>
 
-        <!-- 주요 번호 표 -->
-        <p>자주 사용하는 문자들의 번호 범위를 알아두세요.</p>
-        <table class="unicode-table">
-            <tr><th>문자</th><th>번호 범위</th><th>종류</th></tr>
-            <tr><td>'A' ~ 'Z'</td><td>65 ~ 90</td><td>대문자 알파벳 26개</td></tr>
-            <tr><td>'a' ~ 'z'</td><td>97 ~ 122</td><td>소문자 알파벳 26개</td></tr>
-            <tr><td>'0' ~ '9'</td><td>48 ~ 57</td><td>숫자 문자 10개</td></tr>
-            <tr><td>' '</td><td>32</td><td>공백(스페이스)</td></tr>
-            <tr><td>'가'</td><td>44032</td><td>한글 첫 글자</td></tr>
-        </table>
-    </section>
+    <div class="conv-diagram">
+      <div class="conv-box"><div class="lab">문자</div><div class="val">'A'</div></div>
+      <div class="conv-arrows"><span class="to">ord() →</span><span class="back">← chr()</span></div>
+      <div class="conv-box dark"><div class="lab">번호</div><div class="val">65</div></div>
+    </div>
 
-    <!-- ══ 2. ord() ══ -->
-    <section id="sec2">
-        <h2>2. 문자를 숫자로: ord()</h2>
-        <p><code>ord()</code>에는 반드시 <strong>문자 하나</strong>만 넣어야 합니다.</p>
+    <p class="desc">자주 사용하는 문자들의 번호 범위를 알아두세요.</p>
+    <table class="result-table">
+      <tr><th>문자</th><th>번호 범위</th><th>종류</th></tr>
+      <tr><td>'A' ~ 'Z'</td><td>65 ~ 90</td><td>대문자 알파벳 26개</td></tr>
+      <tr><td>'a' ~ 'z'</td><td>97 ~ 122</td><td>소문자 알파벳 26개</td></tr>
+      <tr><td>'0' ~ '9'</td><td>48 ~ 57</td><td>숫자 문자 10개</td></tr>
+      <tr><td>' '</td><td>32</td><td>공백(스페이스)</td></tr>
+      <tr><td>'가'</td><td>44032</td><td>한글 첫 글자</td></tr>
+    </table>
+  </section>
 
-        <div class="code-wrapper"><pre>
-<span class="fn">print</span>(<span class="fn">ord</span>(<span class="st">'A'</span>))   <span class="cm"># → 65</span>
-<span class="fn">print</span>(<span class="fn">ord</span>(<span class="st">'a'</span>))   <span class="cm"># → 97</span>
-<span class="fn">print</span>(<span class="fn">ord</span>(<span class="st">'가'</span>))  <span class="cm"># → 44032</span></pre></div>
-        <div class="output">65
+  <section class="section" id="ch2">
+    <div class="eyebrow">CONCEPT 2</div>
+    <h2 class="sec-title"><span class="sec-num">02</span>문자를 숫자로: ord()</h2>
+    <p class="desc"><code>ord()</code>에는 반드시 <b>문자 하나</b>만 넣어야 합니다.</p>
+
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(ord('A'))   # → 65
+print(ord('a'))   # → 97
+print(ord('가'))  # → 44032</code></pre>
+</div>
+<div class="output-card labeled">65
 97
 44032</div>
 
-        <div class="tip-box">
-            <p class="tip-title">💡 대소문자 차이는 항상 32!</p>
-            <p style="margin:0;">
-                <code>ord('a')</code> − <code>ord('A')</code> = 97 − 65 = <strong>32</strong><br>
-                모든 알파벳 쌍(b−B, z−Z)이 같은 규칙입니다. 이 규칙만 알면 대소문자 변환을 직접 만들 수 있습니다!
-            </p>
-        </div>
+    <div class="callout"><span class="callout-title">💡 대소문자 차이는 항상 32!</span><code>ord('a')</code> − <code>ord('A')</code> = 97 − 65 = <b>32</b><br>모든 알파벳 쌍(b−B, z−Z)이 같은 규칙입니다. 이 규칙만 알면 대소문자 변환을 직접 만들 수 있습니다!</div>
 
-        <div class="drill-together">
-            <h3>✏️ Example — ord() 값 직접 확인</h3>
-            <p>아래 코드를 실행해서 각 값을 확인해보세요. <code>ord('Z')</code>는 몇일까요?</p>
-            <textarea id="editor1" class="code-editor">print(ord('A'))
+    <div class="practice">
+      <div class="tag">✏️ EXAMPLE · ord() 값 직접 확인</div>
+      <p>아래 코드를 실행해서 각 값을 확인해보세요. <code>ord('Z')</code>는 몇일까요?</p>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(ord('A'))
 print(ord('Z'))
 print(ord('0'))
-print(ord('a') - ord('A'))   # 차이는 얼마?</textarea>
-            <button class="run-btn" onclick="runCode('editor1','output1')">실행하기</button>
-            <div id="output1" class="output-area"></div>
-        </div>
+print(ord('a') - ord('A'))   # 차이는 얼마?</code></pre>
+</div>
+    </div>
 
-        <div class="drill-solo">
-            <h3>🎯 Mission — 내 이름 이니셜의 번호는?</h3>
-            <p>자신의 이름 영문 이니셜(예: 'J')의 ord() 값을 출력해보세요.</p>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content"><code>print(ord('J'))</code> 처럼 작성하면 됩니다.</div>
-            </details>
-            <textarea id="editor2" class="code-editor"># 코드를 입력하세요</textarea>
-            <button class="run-btn" onclick="runCode('editor2','output2')">실행하기</button>
-            <div id="output2" class="output-area"></div>
-        </div>
-    </section>
+    <div class="practice">
+      <div class="tag">🎯 MISSION · 내 이름 이니셜의 번호는?</div>
+      <p>자신의 이름 영문 이니셜(예: 'J')의 ord() 값을 출력해보세요.</p>
+      <details><summary>💡 힌트</summary><div class="hint"><code>print(ord('J'))</code> 처럼 작성하면 됩니다.</div></details>
 
-    <!-- ══ 3. chr() ══ -->
-    <section id="sec3">
-        <h2>3. 숫자를 문자로: chr()</h2>
-        <p><code>chr()</code>는 번호를 넣으면 그 번호에 해당하는 문자를 돌려줍니다.</p>
+    </div>
+  </section>
 
-        <div class="code-wrapper"><pre>
-<span class="fn">print</span>(<span class="fn">chr</span>(<span class="nm">65</span>))   <span class="cm"># → 'A'</span>
-<span class="fn">print</span>(<span class="fn">chr</span>(<span class="nm">66</span>))   <span class="cm"># → 'B'</span>
-<span class="fn">print</span>(<span class="fn">chr</span>(<span class="nm">97</span>))   <span class="cm"># → 'a'</span></pre></div>
-        <div class="output">A
+  <section class="section" id="ch3">
+    <div class="eyebrow">CONCEPT 3</div>
+    <h2 class="sec-title"><span class="sec-num">03</span>숫자를 문자로: chr()</h2>
+    <p class="desc"><code>chr()</code>는 번호를 넣으면 그 번호에 해당하는 문자를 돌려줍니다.</p>
+
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(chr(65))   # → 'A'
+print(chr(66))   # → 'B'
+print(chr(97))   # → 'a'</code></pre>
+</div>
+<div class="output-card labeled">A
 B
 a</div>
 
-        <p style="margin-top:18px;"><code>ord()</code>와 <code>chr()</code>를 <strong>합쳐서</strong> 쓰면 강력해집니다.</p>
-        <div class="code-wrapper"><pre>
-<span class="cm"># 'A'에서 2칸 뒤의 글자는?</span>
-<span class="fn">print</span>(<span class="fn">chr</span>(<span class="fn">ord</span>(<span class="st">'A'</span>) + <span class="nm">2</span>))  <span class="cm"># 65 + 2 = 67 → 'C'</span></pre></div>
-        <div class="output">C</div>
+    <p class="desc"><code>ord()</code>와 <code>chr()</code>를 <b>합쳐서</b> 쓰면 강력해집니다.</p>
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py"># 'A'에서 2칸 뒤의 글자는?
+print(chr(ord('A') + 2))  # 65 + 2 = 67 → 'C'</code></pre>
+</div>
+<div class="output-card labeled">C</div>
 
-        <div class="drill-together">
-            <h3>✏️ Example — 결과 예측 후 실행</h3>
-            <p>실행 전에 결과를 예측해보고, 실행해서 맞는지 확인해보세요.</p>
-            <textarea id="editor3" class="code-editor">print(chr(ord('A') + 2))   # 예측: ?
+    <div class="practice">
+      <div class="tag">✏️ EXAMPLE · 결과 예측 후 실행</div>
+      <p>실행 전에 결과를 예측해보고, 실행해서 맞는지 확인해보세요.</p>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">print(chr(ord('A') + 2))   # 예측: ?
 print(chr(ord('a') + 3))   # 예측: ?
-print(chr(ord('0') + 5))   # 예측: ?</textarea>
-            <button class="run-btn" onclick="runCode('editor3','output3')">실행하기</button>
-            <div id="output3" class="output-area"></div>
-        </div>
+print(chr(ord('0') + 5))   # 예측: ?</code></pre>
+</div>
+    </div>
 
-        <div class="drill-solo">
-            <h3>🎯 Mission — 빈칸 채우기</h3>
-            <p>다음 코드의 실행 결과를 먼저 계산해보세요.</p>
-            <div style="background:#f8f7ff; border-radius:8px; padding:16px 20px; font-family:'Consolas',monospace; font-size:0.97rem; line-height:2.8; border:1px solid #e0dbff;">
-                chr(ord('B') + 1) → <input type="text" class="blank-input" id="q1-a" placeholder="?"><br>
-                ord('Z') − ord('A') → <input type="text" class="blank-input" id="q1-b" placeholder="?"><br>
-                chr(65 + 32) → <input type="text" class="blank-input" id="q1-c" placeholder="?">
-            </div>
-            <button class="run-btn" style="margin-top:12px;" onclick="checkQ1()">정답 확인</button>
-            <div class="drill-feedback" id="fb-q1"></div>
-        </div>
-    </section>
+    <div class="practice">
+      <div class="tag">🎯 MISSION · 빈칸 채우기</div>
+      <p>다음 코드의 실행 결과를 먼저 계산해보세요.</p>
+      <div class="blank-code">chr(ord('B') + 1) → <input type="text" class="blank-input w80" id="q1-a" placeholder="?">
+ord('Z') − ord('A') → <input type="text" class="blank-input w80" id="q1-b" placeholder="?">
+chr(65 + 32) → <input type="text" class="blank-input w80" id="q1-c" placeholder="?"></div>
+      <button class="quiz-check-btn" onclick="checkBlanks(['q1-a','q1-b','q1-c'], [['C',&quot;'C'&quot;],'25',['a',&quot;'a'&quot;]], 'fb-q1', &quot;정답! chr(ord('B')+1)=C, ord('Z')-ord('A')=25, chr(65+32)=a&quot;)">정답 확인</button>
+      <div class="drill-feedback" id="fb-q1"></div>
+    </div>
+  </section>
 
-    <!-- ══ CHECK 1 ══ -->
-    <section id="check1" style="background:#fafafa; border:2px solid #e1e4e8;">
-        <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 1 — ord() &amp; chr() 기초</h2>
-        <div id="quiz-area-1"></div>
-        <button class="btn-check" onclick="gradeQuiz('quiz-area-1', quizSet1, 'result-area-1')">채점하기</button>
-        <div id="result-area-1" style="margin-top:20px; text-align:center; font-weight:bold; font-size:1.3rem; display:none; margin-bottom:30px;"></div>
-        <hr style="border:none; border-top:1px solid #e1e4e8; margin:30px 0;">
+  <section class="section" id="ch4">
+    <div class="eyebrow">🏆 CHECK 1</div>
+    <h2 class="sec-title"><span class="sec-num">04</span>Check 1 — ord() &amp; chr() 기초</h2>
+<div id="quiz-c1"></div>
+<button class="check-set-btn" onclick="gradeQuiz('c1')">🎯 채점하기</button>
+<button class="btn-retry" onclick="resetQuiz('c1')">🔄 다시 풀기</button>
+<div class="final-score" id="score-c1"><div class="final-score-num"></div><div class="final-score-msg"></div></div>
 
-        <div class="challenge-box">
-            <span class="story-badge">📖 상황 문제</span>
-            <span class="challenge-badge" style="margin-left:6px;">문제 1</span>
-            <div class="challenge-title">준영이의 키보드 Shift 키가 고장났어요</div>
-            <p>준영이의 키보드는 Shift 키가 고장나서 영어를 타이핑하면 대소문자가 뒤섞여 나옵니다.<br>
-            대소문자가 섞인 문자열이 입력되면 <strong>전부 소문자로</strong> 바꿔서 출력하세요.</p>
-            <div class="io-example">입력: JaMCoDing  →  출력: jamcoding
+    <hr class="section-sep">
+
+    <div class="challenge-box">
+      <span class="story-badge">📖 상황 문제</span><span class="challenge-badge">문제 1</span>
+      <div class="challenge-title">준영이의 키보드 Shift 키가 고장났어요</div>
+      <p>준영이의 키보드는 Shift 키가 고장나서 영어를 타이핑하면 대소문자가 뒤섞여 나옵니다.<br>대소문자가 섞인 문자열이 입력되면 <b>전부 소문자로</b> 바꿔서 출력하세요.</p>
+<div class="io-example">입력: JaMCoDing  →  출력: jamcoding
 입력: PYThon     →  출력: python</div>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content">대문자(A~Z)의 ord 값은 65~90 범위입니다. 대문자일 때만 +32 후 chr()로 변환하면 됩니다.</div>
-            </details>
-            <textarea id="c1-e1" class="code-editor">word = input("단어 입력: ")
+      <details><summary>💡 힌트</summary><div class="hint">대문자(A~Z)의 ord 값은 65~90 범위입니다. 대문자일 때만 +32 후 chr()로 변환하면 됩니다.</div></details>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">word = input("단어 입력: ")
 result = ""
 for char in word:
-    # 대문자이면 소문자로 변환, 아니면 그대로
-</textarea>
-            <button class="run-btn" onclick="runCode('c1-e1','c1-o1')">실행하기</button>
-            <div id="c1-o1" class="output-area"></div>
-        </div>
+    # 대문자이면 소문자로 변환, 아니면 그대로</code></pre>
+</div>
+    </div>
 
-        <div class="challenge-box">
-            <span class="challenge-badge">문제 2</span>
-            <div class="challenge-title">각 문자의 번호 목록 출력하기</div>
-            <p>리스트 안의 각 문자와 그 유니코드 번호를 함께 출력하세요.</p>
-            <div class="io-example">chars = ['A', 'B', 'C', 'a', '0']
+    <div class="challenge-box">
+      <span class="challenge-badge">문제 2</span>
+      <div class="challenge-title">각 문자의 번호 목록 출력하기</div>
+      <p>리스트 안의 각 문자와 그 유니코드 번호를 함께 출력하세요.</p>
+<div class="io-example">chars = ['A', 'B', 'C', 'a', '0']
 출력:
 A → 65
 B → 66
 C → 67
 a → 97
 0 → 48</div>
-            <textarea id="c1-e2" class="code-editor">chars = ['A', 'B', 'C', 'a', '0']
-</textarea>
-            <button class="run-btn" onclick="runCode('c1-e2','c1-o2')">실행하기</button>
-            <div id="c1-o2" class="output-area"></div>
-        </div>
-    </section>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">chars = ['A', 'B', 'C', 'a', '0']</code></pre>
+</div>
+    </div>
+  </section>
 
-    <!-- ══ 4. 알파벳 출력 & 시저 암호 ══ -->
-    <section id="sec4">
-        <h2>4. 알파벳 출력 &amp; 시저 암호</h2>
-        <p>번호가 연속된다는 점을 이용하면 for문으로 알파벳 전체를 출력할 수 있습니다.</p>
+  <section class="section" id="ch5">
+    <div class="eyebrow">CONCEPT 4</div>
+    <h2 class="sec-title"><span class="sec-num">05</span>알파벳 출력 &amp; 시저 암호</h2>
+    <p class="desc">번호가 연속된다는 점을 이용하면 for문으로 알파벳 전체를 출력할 수 있습니다.</p>
 
-        <div class="code-wrapper"><pre>
-<span class="cm"># A부터 E까지 출력</span>
-<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">65</span>, <span class="nm">70</span>):
-    <span class="fn">print</span>(<span class="fn">chr</span>(i), end=<span class="st">" "</span>)</pre></div>
-        <div class="output">A B C D E</div>
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py"># A부터 E까지 출력
+for i in range(65, 70):
+    print(chr(i), end=" ")</code></pre>
+</div>
+<div class="output-card labeled">A B C D E</div>
 
-        <p style="margin-top:24px;"><strong>시저 암호</strong>는 각 글자를 일정 칸수만큼 밀어서 다른 글자로 바꾸는 고전 암호입니다.<br>
-        예를 들어 3칸 밀면: A→D, B→E, C→F</p>
-        <div class="code-wrapper"><pre>
-<span class="cm"># 'ACE'를 3칸 밀면? → 'DFH'</span>
-word = <span class="st">"ACE"</span>
-<span class="kw">for</span> char <span class="kw">in</span> word:
-    <span class="fn">print</span>(<span class="fn">chr</span>(<span class="fn">ord</span>(char) + <span class="nm">3</span>), end=<span class="st">""</span>)</pre></div>
-        <div class="output">DFH</div>
+    <p class="desc"><b>시저 암호</b>는 각 글자를 일정 칸수만큼 밀어서 다른 글자로 바꾸는 고전 암호입니다.<br>예를 들어 3칸 밀면: A→D, B→E, C→F</p>
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py"># 'ACE'를 3칸 밀면? → 'DFH'
+word = "ACE"
+for char in word:
+    print(chr(ord(char) + 3), end="")</code></pre>
+</div>
+<div class="output-card labeled">DFH</div>
 
-        <div class="drill-together">
-            <h3>✏️ Example — A~Z 전체 출력하기</h3>
-            <p><code>ord('Z')</code>는 <strong>90</strong>입니다. range의 끝값에 +1을 잊지 마세요!</p>
-            <textarea id="editor5" class="code-editor">for i in range(ord('A'), ord('Z') + 1):
-    print(chr(i), end=" ")</textarea>
-            <button class="run-btn" onclick="runCode('editor5','output5')">실행하기</button>
-            <div id="output5" class="output-area"></div>
-        </div>
+    <div class="practice">
+      <div class="tag">✏️ EXAMPLE · A~Z 전체 출력하기</div>
+      <p><code>ord('Z')</code>는 <b>90</b>입니다. range의 끝값에 +1을 잊지 마세요!</p>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">for i in range(ord('A'), ord('Z') + 1):
+    print(chr(i), end=" ")</code></pre>
+</div>
+    </div>
 
-        <div class="drill-solo">
-            <h3>🎯 Mission — 소문자 a~z 출력하기</h3>
-            <p>'a'부터 'z'까지 출력하는 코드를 스스로 작성해보세요.</p>
-            <div class="io-example">출력 예: a b c d ... x y z</div>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content"><code>for i in range(ord('a'), ord('z') + 1):</code></div>
-            </details>
-            <textarea id="editor6" class="code-editor"># 코드를 입력하세요</textarea>
-            <button class="run-btn" onclick="runCode('editor6','output6')">실행하기</button>
-            <div id="output6" class="output-area"></div>
-        </div>
-    </section>
+    <div class="practice">
+      <div class="tag">🎯 MISSION · 소문자 a~z 출력하기</div>
+      <p>'a'부터 'z'까지 출력하는 코드를 스스로 작성해보세요.</p>
+<div class="io-example">출력 예: a b c d ... x y z</div>
+      <details><summary>💡 힌트</summary><div class="hint"><code>for i in range(ord('a'), ord('z') + 1):</code></div></details>
 
-    <!-- ══ 5. for문 활용 응용 ══ -->
-    <section id="sec5">
-        <h2>5. for문 활용 응용</h2>
+    </div>
+  </section>
 
-        <h3>5-1. 문자열의 각 글자를 번호로 출력</h3>
-        <div class="code-wrapper"><pre>
-word = <span class="st">"Hello"</span>
-<span class="kw">for</span> char <span class="kw">in</span> word:
-    <span class="fn">print</span>(char, <span class="st">"→"</span>, <span class="fn">ord</span>(char))</pre></div>
-        <div class="output">H → 72
+  <section class="section" id="ch6">
+    <div class="eyebrow">CONCEPT 5</div>
+    <h2 class="sec-title"><span class="sec-num">06</span>for문 활용 응용</h2>
+
+    <h3 class="sub-title">5-1. 문자열의 각 글자를 번호로 출력</h3>
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">word = "Hello"
+for char in word:
+    print(char, "→", ord(char))</code></pre>
+</div>
+<div class="output-card labeled">H → 72
 e → 101
 l → 108
 l → 108
 o → 111</div>
 
-        <h3 style="margin-top:28px;">5-2. 유니코드 범위로 문자 종류 판별하기</h3>
-        <p>번호의 범위를 이용하면 그 문자가 대문자인지, 소문자인지, 숫자인지 알 수 있습니다.</p>
-        <div class="code-wrapper"><pre>
-char = <span class="st">'G'</span>
-code = <span class="fn">ord</span>(char)
+    <h3 class="sub-title">5-2. 유니코드 범위로 문자 종류 판별하기</h3>
+    <p class="desc">번호의 범위를 이용하면 그 문자가 대문자인지, 소문자인지, 숫자인지 알 수 있습니다.</p>
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">char = 'G'
+code = ord(char)
 
-<span class="kw">if</span> <span class="nm">65</span> <= code <= <span class="nm">90</span>:
-    <span class="fn">print</span>(<span class="st">"대문자입니다."</span>)
-<span class="kw">elif</span> <span class="nm">97</span> <= code <= <span class="nm">122</span>:
-    <span class="fn">print</span>(<span class="st">"소문자입니다."</span>)
-<span class="kw">elif</span> <span class="nm">48</span> <= code <= <span class="nm">57</span>:
-    <span class="fn">print</span>(<span class="st">"숫자 문자입니다."</span>)</pre></div>
-        <div class="output">대문자입니다.</div>
+if 65 &lt;= code &lt;= 90:
+    print("대문자입니다.")
+elif 97 &lt;= code &lt;= 122:
+    print("소문자입니다.")
+elif 48 &lt;= code &lt;= 57:
+    print("숫자 문자입니다.")</code></pre>
+</div>
+<div class="output-card labeled">대문자입니다.</div>
 
-        <div class="drill-together">
-            <h3>✏️ Example — 문자열을 번호 목록으로</h3>
-            <p>"Python"의 각 글자를 번호로 변환해봅시다.</p>
-            <textarea id="editor7" class="code-editor"># 코드를 입력하세요</textarea>
-            <button class="run-btn" onclick="runCode('editor7','output7')">실행하기</button>
-            <div id="output7" class="output-area"></div>
-        </div>
+    <div class="practice">
+      <div class="tag">✏️ EXAMPLE · 문자열을 번호 목록으로</div>
+      <p>"Python"의 각 글자를 번호로 변환해봅시다.</p>
 
-        <div class="drill-solo" style="margin-top:25px;">
-            <h3>🎯 Mission — 대문자를 소문자로 (ord/chr 사용)</h3>
-            <p>문자열 "PYTHON"의 각 글자를 소문자로 바꿔 출력하세요. <code>lower()</code> 사용 금지!</p>
-            <div class="io-example">입력: "PYTHON"  →  출력: python</div>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content">대소문자 차이는 32입니다. <code>chr(ord(char) + 32)</code></div>
-            </details>
-            <textarea id="editor8" class="code-editor">word = 'PYTHON'
-# 각 글자를 소문자로 변환하여 출력하세요</textarea>
-            <button class="run-btn" onclick="runCode('editor8','output8')">실행하기</button>
-            <div id="output8" class="output-area"></div>
-        </div>
-    </section>
+    </div>
 
-    <!-- ══ CHECK 2 ══ -->
-    <section id="check2" style="background:#fafafa; border:2px solid #e1e4e8;">
-        <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 2 — 알파벳 출력 &amp; 암호화</h2>
-        <div id="quiz-area-2"></div>
-        <button class="btn-check" onclick="gradeQuiz('quiz-area-2', quizSet2, 'result-area-2')">채점하기</button>
-        <div id="result-area-2" style="margin-top:20px; text-align:center; font-weight:bold; font-size:1.3rem; display:none; margin-bottom:30px;"></div>
-        <hr style="border:none; border-top:1px solid #e1e4e8; margin:30px 0;">
+    <div class="practice">
+      <div class="tag">🎯 MISSION · 대문자를 소문자로 (ord/chr 사용)</div>
+      <p>문자열 "PYTHON"의 각 글자를 소문자로 바꿔 출력하세요. <code>lower()</code> 사용 금지!</p>
+<div class="io-example">입력: "PYTHON"  →  출력: python</div>
+      <details><summary>💡 힌트</summary><div class="hint">대소문자 차이는 32입니다. <code>chr(ord(char) + 32)</code></div></details>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">word = 'PYTHON'
+# 각 글자를 소문자로 변환하여 출력하세요</code></pre>
+</div>
+    </div>
+  </section>
 
-        <div class="challenge-box">
-            <span class="story-badge">📖 상황 문제</span>
-            <span class="challenge-badge" style="margin-left:6px;">문제 1</span>
-            <div class="challenge-title">카이사르 암호 만들기</div>
-            <p>알파벳 대문자로 이루어진 단어와 숫자 하나를 입력받아, 각 글자를 그 숫자만큼 밀어서 암호화된 단어를 출력하세요.<br>
-            <small style="color:var(--text-muted);">(끝 알파벳은 다시 앞으로 돌아옵니다. 예: Z에서 +1이면 A가 됩니다.)</small></p>
-            <div class="io-example">입력: ACE  /  3   →  출력: DFH
+  <section class="section" id="ch7">
+    <div class="eyebrow">🏆 CHECK 2</div>
+    <h2 class="sec-title"><span class="sec-num">07</span>Check 2 — 알파벳 출력 &amp; 암호화</h2>
+<div id="quiz-c2"></div>
+<button class="check-set-btn" onclick="gradeQuiz('c2')">🎯 채점하기</button>
+<button class="btn-retry" onclick="resetQuiz('c2')">🔄 다시 풀기</button>
+<div class="final-score" id="score-c2"><div class="final-score-num"></div><div class="final-score-msg"></div></div>
+
+    <hr class="section-sep">
+
+    <div class="challenge-box">
+      <span class="story-badge">📖 상황 문제</span><span class="challenge-badge">문제 1</span>
+      <div class="challenge-title">카이사르 암호 만들기</div>
+      <p>알파벳 대문자로 이루어진 단어와 숫자 하나를 입력받아, 각 글자를 그 숫자만큼 밀어서 암호화된 단어를 출력하세요.<br><small style="color:var(--sub);">(끝 알파벳은 다시 앞으로 돌아옵니다. 예: Z에서 +1이면 A가 됩니다.)</small></p>
+<div class="io-example">입력: ACE  /  3   →  출력: DFH
 입력: PYTHON  /  1  →  출력: QZUIPO
 입력: XYZ  /  2   →  출력: ZAB</div>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content">
-                    끝 알파벳 처리: <code>chr((ord(char) - 65 + n) % 26 + 65)</code><br>
-                    65를 빼서 0~25로 만든 뒤, 26으로 나눈 나머지를 이용합니다.
-                </div>
-            </details>
-            <textarea id="c2-e1" class="code-editor">word = input("단어 입력: ")
-n = int(input("밀 칸수 입력: "))
-</textarea>
-            <button class="run-btn" onclick="runCode('c2-e1','c2-o1')">실행하기</button>
-            <div id="c2-o1" class="output-area"></div>
-        </div>
-
-        <div class="challenge-box">
-            <span class="challenge-badge">문제 2</span>
-            <div class="challenge-title">대문자 개수 세기</div>
-            <p>문자열 안에 있는 <strong>대문자의 개수</strong>를 세는 코드를 작성하세요. (<code>isupper()</code> 사용 금지)</p>
-            <div class="io-example">입력: "Hello World"  →  출력: 대문자 개수: 2</div>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content">대문자 A~Z의 ord 값은 65~90입니다.</div>
-            </details>
-            <textarea id="c2-e2" class="code-editor">text = "Hello World"
-count = 0
-</textarea>
-            <button class="run-btn" onclick="runCode('c2-e2','c2-o2')">실행하기</button>
-            <div id="c2-o2" class="output-area"></div>
-        </div>
-
-        <div class="challenge-box">
-            <span class="challenge-badge">문제 3</span>
-            <div class="challenge-title">Z부터 A까지 역순 출력</div>
-            <p>ord()와 range()를 이용해서 Z부터 A까지 역순으로 출력하세요.</p>
-            <div class="io-example">출력 예: Z Y X W ... C B A</div>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content"><code>range(ord('Z'), ord('A') - 1, -1)</code></div>
-            </details>
-            <textarea id="c2-e3" class="code-editor"># 코드를 입력하세요</textarea>
-            <button class="run-btn" onclick="runCode('c2-e3','c2-o3')">실행하기</button>
-            <div id="c2-o3" class="output-area"></div>
-        </div>
-    </section>
-
-    <!-- ══ 실전 챌린지 ══ -->
-    <section id="sec-challenge" style="background: #f0eeff; border: 2px solid var(--primary);">
-        <h2 style="border-left-color: var(--accent); color: var(--secondary);">🚀 실전 코딩 챌린지</h2>
-        <p style="text-align:center; margin-bottom:30px; font-size:1.05rem; color:var(--text-muted);">실제 상황에서 만날 수 있는 문제들을 풀어봅시다.</p>
-
-        <div class="challenge-box">
-            <span class="story-badge">📖 상황 문제</span>
-            <span class="challenge-badge" style="margin-left:6px;">Mission 1</span>
-            <div class="challenge-title">암호 해독기 만들기 (대소문자 혼합)</div>
-            <p>앞의 카이사르 암호에서 입력되는 글자가 대문자에 한정되지 않게 되었습니다.<br>
-            소문자는 소문자끼리, 대문자는 대문자끼리 암호화하며, 알파벳이 아닌 경우(띄어쓰기 등)는 그대로 출력합니다.</p>
-            <div class="io-example">입력: Hello Python  /  3
-출력: Khoor Sbwkrq</div>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content">
-                    대문자: <code>(ord(char) - 65 + n) % 26 + 65</code><br>
-                    소문자: <code>(ord(char) - 97 + n) % 26 + 97</code><br>
-                    알파벳 아닌 경우: 그대로 출력
-                </div>
-            </details>
-            <textarea id="m1-editor" class="code-editor">text = input("문장 입력: ")
-n = int(input("밀 칸수: "))
-</textarea>
-            <button class="run-btn" onclick="runCode('m1-editor','m1-output')">실행하기</button>
-            <div id="m1-output" class="output-area"></div>
-        </div>
-
-        <div class="challenge-box">
-            <span class="story-badge">📖 상황 문제</span>
-            <span class="challenge-badge" style="margin-left:6px;">Mission 2</span>
-            <div class="challenge-title">비밀번호 조건 검사기</div>
-            <p>점코딩닷컴에 회원가입하기 위한 비밀번호가 아래 조건을 모두 만족하는지 확인하세요.</p>
-            <p style="background:#f1f2f6; padding:14px 16px; border-radius:8px; margin:12px 0; font-size:0.93rem; line-height:2.0;">
-                1. 알파벳 <strong>대문자</strong>로 시작해야 합니다.<br>
-                2. 알파벳 소문자와 숫자가 각각 <strong>3개 이상</strong> 들어가야 합니다.<br>
-                3. 비밀번호 전체 길이가 <strong>10자 이상, 20자 이하</strong>여야 합니다.
-            </p>
-            <div class="io-example">입력: Jamcoding123  →  조건에 부합합니다.
-입력: python111    →  조건에 부합하지 않습니다.</div>
-            <details><summary>💡 힌트</summary>
-                <div class="answer-content">
-                    대문자: 65~90 / 소문자: 97~122 / 숫자: 48~57<br>
-                    각 종류의 개수를 세는 변수를 만들어 for문으로 확인하세요.
-                </div>
-            </details>
-            <textarea id="m2-editor" class="code-editor">pw = input("비밀번호 입력: ")
-</textarea>
-            <button class="run-btn" onclick="runCode('m2-editor','m2-output')">실행하기</button>
-            <div id="m2-output" class="output-area"></div>
-        </div>
-
-        <div class="challenge-box">
-            <span class="challenge-badge">Mission 3</span>
-            <div class="challenge-title">A~Z 전체 출력하기</div>
-            <p>ord()와 chr()를 사용해 A부터 Z까지 한 줄에 출력하세요.</p>
-            <div class="io-example">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>
-            <details><summary>💡 정답 코드 보기</summary>
-                <div class="code-wrapper" style="margin-top:10px;"><pre>
-<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">ord</span>(<span class="st">'A'</span>), <span class="fn">ord</span>(<span class="st">'Z'</span>) + <span class="nm">1</span>):
-    <span class="fn">print</span>(<span class="fn">chr</span>(i), end=<span class="st">" "</span>)</pre></div>
-            </details>
-            <textarea id="m3-editor" class="code-editor"># 코드를 입력하세요</textarea>
-            <button class="run-btn" onclick="runCode('m3-editor','m3-output')">실행하기</button>
-            <div id="m3-output" class="output-area"></div>
-        </div>
-
-        <div class="challenge-box">
-            <span class="challenge-badge">Mission 4</span>
-            <div class="challenge-title">숫자 문자 판별기</div>
-            <p>입력받은 문자가 숫자 문자('0'~'9')인지 판별하세요. <code>isdigit()</code> 사용 금지!</p>
-            <div class="io-example">입력: 5  →  숫자입니다.
-입력: a  →  숫자가 아닙니다.</div>
-            <details><summary>💡 정답 코드 보기</summary>
-                <div class="code-wrapper" style="margin-top:10px;"><pre>
-char = <span class="fn">input</span>(<span class="st">"한 글자 입력: "</span>)
-code = <span class="fn">ord</span>(char)
-<span class="kw">if</span> <span class="nm">48</span> <= code <= <span class="nm">57</span>:
-    <span class="fn">print</span>(<span class="st">"숫자입니다."</span>)
-<span class="kw">else</span>:
-    <span class="fn">print</span>(<span class="st">"숫자가 아닙니다."</span>)</pre></div>
-            </details>
-            <textarea id="m4-editor" class="code-editor"># 코드를 입력하세요</textarea>
-            <button class="run-btn" onclick="runCode('m4-editor','m4-output')">실행하기</button>
-            <div id="m4-output" class="output-area"></div>
-        </div>
-    </section>
-
-    <!-- ══ CHECK 3 최종 ══ -->
-    <section id="check3" style="background:#fafafa; border:2px solid #e1e4e8;">
-        <h2 style="color:var(--secondary); border-left-color:var(--primary);">Check 3 — 최종 종합 퀴즈 (15문항)</h2>
-        <p>유니코드와 변환 함수의 개념을 완벽하게 확인해봅시다!</p>
-        <div id="quiz-area-3"></div>
-        <button class="btn-check" onclick="gradeQuiz('quiz-area-3', quizSet3, 'result-area-3')">💯 채점하기</button>
-        <div id="result-area-3" style="margin-top:20px; text-align:center; font-weight:bold; font-size:1.3rem; display:none; margin-bottom:30px;"></div>
-    </section>
-
-    <footer>
-        <p style="font-size:1rem; font-weight:700; color:var(--secondary); margin-bottom:6px;">다음 단계</p>
-        <p style="margin-bottom:4px;">정보올림피아드 사이트에서 유니코드 관련 문제를 직접 풀어보세요.</p>
-        <a href="https://www.jungol.co.kr" target="_blank" style="color:var(--primary); font-weight:700; font-size:0.95rem;">jungol.co.kr →</a>
-        <p style="margin-top:20px; font-size:0.85rem; color:#b2bec3;">Copyright &copy; 2026 CODE:N ACADEMY</p>
-    </footer>
+      <details><summary>💡 힌트</summary><div class="hint">끝 알파벳 처리: <code>chr((ord(char) - 65 + n) % 26 + 65)</code><br>65를 빼서 0~25로 만든 뒤, 26으로 나눈 나머지를 이용합니다.</div></details>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">word = input("단어 입력: ")
+n = int(input("밀 칸수 입력: "))</code></pre>
 </div>
+    </div>
+
+    <div class="challenge-box">
+      <span class="challenge-badge">문제 2</span>
+      <div class="challenge-title">대문자 개수 세기</div>
+      <p>문자열 안에 있는 <b>대문자의 개수</b>를 세는 코드를 작성하세요. (<code>isupper()</code> 사용 금지)</p>
+<div class="io-example">입력: "Hello World"  →  출력: 대문자 개수: 2</div>
+      <details><summary>💡 힌트</summary><div class="hint">대문자 A~Z의 ord 값은 65~90입니다.</div></details>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">text = "Hello World"
+count = 0</code></pre>
+</div>
+    </div>
+
+    <div class="challenge-box">
+      <span class="challenge-badge">문제 3</span>
+      <div class="challenge-title">Z부터 A까지 역순 출력</div>
+      <p>ord()와 range()를 이용해서 Z부터 A까지 역순으로 출력하세요.</p>
+<div class="io-example">출력 예: Z Y X W ... C B A</div>
+      <details><summary>💡 힌트</summary><div class="hint"><code>range(ord('Z'), ord('A') - 1, -1)</code></div></details>
+
+    </div>
+  </section>
+
+  <section class="section" id="ch8">
+    <div class="eyebrow">🚀 CHALLENGE</div>
+    <h2 class="sec-title"><span class="sec-num">08</span>실전 코딩 챌린지</h2>
+    <p class="desc">실제 상황에서 만날 수 있는 문제들을 풀어봅시다.</p>
+
+    <div class="challenge-box">
+      <span class="story-badge">📖 상황 문제</span><span class="challenge-badge">MISSION 1</span>
+      <div class="challenge-title">암호 해독기 만들기 (대소문자 혼합)</div>
+      <p>앞의 카이사르 암호에서 입력되는 글자가 대문자에 한정되지 않게 되었습니다.<br>소문자는 소문자끼리, 대문자는 대문자끼리 암호화하며, 알파벳이 아닌 경우(띄어쓰기 등)는 그대로 출력합니다.</p>
+<div class="io-example">입력: Hello Python  /  3
+출력: Khoor Sbwkrq</div>
+      <details><summary>💡 힌트</summary><div class="hint">대문자: <code>(ord(char) - 65 + n) % 26 + 65</code><br>소문자: <code>(ord(char) - 97 + n) % 26 + 97</code><br>알파벳 아닌 경우: 그대로 출력</div></details>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">text = input("문장 입력: ")
+n = int(input("밀 칸수: "))</code></pre>
+</div>
+    </div>
+
+    <div class="challenge-box">
+      <span class="story-badge">📖 상황 문제</span><span class="challenge-badge">MISSION 2</span>
+      <div class="challenge-title">비밀번호 조건 검사기</div>
+      <p>점코딩닷컴에 회원가입하기 위한 비밀번호가 아래 조건을 모두 만족하는지 확인하세요.</p>
+      <div class="rule-box">1. 알파벳 <b>대문자</b>로 시작해야 합니다.<br>2. 알파벳 소문자와 숫자가 각각 <b>3개 이상</b> 들어가야 합니다.<br>3. 비밀번호 전체 길이가 <b>10자 이상, 20자 이하</b>여야 합니다.</div>
+<div class="io-example">입력: Jamcoding123  →  조건에 부합합니다.
+입력: python111    →  조건에 부합하지 않습니다.</div>
+      <details><summary>💡 힌트</summary><div class="hint">대문자: 65~90 / 소문자: 97~122 / 숫자: 48~57<br>각 종류의 개수를 세는 변수를 만들어 for문으로 확인하세요.</div></details>
+<div class="vs-label">💻 VS Code에 입력하고 실행해보세요</div><div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">pw = input("비밀번호 입력: ")</code></pre>
+</div>
+    </div>
+
+    <div class="challenge-box">
+      <span class="challenge-badge">MISSION 3</span>
+      <div class="challenge-title">A~Z 전체 출력하기</div>
+      <p>ord()와 chr()를 사용해 A부터 Z까지 한 줄에 출력하세요.</p>
+<div class="io-example">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>
+      <details><summary>💡 정답 코드 보기</summary>
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">for i in range(ord('A'), ord('Z') + 1):
+    print(chr(i), end=" ")</code></pre>
+</div>
+      </details>
+
+    </div>
+
+    <div class="challenge-box">
+      <span class="challenge-badge">MISSION 4</span>
+      <div class="challenge-title">숫자 문자 판별기</div>
+      <p>입력받은 문자가 숫자 문자('0'~'9')인지 판별하세요. <code>isdigit()</code> 사용 금지!</p>
+<div class="io-example">입력: 5  →  숫자입니다.
+입력: a  →  숫자가 아닙니다.</div>
+      <details><summary>💡 정답 코드 보기</summary>
+<div class="code-card"><div class="code-dots"><span></span><span></span><span></span></div>
+<pre><code class="py">char = input("한 글자 입력: ")
+code = ord(char)
+if 48 &lt;= code &lt;= 57:
+    print("숫자입니다.")
+else:
+    print("숫자가 아닙니다.")</code></pre>
+</div>
+      </details>
+
+    </div>
+  </section>
+
+  <section class="section" id="ch9">
+    <div class="eyebrow">🏆 FINAL</div>
+    <h2 class="sec-title"><span class="sec-num">09</span>Check 3 — 최종 종합 퀴즈 (15문항)</h2>
+    <p class="desc">유니코드와 변환 함수의 개념을 완벽하게 확인해봅시다!</p>
+<div id="quiz-c3"></div>
+<button class="check-set-btn" onclick="gradeQuiz('c3')">🎯 채점하기</button>
+<button class="btn-retry" onclick="resetQuiz('c3')">🔄 다시 풀기</button>
+<div class="final-score" id="score-c3"><div class="final-score-num"></div><div class="final-score-msg"></div></div>
+  </section>
+</main>
+
+<footer>
+  <div class="next-card"><p>수고했어요 🎉 정보올림피아드 사이트에서 유니코드 관련 문제를 직접 풀어보세요.</p><a class="btn" href="https://www.jungol.co.kr" target="_blank">jungol.co.kr 바로가기 →</a></div>
+  <div class="copyright">Copyright © 2026 CODE:N ACADEMY</div>
+</footer>
 
 <script>
-    let pyodide;
-    async function initPyodide() {
-        pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/" });
+// ===== 퀴즈 데이터 =====
+var SCORE_MSGS = [[100,'🎉 완벽합니다!'],[70,'👍 훌륭해요!'],[0,'💪 다시 복습해봐요!']];
+var QUIZ = {
+  c1: [
+    {q:"문자를 유니코드 번호(정수)로 변환하는 함수는?", o:["int()","chr()","ord()","str()"], a:2},
+    {q:"유니코드 번호를 문자로 변환하는 함수는?", o:["ord()","char()","text()","chr()"], a:3},
+    {q:"ord('A')의 결과가 65일 때, ord('C')의 결과는?", o:["63","66","67","68"], a:2},
+    {q:"chr(97)의 결과가 'a'일 때, chr(98)의 결과는?", o:["'A'","'b'","'98'","'B'"], a:1}
+  ],
+  c2: [
+    {q:"ord() 함수의 반환값 자료형은?", o:["문자열(str)","정수(int)","실수(float)","리스트(list)"], a:1},
+    {q:"chr() 함수의 반환값 자료형은?", o:["문자열(str)","정수(int)","불린(bool)","튜플(tuple)"], a:0},
+    {q:"chr(ord('A') + 1)의 결과는?", o:["'A1'","66","'B'","에러"], a:2},
+    {q:"알파벳 'A'(대문자)와 'a'(소문자)의 유니코드 번호 차이는?", o:["0 (같다)","26","32","48"], a:2}
+  ],
+  c3: [
+    {q:"다음 중 문자를 유니코드 번호로 변환하는 함수는?", o:["int()","chr()","ord()","str()"], a:2},
+    {q:"다음 중 유니코드 번호를 문자로 변환하는 함수는?", o:["ord()","char()","text()","chr()"], a:3},
+    {q:"ord('A')의 결과가 65일 때, ord('C')의 결과는?", o:["63","66","67","68"], a:2},
+    {q:"chr(97)의 결과가 'a'일 때, chr(98)의 결과는?", o:["'A'","'b'","'98'","'B'"], a:1},
+    {q:"ord() 함수의 반환값(Return Type) 자료형은?", o:["문자열(str)","정수(int)","실수(float)","리스트(list)"], a:1},
+    {q:"chr() 함수의 반환값(Return Type) 자료형은?", o:["문자열(str)","정수(int)","불린(bool)","튜플(tuple)"], a:0},
+    {q:"ord('가')의 실행 결과로 올바른 것은?", o:["에러 발생 (한글 불가)","정수값 (예: 44032)","문자 '가'","None"], a:1},
+    {q:"유니코드에서 'A'(대문자)와 'a'(소문자)의 번호는?", o:["같다","다르다","컴퓨터마다 다르다","알 수 없다"], a:1},
+    {q:"chr(ord('A') + 1)의 결과는?", o:["'A1'","66","'B'","에러"], a:2},
+    {q:"문자 '0'을 ord('0')으로 변환하면?", o:["0이 나옵니다.","48이 나옵니다.","에러가 발생합니다.","None이 나옵니다."], a:1},
+    {q:"ord() 함수에 인자로 넣을 수 없는 것은?", o:["'Z'","'@'","' ' (공백)","'AB' (두 글자)"], a:3},
+    {q:"A~Z를 range()로 출력할 때 시작값은?", o:["0","1","ord('A')","ord('Z')"], a:2},
+    {q:"글자를 밀어서 바꾸는 고전 암호는?", o:["시저 암호","해시 암호","RSA","AES"], a:0},
+    {q:"print(ord('a') - ord('A'))의 결과는?", o:["0","1","32","-32"], a:2},
+    {q:"chr(1000)처럼 큰 숫자를 넣으면?", o:["에러 발생","해당 유니코드 문자 반환","항상 '?' 반환","컴퓨터가 멈춤"], a:1}
+  ]
+};
+
+// ===== syntax highlight =====
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function highlight(code){
+  code = esc(code);
+  var token = /(#.*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(\d+\.?\d*)\b|\b(def|return|for|in|if|elif|else|while|True|False|and|or|not|pass|break|continue|global|import|del)\b|\b(print|input|int|float|str|range|len|map|min|max|abs|split|join|sum|sorted|list|tuple|set|type|round|count|index|ord|chr|enumerate)\b/g;
+  return code.replace(token, function(m, cm, str, num, kw, bi){
+    if (cm) return '<span class="c-cm">'+cm+'</span>';
+    if (str) return '<span class="c-str">'+str+'</span>';
+    if (num) return '<span class="c-num">'+num+'</span>';
+    if (kw) return '<span class="c-kw">'+kw+'</span>';
+    if (bi) return '<span class="c-bi">'+bi+'</span>';
+    return m;
+  });
+}
+document.querySelectorAll('code.py').forEach(function(el){
+  el.innerHTML = highlight(el.textContent);
+});
+
+// ===== 사이드바 토글 =====
+var isMobile = window.matchMedia('(max-width:900px)').matches;
+if (isMobile) document.body.classList.remove('nav-collapsed');
+var navToggle = document.getElementById('navToggle');
+navToggle.addEventListener('click', function(){
+  if (window.matchMedia('(max-width:900px)').matches){
+    document.body.classList.toggle('nav-open');
+  } else {
+    document.body.classList.toggle('nav-collapsed');
+  }
+});
+document.querySelectorAll('.sidebar nav a').forEach(function(a){
+  a.addEventListener('click', function(){
+    document.body.classList.remove('nav-open');
+  });
+});
+
+// ===== 스크롤스파이 =====
+var navLinks = document.querySelectorAll('.sidebar nav a');
+var sections = document.querySelectorAll('main .section');
+var observer = new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if (entry.isIntersecting){
+      navLinks.forEach(function(l){ l.classList.remove('active'); });
+      var link = document.querySelector('.sidebar nav a[href="#' + entry.target.id + '"]');
+      if (link) link.classList.add('active');
     }
-    initPyodide();
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(function(s){ observer.observe(s); });
 
-    async function runCode(editorId, outputId) {
-        if (!pyodide) return alert('Pyodide 로딩 중입니다. 잠시 후 다시 시도해주세요.');
-        const code = document.getElementById(editorId).value;
-        const outputDiv = document.getElementById(outputId);
-        try {
-            await pyodide.runPythonAsync(`
-import sys, builtins, js
-from io import StringIO
-def custom_input(prompt=""):
-    res = js.window.prompt(prompt)
-    return res if res is not None else ""
-builtins.input = custom_input
-sys.stdout = StringIO()
-            `);
-            await pyodide.runPythonAsync(code);
-            outputDiv.textContent = pyodide.runPython("sys.stdout.getvalue()");
-            outputDiv.style.color = "var(--text-main)";
-        } catch (error) {
-            outputDiv.textContent = 'Error: ' + error.message;
-            outputDiv.style.color = "#d63031";
-        }
+// ===== 빈칸 채점 (공백 무시, 정답 후보 여러 개 가능) =====
+function checkBlanks(ids, answers, fbId, okMsg){
+  var norm = function(v){ return String(v).replace(/\s+/g,''); };
+  var ok = 0;
+  ids.forEach(function(id, i){
+    var el = document.getElementById(id);
+    var cands = [].concat(answers[i]).map(norm);
+    if (cands.indexOf(norm(el.value)) !== -1){
+      el.style.borderColor = 'var(--good)'; el.style.background = 'var(--good-soft)'; ok++;
+    } else {
+      el.style.borderColor = 'var(--bad)'; el.style.background = 'var(--bad-soft)';
     }
+  });
+  var all = ok === ids.length;
+  var fb = document.getElementById(fbId);
+  fb.classList.add('show');
+  fb.style.background = all ? 'var(--good-soft)' : 'var(--bad-soft)';
+  fb.style.color = all ? 'var(--good)' : 'var(--bad)';
+  fb.textContent = all ? ('🎉 ' + (okMsg || '모두 정답이에요!')) : (ids.length + '개 중 ' + ok + '개 정답. 빨간 칸을 다시 확인해보세요.');
+}
 
-    function paintInput(id, ok) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        el.style.borderColor = ok ? '#00b894' : '#d63031';
-    }
-
-    function checkQ1() {
-        const a = document.getElementById('q1-a').value.trim();
-        const b = document.getElementById('q1-b').value.trim();
-        const c = document.getElementById('q1-c').value.trim();
-        const ca = a === 'C', cb = b === '25', cc = c === 'a';
-        paintInput('q1-a', ca); paintInput('q1-b', cb); paintInput('q1-c', cc);
-        const fb = document.getElementById('fb-q1');
-        const ok = ca && cb && cc;
-        fb.className = 'drill-feedback show';
-        fb.style.backgroundColor = ok ? '#d4efdf' : '#fde8e8';
-        fb.innerHTML = ok
-            ? "✅ 정답! chr(ord('B')+1)=C, ord('Z')-ord('A')=25, chr(65+32)=a"
-            : "❌ 오답이 있습니다. 빈칸 색상을 확인하세요.";
-    }
-
-    const quizSet1 = [
-        { q: "문자를 유니코드 번호(정수)로 변환하는 함수는?", options: ["int()", "chr()", "ord()", "str()"], a: 2 },
-        { q: "유니코드 번호를 문자로 변환하는 함수는?", options: ["ord()", "char()", "text()", "chr()"], a: 3 },
-        { q: "ord('A')의 결과가 65일 때, ord('C')의 결과는?", options: ["63", "66", "67", "68"], a: 2 },
-        { q: "chr(97)의 결과가 'a'일 때, chr(98)의 결과는?", options: ["'A'", "'b'", "'98'", "'B'"], a: 1 },
-    ];
-
-    const quizSet2 = [
-        { q: "ord() 함수의 반환값 자료형은?", options: ["문자열(str)", "정수(int)", "실수(float)", "리스트(list)"], a: 1 },
-        { q: "chr() 함수의 반환값 자료형은?", options: ["문자열(str)", "정수(int)", "불린(bool)", "튜플(tuple)"], a: 0 },
-        { q: "chr(ord('A') + 1)의 결과는?", options: ["'A1'", "66", "'B'", "에러"], a: 2 },
-        { q: "알파벳 'A'(대문자)와 'a'(소문자)의 유니코드 번호 차이는?", options: ["0 (같다)", "26", "32", "48"], a: 2 },
-    ];
-
-    const quizSet3 = [
-        { q: "다음 중 문자를 유니코드 번호로 변환하는 함수는?", options: ["int()", "chr()", "ord()", "str()"], a: 2 },
-        { q: "다음 중 유니코드 번호를 문자로 변환하는 함수는?", options: ["ord()", "char()", "text()", "chr()"], a: 3 },
-        { q: "ord('A')의 결과가 65일 때, ord('C')의 결과는?", options: ["63", "66", "67", "68"], a: 2 },
-        { q: "chr(97)의 결과가 'a'일 때, chr(98)의 결과는?", options: ["'A'", "'b'", "'98'", "'B'"], a: 1 },
-        { q: "ord() 함수의 반환값(Return Type) 자료형은?", options: ["문자열(str)", "정수(int)", "실수(float)", "리스트(list)"], a: 1 },
-        { q: "chr() 함수의 반환값(Return Type) 자료형은?", options: ["문자열(str)", "정수(int)", "불린(bool)", "튜플(tuple)"], a: 0 },
-        { q: "ord('가')의 실행 결과로 올바른 것은?", options: ["에러 발생 (한글 불가)", "정수값 (예: 44032)", "문자 '가'", "None"], a: 1 },
-        { q: "유니코드에서 'A'(대문자)와 'a'(소문자)의 번호는?", options: ["같다", "다르다", "컴퓨터마다 다르다", "알 수 없다"], a: 1 },
-        { q: "chr(ord('A') + 1)의 결과는?", options: ["'A1'", "66", "'B'", "에러"], a: 2 },
-        { q: "문자 '0'을 ord('0')으로 변환하면?", options: ["0이 나옵니다.", "48이 나옵니다.", "에러가 발생합니다.", "None이 나옵니다."], a: 1 },
-        { q: "ord() 함수에 인자로 넣을 수 없는 것은?", options: ["'Z'", "'@'", "' ' (공백)", "'AB' (두 글자)"], a: 3 },
-        { q: "A~Z를 range()로 출력할 때 시작값은?", options: ["0", "1", "ord('A')", "ord('Z')"], a: 2 },
-        { q: "글자를 밀어서 바꾸는 고전 암호는?", options: ["시저 암호", "해시 암호", "RSA", "AES"], a: 0 },
-        { q: "print(ord('a') - ord('A'))의 결과는?", options: ["0", "1", "32", "-32"], a: 2 },
-        { q: "chr(1000)처럼 큰 숫자를 넣으면?", options: ["에러 발생", "해당 유니코드 문자 반환", "항상 '?' 반환", "컴퓨터가 멈춤"], a: 1 },
-    ];
-
-    function renderQuiz(areaId, questions, prefix) {
-        document.getElementById(areaId).innerHTML = questions.map((q, idx) => `
-            <div class="quiz-item">
-                <div class="quiz-question">Q${idx+1}. ${q.q}</div>
-                <div class="quiz-options">
-                    ${q.options.map((opt, oIdx) => `<label><input type="radio" name="${prefix}q${idx}" value="${oIdx}"> ${opt}</label>`).join('')}
-                </div>
-                <div id="${prefix}fb${idx}" style="font-weight:bold; margin-top:8px; font-size:0.9rem;"></div>
-            </div>`).join('');
-    }
-
-    function gradeQuiz(areaId, questions, resultId) {
-        const prefix = areaId.replace('quiz-area-', 'q');
-        let count = 0;
-        questions.forEach((q, idx) => {
-            const sel = document.querySelector(`input[name="${prefix}q${idx}"]:checked`);
-            const fb = document.getElementById(`${prefix}fb${idx}`);
-            if (sel && parseInt(sel.value) === q.a) {
-                count++; fb.innerText = "✅ 정답!"; fb.style.color = "#00b894";
-            } else {
-                fb.innerText = `❌ 오답 (정답: ${q.options[q.a]})`; fb.style.color = "#d63031";
-            }
-        });
-        const res = document.getElementById(resultId);
-        res.style.display = 'block';
-        const pct = Math.round(count / questions.length * 100);
-        let msg = pct === 100 ? "🎉 완벽합니다!" : pct >= 70 ? "👍 훌륭해요!" : "💪 다시 복습해봐요!";
-        res.innerHTML = `${count}/${questions.length} 정답 (${pct}점) — ${msg}`;
-        res.style.color = pct >= 70 ? '#6c63ff' : '#d63031';
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Tab' && e.target.classList.contains('code-editor')) {
-            e.preventDefault();
-            let s = e.target.selectionStart;
-            e.target.value = e.target.value.substring(0, s) + "    " + e.target.value.substring(e.target.selectionEnd);
-            e.target.selectionStart = e.target.selectionEnd = s + 4;
-        }
+// ===== 퀴즈 (라디오형, 여러 세트 지원) =====
+function buildQuiz(key){
+  var c = document.getElementById('quiz-' + key);
+  if (!c) return;
+  var h = '';
+  QUIZ[key].forEach(function(q, i){
+    var opts = q.o.map(function(o, j){
+      return '<label><input type="radio" name="' + key + 'q' + i + '" value="' + j + '"> ' + o + '</label>';
+    }).join('');
+    h += '<div class="quiz-card"><div class="quiz-q">Q' + (i+1) + '. ' + q.q + '</div><div class="quiz-opts">' + opts + '</div></div>';
+  });
+  c.innerHTML = h;
+}
+function gradeQuiz(key){
+  var Qs = QUIZ[key], score = 0;
+  Qs.forEach(function(q, i){
+    var radios = document.getElementsByName(key + 'q' + i);
+    var picked = -1;
+    radios.forEach(function(r, j){
+      if (r.checked) picked = j;
+      r.closest('label').classList.remove('correct', 'wrong');
     });
-
-    function autoResize(el) {
-        el.style.height = 'auto';
-        el.style.height = Math.max(220, el.scrollHeight) + 'px';
-    }
-    document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('code-editor')) autoResize(e.target);
-    });
-    window.addEventListener('load', function() {
-        document.querySelectorAll('.code-editor').forEach(el => autoResize(el));
-    });
-
-    renderQuiz("quiz-area-1", quizSet1, "q1");
-    renderQuiz("quiz-area-2", quizSet2, "q2");
-    renderQuiz("quiz-area-3", quizSet3, "q3");
-
-    function toggleNav() {
-        document.querySelector('nav').classList.toggle('collapsed');
-        document.getElementById('nav-toggle').classList.toggle('collapsed-btn');
-        document.body.classList.toggle('nav-collapsed');
-    }
-
-    function goToSection(id) {
-        if (id === 'top') window.scrollTo({ top: 0, behavior: 'smooth' });
-        else { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-    }
-
-    const navMap = [
-        { navId: 'nav-top', secId: null }, { navId: 'nav-sec1', secId: 'sec1' },
-        { navId: 'nav-sec2', secId: 'sec2' }, { navId: 'nav-sec3', secId: 'sec3' },
-        { navId: 'nav-check1', secId: 'check1' }, { navId: 'nav-sec4', secId: 'sec4' },
-        { navId: 'nav-sec5', secId: 'sec5' }, { navId: 'nav-check2', secId: 'check2' },
-        { navId: 'nav-challenge', secId: 'sec-challenge' }, { navId: 'nav-check3', secId: 'check3' },
-    ];
-    window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY + 80;
-        let current = 'nav-top';
-        navMap.forEach(({ navId, secId }) => {
-            if (!secId) return;
-            const el = document.getElementById(secId);
-            if (el && el.offsetTop <= scrollY) current = navId;
-        });
-        navMap.forEach(({ navId }) => document.getElementById(navId)?.classList.remove('active'));
-        document.getElementById(current)?.classList.add('active');
-    });
+    radios[q.a].closest('label').classList.add('correct');
+    if (picked === q.a) score++;
+    else if (picked !== -1) radios[picked].closest('label').classList.add('wrong');
+  });
+  var pct = Math.round(score / Qs.length * 100);
+  var msg = SCORE_MSGS.find(function(m){ return pct >= m[0]; })[1];
+  var sc = document.getElementById('score-' + key);
+  sc.classList.add('show');
+  sc.querySelector('.final-score-num').textContent = pct + '점 (' + score + '/' + Qs.length + ')';
+  sc.querySelector('.final-score-msg').textContent = msg;
+  sc.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function resetQuiz(key){
+  buildQuiz(key);
+  document.getElementById('score-' + key).classList.remove('show');
+  document.getElementById('quiz-' + key).scrollIntoView({behavior:'smooth'});
+}
+if (typeof QUIZ !== 'undefined') Object.keys(QUIZ).forEach(buildQuiz);
 </script>
+
 </body>
 </html>
