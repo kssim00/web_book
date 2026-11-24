@@ -17,6 +17,8 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
 #scn button{font:inherit;font-size:13.5px;font-weight:700;border:2px solid #b9d3a3;background:#fff;color:#3b6d11;border-radius:999px;padding:5px 12px;cursor:pointer}
 #scn button.on{background:#3b6d11;border-color:#3b6d11;color:#fff}
 #scn:empty{display:none}
+#hint{font-size:14.5px;font-weight:800;color:#c76a00}
+#hint:empty{display:none}
 .bar .s{font-size:15px;padding:8px 18px;background:#fff;color:#3b6d11;border:2px solid #3b6d11}
 #entryContainer{position:fixed;left:-99999px;top:0;width:1200px;height:800px;visibility:hidden}
 </style>
@@ -117,6 +119,24 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
       return u || s;
     }
     var project = mapStrings(JSON.parse(TD.decode(pe.data)), localize);
+    /* 장면마다 어떤 키·클릭으로 움직이는지 찾아 아래에 안내 (예: 2-1 학습하기는 스페이스·화살표 키) */
+    (function(){
+      var KN = {32:'스페이스',37:'←',38:'↑',39:'→',40:'↓',13:'엔터'};
+      (project.objects||[]).forEach(function(o){
+        var c = CTL[o.scene] || (CTL[o.scene] = {keys:[], obj:false, mouse:false});
+        var sc = o.script; try{ if (typeof sc === 'string') sc = JSON.parse(sc); }catch(e){ sc = []; }
+        (function walk(b){
+          if (Array.isArray(b)) { b.forEach(walk); return; }
+          if (!b || typeof b !== 'object') return;
+          var t = b.type, P = b.params || [];
+          var k = t === 'when_some_key_pressed' ? P[1] : (t === 'is_press_some_key' ? P[0] : null);
+          if (k != null && k !== '') { var n = KN[+k] || (+k >= 48 && +k <= 90 ? String.fromCharCode(+k) : String(k)); if (c.keys.indexOf(n) < 0) c.keys.push(n); }
+          if (t === 'when_object_click' || t === 'when_object_click_canceled') c.obj = true;
+          if (t === 'mouse_clicked' || t === 'mouse_click_cancled' || t === 'is_clicked') c.mouse = true;
+          for (var x in b) if (x !== 'type') walk(b[x]);
+        })(sc);
+      });
+    })();
     (project.objects||[]).forEach(function(o){ ((o.sprite&&o.sprite.pictures)||[]).forEach(function(p){ var f=p.fileurl||''; if(f.indexOf('blob:')===0){ p.thumbUrl=f; p.thumbnail=f; } }); });
     Entry.creationChangedEvent = new Entry.Event(window);
     Entry.init($('entryContainer'), {type:'workspace', libDir:'https://playentry.org/lib', entryDir:'/entry-js', resourcePath:'https://playentry.org/', textCodingEnable:false});
@@ -136,6 +156,19 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
     $('ovMsg').innerHTML = (scs.length > 1 ? '<span>장면이 ' + scs.length + '개 있어요. 아래에서 골라 볼 수도 있어요.</span>' : '') + '<button class="b" id="bigRun">▶ 시작하기</button>';
     $('bigRun').onclick = run;
   }
+  var CTL = {};
+  function ctlText(){
+    var id = ''; try{ id = Entry.scene.selectedScene.id; }catch(e){}
+    var c = CTL[id]; if (!c) return '';
+    var ORD = ['스페이스','←','→','↑','↓','엔터'], ks = c.keys.slice().sort(function(a,b){ var i=ORD.indexOf(a), j=ORD.indexOf(b); return (i<0?99:i)-(j<0?99:j) || (a<b?-1:1); });
+    var arrows = ks.filter(function(k){ return '←→↑↓'.indexOf(k) >= 0; }).join(' '), other = ks.filter(function(k){ return '←→↑↓'.indexOf(k) < 0; });
+    var parts = other.concat(arrows ? [arrows] : []), out = [];
+    if (parts.length) out.push('⌨️ ' + parts.join(' · ') + ' 키를 눌러 보세요');
+    if (c.obj) out.push('🖱️ 오브젝트를 클릭해 보세요');
+    else if (c.mouse) out.push('🖱️ 화면을 클릭해 보세요');
+    return out.join('  ');
+  }
+  function showCtl(){ var t = ctlText(); if ($('hint').textContent !== t) $('hint').textContent = t; }
   function mark(){ try{ var cur = Entry.scene.selectedScene, scs = Entry.scene.getScenes(); [].forEach.call(document.querySelectorAll('#scn button'), function(b){ b.classList.toggle('on', scs[+b.dataset.k] === cur); }); }catch(e){} }
   function run(){ $('ov').classList.add('hide'); try{ if(Entry.engine.state !== 'stop') Entry.engine.toggleStop(); Entry.engine.toggleRun(); }catch(e){ console.error(e); } }
   function stop(){ try{ if(Entry.engine.state !== 'stop') Entry.engine.toggleStop(); }catch(e){} }
@@ -144,6 +177,7 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
   $('reBtn').onclick = function(){ run(); sync(); };
   function sync(){ var r = running(); $('tgBtn').textContent = r ? '■ 멈추기' : '▶ 시작하기'; }
   setInterval(sync, 300);
+  setInterval(showCtl, 400);
   /* 다른 탭으로 가거나 창이 가려지면 저절로 멈춤 */
   document.addEventListener('visibilitychange', function(){ if (document.hidden) stop(); });
   go().catch(function(e){ console.error(e); fail('엔트리를 불러오지 못했어요.<br><small>'+(e.message||e)+'</small>'); });
