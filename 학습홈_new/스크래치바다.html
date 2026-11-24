@@ -304,7 +304,7 @@ function makePins() {
 /* 카드 */
 const DEV = {camera: '📷 카메라', mic: '🎤 마이크', sound: '🔊 소리'};
 function btn(cls, text, fn) { const b = document.createElement('button'); b.className = 'btn ' + cls; b.textContent = text; b.addEventListener('click', fn); return b; }
-function openMission(i) { const it = L[i]; location.href = '미션.html?id=' + it.id + '&f=3&n=' + encodeURIComponent(label(it)); }
+function openMission(i) { const it = L[i]; location.href = '스크래치미션.html?id=' + it.id + (it.no && it.no !== '쉼터' && it.no !== '선택' ? '&n=' + encodeURIComponent(it.no) : ''); }
 let pvI = -1; const PVL = Object.keys(window.SCRATCH_FILES || {});
 function pvUrl(it) { const m = MS[it.id]; if (m && m.preview) return m.preview; return window.SCRATCH_PV_READY && PVL.indexOf(it.id) >= 0 ? '스크래치미리보기.html?id=' + it.id + '&t=' + encodeURIComponent(it.no + ' ' + it.t) : ''; }
 function openPv(i) {

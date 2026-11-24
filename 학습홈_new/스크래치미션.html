@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스크래치 미션</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 학습홈 2.0 · 스크래치 미션지 — 단계 없이, 스프라이트마다 흩어진 블록을 처음부터 다 보여 준다 (2026-11-24 원장님 확정)
+   내용은 lib/scratch_missions.js (클로드\_tools\mk_scratch_missions.py 가 완성작에서 뽑아 만듦) */
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#eff5f8;font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#14232c;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.topbar{max-width:720px;margin:0 auto;padding:26px 18px 0;display:flex;align-items:center;gap:10px}
+.backl{font-size:15px;font-weight:700;color:#5b6f7a;padding:4px 0}
+.backl:hover{color:#14232c}
+.tbadge{margin-left:auto;font-size:12px;font-weight:800;color:#7a5600;background:#ffe9a8;border-radius:999px;padding:4px 10px}
+.page{max-width:720px;margin:0 auto;padding:0 18px 60px}
+.eyebrow{margin:14px 0 6px;font-size:14px;font-weight:800;color:#1f8fc4}
+h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
+.goal{margin:10px 0 0;font-size:16px;color:#5b6f7a;line-height:1.65}
+.goal b{color:#14232c}
+.meta{display:flex;align-items:center;gap:16px;margin:20px 0 12px;flex-wrap:wrap}
+.playl{font-size:15px;font-weight:800;color:#0f6f9e;white-space:nowrap;text-decoration:none}
+.playl:hover,.ansb:hover{text-decoration:underline;text-underline-offset:4px}
+/* 완성작 파일이 여러 개일 때 (기본 · 보너스 미션 …) */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.tabs[hidden],.playl[hidden]{display:none}
+.tabs button{font-size:14px;font-weight:800;color:#5b6f7a;border-radius:999px;padding:6px 14px;box-shadow:inset 0 0 0 1.5px #cddbe2;background:#fff}
+.tabs button.on{background:#1f8fc4;color:#fff;box-shadow:none}
+.list{background:#fff;border-radius:20px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(20,60,80,.07);margin:0;padding:0;list-style:none}
+.it{border-top:1px solid #e9f0f3;padding:18px 22px 20px}.it:first-child{border-top:0}
+.ih{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.nm{font-size:17px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.say{flex:1;min-width:200px;font-size:15.5px;color:#5b6f7a;line-height:1.5}
+.pane{padding:16px;border-radius:14px;background:#f5f9fb;overflow-x:auto}
+.pane.ans{margin-top:10px;background:#fffdf3;box-shadow:inset 0 0 0 1.5px #f2c94c}
+.lab{font-size:12px;font-weight:800;color:#8a6a00;margin:0 0 8px}
+.ansb{display:inline-block;margin-top:10px;font-size:14px;font-weight:800;color:#8a6a00}
+.pile{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 12px}
+.pile>*{transform:rotate(var(--r,0deg))}
+.stacks{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.stack{display:inline-flex;flex-direction:column;align-items:flex-start}
+.b{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;color:#fff;font-size:13.5px;font-weight:600;line-height:1.3;white-space:nowrap;min-height:32px}
+.stack>*+*,.in>*+*{margin-top:2px}
+.b.hat{border-radius:16px 16px 7px 7px;padding-top:8px}
+.v{display:inline-block;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:600}
+.v.sel{border-radius:5px;background:rgba(0,0,0,.18);color:#fff}
+.v.blank{min-width:30px;height:19px;vertical-align:middle;padding:0}
+.v.col{min-width:26px;height:19px;vertical-align:middle;padding:0;box-shadow:inset 0 0 0 2px #fff}
+/* 블록 안에 끼우는 블록: 동그란 것(값) · 각진 것(판단) */
+.rp,.bo{display:inline-flex;align-items:center;gap:4px;color:#fff;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.bo{border-radius:5px;padding:2px 8px}
+.bo.none{min-width:34px;height:20px;background:rgba(0,0,0,.2)}
+.c{display:flex;flex-direction:column;align-items:flex-start;border-radius:7px}
+.c .head,.c .foot{padding:6px 12px;color:#fff;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap;min-height:32px}
+.c .foot{padding:5px 12px;min-width:70px;min-height:0}
+.c .head.mid{padding:5px 12px;min-height:0}
+.c .in{margin-left:14px;padding:2px 2px 2px 0;background:#fff;border-radius:0 6px 6px 0;display:flex;flex-direction:column;align-items:flex-start}
+.c.hollow .in{min-width:110px;min-height:22px;box-shadow:inset 0 0 0 1.5px #dfe8ec}
+/* 스크래치 블록 색 */
+.ev{background:#e6ac00}.ctl{background:#f29a0c}.mo{background:#4c97ff}.lk{background:#9966ff}.snd{background:#cf63cf}.sen{background:#47a8d1}.op{background:#4fb34f}.va{background:#ff8c1a}.li{background:#f2661a}.my{background:#ff6680}.pen{background:#0fbd8c}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:10px}
+.done{border-radius:999px;padding:11px 22px;font-size:15px;font-weight:700;background:#14232c;color:#fff;white-space:nowrap}
+.done.sm{padding:7px 14px;font-size:14px;margin-left:auto}
+.done.was{background:#dbe7ec;color:#3d5d6b}
+.modal{position:fixed;inset:0;background:rgba(14,24,30,.6);display:flex;align-items:center;justify-content:center;z-index:60;padding:18px;visibility:hidden;opacity:0;transition:opacity .15s}
+.modal.on{visibility:visible;opacity:1}
+.modal .box{width:min(900px,100%);background:#fff;border-radius:22px;overflow:hidden;display:flex;flex-direction:column}
+.modal .mh{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-weight:800;font-size:16px}
+.mclose{font-size:14px;font-weight:700;border-radius:999px;padding:7px 14px;background:#eef3f6}
+.modal iframe{width:100%;height:min(660px,78vh);border:0;display:block}
+.empty{text-align:center;padding:60px 20px;font-size:17px;line-height:1.8;color:#3d5d6b}
+@media (max-width:600px){h1{font-size:25px}.it{padding:16px}}
+</style>
+</head>
+<body>
+<div class="topbar"><button class="backl" id="backBtn">← 바닷길</button></div>
+<div class="page" id="page">
+  <p class="eyebrow" id="tag"></p>
+  <h1 id="title"></h1>
+  <p class="goal" id="goal" hidden></p>
+  <div class="meta"><button class="playl" id="playBtn" hidden>▶ 완성작</button><a class="playl" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">스크래치 열기 ↗</a><button class="done sm" data-done></button></div>
+  <div class="tabs" id="tabs" hidden></div>
+  <ol class="list" id="list"></ol>
+  <div class="foot">
+    <a class="playl" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">스크래치 열기 ↗</a>
+    <button class="done" data-done></button>
+  </div>
+</div>
+<div class="modal" id="modal"><div class="box"><div class="mh"><span id="mTitle"></span><button class="mclose" id="mClose">닫기 ✕</button></div><iframe id="mFrame" title="완성작"></iframe></div></div>
+<script>/* 자료 파일은 고칠 때마다 바로 보이게 매번 새로 받아 온다 */ document.write('<script src="lib/scratch_missions.js?t=' + Date.now() + '"><\/script><script src="lib/scratch_previews.js?t=' + Date.now() + '"><\/script>');</script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const Q = new URLSearchParams(location.search), ID = Q.get('id'), SEA = '스크래치바다.html';
+const M = (window.SCRATCH_MISSIONS || {})[ID];
+const KEY = 'studyhome_new_3d_demo';
+let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
+const TEACHER = (() => { try { return localStorage.getItem('학습홈_admin') === '1'; } catch (e) { return false; } })();
+$('backBtn').addEventListener('click', () => { location.href = SEA + '?at=' + encodeURIComponent(ID || ''); });
+if (!M) { $('page').innerHTML = '<div class="empty">이 미션의 안내는 아직 준비 중이에요.<br>바닷길로 돌아가 다른 미션을 해 봐요.</div>'; return; }
+const NO = Q.get('n') || M.no || '';
+document.title = M.title + ' · 스크래치 미션';
+$('tag').textContent = (NO ? NO + ' ' : '') + '미션'; $('title').textContent = M.title;
+if (M.goal) { $('goal').hidden = false; $('goal').innerHTML = M.goal; }
+if (TEACHER) { const t = document.createElement('span'); t.className = 'tbadge'; t.textContent = '🔑 선생님'; t.title = '선생님 모드: 스프라이트마다 ✅ 정답이 보여요'; document.querySelector('.topbar').appendChild(t); }
+
+/* 블록 그리기 — 글 표기: [값] · {고르는 칸} · ⟦분류|동그란 블록⟧ · ⟪분류|판단 블록⟫ (안에 또 넣을 수 있음) */
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function inline(t) {
+  let i = 0;
+  const parse = end => {
+    let h = '';
+    while (i < t.length) {
+      const c = t[i];
+      if (end && c === end) { i++; return h; }
+      if (c === '[') { let j = t.indexOf(']', i); if (j < 0) j = t.length; const v = t.slice(i + 1, j); i = j + 1;
+        h += !v.trim() ? '<span class="v blank"></span>' : /^#[0-9a-f]{6}$/i.test(v) ? '<span class="v col" style="background:' + v + '"></span>' : '<span class="v">' + esc(v) + '</span>'; }
+      else if (c === '{') { let j = t.indexOf('}', i); if (j < 0) j = t.length; h += '<span class="v sel">' + esc(t.slice(i + 1, j).trim() || ' ') + ' ▾</span>'; i = j + 1; }
+      else if (c === '⟦' || c === '⟪') { const bo = c === '⟪'; i++;
+        if (bo && t[i] === '⟫') { i++; h += '<span class="bo none"></span>'; continue; }
+        const k = t.indexOf('|', i), cat = t.slice(i, k); i = k + 1; h += '<span class="' + (bo ? 'bo ' : 'rp ') + cat + '">' + parse(bo ? '⟫' : '⟧') + '</span>'; }
+      else { h += esc(c); i++; }
+    }
+    return h;
+  };
+  return parse(null);
+}
+const head = s => { const m = s.match(/^(\w+)([:^])([\s\S]*)$/); return m || [s, 'ctl', ':', s]; };
+function block(x) {
+  if (Array.isArray(x)) { const m = head(x[0]); return '<div class="c ' + m[1] + '"><div class="head">' + inline(m[3]) + '</div><div class="in">' + x[1].map(block).join('') + '</div>' + (x.length > 3 ? '<div class="head mid">' + inline(x[2]) + '</div><div class="in">' + x[3].map(block).join('') + '</div>' : '') + '<div class="foot"></div></div>'; }
+  const m = head(x); return '<span class="b ' + m[1] + (m[2] === '^' ? ' hat' : '') + '">' + inline(m[3]) + '</span>';
+}
+/* 흩어진 블록: 반복·만약 안은 비우고, 같은 블록은 한 번만(값이 다르면 칸을 비움), 순서는 섞음(늘 같은 순서) */
+function pieces(list, out) { list.forEach(x => { if (Array.isArray(x)) { out.push(x.length > 3 ? [x[0], [], x[2], []] : [x[0], []]); pieces(x[1], out); if (x.length > 3) pieces(x[3], out); } else out.push(x); }); return out; }
+function shuffle(a, seed) {
+  const r = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+  if (b.length > 1 && b.every((x, i) => x === a[i])) b.push(b.shift());
+  return b;
+}
+function uniq(list) {
+  const str = x => Array.isArray(x) ? x[0] : x, key = x => str(x).replace(/\[[^\]]*\]/g, '[]'), seen = new Map(), out = [];
+  list.forEach(x => { const k = key(x); if (!seen.has(k)) { seen.set(k, out.length); out.push(x); } else { const i = seen.get(k), y = out[i]; if (str(y) !== str(x)) out[i] = Array.isArray(y) ? [k, ...y.slice(1)] : k; } });
+  return out.map(x => Array.isArray(x) ? [x[0].replace(/\[\]/g, '[ ]'), ...x.slice(1)] : x.replace(/\[\]/g, '[ ]'));
+}
+const pileHTML = (code, seed) => '<div class="pile">' + shuffle(uniq(pieces(code, [])), seed * 31 + 3).map((x, i) => {
+  const h = Array.isArray(x) ? block(x).replace('class="c ', 'class="c hollow ') : block(x);
+  return h.replace(/^<(\w+) /, '<$1 style="--r:' + (((i * 37 + seed * 13) % 5) - 2) * .7 + 'deg" ');
+}).join('') + '</div>';
+/* 정답(선생님만): 모자 블록마다 한 묶음으로 조립해서 */
+const ansHTML = code => { const g = []; code.forEach(x => { if ((!Array.isArray(x) && /^\w+\^/.test(x)) || !g.length) g.push([]); g[g.length - 1].push(x); }); return '<div class="stacks">' + g.map(s => '<div class="stack">' + s.map(block).join('') + '</div>').join('') + '</div>'; };
+
+let FI = 0; const ans = {};
+function draw() {
+  const F = M.files[FI] || {sprites: []};
+  $('tabs').hidden = M.files.length < 2;
+  $('tabs').innerHTML = M.files.map((f, i) => '<button data-f="' + i + '"' + (i === FI ? ' class="on"' : '') + '>' + esc(f.name) + '</button>').join('');
+  $('list').innerHTML = F.sprites.length ? F.sprites.map((s, i) => {
+    const k = FI + '_' + i;
+    return '<li class="it" data-k="' + k + '"><div class="ih"><span class="nm" title="' + esc(s.obj).replace(/"/g, '&quot;') + '">' + esc(s.obj) + '</span>' + (s.say ? '<span class="say">' + esc(s.say) + '</span>' : '') + '</div>' +
+      '<div class="pane">' + pileHTML(s.code, FI * 17 + i + 1) + '</div>' +
+      (TEACHER ? '<button class="ansb" data-ans>✅ 정답 ' + (ans[k] ? '▴' : '▾') + '</button>' + (ans[k] ? '<div class="pane ans"><p class="lab">정답 (원장님 화면에만 보여요)</p>' + ansHTML(s.code) + '</div>' : '') : '') + '</li>';
+  }).join('') : '<li class="it"><div class="empty" style="padding:30px 0">이 파일에는 블록이 없어요.</div></li>';
+}
+$('list').addEventListener('click', e => { const li = e.target.closest('[data-k]'); if (li && e.target.closest('[data-ans]')) { ans[li.dataset.k] = !ans[li.dataset.k]; draw(); } });
+$('tabs').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (b) { FI = +b.dataset.f; draw(); } });
+
+/* 완료: 아직 안 한 미션이면 바닷길로 돌아가 완료 처리, 이미 끝낸 미션이면 그냥 돌아가기 */
+const isDone = !!(S.scratch && S.scratch.done && S.scratch.done[ID]);
+document.querySelectorAll('[data-done]').forEach(b => {
+  b.textContent = isDone ? '✓ 완료한 미션' : '미션 완료 ⭐'; if (isDone) b.classList.add('was');
+  b.addEventListener('click', () => { location.href = SEA + (isDone ? '?at=' : '?done=') + encodeURIComponent(ID); });
+});
+
+/* 완성작: 스크래치 미리 해보기 창. 닫으면 멈춤 */
+const HAS_PV = !!(window.SCRATCH_PV_READY && (window.SCRATCH_PV || {})[ID]);
+$('playBtn').hidden = !HAS_PV; $('mTitle').textContent = '▶ 완성작 · ' + M.title;
+$('playBtn').addEventListener('click', () => { $('mFrame').src = '스크래치미리보기.html?id=' + encodeURIComponent(ID) + '&t=' + encodeURIComponent((NO ? NO + ' ' : '') + M.title); $('modal').classList.add('on'); });
+const closeM = () => { $('modal').classList.remove('on'); $('mFrame').src = 'about:blank'; };
+$('mClose').addEventListener('click', closeM);
+$('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeM(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeM(); });
+draw();
+})();
+</script>
+</body>
+</html>
