@@ -17,6 +17,11 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
 #scn button{font:inherit;font-size:13.5px;font-weight:700;border:2px solid #b9d3a3;background:#fff;color:#3b6d11;border-radius:999px;padding:5px 12px;cursor:pointer}
 #scn button.on{background:#3b6d11;border-color:#3b6d11;color:#fff}
 #scn:empty{display:none}
+#fil{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:100%}
+#fil:empty{display:none}
+#fil button{font:inherit;font-size:14px;font-weight:800;border:2px solid #f0c890;background:#fff;color:#c76a00;border-radius:999px;padding:5px 14px;cursor:pointer}
+#fil button.on{background:#c76a00;border-color:#c76a00;color:#fff}
+body.hasFil #stageBox{width:min(100%, calc((100vh - 195px) * 1.778))}
 #hint{font-size:16px;font-weight:800;color:#c76a00;margin:-4px 0 -2px}
 #hint:empty{display:none}
 .bar .s{font-size:15px;padding:8px 18px;background:#fff;color:#3b6d11;border:2px solid #3b6d11}
@@ -30,6 +35,7 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
 
 <div id="wrap">
   <p id="ttl"></p>
+  <div id="fil"></div>
   <div id="hint"></div>
   <div id="stageBox"><div id="ov"><span id="ovMsg">엔트리 작품을 불러오는 중이에요…<br><small>인터넷 연결이 필요해요</small></span></div></div>
   <div id="scn"></div>
@@ -92,10 +98,22 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
 <script src="https://playentry.org/lib/entry-js/dist/entry.min.js"></script>
 <script src="lib/fflate.js"></script>
 <script src="lib/entry-media.js"></script>
+<script>document.write('<script src="lib/entry_previews.js?t=' + Date.now() + '"><\/script>');</script>
 <script>
 (function(){
   var TD = new TextDecoder(), Q = new URLSearchParams(location.search), F = Q.get('f'), $ = function(i){ return document.getElementById(i); };
   document.getElementById('ttl').textContent = Q.get('t') || ''; if (window !== top) document.getElementById('ttl').style.display = 'none';
+  /* 완성작 파일이 여러 개인 미션(예: 3-2 학습하기·미션1·미션2·확장)은 제목 아래 파일 버튼으로 바꿔 봄 — 누르면 그 파일로 다시 엶 */
+  (function(){
+    var m = (F || '').match(/^(.*\/)([^\/]+)$/); if (!m) return;
+    var all = window.ENTRY_PV_FILES || {}, list = null;
+    Object.keys(all).forEach(function(id){ if (all[id].some(function(x){ return x[0] === m[2]; })) list = all[id]; });
+    if (!list) return;
+    document.body.classList.add('hasFil');
+    list.forEach(function(x){ var b = document.createElement('button'); b.textContent = x[1]; if (x[0] === m[2]) b.className = 'on';
+      b.onclick = function(){ if (x[0] === m[2]) return; var q = new URLSearchParams(location.search); q.set('f', m[1] + x[0]); location.replace(location.pathname + '?' + q.toString()); };
+      $('fil').appendChild(b); });
+  })();
   var ASSET_RE = /temp\/[^\/\\]+\/[^\/\\]+\/(?:image|thumb|sound)\/[^\/\\]+$/i;
   var MIME = {png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',svg:'image/svg+xml',bmp:'image/bmp',mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg'};
   function mapStrings(v, fn){

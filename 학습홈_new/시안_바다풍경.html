@@ -49,7 +49,7 @@ const $ = id => document.getElementById(id), T = THREE;
 const DESC = {
   A: '<b>A. 해안선 길</b> — 큰 만(바닷가)을 따라 길이 한 줄로 이어져요. 바다 쪽은 모래사장, 안쪽은 언덕·야자수, 멀리 산과 수평선. 구역마다 풍경이 달라요(모래사장 → 쉼터 → 바위 해안 → 게임 섬).',
   B: '<b>B. 해안선 + 주변만</b> — A와 같지만 가까이 볼 때 <b>지금 위치 앞뒤 미션만</b> 팻말이 보여서 화면이 깔끔해요. 멀리 보면 팻말 대신 구역 이름만.',
-  C: '<b>C. 섬 잇기</b> — 책 한 권·쉼터·관문·게임이 <b>각각 섬 하나</b>. 섬 안에서는 모래길, 섬과 섬 사이는 나무다리로 건너가요.'
+  C: '<b>C. 섬 잇기</b> — 미션 5~8개마다 <b>섬 하나</b> (책 구분 없이 순서대로). 섬 안은 모래길, 섬 사이는 나무다리. 쉼터·관문·게임 섬·오락실만 표지(해먹, 아치, 등대, 관람차)로 알려 줘요.'
 };
 /* 미션 목록 */
 const L = [];
@@ -81,18 +81,17 @@ function layoutA() {
   return pts;
 }
 function layoutC() {
-  /* 노드(책·쉼터·관문·게임)마다 섬 하나. 섬을 큰 호 위에 놓고, 섬 안에서는 반원 길 */
-  const R = 340, a0 = -2.25, a1 = 2.25, cnt = NODES.map(n => n.zone === 'gate' ? 1 : n.ms.length), tot = cnt.reduce((a, b) => a + b, 0) + NODES.length * 1.6;
+  /* 섬은 책과 상관없이 미션 5~8개씩 묶음. 섬을 큰 호 위에 놓고 섬 안은 S자 모래길, 섬 사이는 나무다리 */
+  const SZ = [6, 7, 5, 8, 6, 7, 5, 6, 8, 6, 7, 5, 6, 7], cnt = []; let left = N, k = 0;
+  while (left > 0) { let m = Math.min(left, SZ[k % SZ.length]); if (left - m > 0 && left - m < 4) m = left; cnt.push(m); left -= m; k++; }
+  const R = 330, a0 = -2.35, a1 = 2.35, rad = cnt.map(m => 17 + m * 3.6 + (m % 2) * 3), tot = rad.reduce((a, b) => a + b * 2 + 14, 0);
   let acc = 0; const isl = [];
-  NODES.forEach((n, k) => { const w = cnt[k] + 1.6, a = a0 + (a1 - a0) * (acc + w / 2) / tot; acc += w; const r = n.zone === 'gate' ? 16 : 16 + cnt[k] * 3.1; isl.push({x: Math.sin(a) * R, z: -Math.cos(a) * R + 120, r, a}); });
-  const pts = []; let i = 0;
-  NODES.forEach((n, k) => { const s = isl[k], m = cnt[k], dir = s.a + Math.PI / 2; /* 진행 방향 */
-    for (let j = 0; j < m; j++) { const t = m === 1 ? .5 : j / (m - 1), ang = dir + Math.PI - (t * Math.PI), rr2 = s.r * .55; /* 섬 안 반원 */
-      const ox = Math.sin(s.a) , oz = -Math.cos(s.a); /* 바깥 방향 */
-      const bx = Math.cos(s.a), bz = Math.sin(s.a); /* 진행 방향 */
-      const u = (t - .5) * 2, w = Math.sin(u * Math.PI) * s.r * .32; pts.push(new T.Vector3(s.x + bx * u * s.r * .66 + ox * w, 0, s.z + bz * u * s.r * .66 + oz * w)); i++; } });
-  H = (x, z) => { let h = -4.5; isl.forEach(s => { const d = Math.hypot(x - s.x, z - s.z); const e = smooth(s.r + 3, s.r - 7, d); h = Math.max(h, -4.5 + e * 5 + e * smooth(s.r * .45, 0, d) * (2 + noise(x, z) * 1.5)); }); return h; };
-  WORLD = {center: new T.Vector3(0, 0, 120), span: 660, isl};
+  cnt.forEach((m, k) => { const w = rad[k] * 2 + 14, a = a0 + (a1 - a0) * (acc + w / 2) / tot; acc += w; isl.push({x: Math.sin(a) * R + Math.sin(k * 2.1) * 14, z: -Math.cos(a) * R + 120 + Math.cos(k * 1.7) * 14, r: rad[k], a, m}); });
+  const pts = [];
+  isl.forEach((s, k) => { const ox = Math.sin(s.a), oz = -Math.cos(s.a), bx = Math.cos(s.a), bz = Math.sin(s.a), flip = k % 2 ? 1 : -1;
+    for (let j = 0; j < s.m; j++) { const t = s.m === 1 ? .5 : j / (s.m - 1), u = (t - .5) * 2, w = Math.sin(u * Math.PI) * s.r * .34 * flip; pts.push(new T.Vector3(s.x + bx * u * s.r * .66 + ox * w, 0, s.z + bz * u * s.r * .66 + oz * w)); } });
+  H = (x, z) => { let h = -4.5; isl.forEach(s => { const d = Math.hypot(x - s.x, z - s.z), rr3 = s.r * (1 + .12 * Math.sin(Math.atan2(z - s.z, x - s.x) * 3 + s.a * 5)); const e = smooth(rr3 + 3, rr3 - 7, d); h = Math.max(h, -4.5 + e * 5 + e * smooth(rr3 * .5, 0, d) * (2.5 + noise(x, z) * 2)); }); return h; };
+  WORLD = {center: new T.Vector3(0, 0, 150), span: 860, isl};
   return pts;
 }
 /* 길에서 가장 가까운 거리 */
@@ -173,8 +172,8 @@ function build(v) {
   for (let k = 0; k < 6; k++) { const a = rr(-1.2, 1.2), r = rr(60, 180), x = Math.sin(a) * r, z = 120 - Math.cos(a) * r; if (H(x, z) > -1) continue; const b = new T.Group(); b.position.set(x, -.3, z); b.rotation.y = rnd() * 6; const hl = new T.Mesh(new T.BoxGeometry(6, 1.4, 2.4), flat('#ffffff')); b.add(hl); const ms = new T.Mesh(new T.CylinderGeometry(.12, .12, 7, 5), flat('#8a5a32')); ms.position.y = 4; b.add(ms); const sl = new T.Mesh(new T.ConeGeometry(2.2, 5.6, 3), flat(['#ff8a70', '#ffcf4a', '#6cc4ee'][k % 3])); sl.position.set(.8, 4.4, 0); sl.scale.z = .2; b.add(sl); scene.add(b); b.userData.bob = rnd() * 6; (WORLD.boats = WORLD.boats || []).push(b); }
   /* 구역 랜드마크 */
   zoneLb = [];
-  NODES.forEach((n, k) => { const i0 = L.findIndex(x => x.node === k), i1 = L.length - 1 - [...L].reverse().findIndex(x => x.node === k), im = Math.round((i0 + i1) / 2), p = P[im], t = curve.getTangentAt(U[im]); const side = VAR === 'C' ? 0 : 1;
-    const q = VAR === 'C' && WORLD.isl ? new T.Vector3(WORLD.isl[k].x, 0, WORLD.isl[k].z) : p.clone().add(new T.Vector3(-t.z * 16 * side, 0, t.x * 16 * side)); q.y = Math.max(.3, H(q.x, q.z)); const g = new T.Group(); g.position.copy(q); scene.add(g); let top = 10;
+  NODES.forEach((n, k) => { if (VAR === 'C' && n.zone === 'base') return; const i0 = L.findIndex(x => x.node === k), i1 = L.length - 1 - [...L].reverse().findIndex(x => x.node === k), im = VAR === 'C' ? i0 : Math.round((i0 + i1) / 2), p = P[im], t = curve.getTangentAt(U[im]); const side = VAR === 'C' ? .55 : 1;
+    const q = p.clone().add(new T.Vector3(-t.z * 16 * side, 0, t.x * 16 * side)); q.y = Math.max(.3, H(q.x, q.z)); const g = new T.Group(); g.position.copy(q); scene.add(g); let top = 10;
     if (n.zone === 'rest') { const hm = new T.Mesh(new T.BoxGeometry(3.4, .3, 1.5), flat('#ff9b4a')); hm.position.y = 1.4; g.add(hm); const um = new T.Mesh(new T.ConeGeometry(3.2, 1.4, 10), flat('#ff7a6a')); um.position.set(-3, 3.6, 2); g.add(um); const st = new T.Mesh(new T.CylinderGeometry(.1, .1, 3.6, 5), flat('#eee')); st.position.set(-3, 1.8, 2); g.add(st); top = 6; }
     else if (n.zone === 'game') { [0, 1, 2, 3].forEach(j => { const b = new T.Mesh(new T.CylinderGeometry(1.6 - j * .2, 1.8 - j * .2, 3, 10), flat(j % 2 ? '#ffffff' : '#e8503a')); b.position.y = 1.5 + j * 3; b.castShadow = true; g.add(b); }); const lt = new T.Mesh(new T.SphereGeometry(1, 10, 8), flat('#ffe14d', {emissive: '#a07000', emissiveIntensity: .8})); lt.position.y = 13.4; g.add(lt); top = 16; }
     else if (n.zone === 'opt') { const wh = new T.Mesh(new T.TorusGeometry(5, .35, 6, 28), flat('#f59ac4')); wh.position.y = 7; g.add(wh); for (let j = 0; j < 8; j++) { const cb = new T.Mesh(new T.BoxGeometry(1.1, 1.1, 1.1), flat(['#ffcf4a', '#6cc4ee', '#7fd39a', '#ff8a70'][j % 4])); cb.position.set(Math.cos(j * .785) * 5, Math.sin(j * .785) * 5, 0); wh.add(cb); } g.userData.wheel = wh; top = 14; }
