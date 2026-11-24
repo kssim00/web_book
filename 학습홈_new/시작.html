@@ -447,14 +447,14 @@ const INFO = {
   volcano: {desc: () => '화산섬 기슭의 거북이 해변길에서 터틀을, 화산섬 속 연구소에서 문법을 배워요. 실전 프로젝트(Ursina 3D 게임) 교재도 여기서 열 수 있어요.', btns: () => [button('ok', '거북이 해변길 (터틀)', () => enter('beach')), button('ok', '연구소로 들어가기 (문법)', () => enter('volcano')), button('go2', '실전 프로젝트 교재 열기', openBook('python_ursina.html'))]},
   maker: {desc: () => '무언가를 직접 만들어 내는 마을이에요. 보라색 연구소에서는 앱인벤터로 앱을, 주황 지붕 공방에서는 틴커캐드로 3D 작품을 만들어요.', btns: () => [button('ok', '앱인벤터 교실 열기', openBook('앱인벤터_웹교재.html')), button('ok', '3D 모델링 교재 열기', openBook('틴커캐드_웹교재.html'))]},
   isle: {desc: () => '바다 건너 숨겨진 섬이에요. 마인크래프트를 파이썬으로 움직이고, 로블록스 점프맵을 직접 만들어요.', btns: () => [button('go2', '마인크래프트 파이썬', openBook('마인크래프트_파이썬_코딩_학습지.html')), button('go2', '로블록스 점프맵 · 기초', openBook('로블록스_점프맵_기초.html')), button('go2', '로블록스 점프맵 · 타워형', openBook('로블록스_점프맵_타워형.html')), button('go2', '로블록스 점프맵 · 구조물 꾸미기', openBook('로블록스_점프맵_구조물꾸미기.html'))]},
-  teacher: {desc: () => '원장님 전용 공간이에요. 수업자료와 자주 쓰는 링크가 들어갈 자리예요.', btns: () => []}
+  teacher: {desc: () => isT() ? '자주 쓰는 링크, 수업자료, 선생님 도구가 있어요.' : '선생님 전용 공간이에요.', btns: () => isT() ? [button('ok', '등대로 들어가기', () => enter('teacher'))] : []}
 };
 function select(id) {
   if (leaving || mode !== 'map') return;
   if (selected === id) { closeCard(); return; }
   selected = id; const pl = PLACES.find(p => p.id === id), info = INFO[id], box = $('cBtns');
   PLACES.forEach(p => p.el.classList.toggle('on', p.id === id));
-  $('cTag').className = 'tag' + (pl.soon || !info.btns().length ? ' soon' : ''); $('cTag').textContent = pl.soon ? '준비 중' : (info.btns().length ? '들어갈 수 있어요' : '연결 예정');
+  $('cTag').className = 'tag' + (pl.soon || !info.btns().length ? ' soon' : ''); $('cTag').textContent = pl.soon ? '준비 중' : (info.btns().length ? '들어갈 수 있어요' : (id === 'teacher' ? '선생님 전용' : '연결 예정'));
   $('cTitle').textContent = pl.name; $('cDesc').textContent = info.desc();
   box.innerHTML = ''; info.btns().forEach(b => box.appendChild(b)); box.appendChild(button('sub', '지도로 돌아가기', closeCard));
   $('card').classList.add('show'); $('goBtn').style.display = 'none';
@@ -462,7 +462,7 @@ function select(id) {
 function closeCard() { selected = null; PLACES.forEach(p => p.el.classList.remove('on')); $('card').classList.remove('show'); if (mode === 'map') $('goBtn').style.display = 'block'; }
 function enter(zone) {
   if (leaving) return; leaving = true; selected = zone === 'beach' ? 'volcano' : zone; $('card').classList.remove('show'); $('goBtn').style.display = 'none';
-  setTimeout(() => $('fade').classList.add('on'), 700); setTimeout(() => { location.href = zone === 'cabin' ? '오두막.html' : zone === 'beach' ? '해변.html' : zone === 'volcano' ? '화산섬.html' : zone === 'sea' ? '스크래치바다.html' : FOREST2; }, 1350);
+  setTimeout(() => $('fade').classList.add('on'), 700); setTimeout(() => { location.href = zone === 'teacher' ? '등대.html' : zone === 'cabin' ? '오두막.html' : zone === 'beach' ? '해변.html' : zone === 'volcano' ? '화산섬.html' : zone === 'sea' ? '스크래치바다.html' : FOREST2; }, 1350);
 }
 $('goBtn').addEventListener('click', () => enter(S.place === 'volcano' && S.pyAt === 'beach' ? 'beach' : S.place));
 

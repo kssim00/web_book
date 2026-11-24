@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>교사용 등대</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#0e1a2b;color:#e9e4d6;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+a{color:inherit;text-decoration:none}
+.sky{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.sky i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.5}
+.beam{position:absolute;left:92px;top:118px;width:150vw;height:150vw;margin:-75vw 0 0 -75vw;background:conic-gradient(from 0deg,rgba(255,214,130,.20),rgba(255,214,130,0) 22deg,rgba(255,214,130,0) 338deg,rgba(255,214,130,.20));animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tower{position:fixed;left:56px;top:90px;width:72px;pointer-events:none}
+.sea{position:fixed;left:0;right:0;bottom:0;height:90px;background:linear-gradient(#0e1a2b00,#0a1422);pointer-events:none}
+main{position:relative;max-width:820px;margin:0 auto;padding:34px 28px 120px 28px}
+@media(min-width:1100px){main{margin-left:calc(50% - 330px)}}
+@media(max-width:900px){.tower,.beam{display:none}}
+.back{font-size:14px;color:#9fb0c7}
+.back:hover{color:#ffd88a}
+h1{font-size:30px;font-weight:900;margin:18px 0 22px;letter-spacing:-.5px}
+h1 small{font-size:13px;font-weight:600;color:#7f90a8;margin-left:10px}
+.tabs{display:flex;gap:26px;border-bottom:1px solid #24364f;margin-bottom:26px}
+.tabs button{font-size:16px;font-weight:700;color:#7f90a8;padding:0 0 12px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:#ffd88a;border-color:#ffd88a}
+.pane{display:none}.pane.on{display:block}
+.grp{margin-bottom:28px}
+.grp h3{font-size:13px;font-weight:700;color:#7f90a8;margin:0 0 10px;letter-spacing:.5px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:12px;background:#17273d;border:1px solid #24364f;font-size:15px;font-weight:600;transition:.15s}
+.chip:hover{border-color:#ffd88a;color:#ffd88a}
+.chip.mine{border-style:dashed}
+.chip .x{display:none;margin-left:2px;color:#ff9b8a;font-weight:900}
+body.edit .chip.mine .x{display:inline}
+.chip.off{opacity:.4}
+.txt{font-size:14px;color:#9fb0c7}
+.txt:hover{color:#ffd88a}
+.row{display:flex;gap:18px;align-items:center;margin-top:6px}
+.add{display:none;gap:8px;flex-wrap:wrap;margin-top:14px}
+.add.on{display:flex}
+.add input,.add select,.find{background:#0b1524;border:1px solid #24364f;border-radius:10px;padding:9px 12px;font-size:14px;outline:0}
+.add input:focus,.find:focus{border-color:#ffd88a}
+.ok{background:#ffd88a;color:#1b2536;border-radius:10px;padding:9px 16px;font-weight:800;font-size:14px}
+.note{font-size:13px;color:#7f90a8;line-height:1.7;margin:0 0 18px}
+details{border-bottom:1px solid #1b2c44}
+summary{list-style:none;cursor:pointer;padding:13px 2px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"›";color:#7f90a8;transition:.15s;display:inline-block}
+details[open]>summary::before{transform:rotate(90deg);color:#ffd88a}
+summary em{font-style:normal;font-size:13px;font-weight:600;color:#7f90a8;margin-left:auto}
+.files{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0 16px 20px}
+.seg{display:inline-flex;background:#0b1524;border:1px solid #24364f;border-radius:999px;padding:3px;margin-right:10px}
+.seg button{padding:6px 16px;border-radius:999px;font-size:14px;font-weight:700;color:#7f90a8}
+.seg button.on{background:#ffd88a;color:#1b2536}
+.me{font-size:14px;color:#9fb0c7;margin:16px 0 6px}
+.me b{color:#ffd88a}
+.list{margin-top:6px}
+.sec{font-size:12px;font-weight:700;color:#7f90a8;margin:18px 0 4px;letter-spacing:.5px}
+.m{display:flex;align-items:center;gap:14px;padding:9px 2px;border-bottom:1px solid #16263b;font-size:15px}
+.m .no{width:44px;color:#7f90a8;font-size:13px;font-weight:700;flex:none}
+.m .t{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m.done .t::after{content:" ⭐";font-size:12px}
+.m.now .t{color:#ffd88a}
+.m.now .t::after{content:" · 지금";font-size:12px;font-weight:600}
+.m a,.m button{font-size:13px;color:#9fb0c7;flex:none}
+.m a:hover,.m button:hover{color:#ffd88a;text-decoration:underline}
+.gate{position:fixed;inset:0;background:#0e1a2b;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9;text-align:center}
+.gate.on{display:flex}
+.gate b{font-size:22px}
+#toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#ffd88a;color:#1b2536;font-weight:800;font-size:14px;padding:10px 18px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="sky" id="sky"><div class="beam"></div></div>
+<svg class="tower" viewBox="0 0 72 190"><path d="M24 60h24l8 118H16z" fill="#f3efe4"/><path d="M22.6 80h26.8l1.4 20H21.2zM19.9 120h32.2l1.4 20H18.5z" fill="#d9634f"/><rect x="18" y="52" width="36" height="8" rx="2" fill="#3a4a63"/><rect x="24" y="30" width="24" height="22" rx="3" fill="#ffd88a"/><path d="M20 30h32L36 12z" fill="#d9634f"/><rect x="30" y="150" width="12" height="28" rx="6" fill="#3a4a63"/><rect x="6" y="178" width="60" height="10" rx="3" fill="#3a4a63"/></svg>
+<div class="sea"></div>
+
+<main>
+  <a class="back" href="시작.html?map=1">← 세계 지도</a>
+  <h1>교사용 등대<small id="where"></small></h1>
+  <div class="tabs">
+    <button data-p="links" class="on">링크</button>
+    <button data-p="files">수업자료</button>
+    <button data-p="tools">도구</button>
+  </div>
+
+  <section class="pane on" id="links">
+    <div id="linkGroups"></div>
+    <div class="row"><button class="txt" id="addBtn">+ 링크 추가</button><button class="txt" id="editBtn">정리</button></div>
+    <div class="add" id="addBox">
+      <input id="aName" placeholder="이름" size="12">
+      <input id="aUrl" placeholder="주소 (https://…)" size="30">
+      <select id="aGrp"></select>
+      <button class="ok" id="aOk">추가</button>
+    </div>
+  </section>
+
+  <section class="pane" id="files">
+    <p class="note" id="fileNote"></p>
+    <div id="fileTree"></div>
+  </section>
+
+  <section class="pane" id="tools">
+    <div>
+      <span class="seg" id="seg"><button data-c="entry" class="on">엔트리</button><button data-c="scratch">스크래치</button></span>
+      <input class="find" id="find" placeholder="미션 찾기" size="16">
+    </div>
+    <div class="me" id="me"></div>
+    <div class="list" id="list"></div>
+    <div class="row" style="margin-top:28px"><button class="txt" id="offBtn">선생님 모드 끄기</button></div>
+  </section>
+</main>
+
+<div class="gate" id="gate"><b>🔒 선생님만 들어갈 수 있어요</b><a class="back" href="시작.html?map=1">← 세계 지도</a></div>
+<div id="toast"></div>
+
+<script>document.write('<script src="lib/teacher_data.js?t=' + Date.now() + '"><\/script>');</script>
+<script src="lib/entry_course.js"></script>
+<script src="lib/entry_previews.js"></script>
+<script src="lib/scratch_course.js"></script>
+<script src="lib/scratch_previews.js"></script>
+<script>
+const LINKS = window.TEACHER_LINKS || [], FILES = window.TEACHER_FILES || [];
+
+const $ = id => document.getElementById(id);
+const LOCAL = location.protocol === 'file:';
+const toast = m => { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('on'), 2200); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const inner = n => esc(n);
+
+/* 별 */
+for (let i = 0; i < 60; i++) { const s = document.createElement('i'); s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 70 + '%'; s.style.opacity = .15 + Math.random() * .5; $('sky').appendChild(s); }
+$('where').textContent = LOCAL ? '학원 컴퓨터' : '';
+
+/* 입장: 선생님 로그인 때만 */
+const T_KEY = '학습홈_admin';
+const isT = () => { try { return localStorage.getItem(T_KEY) === '1'; } catch (e) { return false; } };
+if (!isT()) $('gate').classList.add('on');
+$('offBtn').onclick = () => { try { localStorage.removeItem(T_KEY); } catch (e) {} location.href = '시작.html?map=1'; };
+
+/* 탭 */
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === b.dataset.p));
+});
+
+/* 링크 */
+const MK = 'studyhome_new_teacher_links';
+let mine = []; try { mine = JSON.parse(localStorage.getItem(MK)) || []; } catch (e) {}
+const saveMine = () => { try { localStorage.setItem(MK, JSON.stringify(mine)); } catch (e) {} };
+function paintLinks() {
+  $('linkGroups').innerHTML = LINKS.map(G => {
+    const own = mine.map((m, i) => [m, i]).filter(x => x[0].g === G.g);
+    return '<div class="grp"><h3>' + esc(G.g) + '</h3><div class="chips">' +
+      G.items.map(it => (it[2] === 'local' && !LOCAL) ? '<span class="chip off" title="학원 컴퓨터에서만 열려요">' + inner(it[0], it[1]) + '</span>' : '<a class="chip" target="_blank" rel="noopener" href="' + esc(it[1]) + '">' + inner(it[0], it[1]) + '</a>').join('') +
+      own.map(x => '<a class="chip mine" target="_blank" rel="noopener" href="' + esc(x[0].u) + '">' + inner(x[0].n, x[0].u) + '<span class="x" data-i="' + x[1] + '">×</span></a>').join('') + '</div></div>';
+  }).join('');
+  document.querySelectorAll('.chip .x').forEach(x => x.onclick = e => { e.preventDefault(); mine.splice(+x.dataset.i, 1); saveMine(); paintLinks(); });
+}
+$('aGrp').innerHTML = LINKS.map(G => '<option>' + esc(G.g) + '</option>').join('');
+$('addBtn').onclick = () => $('addBox').classList.toggle('on');
+$('editBtn').onclick = () => { document.body.classList.toggle('edit'); $('editBtn').textContent = document.body.classList.contains('edit') ? '정리 끝' : '정리'; if (document.body.classList.contains('edit') && !mine.length) toast('직접 추가한 링크만 지울 수 있어요'); };
+$('aOk').onclick = () => {
+  const n = $('aName').value.trim(); let u = $('aUrl').value.trim(); if (!n || !u) return toast('이름과 주소를 적어 주세요');
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  mine.push({n, u, g: $('aGrp').value}); saveMine(); $('aName').value = $('aUrl').value = ''; paintLinks(); toast('이 컴퓨터에 저장했어요');
+};
+paintLinks();
+
+/* 수업자료 */
+$('fileNote').textContent = LOCAL ? '' : '수업자료는 학원 컴퓨터에서 등대를 열었을 때만 열려요. (인터넷에는 올리지 않아요)';
+$('fileTree').innerHTML = FILES.map((F, i) => {
+  const n = F.sub.reduce((a, s) => a + s.files.length, 0);
+  return '<details' + (i === 0 ? ' open' : '') + '><summary>' + esc(F.t) + '<em>' + (n ? n + '개' : '비어 있음') + '</em></summary>' +
+    F.sub.map(s => '<div class="grp" style="margin:0 0 4px 20px"><h3>' + esc(s.t) + '</h3></div><div class="files">' + s.files.map(f => LOCAL ? '<a class="chip" target="_blank" href="' + esc(s.dir + f[1]) + '">' + inner(f[0], f[1]) + '</a>' : '<span class="chip off">' + inner(f[0], f[1]) + '</span>').join('') + '</div>').join('') + '</details>';
+}).join('');
+
+/* 도구: 미션 바로 열기 + 이 컴퓨터 진도 맞추기 */
+const KEY = 'studyhome_new_3d_demo';
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+let cur = 'entry';
+const courseOf = c => (c === 'entry' ? window.ENTRY_COURSE : window.SCRATCH_COURSE) || [];
+const hasPv = (c, id) => c === 'entry' ? (window.ENTRY_PREVIEWS || []).indexOf(id) >= 0 : !!(window.SCRATCH_PV || {})[id];
+const sheet = (c, m) => c === 'entry' ? '미션.html?id=' + m[0] + '&f=2&n=' + encodeURIComponent(m[1]) : '스크래치미션.html?id=' + m[0] + (m[1] && m[1] !== '쉼터' && m[1] !== '선택' ? '&n=' + encodeURIComponent(m[1]) : '');
+const pv = (c, m) => c === 'entry' ? '엔트리미리보기.html?f=' + encodeURIComponent('2_미리해보기/엔트리/' + m[0] + '.ent') + '&t=' + encodeURIComponent(m[1] + ' ' + m[2]) : '스크래치미리보기.html?id=' + m[0] + '&t=' + encodeURIComponent(m[1] + ' ' + m[2]);
+function paintTools() {
+  const S = load(), done = (S[cur] && S[cur].done) || {}, q = $('find').value.trim();
+  const nodes = courseOf(cur); let now = null;
+  nodes.forEach(n => { if (!n.opt) (n.ms || []).forEach(m => { if (!now && !done[m[0]]) now = m[0]; }); });
+  const cnt = Object.keys(done).filter(k => done[k]).length;
+  $('me').innerHTML = '이 컴퓨터 · <b>' + esc(S.name || '이름 없음') + '</b> · ⭐ ' + cnt + '개';
+  $('list').innerHTML = nodes.map(n => {
+    const ms = (n.ms || []).filter(m => !q || (m[1] + ' ' + m[2]).indexOf(q) >= 0); if (!ms.length) return '';
+    return '<div class="sec">' + esc(n.title) + (n.opt ? ' · 선택' : '') + '</div>' + ms.map(m =>
+      '<div class="m' + (done[m[0]] ? ' done' : '') + (m[0] === now ? ' now' : '') + '"><span class="no">' + esc(m[1]) + '</span><span class="t">' + esc(m[2]) + '</span>' +
+      '<a target="_blank" href="' + sheet(cur, m) + '">미션지</a>' + (hasPv(cur, m[0]) ? '<a target="_blank" href="' + pv(cur, m) + '">완성작</a>' : '') +
+      (n.opt ? '' : '<button data-id="' + m[0] + '" data-t="' + esc(m[1] + ' ' + m[2]) + '">진도</button>') + '</div>').join('');
+  }).join('') || '<p class="note">찾는 미션이 없어요.</p>';
+  document.querySelectorAll('.m button').forEach(b => b.onclick = () => setNow(b.dataset.id, b.dataset.t));
+}
+function setNow(id, t) {
+  const S = load();
+  if (!confirm('이 컴퓨터의 ' + (S.name || '학생') + ' 진도를\n"' + t + '" 부터 하도록 맞출까요?\n(앞 미션은 완료, 이 미션부터는 안 한 것으로)')) return;
+  if (!S[cur] || typeof S[cur] !== 'object') S[cur] = {}; if (!S[cur].done) S[cur].done = {};
+  let before = true;
+  courseOf(cur).forEach(n => { if (n.opt) return; (n.ms || []).forEach(m => { if (m[0] === id) before = false; if (before) S[cur].done[m[0]] = true; else delete S[cur].done[m[0]]; }); });
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  paintTools(); toast('진도를 맞췄어요');
+}
+document.querySelectorAll('#seg button').forEach(b => b.onclick = () => { cur = b.dataset.c; document.querySelectorAll('#seg button').forEach(x => x.classList.toggle('on', x === b)); paintTools(); });
+$('find').oninput = paintTools;
+paintTools();
+</script>
+</body>
+</html>
