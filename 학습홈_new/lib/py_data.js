@@ -54,6 +54,8 @@ const BONUS = [
   ['race', '터틀 레이스 게임', 'turtle_game_race.html', '리스트 · 랜덤 · 클래스'],
   ['snow', '크리스마스 눈송이', 'turtle_tool_snow.html', '클래스 · 랜덤 · 애니메이션']
 ];
+/* 실전 프로젝트 (python_ursina.html 의 #lesson-01 ~ 13 순서) */
+const URSINA = ['Ursina 시작하기', '도형 · 색 · 글자', '움직임과 회전', '움직임 경계 정하기', '카메라', '충돌', '키보드 입력', '플레이어 충돌', 'Entity 클래스', '버튼과 마우스', '이미지 애니메이션', '회전판 태양계', '빙글빙글 태양계의 비밀'];
 /* 터틀 교재 주소. 지금은 컴퓨터의 파일을 열고, 사이트에 올릴 때 사이트 안의 주소로 바꿉니다. */
-window.PYDATA = {BASE: 'https://kssim00.github.io/web_book/', TURTLE_URL: '../python_turtle.html', GRAMMAR: GRAMMAR, TURTLE: TURTLE, BONUS: BONUS};
+window.PYDATA = {BASE: 'https://kssim00.github.io/web_book/', TURTLE_URL: '../python_turtle.html', GRAMMAR: GRAMMAR, URSINA: URSINA, TURTLE: TURTLE, BONUS: BONUS};
 })();

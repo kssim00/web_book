@@ -3,231 +3,162 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>파이썬 화산섬 연구소</title>
+<title>파이썬 화산섬</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="favicon-180.png">
 <style>
 *{box-sizing:border-box}
-:root{--bg:#0e1220;--panel:#161c2e;--line:#2a3350;--text:#e6ebf7;--dim:#8a95b3;--g:#5cc8ff;--t:#ff9b4a;--b:#c58bff}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
-body{min-height:100vh;background:radial-gradient(900px 420px at 50% -120px,rgba(255,110,50,.28),transparent 70%),repeating-linear-gradient(0deg,transparent 0 39px,rgba(255,255,255,.025) 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,255,255,.025) 39px 40px),var(--bg)}
-button{font:inherit;cursor:pointer}
+:root{--bg:#0e1220;--text:#eef1f8;--mid:#c3cbe0;--dim:#6f7a9c;--line:#1f2740;--soft:#161c2e;--btn:#141a2c;--btnline:#2a3350;--k:#ff8a3c;--cool:#4a5578;--smoke:#9aa3bd;--glow:rgba(255,110,50,.20);
+  --h0:#56618a;--h1:#866f80;--h2:#b47a68;--h3:#d98552;--h4:#f0883c;--h5:#ff7a2e}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;cursor:pointer;color:inherit;background:none;border:0;padding:0}
 .mono{font-family:"JetBrains Mono","D2Coding","Consolas",monospace}
-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:12px 20px;background:rgba(14,18,32,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.brand{margin-right:auto}
-.brand b{display:block;font-size:19px;font-weight:800;letter-spacing:.2px}
-.brand span{font-size:12px;color:var(--dim)}
-.chip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 13px;font-size:14px;font-weight:700;color:var(--text)}
-.chip.btn:hover{border-color:var(--g)}
-.wrap{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px;max-width:1240px;margin:0 auto;padding:18px 20px 60px}
-.stage{background:rgba(22,28,46,.55);border:1px solid var(--line);border-radius:18px;padding:8px 6px 20px;overflow:hidden}
-.tracks{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);margin:0 12px 4px}
-.tracks>div{padding:12px 6px 10px;text-align:center}
-.tracks b{font-size:17px;font-weight:800}
-.tracks small{display:block;font-size:12px;color:var(--dim);margin-top:2px}
-.tracks .bar{height:5px;border-radius:99px;background:#232b45;margin:8px auto 0;max-width:230px;overflow:hidden}
-.tracks .bar i{display:block;height:100%;width:0;border-radius:99px;transition:width .6s}
-svg{display:block;width:100%;height:auto}
-.trunk{fill:none;stroke:#27304c;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
-.trunk.on{stroke-width:5;transition:stroke-dashoffset .9s ease}
-.ch{font-size:12.5px;font-weight:700;fill:var(--dim);letter-spacing:.4px}
-.node{cursor:pointer}
-.node circle.c{fill:#141a2b;stroke:#313b5c;stroke-width:3;transition:fill .3s,stroke .3s}
-.node text.gl{font-size:12.5px;font-weight:700;fill:#56618a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
-.node text.tt{font-size:15px;font-weight:700;fill:#6f7a9c;dominant-baseline:central;pointer-events:none}
-.node text.st{font-size:11.5px;fill:#56618a;dominant-baseline:central;pointer-events:none}
-.node.open circle.c{stroke:var(--k)}
-.node.open text.gl{fill:var(--k)}
-.node.open text.tt{fill:var(--text)}
-.node.open text.st{fill:var(--k)}
-.node.ahead circle.c{stroke:#3d4870}
-.node.ahead text.gl{fill:#8a95b3}
-.node.ahead text.tt{fill:#aab3cc}
-.node.ahead text.st{fill:#6f7a9c}
-.node.done circle.c{fill:var(--k);stroke:var(--k)}
-.node.done text.gl{fill:#0e1220}
-.node.done text.tt{fill:#c9d2ea}
-.node.done text.st{fill:#7d88a8}
-.node .halo{fill:none;stroke:var(--k);stroke-width:2;opacity:0}
-.node.open.cur .halo{animation:halo 1.8s ease-out infinite}
-.node.sel circle.c{stroke:#fff;stroke-width:3.5}
-.node:hover circle.c{filter:brightness(1.25)}
-@keyframes halo{0%{r:27;opacity:.9}100%{r:44;opacity:0}}
-.pop{animation:pop .5s ease}
-@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
-.side{position:sticky;top:78px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
-.tag{display:inline-block;font-size:12px;font-weight:800;border-radius:8px;padding:4px 10px;margin-bottom:10px;color:#0e1220}
-.side h2{font-size:22px;margin:0 0 4px;line-height:1.35}
-.side .code{font-size:13px;color:var(--dim);margin:0 0 12px}
-.side p{font-size:15px;line-height:1.65;margin:0 0 16px;color:#b9c2db}
-.col{display:flex;flex-direction:column;gap:9px}
-.b1{border:0;border-radius:12px;padding:13px 16px;font-size:16px;font-weight:800;color:#0e1220}
-.b2{border:1px solid var(--line);background:transparent;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:700;color:var(--text)}
-.b1:hover,.b2:hover{filter:brightness(1.12)}
-.b1:disabled{background:#2a3350!important;color:#6f7a9c;cursor:not-allowed}
-.note{font-size:13px;color:var(--dim);margin-top:12px;line-height:1.5}
-.foot{max-width:1240px;margin:-40px auto 30px;padding:0 20px;font-size:12px;color:#56618a;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.foot button{background:none;border:0;color:#6f7a9c;text-decoration:underline;font-size:12px}
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#e6ebf7;color:#0e1220;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .25s;z-index:30}
-.toast.show{opacity:1}
-.modal{position:fixed;inset:0;background:rgba(5,8,16,.78);display:none;align-items:center;justify-content:center;padding:14px;z-index:20}
-.modal.show{display:flex}
-.mbox{background:var(--bg);border:1px solid var(--line);border-radius:16px;width:min(900px,100%);height:min(780px,100%);display:flex;flex-direction:column;overflow:hidden}
-.mtop{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-weight:800;font-size:15px;border-bottom:1px solid var(--line)}
-.mbox iframe{flex:1;border:0;width:100%;background:var(--bg)}
-@media (max-width:900px){.wrap{grid-template-columns:1fr}.side{position:fixed;left:12px;right:12px;bottom:12px;top:auto;z-index:6;box-shadow:0 -8px 30px rgba(0,0,0,.5)}.wrap{padding-bottom:280px}.foot{margin-top:-250px}}
+.page{position:relative;max-width:1000px;margin:0 auto;padding:26px 40px 70px}
+.page::before{content:"";position:absolute;right:-140px;top:-120px;width:560px;height:420px;background:radial-gradient(closest-side,var(--glow),transparent);pointer-events:none;transition:opacity .6s;opacity:.55}
+.page.u::before{opacity:1}
+.nav{display:flex;gap:18px;margin-bottom:14px}
+.nav button{font-size:13px;font-weight:600;color:var(--dim)}
+.nav button:hover{color:var(--text)}
+.ttl b{display:block;font-size:24px;font-weight:800;letter-spacing:-.3px}
+.ttl span{display:block;margin-top:5px;font-size:11.5px;letter-spacing:1px;color:var(--dim)}
+
+/* 온도선 + 분화구 */
+.heatwrap{position:relative;margin:30px 64px 30px 0}
+.heat{height:5px;border-radius:9px;background:linear-gradient(90deg,var(--cool),var(--h2) 42%,var(--h4) 78%,#e03a12)}
+.heat i{position:absolute;top:-5px;width:15px;height:15px;margin-left:-7.5px;border-radius:50%;background:var(--bg);border:3.5px solid var(--k);transition:left .6s cubic-bezier(.3,1.4,.5,1)}
+.crater{position:absolute;right:-64px;top:-13px;width:64px;height:31px;cursor:pointer}
+.crater .lava{position:absolute;left:14px;top:9px;width:36px;height:13px;border-radius:50%;background:radial-gradient(#ffe08a,#ff8a3c 55%,#e2521f);box-shadow:0 0 22px 6px rgba(255,120,50,.45);animation:lava 2.6s ease-in-out infinite}
+@keyframes lava{50%{box-shadow:0 0 30px 10px rgba(255,120,50,.6)}}
+.crater:hover .lava{filter:brightness(1.15)}
+.puffs{position:absolute;left:50%;bottom:20px;width:0;height:0;pointer-events:none}
+.puffs b{position:absolute;left:-9px;bottom:0;width:18px;height:18px;border-radius:50%;background:var(--smoke);opacity:0;animation:puff 4.2s ease-out infinite}
+.puffs b:nth-child(2){animation-delay:1.05s;--dx:14px}
+.puffs b:nth-child(3){animation-delay:2.1s;--dx:-10px}
+.puffs b:nth-child(4){animation-delay:3.15s;--dx:8px}
+@keyframes puff{0%{transform:translate(0,0) scale(.2);opacity:0}8%{transform:translate(0,-8px) scale(.75);opacity:.55}14%{transform:translate(0,-13px) scale(.62);opacity:.55}100%{transform:translate(var(--dx,-6px),-104px) scale(1.9);opacity:0}}
+.page.u .puffs b{animation-duration:2.6s}
+.page.u .puffs b:nth-child(2){animation-delay:.65s}
+.page.u .puffs b:nth-child(3){animation-delay:1.3s}
+.page.u .puffs b:nth-child(4){animation-delay:1.95s}
+
+/* 목차 */
+.tabs{display:flex;gap:22px;align-items:baseline;margin-bottom:24px}
+.tabs button{font-size:21px;font-weight:800;color:var(--dim);opacity:.55;padding-bottom:6px;border-bottom:2.5px solid transparent;transition:.2s}
+.tabs button:hover{opacity:.9}
+.tabs button.on{color:var(--text);opacity:1;border-color:var(--k)}
+.tabs button i{font-style:normal;font-size:12px;font-weight:600;color:var(--dim);margin-left:7px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:0 48px;align-items:start}
+.ch{margin-bottom:24px;padding-left:20px;border-left:3px solid var(--c)}
+.ch h3{margin:0 0 4px;font-size:12.5px;font-weight:700;color:var(--mid);display:flex;gap:9px;align-items:baseline}
+.ch h3 i{font-style:normal;font-size:11px;color:var(--c)}
+.ls{position:relative;display:flex;align-items:center;gap:8px;height:44px;border-bottom:1px solid var(--line);cursor:pointer}
+.ls .lt{font-size:15.5px;font-weight:600;color:var(--mid);margin-right:auto;transition:.2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ls .no{font-size:11.5px;color:var(--dim);width:20px;flex:none}
+.ls:hover .lt{color:var(--text);transform:translateX(3px)}
+.ic,.ver{flex:none;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:700;color:var(--dim);border:1px solid var(--btnline);background:var(--btn);transition:.2s}
+.ic:hover,.ver:hover{border-color:var(--k);color:var(--k)}
+.ver.done{color:var(--c);border-color:var(--c)}
+.ls.done .lt{color:var(--dim);font-weight:500}
+.ls.done .ic{background:var(--c);border-color:var(--c);color:var(--bg)}
+.ls.now .lt{color:var(--text);font-weight:800}
+.ls.now::before{content:"";position:absolute;left:-25.5px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--k);box-shadow:0 0 0 3px var(--bg)}
+.ls.now .ic{border-color:var(--k);color:var(--k)}
+@media (max-width:820px){.page{padding:20px 24px 70px}.cols{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.puffs b,.crater .lava{animation:none}}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand"><b>파이썬 화산섬 연구소</b><span class="mono">PYTHON LAB · 스킬 트리</span></div>
-  <span class="chip" id="who"></span>
-  <span class="chip mono" id="pts">0 / 0</span>
-  <button class="chip btn" id="beachBtn">거북이 해변길</button>
-  <button class="chip btn" id="worldBtn">세계 지도</button>
-</header>
-
-<div class="wrap">
-  <div class="stage">
-    <div class="tracks">
-      <div><b style="color:var(--g)">문법 트랙</b><small class="mono" id="gCnt"></small><div class="bar"><i id="gBar" style="background:var(--g)"></i></div></div>
-      <div><b style="color:var(--t)">터틀 트랙</b><small class="mono" id="tCnt"></small><div class="bar"><i id="tBar" style="background:var(--t)"></i></div></div>
-    </div>
-    <svg id="tree" role="img" aria-label="파이썬 스킬 트리"></svg>
+<div class="page" id="page">
+  <div class="nav"><button id="worldBtn">← 세계 지도</button><button id="beachBtn">거북이 해변길</button></div>
+  <div class="ttl"><b>파이썬 화산섬</b><span class="mono">PYTHON LAB</span></div>
+  <div class="heatwrap">
+    <div class="heat"><i id="mark"></i></div>
+    <div class="crater" id="crater" title="실전 연구소"><div class="puffs"><b></b><b></b><b></b><b></b></div><div class="lava"></div></div>
   </div>
-  <aside class="side" id="side">
-    <span class="tag" id="sTag"></span>
-    <h2 id="sTitle"></h2>
-    <div class="code mono" id="sCode"></div>
-    <p id="sDesc"></p>
-    <div class="col">
-      <button class="b1" id="playBtn" style="background:var(--b);display:none">▶ 미리 해보기</button>
-      <button class="b1" id="openBtn">교재 열기</button>
-      <button class="b2" id="doneBtn"></button>
-    </div>
-    <div class="note" id="sNote"></div>
-  </aside>
+  <div class="tabs" id="tabs"></div>
+  <div id="list"></div>
 </div>
-<div class="foot"><span>칸을 누르면 오른쪽에 설명이 나와요. 앞 단계를 끝내면 다음 칸이 열립니다.</span><button id="resetBtn">시안용: 파이썬 진행 초기화</button></div>
-<div class="toast" id="toast"></div>
-<div class="modal" id="modal"><div class="mbox"><div class="mtop"><span id="mTitle"></span><button class="chip btn" id="mClose">닫기 ✕</button></div><iframe id="mFrame" title="미리 해보기"></iframe></div></div>
 
 <script src="lib/py_data.js"></script>
 <script>
 (() => {
+/* 교재 목록은 lib/py_data.js (GRAMMAR, URSINA). 완료 표시는 교재마다 따로: S.py.gd(문법 파일 이름), S.py.ud(실전 번호) */
 const $ = id => document.getElementById(id);
-const NS = 'http://www.w3.org/2000/svg';
-const BASE = window.PYDATA.BASE;
-const el = (tag, attrs, parent, text) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; if (parent) parent.appendChild(e); return e; };
-
-const GRAMMAR = window.PYDATA.GRAMMAR, TURTLE = window.PYDATA.TURTLE, BONUS = window.PYDATA.BONUS;
-
+const D = window.PYDATA, BASE = D.BASE, URS = D.URSINA || [];
 const KEY = 'studyhome_new_3d_demo';
 let S = {name: '탐험가'};
 try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = Object.assign(S, v); } catch (e) {}
 if (!S.py || typeof S.py !== 'object') S.py = {};
-const flatG = [].concat.apply([], GRAMMAR.map(c => c.items)), flatT = [].concat.apply([], TURTLE.map(c => c.items));
-S.py.g = Math.max(0, Math.min(flatG.length, S.py.g | 0)); S.py.t = Math.max(0, Math.min(flatT.length, S.py.t | 0));
-S.py.b = Array.isArray(S.py.b) ? S.py.b.filter(x => BONUS.some(b => b[0] === x)) : [];
+const flat = [].concat.apply([], D.GRAMMAR.map(c => c.items));
+if (!Array.isArray(S.py.gd)) S.py.gd = flat.slice(0, Math.max(0, S.py.g | 0)).map(it => it[2]);   /* 예전 순서식 진도에서 옮김 */
+S.py.gd = S.py.gd.filter(f => flat.some(it => it[2] === f));
+S.py.ud = Array.isArray(S.py.ud) ? S.py.ud.filter(n => n >= 1 && n <= URS.length) : [];
+S.py.t = S.py.t | 0; if (!Array.isArray(S.py.b)) S.py.b = [];
 S.place = 'volcano'; S.pyAt = 'lab';
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const save = () => { S.py.g = S.py.gd.length; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 if (S.started) save();
-$('who').textContent = S.name || '탐험가';
+let TAB = S.py.tab === 'u' ? 'u' : 'g';
 
-/* 배치 */
-const VW = 780, XG = 150, XT = 500, TOP = 54, STEP = 78, CHGAP = 56, OFF = 0;
-const nodes = [];
-function layout(track, chapters, x, color) {
-  let y = TOP, idx = 0; const pts = [[x, 14]];
-  chapters.forEach(c => {
-    y += CHGAP; nodes.push({kind: 'ch', x, y: y - 42, text: c.ch});
-    c.items.forEach(it => { nodes.push({kind: 'node', track, idx, x, y, color, glyph: it[0], title: it[1], file: it[2], desc: it[3]}); pts.push([x, y]); y += STEP; idx++; });
+/* 문법 줄 만들기: "딕셔너리 (dict) 1·2·4" 처럼 번호만 다른 교재는 한 줄로 묶음 */
+let gi = 0;
+const CH = D.GRAMMAR.map(c => {
+  const rows = [];
+  c.items.forEach(it => {
+    const m = it[1].match(/^(.+\(dict\)) (\d+)$/), last = rows[rows.length - 1], one = {i: gi++, file: it[2]};
+    if (m && last && last.title === m[1]) last.vers.push([m[2], one]);
+    else if (m) rows.push({title: m[1], vers: [[m[2], one]]});
+    else rows.push({title: it[1], vers: [['', one]]});
   });
-  return {pts, endY: y - STEP};
-}
-const LG = layout('g', GRAMMAR, XG, 'var(--g)'), LT = layout('t', TURTLE, XT, 'var(--t)');
-const BY = LT.endY + 104, bonusPts = [];
-nodes.push({kind: 'ch', x: XT, y: BY - 22, text: 'BONUS LAB  게임 만들기'});
-BONUS.forEach((b, i) => { const x = XT, y = BY + 22 + i * 70; nodes.push({kind: 'node', track: 'b', idx: i, id: b[0], x, y, color: 'var(--b)', glyph: b[0], title: b[1], file: b[2], desc: '배우는 것: ' + b[3], tagline: b[3]}); bonusPts.push([x, y]); });
-const BEND = BY + 22 + (BONUS.length - 1) * 70;
-const VH = Math.max(LG.endY, BEND) + 70;
-const svg = $('tree'); svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
-
-const line = pts => pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ');
-el('path', {class: 'trunk', d: line(LG.pts)}, svg); el('path', {class: 'trunk', d: line(LT.pts)}, svg);
-el('path', {class: 'trunk', d: 'M' + XT + ' ' + LT.endY + ' L' + XT + ' ' + BEND, 'stroke-dasharray': '2 12'}, svg);
-const onG = el('path', {class: 'trunk on', d: line(LG.pts), stroke: '#5cc8ff'}, svg), onT = el('path', {class: 'trunk on', d: line(LT.pts), stroke: '#ff9b4a'}, svg);
-const lenG = onG.getTotalLength(), lenT = onT.getTotalLength();
-[onG, onT].forEach((p, i) => { const L = i ? lenT : lenG; p.setAttribute('stroke-dasharray', L); p.setAttribute('stroke-dashoffset', L); });
-el('circle', {cx: XG, cy: 14, r: 7, fill: '#5cc8ff'}, svg); el('circle', {cx: XT, cy: 14, r: 7, fill: '#ff9b4a'}, svg);
-
-nodes.forEach(n => {
-  if (n.kind === 'ch') { el('text', {class: 'ch mono', x: n.x - 128, y: n.y}, svg, n.text); return; }
-  const g = el('g', {class: 'node', tabindex: 0, style: '--k:' + n.color + ';transform-box:fill-box;transform-origin:center'}, svg);
-  el('circle', {class: 'halo', cx: n.x, cy: n.y, r: 27}, g); el('circle', {class: 'c', cx: n.x, cy: n.y, r: 25}, g);
-  el('text', {class: 'gl mono', x: n.x, y: n.y + 1, style: n.glyph.length > 5 ? 'font-size:10.5px' : ''}, g, n.glyph);
-  { el('text', {class: 'tt', x: n.x + 40, y: n.y - 8}, g, n.title.length > 16 ? n.title.slice(0, 15) + '…' : n.title); n.stEl = el('text', {class: 'st mono', x: n.x + 40, y: n.y + 12}, g, ''); }
-  g.addEventListener('click', () => pick(n)); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(n); } });
-  n.g = g;
+  return {name: c.ch.replace(/^LV\.\d+\s+/, ''), rows};
 });
+const ROWS = [].concat.apply([], CH.map(c => c.rows));
+const gDone = r => r.vers.every(v => S.py.gd.includes(v[1].file));
+const uDone = n => S.py.ud.includes(n);
+const pad = n => String(n).padStart(2, '0');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 
-const real = nodes.filter(n => n.kind === 'node');
-function stateOf(n) {
-  if (n.track === 'b') return S.py.b.includes(n.id) ? 'done' : 'open';
-  const p = S.py[n.track]; return n.idx < p ? 'done' : n.idx === p ? 'open' : 'ahead';
-}
-let sel = null;
-function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2200); }
 function render() {
-  real.forEach(n => {
-    const st = stateOf(n); n.g.setAttribute('class', 'node ' + st + (st === 'open' && n.track !== 'b' ? ' cur' : '') + (n === sel ? ' sel' : ''));
-    n.stEl.textContent = st === 'done' ? 'DONE' : st === 'open' ? (n.track === 'b' ? 'OPEN' : 'NOW') : 'OPEN';
-  });
-  const frac = (pts, k, L) => { if (k <= 0) return L; const y = pts[Math.min(k, pts.length - 1)][1] - pts[0][1], tot = pts[pts.length - 1][1] - pts[0][1]; return L * (1 - y / tot); };
-  onG.setAttribute('stroke-dashoffset', frac(LG.pts, S.py.g, lenG)); onT.setAttribute('stroke-dashoffset', frac(LT.pts, S.py.t, lenT));
-  $('gCnt').textContent = S.py.g + ' / ' + flatG.length; $('tCnt').textContent = S.py.t + ' / ' + flatT.length + '  ·  BONUS ' + S.py.b.length + ' / ' + BONUS.length;
-  $('gBar').style.width = (S.py.g / flatG.length * 100) + '%'; $('tBar').style.width = (S.py.t / flatT.length * 100) + '%';
-  $('pts').textContent = (S.py.g + S.py.t + S.py.b.length) + ' / ' + real.length;
-  if (sel) panel();
+  const gNow = ROWS.find(r => !gDone(r)), gCnt = ROWS.filter(gDone).length;
+  let uNow = 0; for (let n = 1; n <= URS.length; n++) if (!uDone(n)) { uNow = n; break; }
+  $('page').classList.toggle('u', TAB === 'u');
+  $('mark').style.left = (TAB === 'u' ? 80 + (URS.length ? S.py.ud.length / URS.length : 0) * 20 : gCnt / ROWS.length * 80).toFixed(1) + '%';
+  $('tabs').innerHTML = '<button data-tab="g" class="' + (TAB === 'g' ? 'on' : '') + '">문법<i class="mono">' + gCnt + '/' + ROWS.length + '</i></button><button data-tab="u" class="' + (TAB === 'u' ? 'on' : '') + '">실전<i class="mono">' + S.py.ud.length + '/' + URS.length + '</i></button>';
+  const gRow = r => {
+    const d = gDone(r), k = ROWS.indexOf(r);
+    return '<div class="ls' + (d ? ' done' : r === gNow ? ' now' : '') + '" data-g="' + r.vers[0][1].i + '"><span class="lt">' + esc(r.title) + '</span>' +
+      (r.vers.length > 1 ? r.vers.map(v => '<span class="ver mono' + (S.py.gd.includes(v[1].file) ? ' done' : '') + '" data-g="' + v[1].i + '" title="' + esc(r.title + ' ' + v[0]) + '">' + v[0] + '</span>').join('') : '') +
+      '<span class="ic" data-gt="' + k + '" title="' + (d ? '완료 취소' : '완료') + '">' + (d ? '✓' : '→') + '</span></div>';
+  };
+  const uRow = n => '<div class="ls' + (uDone(n) ? ' done' : n === uNow ? ' now' : '') + '" data-u="' + n + '"><span class="no mono">' + pad(n) + '</span><span class="lt">' + esc(URS[n - 1]) + '</span><span class="ic" data-ut="' + n + '" title="' + (uDone(n) ? '완료 취소' : '완료') + '">' + (uDone(n) ? '✓' : '→') + '</span></div>';
+  const gCh = ci => '<section class="ch" style="--c:var(--h' + Math.min(5, ci) + ')"><h3><i class="mono">LV.' + (ci + 1) + '</i>' + esc(CH[ci].name) + '</h3>' + CH[ci].rows.map(gRow).join('') + '</section>';
+  if (TAB === 'g') {
+    /* 두 줄로 나누기: 줄 수가 비슷해지는 곳에서 자름 */
+    const tot = ROWS.length + CH.length; let acc = 0, cut = CH.length;
+    for (let ci = 0; ci < CH.length; ci++) { acc += CH[ci].rows.length + 1; if (acc >= tot / 2) { cut = ci + 1; break; } }
+    const ids = CH.map((_, ci) => ci);
+    $('list').innerHTML = '<div class="cols"><div>' + ids.slice(0, cut).map(gCh).join('') + '</div><div>' + ids.slice(cut).map(gCh).join('') + '</div></div>';
+  } else {
+    const half = Math.ceil(URS.length / 2), ns = URS.map((_, k) => k + 1);
+    $('list').innerHTML = '<section class="ch" style="--c:#e03a12"><h3><i class="mono">Ursina</i>3D 게임 만들기</h3><div class="cols"><div>' + ns.slice(0, half).map(uRow).join('') + '</div><div>' + ns.slice(half).map(uRow).join('') + '</div></div></section>';
+  }
 }
-function panel() {
-  const n = sel, st = stateOf(n), name = n.track === 'g' ? '문법 트랙' : n.track === 't' ? '터틀 트랙' : '보너스 게임';
-  $('sTag').textContent = name; $('sTag').style.background = n.color;
-  $('sTitle').textContent = n.title; $('sCode').textContent = n.track === 't' ? 'turtle · ' + (n.glyph === 'mini' ? '미니 프로젝트' : n.glyph + '차시') : n.track === 'b' ? 'turtle game · ' + n.glyph : 'python · ' + n.glyph;
-  $('sDesc').textContent = n.desc;
-  $('playBtn').style.display = n.track === 'b' ? 'block' : 'none';
-  const ob = $('openBtn'), db = $('doneBtn'); ob.style.background = n.color; ob.disabled = false; ob.textContent = (n.track === 'b' ? '만드는 방법 보기' : (st === 'done' ? '교재 다시 보기' : '교재 열기'));
-  if (n.track === 'b') ob.style.background = '#e6ebf7';
-  db.style.display = st === 'ahead' ? 'none' : 'block'; db.textContent = st === 'done' ? '✓ 완료함 (누르면 취소)' : '완료로 표시';
-  $('sNote').textContent = st === 'ahead' ? '아직 진도 전인 교재예요. 자유롭게 열어 볼 수 있고, 완료 표시는 NOW 칸부터 순서대로 해요.' : '';
-}
-function pick(n) { sel = n; render(); }
-$('openBtn').addEventListener('click', () => {
-  if (!sel) return;
-  if (sel.track === 't') { location.href = '교재.html?t=' + sel.idx; return; }
-  if (sel.track === 'g') { location.href = '교재.html?i=' + sel.idx; return; }
-  window.open(BASE + sel.file, '_blank');
+const setTab = t => { TAB = t; S.py.tab = t; save(); render(); };
+document.addEventListener('click', e => {
+  const t = e.target;
+  const tab = t.closest('[data-tab]'); if (tab) { setTab(tab.dataset.tab); return; }
+  if (t.closest('#crater')) { setTab('u'); return; }
+  const gt = t.closest('[data-gt]');
+  if (gt) { const r = ROWS[+gt.dataset.gt], fs = r.vers.map(v => v[1].file); if (gDone(r)) S.py.gd = S.py.gd.filter(f => !fs.includes(f)); else fs.forEach(f => { if (!S.py.gd.includes(f)) S.py.gd.push(f); }); save(); render(); return; }
+  const ut = t.closest('[data-ut]');
+  if (ut) { const n = +ut.dataset.ut; if (uDone(n)) S.py.ud = S.py.ud.filter(x => x !== n); else S.py.ud.push(n); save(); render(); return; }
+  const g = t.closest('[data-g]'); if (g) { location.href = '교재.html?i=' + g.dataset.g; return; }
+  const u = t.closest('[data-u]'); if (u) window.open(BASE + 'python_ursina.html#lesson-' + pad(+u.dataset.u), '_blank');
 });
-$('doneBtn').addEventListener('click', () => {
-  const n = sel; if (!n) return; const st = stateOf(n); let fl = null;
-  if (n.track === 'b') { if (st === 'done') S.py.b = S.py.b.filter(x => x !== n.id); else if (st === 'open') { S.py.b.push(n.id); fl = n; toast('보너스 게임 완료!'); } }
-  else if (st === 'open') { S.py[n.track]++; fl = n; const next = real.find(m => m.track === n.track && m.idx === n.idx + 1); if (next) { sel = next; toast('진도가 다음 칸으로 넘어갔어요.'); setTimeout(() => next.g.scrollIntoView({behavior: 'smooth', block: 'center'}), 250); } else toast(n.track === 't' ? '터틀 트랙을 모두 끝냈어요!' : '문법 트랙을 모두 끝냈어요!'); }
-  else if (st === 'done') { if (n.idx === S.py[n.track] - 1) S.py[n.track]--; else { toast('마지막으로 완료한 칸만 취소할 수 있어요.'); return; } }
-  save(); render(); if (fl) flash(fl);
-});
-function flash(n) { n.g.classList.remove('pop'); void n.g.getBoundingClientRect(); n.g.classList.add('pop'); }
 $('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; });
 $('beachBtn').addEventListener('click', () => { location.href = '해변.html'; });
-$('playBtn').addEventListener('click', () => { if (!sel || sel.track !== 'b') return; $('mTitle').textContent = '미리 해보기 · ' + sel.title; $('mFrame').src = '터틀게임.html?g=' + sel.id; $('modal').classList.add('show'); });
-const closeModal = () => { $('modal').classList.remove('show'); $('mFrame').src = 'about:blank'; };
-$('mClose').addEventListener('click', closeModal);
-$('modal').addEventListener('click', e => { if (e.target === $('modal')) closeModal(); });
-$('resetBtn').addEventListener('click', () => { S.py = {g: 0, t: 0, b: []}; save(); sel = real[0]; render(); window.scrollTo({top: 0, behavior: 'smooth'}); });
-
-sel = real.find(n => n.track === 'g' && stateOf(n) === 'open') || real.find(n => n.track === 't' && stateOf(n) === 'open') || real[0];
 render();
-if (sel && sel.idx > 2) setTimeout(() => sel.g.scrollIntoView({block: 'center'}), 50);
 })();
 </script>
 </body>

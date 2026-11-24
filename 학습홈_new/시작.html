@@ -416,7 +416,7 @@ PLACES.forEach(pl => {
 });
 function pinText() {
   const z = (n, id) => (S.place === id ? '지금 여기 · ' : '') + (n >= REAL ? '미션 ' + REAL + '개 완료' : '미션 ' + (n + 1) + ' / ' + REAL);
-  const t = {forest: (S.place === 'forest' ? '지금 여기 · ' : '') + '⭐ 미션 ' + ED() + '개 완료', tower: '시험 연습', cabin: 'AI 과외 · 모의시험', sea: (S.place === 'sea' ? '지금 여기 · ' : '') + '⭐ 미션 ' + SD() + '개 완료', volcano: (S.place === 'volcano' ? '지금 여기 · ' : '') + '문법 ' + S.py.g + '/15 · 터틀 ' + S.py.t + '/10', teacher: '원장님 전용'};
+  const t = {forest: (S.place === 'forest' ? '지금 여기 · ' : '') + '⭐ 미션 ' + ED() + '개 완료', tower: '시험 연습', cabin: 'AI 과외 · 모의시험', sea: (S.place === 'sea' ? '지금 여기 · ' : '') + '⭐ 미션 ' + SD() + '개 완료', volcano: (S.place === 'volcano' ? '지금 여기 · ' : '') + '문법 ' + S.py.g + '/19 · 터틀 ' + S.py.t + '/10', teacher: '원장님 전용'};
   PLACES.forEach(pl => { pl.el.children[1].textContent = t[pl.id] || pl.sub || ''; pl.el.classList.toggle('here', pl.id === S.place); });
   flags.forEach((f, k) => f.material.color.set(k >= REAL ? '#a9b3a2' : k < S.progress ? '#2f9e6e' : k === S.progress ? '#f5b921' : '#a9b3a2'));
 }

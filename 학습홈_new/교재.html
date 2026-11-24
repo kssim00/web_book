@@ -47,7 +47,7 @@ iframe{transition:left .25s ease,width .25s ease}
 <nav class="toc" id="toc" hidden></nav>
 <button class="tocTab" id="tocTab" title="목차 열기/닫기" hidden>›</button>
 <div class="fab">
-  <button id="treeBtn" title="스킬 트리로 돌아가기">← 스킬 트리</button>
+  <button id="treeBtn" title="화산섬으로 돌아가기">← 화산섬</button>
   <span class="pos" id="pos"></span>
   <button class="ic" id="prevBtn">‹</button>
   <button class="go" id="nextBtn"></button>
@@ -57,7 +57,7 @@ iframe{transition:left .25s ease,width .25s ease}
 <script>
 (() => {
 const $ = id => document.getElementById(id);
-const D = window.PYDATA, flat = [], Q = new URLSearchParams(location.search), TUR = Q.has('t'), PK = TUR ? 't' : 'g', QK = TUR ? 't' : 'i', COL = TUR ? '#ff9b4a' : '#5cc8ff';
+const D = window.PYDATA, flat = [], Q = new URLSearchParams(location.search), TUR = Q.has('t'), PK = TUR ? 't' : 'g', QK = TUR ? 't' : 'i', COL = TUR ? '#ff9b4a' : '#ff8a3c';
 (TUR ? D.TURTLE : D.GRAMMAR).forEach(c => c.items.forEach(it => flat.push({ch: c.ch, glyph: it[0], title: it[1], file: it[2]})));
 document.documentElement.style.setProperty('--k', COL);
 const KEY = 'studyhome_new_3d_demo';
@@ -65,35 +65,38 @@ let S = {};
 try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
 if (!S.py || typeof S.py !== 'object') S.py = {};
 S.py.g = S.py.g | 0; S.py.t = S.py.t | 0; if (!Array.isArray(S.py.b)) S.py.b = []; S.py[PK] = Math.max(0, Math.min(flat.length, S.py[PK]));
+// 문법은 교재마다 따로 완료 표시(S.py.gd = 끝낸 교재 파일 이름). 예전 순서식 진도(S.py.g)에서 한 번 옮긴다
+if (!TUR && !Array.isArray(S.py.gd)) S.py.gd = flat.slice(0, S.py.g).map(it => it.file);
+const GD = TUR ? [] : S.py.gd, firstLeft = TUR ? -1 : flat.findIndex(it => !GD.includes(it.file));
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 let i = parseInt(Q.get(QK), 10);
-if (isNaN(i) || i < 0 || i >= flat.length) i = Math.min(S.py[PK], flat.length - 1);
+if (isNaN(i) || i < 0 || i >= flat.length) i = TUR ? Math.min(S.py[PK], flat.length - 1) : (firstLeft < 0 ? flat.length - 1 : firstLeft);
 const cur = flat[i], plain = TUR ? D.TURTLE_URL + '?lesson=' + i : D.BASE + cur.file, url = TUR ? plain + '&embed=1' : plain;
 document.title = cur.title + ' · 파이썬 교재';
 $('frame').src = url;
 $('pos').textContent = (i + 1) + ' / ' + flat.length;
 $('pos').title = (TUR ? '터틀 ' : '문법 ') + cur.ch.replace(/\s+/g, ' ') + ' · ' + cur.title;
-const BEACH = TUR && S.pyAt === 'beach', HOMEURL = BEACH ? '해변.html?back=1' : '화산섬.html', HOMENAME = BEACH ? '해변길' : '스킬 트리';
+const BEACH = TUR && S.pyAt === 'beach', HOMEURL = BEACH ? '해변.html?back=1' : '화산섬.html', HOMENAME = BEACH ? '해변길' : '화산섬';
 if (BEACH) { $('treeBtn').textContent = '← 해변길'; $('treeBtn').title = '해변길로 돌아가기'; }
 const go = k => { location.href = '교재.html?' + QK + '=' + k; };
-const prev = $('prevBtn'), next = $('nextBtn'), last = i === flat.length - 1, isNow = i === S.py[PK];
+const prev = $('prevBtn'), next = $('nextBtn'), last = i === flat.length - 1, isNow = TUR ? i === S.py[PK] : i === firstLeft;
 prev.title = i > 0 ? '이전: ' + flat[i - 1].title : '처음 교재예요'; prev.disabled = i === 0;
 prev.addEventListener('click', () => go(i - 1));
-next.textContent = last ? (isNow ? '✓ 완료하고 ' + HOMENAME + '로' : HOMENAME + '로 ›') : (isNow ? '✓ 완료하고 다음 ›' : '다음 ›');
+next.textContent = last ? (isNow ? '✓ 완료하고 ' + HOMENAME + (BEACH ? '로' : '으로') : HOMENAME + (BEACH ? '로 ›' : '으로 ›')) : (isNow ? '✓ 완료하고 다음 ›' : '다음 ›');
 next.title = last ? HOMENAME + '로 돌아가기' : '다음: ' + flat[i + 1].title;
-next.addEventListener('click', () => { if (isNow) { S.py[PK] = i + 1; save(); } if (last) location.href = HOMEURL; else go(i + 1); });
+next.addEventListener('click', () => { if (isNow) { if (TUR) S.py.t = i + 1; else { GD.push(cur.file); S.py.g = GD.length; } save(); } if (last) location.href = HOMEURL; else go(i + 1); });
 $('treeBtn').addEventListener('click', () => { location.href = HOMEURL; });
 $('newTab').addEventListener('click', () => window.open(plain, '_blank'));
-// 목차 서랍(터틀만): 평소엔 접혀 있고 왼쪽 작은 탭으로 연다. 열림 상태는 차시를 넘겨도 유지
-if (TUR) {
+// 목차 서랍(터틀·문법): 평소엔 접혀 있고 왼쪽 작은 탭으로 연다. 열림 상태는 차시를 넘겨도 유지
+{
   const toc = $('toc'), tab = $('tocTab'), TK = 'studyhome_new_toc_open';
   toc.hidden = false; tab.hidden = false;
   const ol = document.createElement('ol'); toc.appendChild(ol);
   flat.forEach((it, k) => {
     const li = document.createElement('li'), a = document.createElement('a');
     a.href = '교재.html?' + QK + '=' + k; a.title = it.title;
-    a.className = k === i ? 'cur' : (k < S.py[PK] ? 'done' : '');
-    a.textContent = it.title.split(/[:,-]/)[0].trim();
+    a.className = k === i ? 'cur' : ((TUR ? k < S.py.t : GD.includes(it.file)) ? 'done' : '');
+    a.textContent = TUR ? it.title.split(/[:,-]/)[0].trim() : it.title;
     li.appendChild(a); ol.appendChild(li);
   });
   const setOpen = o => { document.body.classList.toggle('toc-open', o); tab.textContent = o ? '‹' : '›'; try { localStorage.setItem(TK, o ? '1' : ''); } catch (e) {} };
