@@ -30,7 +30,7 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
   <p id="ttl"></p>
   <div id="stageBox"><div id="ov"><span id="ovMsg">엔트리 작품을 불러오는 중이에요…<br><small>인터넷 연결이 필요해요</small></span></div></div>
   <div id="scn"></div>
-  <div class="bar"><button class="b s" id="runBtn">▶ 시작하기</button><button class="b s" id="stopBtn">■ 멈추기</button><span id="hint"></span></div>
+  <div class="bar"><button class="b s" id="tgBtn">▶ 시작하기</button><button class="b s" id="reBtn" style="border-color:#c9d8bb;color:#5b7a48">↺ 처음부터</button><span id="hint"></span></div>
 </div>
 <div id="entryContainer"></div>
 <script src="https://playentry.org/lib/entry-js/extern/lang/ko.js"></script>
@@ -139,7 +139,13 @@ html,body{margin:0;height:100%;background:#eef6e6;font-family:"Pretendard","Appl
   function mark(){ try{ var cur = Entry.scene.selectedScene, scs = Entry.scene.getScenes(); [].forEach.call(document.querySelectorAll('#scn button'), function(b){ b.classList.toggle('on', scs[+b.dataset.k] === cur); }); }catch(e){} }
   function run(){ $('ov').classList.add('hide'); try{ if(Entry.engine.state !== 'stop') Entry.engine.toggleStop(); Entry.engine.toggleRun(); }catch(e){ console.error(e); } }
   function stop(){ try{ if(Entry.engine.state !== 'stop') Entry.engine.toggleStop(); }catch(e){} }
-  $('runBtn').onclick = run; $('stopBtn').onclick = stop;
+  function running(){ try{ return Entry.engine.state !== 'stop'; }catch(e){ return false; } }
+  $('tgBtn').onclick = function(){ if (running()) stop(); else run(); sync(); };
+  $('reBtn').onclick = function(){ run(); sync(); };
+  function sync(){ var r = running(); $('tgBtn').textContent = r ? '■ 멈추기' : '▶ 시작하기'; }
+  setInterval(sync, 300);
+  /* 다른 탭으로 가거나 창이 가려지면 저절로 멈춤 */
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) stop(); });
   go().catch(function(e){ console.error(e); fail('엔트리를 불러오지 못했어요.<br><small>'+(e.message||e)+'</small>'); });
 })();
 </script>
