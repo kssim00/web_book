@@ -324,7 +324,12 @@ $('gl').addEventListener('contextmenu', e => e.preventDefault());
 $('gl').addEventListener('pointerdown', e => { downAt = e.button === 0 ? [e.clientX, e.clientY] : null; drag = {x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, moved: e.button === 2}; try { $('gl').setPointerCapture(e.pointerId); } catch (er) {} });
 addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY; if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 8) drag.moved = true; if (!drag.moved) return; yawT -= dx * .007; pitT = Math.max(.35, Math.min(2.3, pitT + dy * .006)); $('gl').style.cursor = 'grabbing'; });
 addEventListener('pointerup', () => { if (drag && drag.moved) $('gl').style.cursor = ''; drag = null; });
-$('gl').addEventListener('pointerup', e => { if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 8) return; const i = pickSign(e); if (i >= 0) { if (!S.entry.tapped) { S.entry.tapped = 1; save(); } if (Math.abs(hu - U[i]) < 1e-4 && !walking) showCard(i); else goTo(i); } });
+$('gl').addEventListener('pointerup', e => { if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 8) return; const i = pickSign(e); if (i >= 0) { if (!S.entry.tapped) { S.entry.tapped = 1; save(); }
+  /* 숨은 기능: 같은 팻말·칸을 빠르게 세 번 누르면 걷지 않고 바로 순간이동 (선생님이 여러 진도를 빨리 볼 때) */
+  const now = performance.now(); tap3 = (tap3.i === i && now - tap3.t < 600) ? {i, t: now, n: tap3.n + 1} : {i, t: now, n: 1};
+  if (tap3.n >= 3) { tap3 = {i: -1, t: 0, n: 0}; placeAt(i); snap = true; showCard(i); return; }
+  if (Math.abs(hu - U[i]) < 1e-4 && !walking) showCard(i); else goTo(i); } });
+let tap3 = {i: -1, t: 0, n: 0};
 $('gl').addEventListener('pointermove', e => { if (e.pointerType !== 'mouse' || (drag && drag.moved)) return; $('gl').style.cursor = pickSign(e) >= 0 ? 'pointer' : ''; });
 /* 걷기 */
 let heroI = 0;
