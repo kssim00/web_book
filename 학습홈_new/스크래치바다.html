@@ -418,6 +418,15 @@ addEventListener('keyup', e => { if (!(e.key in keysDown)) return; delete keysDo
 addEventListener('blur', () => { for (const k in keysDown) delete keysDown[k]; if (keyDir) { keyDir = 0; keyStop(); } });
 /* 보드판: 칸에서 칸으로 통통 뛰기 */
 function hopY() { let i = 0; while (i < N - 2 && U[i + 1] < hu) i++; const f = (hu - U[i]) / (U[i + 1] - U[i]); return Math.sin(Math.PI * Math.max(0, Math.min(1, f))) * 2.6; }
+/* 보드판 카메라: 말이 움직이는 동안 판은 가만히. 말이 멈췄는데 화면 가장자리(또는 카드 밑)에 있으면 그때 한 번만 천천히 따라감 */
+const camF = new T.Vector3(), camB = new T.Vector3(), camS = new T.Vector3(); let camGo = false;
+function camFocus(moving) {
+  camB.set(hero.position.x, HEIGHT(hero.position.x, hero.position.z) + .95, hero.position.z);
+  if (snap) { camF.copy(camB); camGo = false; return camF; }
+  if (!moving && !camGo) { camS.copy(camB).project(cam); const co = sel >= 0 && innerWidth > 720; if (camS.x < -.62 || camS.x > (co ? .25 : .62) || camS.y > .55 || camS.y < -.5) camGo = true; }
+  if (camGo && !moving) { camF.lerp(camB, .07); if (camF.distanceToSquared(camB) < .05) camGo = false; }
+  return camF;
+}
 function placeAt(i) { heroI = i; hu = U[i]; walking = null; keyBack = false; }
 /* 걷기 건너뛰기: 걷는 도중 한 번 더 누르면(같은 팻말이나 빈 곳) 남은 길을 건너뛰고 바로 도착 */
 function skipWalk() { if (!walking) return; const w = walking; placeAt(w.i); snap = true; if (w.then) w.then(); }
@@ -434,7 +443,7 @@ function finish(id) {
 const spark = []; function burst(p) { for (let k = 0; k < 28; k++) { const m = new T.Mesh(new T.BoxGeometry(.4, .4, .1), new T.MeshBasicMaterial({color: ['#ff9b4a', '#ffd84a', '#7fd39a', '#6cc4ee', '#f59ac4'][k % 5]})); m.position.set(p.x, p.y + 4, p.z); m.userData.v = new T.Vector3((rnd() - .5) * 14, 9 + rnd() * 8, (rnd() - .5) * 14); m.userData.l = 1.6; scene.add(m); spark.push(m); } }
 /* 버튼 */
 $('contBtn').addEventListener('click', () => { const ni = nowIdx(); if (ni < 0) return; if (MS[L[ni].id] && Math.abs(hu - U[ni]) < 1e-4) { showCard(ni); openPv(ni); } else goTo(ni); });
-$('meBtn').addEventListener('click', () => { zoomT = 0; yawT = 0; pitT = 1; });
+$('meBtn').addEventListener('click', () => { zoomT = 0; yawT = 0; pitT = 1; camGo = true; });
 $('worldBtn').addEventListener('click', () => { location.href = '시작.html?map=1'; });
 $('seg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.v === VIEW) return; const keep = heroI, card = sel; build(b.dataset.v); placeAt(keep); if (card >= 0) showCard(card); });
 $('zr').addEventListener('input', e => { zoomT = e.target.value / 100; });
@@ -465,13 +474,14 @@ function frame() {
   /* 카메라: 0 = 탐험가 뒤, 1 = 숲 전체 */
   zoom += (zoomT - zoom) * (snap ? 1 : Math.min(1, dt * 3)); $('zr').value = Math.round(zoomT * 100);
   const cd = VIEW === 'C' ? CDIR : dir, side = new T.Vector3(-cd.z, 0, cd.x), cardOn = sel >= 0 && innerWidth > 720;   /* 보드판은 카메라가 돌지 않고 늘 같은 쪽에서 봄 */
-  const fP = hero.position.clone().addScaledVector(cd, VIEW === 'C' ? -30 : -15).addScaledVector(side, cardOn ? 7 : VIEW === 'C' ? 0 : 3).add(new T.Vector3(0, 9, 0)), fL = hero.position.clone().addScaledVector(cd, VIEW === 'C' ? 4 : 8).addScaledVector(side, cardOn ? 7 : 0).add(new T.Vector3(0, 2, 0));
+  const hpos = VIEW === 'C' ? camFocus(moving) : hero.position;
+  const fP = hpos.clone().addScaledVector(cd, VIEW === 'C' ? -30 : -15).addScaledVector(side, VIEW === 'C' ? 0 : cardOn ? 7 : 3).add(new T.Vector3(0, 9, 0)), fL = hpos.clone().addScaledVector(cd, VIEW === 'C' ? 4 : 8).addScaledVector(side, VIEW === 'C' ? 0 : cardOn ? 7 : 0).add(new T.Vector3(0, 2, 0));
   const span = Math.max(EXT.x, EXT.z * 1.3) + (VIEW === 'C' ? 45 : 80), oL = CENTER.clone(), oP = oL.clone().add(new T.Vector3(0, span * .9, span * .72));
   if (cardOn) { oL.x += span * .12; oP.x += span * .12; }
   /* 확대·축소: 거리를 곱셈으로 늘려 막대 한 칸마다 비슷하게 멀어지게 (2026-11-24 원장님: 격차가 너무 큼) */
   const ZR = Math.max(4, span * 1.15 / 17), z = (Math.pow(ZR, zoom) - 1) / (ZR - 1);
   yaw += (yawT - yaw) * Math.min(1, dt * 10); pit += (pitT - pit) * Math.min(1, dt * 10);
-  { const hp = hero.position, cs = Math.cos(yaw), sn = Math.sin(yaw), rot = (v, c) => { const dx = v.x - c.x, dz = v.z - c.z; v.x = c.x + dx * cs - dz * sn; v.z = c.z + dx * sn + dz * cs; };
+  { const hp = hpos, cs = Math.cos(yaw), sn = Math.sin(yaw), rot = (v, c) => { const dx = v.x - c.x, dz = v.z - c.z; v.x = c.x + dx * cs - dz * sn; v.z = c.z + dx * sn + dz * cs; };
     fP.y = hp.y + (VIEW === 'C' ? 30 : 9) * pit; const k = 1 / Math.sqrt(pit); fP.x = hp.x + (fP.x - hp.x) * k; fP.z = hp.z + (fP.z - hp.z) * k; rot(fP, hp); rot(fL, hp); rot(oP, oL); }
   cpT.copy(fP).lerp(oP, z); clT.copy(fL).lerp(oL, z);
   if (snap) { cp.copy(cpT); cl.copy(clT); snap = false; } else { cp.lerp(cpT, Math.min(1, dt * 5)); cl.lerp(clT, Math.min(1, dt * 5)); }
