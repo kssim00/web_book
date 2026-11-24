@@ -70,7 +70,12 @@ body.card-on .cont{display:none}
 .pv iframe{flex:1;border:0;width:100%;background:#fff}
 .pv .none{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#5b6b50;font-size:15px;text-align:center;padding:20px}
 .pv .none b{font-size:44px}
-.pv .bot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;background:#fff;font-size:13.5px;color:#5b6b50}
+.pv .bot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;background:#fff;font-size:13.5px;color:#5b6b50;flex-wrap:wrap}
+/* 완성작 창 아래: 미션지 없이도 바로 스크래치를 열고 완료할 수 있게 (2026-11-24) */
+.pv .acts{display:flex;align-items:center;gap:14px;margin-left:auto;flex-wrap:wrap}
+.pv .lnk{font-size:15px;font-weight:800;color:#0f6f9e;text-decoration:none;white-space:nowrap}
+.pv .lnk:hover{text-decoration:underline;text-underline-offset:4px}
+.btn.fin{background:#14232c;color:#fff}
 </style>
 </head>
 <body>
@@ -93,7 +98,7 @@ body.card-on .cont{display:none}
   <div class="top"><span id="pvTitle"></span><button id="pvClose">닫기 ✕</button></div>
   <iframe id="pvFrame" title="미리 해보기"></iframe>
   <div class="none" id="pvNone"><b>🎬</b>이 미션은 미리 해보기를 준비 중이에요.<br>미션지에서 바로 시작해요!</div>
-  <div class="bot"><span id="pvDev">완성된 모습을 먼저 해 보고, 미션지로 만들어 봐요.</span><button class="btn go" id="pvGo">📄 미션지 열기</button></div>
+  <div class="bot"><span id="pvDev">완성된 모습을 먼저 해 보고, 미션지로 만들어 봐요.</span><span class="acts"><a class="lnk" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">스크래치 열기 ↗</a><button class="btn fin" id="pvFin">미션 완료 ⭐</button><button class="btn go" id="pvGo">📄 미션지 열기</button></span></div>
 </div></div>
 <div class="nogl" id="nogl">이 컴퓨터에서는 3D 화면을 띄울 수 없어요.</div>
 <script src="lib/three.min.js"></script>
@@ -308,6 +313,7 @@ function openPv(i) {
   const has = !!url; $('pvFrame').style.display = has ? '' : 'none'; $('pvNone').style.display = has ? 'none' : '';
   $('pvFrame').src = has ? url : 'about:blank';
   $('pvGo').style.display = MS[it.id] ? '' : 'none';
+  $('pvFin').style.display = S.scratch.done[it.id] ? 'none' : '';
   const d = (it.needs || '').split(' ').filter(Boolean).map(x => DEV[x]).join(' · ');
   $('pvDev').textContent = d ? d + ' 필요해요' : (has ? (MS[it.id] ? '완성된 모습을 먼저 해 보고, 미션지로 만들어 봐요.' : '완성된 모습을 먼저 해 봐요. (미션지는 준비 중)') : '');
   $('pv').classList.add('show');
@@ -316,6 +322,7 @@ function closePv() { $('pv').classList.remove('show'); $('pvFrame').src = 'about
 $('pvClose').addEventListener('click', closePv);
 $('pv').addEventListener('click', e => { if (e.target.id === 'pv') closePv(); });
 $('pvGo').addEventListener('click', () => { if (pvI >= 0) openMission(pvI); });
+$('pvFin').addEventListener('click', () => { if (pvI < 0) return; const id = L[pvI].id; closePv(); finish(id); });
 function showCard(i) {
   sel = i; const it = L[i], st = stOf(i), box = $('cBtns'); box.innerHTML = '';
   const tag = $('cTag'); tag.className = 'tag' + (st === 'done' && !it.gate ? ' done' : it.gate ? ' gate' : it.rest ? ' rev' : it.ai ? ' ai' : '');
