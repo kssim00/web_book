@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미리 해보기</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#f3f9fc;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#14304a}
+button{font:inherit;cursor:pointer}
+#wrap{height:100%;display:flex;flex-direction:column;align-items:center;padding:10px 12px;gap:8px}
+#ttl{margin:0;font-weight:900;font-size:18px}
+#hint{min-height:22px;font-weight:800;font-size:16px;color:#e0762a;text-align:center}
+#ver{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+#ver:empty{display:none}
+#ver button{border:1.5px solid #cfe3ef;background:#fff;border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:800;color:#3d6a8a}
+#ver button.on{background:#ffb347;border-color:#ffb347;color:#fff}
+#box{position:relative;width:min(100%, calc((100vh - 120px) * 4 / 3));aspect-ratio:480/400;max-height:calc(100vh - 110px);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 4px 18px rgba(20,50,80,.12)}
+#box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+#msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font-size:15px;color:#5d7486;line-height:1.7;background:#fff}
+#msg.hide{display:none}
+small.tip{font-size:12.5px;color:#7d93a3}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <p id="ttl"></p>
+  <div id="hint"></div>
+  <div id="ver"></div>
+  <div id="box"><iframe id="fr" title="스크래치 작품" allow="autoplay; fullscreen; camera; microphone" allowfullscreen></iframe><div id="msg">작품을 불러오는 중이에요…<br><small>인터넷 연결이 필요해요</small></div></div>
+  <small class="tip">초록 깃발 ▶ 을 눌러 시작해요 · 키보드를 쓰는 게임은 작품 화면을 한 번 클릭한 뒤 해요</small>
+</div>
+<script src="lib/fflate.js"></script>
+<script>document.write('<script src="lib/scratch_previews.js?t=' + Date.now() + '"><\/script>');</script>
+<script>
+(function(){
+  /* 스크래치 완성작(.sb3/.sb2)을 TurboWarp(스크래치 실행기) 화면으로 보여 준다.
+     TurboWarp 는 인터넷 주소의 작품만 열 수 있어서, 이 페이지가 깃허브 주소가 아니면(내 컴퓨터에서 열면) 깃허브에 올라간 사본을 연다. */
+  var $ = function(i){ return document.getElementById(i); }, Q = new URLSearchParams(location.search), ID = Q.get('id') || '';
+  var LIST = (window.SCRATCH_PV || {})[ID] || [];
+  $('ttl').textContent = Q.get('t') || ''; if (window !== top) $('ttl').style.display = 'none';
+  var LIVE = 'https://kssim00.github.io/web_book/학습홈_new/';
+  var base = /github\.io$/.test(location.hostname) ? new URL('.', location.href).href : LIVE;
+  var KN = {space:'스페이스', 'left arrow':'←', 'right arrow':'→', 'up arrow':'↑', 'down arrow':'↓', enter:'엔터', any:'아무'};
+  function hintOf(buf){
+    /* 작품 안 블록에서 쓰는 키·클릭을 찾아 위에 안내 */
+    try{
+      var z = fflate.unzipSync(new Uint8Array(buf)), pj = z['project.json']; if (!pj) return '';
+      var P = JSON.parse(new TextDecoder().decode(pj)), keys = [], click = false, mouse = false;
+      var add = function(k){ k = String(k || '').toLowerCase(); var n = KN[k] || (k.length === 1 ? k.toUpperCase() : k); if (n && keys.indexOf(n) < 0) keys.push(n); };
+      if (P.targets) P.targets.forEach(function(t){ var B = t.blocks || {}; Object.keys(B).forEach(function(id){ var b = B[id]; if (!b || !b.opcode) return;
+        if (b.opcode === 'event_whenkeypressed') add(b.fields && b.fields.KEY_OPTION && b.fields.KEY_OPTION[0]);
+        if (b.opcode === 'sensing_keyoptions') add(b.fields && b.fields.KEY_OPTION && b.fields.KEY_OPTION[0]);
+        if (b.opcode === 'event_whenthisspriteclicked' || b.opcode === 'event_whenstageclicked') click = true;
+        if (b.opcode === 'sensing_mousedown' || b.opcode === 'motion_goto_menu' && b.fields && b.fields.TO && b.fields.TO[0] === '_mouse_' || b.opcode === 'sensing_mousex' || b.opcode === 'sensing_mousey') mouse = true; }); });
+      else (function walk(x){ if (Array.isArray(x)) { if (x[0] === 'whenKeyPressed' || x[0] === 'keyPressed:') add(x[1]); if (x[0] === 'whenClicked') click = true; if (x[0] === 'mousePressed' || x[0] === 'mouseX' || x[0] === 'mouseY' || x[1] === '_mouse_') mouse = true; x.forEach(walk); } else if (x && typeof x === 'object') Object.keys(x).forEach(function(k){ walk(x[k]); }); })(P);
+      var out = []; if (keys.length) out.push('⌨️ ' + keys.join(' · ') + ' 키를 눌러 보세요'); if (click) out.push('🖱️ 스프라이트를 클릭해 보세요'); else if (mouse) out.push('🖱️ 마우스를 움직여 보세요');
+      return out.join('   ');
+    }catch(e){ return ''; }
+  }
+  function show(k){
+    var it = LIST[k]; if (!it) return;
+    [].forEach.call(document.querySelectorAll('#ver button'), function(b, j){ b.classList.toggle('on', j === k); });
+    $('msg').classList.remove('hide'); $('msg').innerHTML = '작품을 불러오는 중이에요…<br><small>인터넷 연결이 필요해요</small>';
+    $('hint').textContent = '';
+    fetch(it[0]).then(function(r){ return r.ok ? r.arrayBuffer() : null; }).then(function(b){ if (b) $('hint').textContent = hintOf(b); }).catch(function(){});
+    var url = base + it[0].split('/').map(encodeURIComponent).join('/');
+    $('fr').onload = function(){ $('msg').classList.add('hide'); };
+    $('fr').src = 'https://turbowarp.org/embed?project_url=' + encodeURIComponent(url);
+  }
+  if (!LIST.length) { $('msg').innerHTML = '이 미션은 미리 해보기를 준비 중이에요.'; return; }
+  if (LIST.length > 1) LIST.forEach(function(it, k){ var b = document.createElement('button'); b.textContent = it[1]; b.onclick = function(){ show(k); }; $('ver').appendChild(b); });
+  show(0);
+  /* 창을 닫거나 다른 탭으로 가면 멈춤 */
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) $('fr').src = 'about:blank'; else if ($('fr').src === 'about:blank') { var on = document.querySelector('#ver button.on'); show(on ? [].indexOf.call($('ver').children, on) : 0); } });
+})();
+</script>
+</body>
+</html>
