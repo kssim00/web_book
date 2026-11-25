@@ -108,7 +108,7 @@ summary em{font-style:normal;font-size:13px;font-weight:600;color:#7f90a8;margin
 
   <section class="pane" id="tools">
     <div>
-      <span class="seg" id="seg"><button data-c="entry" class="on">엔트리</button><button data-c="scratch">스크래치</button><button data-c="py">파이썬</button></span>
+      <span class="seg" id="seg"><button data-c="entry" class="on">엔트리</button><button data-c="scratch">스크래치</button><button data-c="py">파이썬</button><button data-c="etc">그 밖에</button></span>
       <input class="find" id="find" placeholder="미션 찾기" size="16">
     </div>
     <div class="me" id="me"></div>
@@ -210,9 +210,22 @@ function paintPy() {
   sec('우르시나', (D.URSINA || []).map((t, i) => [String(i + 1), t, A(B + 'python_ursina.html#lesson-' + ('0' + (i + 1)).slice(-2), '교재')]));
   $('me').innerHTML = ''; $('list').innerHTML = out.join('') || '<p class="note">찾는 교재가 없어요.</p>';
 }
+/* 그 밖에: 세계 지도의 메이커 마을·숨은 섬에서 여는 교재 (시작.html 의 INFO.maker / INFO.isle 과 같은 파일 — 거기를 바꾸면 여기도 같이) */
+const ETC = [
+  ['앱인벤터', [['앱인벤터 교실', '../앱인벤터_웹교재.html'], ['사진 스티커 앱 (슬라이드)', '../앱인벤터_사진스티커앱.html']]],
+  ['3D 모델링', [['틴커캐드 교실', '../틴커캐드_튜토리얼.html']]],
+  ['마인크래프트', [['마인크래프트 파이썬', '../마인크래프트_파이썬_코딩_학습지.html']]],
+  ['로블록스', [['점프맵 · 기초', '../로블록스_점프맵_기초.html'], ['점프맵 · 타워형', '../로블록스_점프맵_타워형.html'], ['점프맵 · 구조물 꾸미기', '../로블록스_점프맵_구조물꾸미기.html']]]
+];
+function paintEtc() {
+  const q = $('find').value.trim();
+  $('me').innerHTML = '';
+  $('list').innerHTML = ETC.map(G => { const rows = G[1].filter(r => !q || (G[0] + ' ' + r[0]).indexOf(q) >= 0); return rows.length ? '<div class="sec">' + esc(G[0]) + '</div>' + rows.map((r, i) => '<div class="m"><span class="no">' + (i + 1) + '</span><span class="t">' + esc(r[0]) + '</span><a target="_blank" href="' + esc(r[1]) + '">교재</a></div>').join('') : ''; }).join('') || '<p class="note">찾는 교재가 없어요.</p>';
+}
 function paintTools() {
-  $('find').placeholder = cur === 'py' ? '교재 찾기' : '미션 찾기';
+  $('find').placeholder = cur === 'py' || cur === 'etc' ? '교재 찾기' : '미션 찾기';
   if (cur === 'py') return paintPy();
+  if (cur === 'etc') return paintEtc();
   const S = load(), done = (S[cur] && S[cur].done) || {}, q = $('find').value.trim();
   const nodes = courseOf(cur); let now = null;
   nodes.forEach(n => { if (!n.opt) (n.ms || []).forEach(m => { if (!now && !done[m[0]]) now = m[0]; }); });
