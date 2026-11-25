@@ -107,7 +107,7 @@ button{font:inherit;cursor:pointer}
 <div class="modal" id="listModal"><div class="box list">
   <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:20px" id="listTitle"></b><button class="pill hudbtn" id="listClose">닫기 ✕</button></div>
   <div id="rows"></div>
-  <button class="row" id="aiRow"><b style="background:#c96f4a">A</b><span>AI 튜터 오두막</span><em>연결 예정</em></button>
+  <button class="row" id="aiRow"><b style="background:#c96f4a">A</b><span>COS Pro 오두막</span><em>연결 예정</em></button>
   <button class="row" id="cosRow"><b style="background:#7a6bb5">C</b><span>COS 시험의 탑</span><em>연결 예정</em></button>
   <button class="row" id="resetRow"><b style="background:#888">↺</b><span>시안 처음부터 다시 보기</span><em></em></button>
 </div></div>
@@ -390,7 +390,7 @@ if (!SEA) (() => {
   add(new T.BoxGeometry(1.3, 2.3, 0.2), flat('#7a4b2a'), 0, 1.15, 2.55);
   const win = new T.MeshStandardMaterial({color: '#ffe28a', emissive: '#ffc94d', emissiveIntensity: 0.9});
   add(new T.BoxGeometry(1.2, 1.1, 0.15), win, -2, 2, 2.55); add(new T.BoxGeometry(1.2, 1.1, 0.15), win, 2, 2, 2.55);
-  const l = label('AI 튜터 오두막', 8, '#7a2e12'); l.position.set(0, 8.2, 0); g.add(l);
+  const l = label('COS Pro 오두막', 8, '#7a2e12'); l.position.set(0, 8.2, 0); g.add(l);
   const s = new T.Group(); s.position.set(towerPos.x, heightAt(towerPos.x, towerPos.z), towerPos.z); scene.add(s);
   const ad = (geo, mat, x, y, z) => { const m = new T.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; s.add(m); return m; };
   ad(new T.CylinderGeometry(2.6, 3.1, 11, 10), flat('#b7b0cf'), 0, 5.5, 0);
