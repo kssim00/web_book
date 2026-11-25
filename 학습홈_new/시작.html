@@ -75,6 +75,17 @@ body.teacher .tKey{opacity:1;background:#ffe9a8;box-shadow:0 0 0 2px #f2c94c}
 @keyframes tShake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .tLog .row{display:flex;gap:8px;margin-top:12px}
 .tLog .row button{flex:1;border:0;border-radius:999px;padding:10px;font-weight:800}
+.tabs{display:flex;gap:18px;margin:10px 0 2px;border-bottom:2px solid #e9eee2}
+.tabs button{border:0;background:none;padding:6px 2px 9px;font-size:19px;font-weight:900;color:#b3bda9;margin-bottom:-2px;border-bottom:3px solid transparent}
+.tabs button.on{color:#22331b;border-bottom-color:#ff8f5a}
+.msg{font-size:13px;font-weight:700;min-height:18px;margin-top:4px;color:#8a9580}
+.msg.low{color:#b9770e}.msg.ok{color:#2b8a3e}.msg.bad{color:#c92a2a}
+.panel form .btn{margin-top:10px}
+.panel form .btn:disabled{opacity:.6;cursor:default}
+.note{margin:14px 0 0!important;font-size:12px!important;color:#a3ad99!important;text-align:center}
+body.online .tKey{display:none!important}
+button#who{cursor:pointer}
+.pill.out{font-size:13px;padding:7px 12px;color:#6b7a62}
 </style>
 </head>
 <body>
@@ -82,9 +93,9 @@ body.teacher .tKey{opacity:1;background:#ffe9a8;box-shadow:0 0 0 2px #f2c94c}
 
 <div class="hud" id="hud">
   <span class="logo">코딩 탐험대</span>
-  <span class="pill" id="who"></span>
+  <button class="pill" id="who" title="탐험가 바꾸기"></button>
   <span class="pill star">★ <span id="stars">0</span></span>
-  <button class="pill" id="editBtn">탐험가 바꾸기</button>
+  <button class="pill out" id="outBtn">로그아웃</button>
 </div>
 <div id="pins"></div>
 <button class="go" id="goBtn">▶ 이어서 탐험하기<small id="goSub"></small></button>
@@ -97,7 +108,32 @@ body.teacher .tKey{opacity:1;background:#ffe9a8;box-shadow:0 0 0 2px #f2c94c}
 </div>
 
 <div class="intro" id="intro">
-  <div class="panel">
+  <div class="panel" id="authP">
+    <small>코딩 탐험대</small>
+    <div class="tabs"><button type="button" id="tabIn" class="on">로그인</button><button type="button" id="tabUp">회원가입</button></div>
+    <form id="fIn" autocomplete="off">
+      <label for="lId">아이디</label>
+      <input id="lId" maxlength="8" autocomplete="off" spellcheck="false">
+      <label for="lPw">비밀번호</label>
+      <input id="lPw" type="password" maxlength="20" autocomplete="off">
+      <div class="err" id="lErr"></div>
+      <button class="btn ok" type="submit" id="lBtn">로그인</button>
+    </form>
+    <form id="fUp" autocomplete="off" hidden>
+      <label for="uId">아이디</label>
+      <input id="uId" maxlength="8" placeholder="이름 (한글·영어·숫자 2~8자)" autocomplete="off" spellcheck="false">
+      <div class="msg" id="uIdM"></div>
+      <label for="uPw">비밀번호</label>
+      <input id="uPw" type="password" maxlength="20" placeholder="4자 이상" autocomplete="new-password">
+      <div class="msg" id="uPwM"></div>
+      <label for="uPw2">비밀번호 확인</label>
+      <input id="uPw2" type="password" maxlength="20" placeholder="한 번 더 써요" autocomplete="new-password">
+      <div class="msg" id="uPw2M"></div>
+      <button class="btn ok" type="submit" id="uBtn">가입하기</button>
+    </form>
+    <p class="note" id="localNote" hidden>구글 시트 연결 전 · 가입 정보는 이 컴퓨터에만 저장돼요</p>
+  </div>
+  <div class="panel" id="makeP" hidden>
     <small>코딩 탐험대</small>
     <h1 id="iTitle">탐험을 시작해요!</h1>
     <p id="iDesc">이름을 쓰고 나만의 탐험가를 만들어 보세요.</p>
@@ -118,6 +154,7 @@ body.teacher .tKey{opacity:1;background:#ffe9a8;box-shadow:0 0 0 2px #f2c94c}
 <div class="fade" id="fade"></div>
 <div class="nogl" id="nogl">이 컴퓨터에서는 3D 화면을 띄울 수 없어요.<br>같은 폴더의 '모험지도.html'을 열어 주세요.</div>
 
+<script src="lib/sync.js"></script>
 <script src="lib/three.min.js"></script>
 <script>
 (() => {
@@ -132,7 +169,8 @@ const HAIRS = ['짧은 머리', '단발', '묶은 머리', '양갈래'];
 const KEY = 'studyhome_new_3d_demo';
 let S = {name:'', color:0, hair:0, progress:0, sea:0, started:false, place:'forest'};
 try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = Object.assign(S, v); } catch (e) {}
-S.progress = Math.max(0, Math.min(REAL, S.progress | 0)); S.sea = Math.max(0, Math.min(REAL, S.sea | 0)); if (S.place !== 'sea' && S.place !== 'volcano') S.place = 'forest'; if (!S.py || typeof S.py !== 'object') S.py = {}; S.py.g = S.py.g | 0; S.py.t = S.py.t | 0; if (!Array.isArray(S.py.b)) S.py.b = [];
+function norm() { S.progress = Math.max(0, Math.min(REAL, S.progress | 0)); S.sea = Math.max(0, Math.min(REAL, S.sea | 0)); if (S.place !== 'sea' && S.place !== 'volcano') S.place = 'forest'; if (!S.py || typeof S.py !== 'object') S.py = {}; S.py.g = S.py.g | 0; S.py.t = S.py.t | 0; if (!Array.isArray(S.py.b)) S.py.b = []; }
+norm();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
 let rnd = (seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(23);
@@ -471,15 +509,15 @@ COLORS.forEach((c, i) => { const b = document.createElement('button'); b.style.b
 HAIRS.forEach((h, i) => { const b = document.createElement('button'); b.textContent = h; b.addEventListener('click', () => { S.hair = i; introUI(); }); $('hs').appendChild(b); });
 function introUI() { [...$('sw').children].forEach((b, i) => b.classList.toggle('on', i === S.color)); [...$('hs').children].forEach((b, i) => b.classList.toggle('on', i === S.hair)); styleHero(); }
 function showIntro(edit) {
-  closeCard(); document.body.classList.remove('map-on'); mode = 'intro'; placeHero(); snap = true; $('intro').classList.remove('hide'); $('hud').style.display = 'none'; $('goBtn').style.display = 'none';
-  $('iTitle').textContent = edit ? '탐험가 바꾸기' : (S.started ? S.name + ', 다시 왔구나!' : '탐험을 시작해요!');
-  $('iDesc').textContent = edit ? '이름과 모습을 바꿀 수 있어요.' : (S.started ? '이름을 확인하고 세계 지도로 가요.' : '이름을 쓰고 나만의 탐험가를 만들어 보세요.');
+  closeCard(); document.body.classList.remove('map-on'); mode = 'intro'; placeHero(); snap = true; $('intro').classList.remove('hide'); $('hud').style.display = 'none'; $('goBtn').style.display = 'none'; $('authP').hidden = true; $('makeP').hidden = false;
+  $('iTitle').textContent = S.started ? '탐험가 바꾸기' : '탐험가를 만들어요';
+  $('iDesc').textContent = S.started ? '이름과 모습을 바꿀 수 있어요.' : '이름을 쓰고 나만의 탐험가를 만들어 보세요.';
   $('nm').value = S.name; $('err').textContent = '';
 }
 function begin() {
   const name = $('nm').value.trim();
   if (!name) { $('err').textContent = '이름을 먼저 써 주세요.'; $('nm').focus(); return; }
-  S.name = name; S.started = true; save(); showMap();
+  S.name = name; S.started = true; save(); pushState(); showMap();
 }
 function showMap() {
   document.body.classList.add('map-on');
@@ -488,7 +526,7 @@ function showMap() {
 $('startBtn').addEventListener('click', begin);
 $('nm').addEventListener('input', () => { $('err').textContent = ''; });
 $('nm').addEventListener('keydown', e => { if (e.key === 'Enter') begin(); });
-$('editBtn').addEventListener('click', () => showIntro(true));
+$('who').addEventListener('click', () => showIntro(true));
 
 function resize() { const w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 window.addEventListener('resize', resize); resize();
@@ -547,10 +585,115 @@ $('tCancel').addEventListener('click', closeT);
 $('tPw').addEventListener('keydown', e => { if (e.key === 'Enter') tryT(); if (e.key === 'Escape') closeT(); });
 $('tLog').addEventListener('click', e => { if (e.target.id === 'tLog') closeT(); });
 paintT();
+
+/* ── 로그인·회원가입 ──
+   계정·진도는 회원용 구글 Apps Script(lib/sync.js 의 STUDY_API)로 구글 시트에 저장. 주소가 비어 있으면 이 컴퓨터에만 저장.
+   비밀번호는 브라우저에서 암호화(SHA-256)해서 보낸다. 로그인 표시는 이 탭에만(sessionStorage). */
+const API = window.STUDY_API || '', AKEY = '학습홈_auth', LKEY = '학습홈_local_users';
+let A = null; try { A = JSON.parse(sessionStorage.getItem(AKEY)); } catch (e) {}
+const setA = a => { A = a; try { if (a) sessionStorage.setItem(AKEY, JSON.stringify(a)); else sessionStorage.removeItem(AKEY); } catch (e) {} };
+document.body.classList.toggle('online', !!API); $('localNote').hidden = !!API;
+async function hashPw(id, pw) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('코드앤|' + id + '|' + pw)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+function localApi(d) {
+  let U = {}; try { U = JSON.parse(localStorage.getItem(LKEY)) || {}; } catch (e) {}
+  const u = U[d.id], put = () => { try { localStorage.setItem(LKEY, JSON.stringify(U)); } catch (e) {} };
+  if (d.action === 'check') return {ok: true, exists: !!u};
+  if (d.action === 'signup') { if (u) return {ok: false, error: 'exists'}; U[d.id] = {h: d.h, state: ''}; put(); return {ok: true, role: 'student', state: ''}; }
+  if (!u) return {ok: false, error: 'noid'};
+  if (u.h !== d.h) return {ok: false, error: 'badpw'};
+  if (d.action === 'login') return {ok: true, role: 'student', state: u.state || ''};
+  if (d.action === 'saveState') { u.state = d.state; put(); return {ok: true}; }
+  return {ok: false, error: 'unknown'};
+}
+async function api(d) { if (!API) return localApi(d); const r = await fetch(API, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify(d)}); return r.json(); }
+function pushState() { if (!A) return; save(); if (API) { if (window.studySync) window.studySync(true); } else localApi({action: 'saveState', id: A.id, h: A.h, state: JSON.stringify(S)}); }
+/* 한 컴퓨터를 여러 학생이 쓰므로 학생마다 진도를 따로 둔다: 바꿔 앉을 때 앞 학생 것은 보관, 로그인한 학생 것은 시트 것과 합침 */
+const stashKey = id => KEY + '_u_' + id;
+function stashCur() { try { if (S.uid) localStorage.setItem(stashKey(S.uid), JSON.stringify(S)); else if (S.started && !localStorage.getItem(KEY + '_legacy')) localStorage.setItem(KEY + '_legacy', JSON.stringify(S)); } catch (e) {} }
+function merge(a, b) {
+  if (Array.isArray(a) && Array.isArray(b)) return [...new Set([...a, ...b])];
+  if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) { const o = Object.assign({}, a); Object.keys(b).forEach(k => { o[k] = k in a ? merge(a[k], b[k]) : b[k]; }); return o; }
+  if (typeof a === 'number' && typeof b === 'number') return Math.max(a, b);
+  if (typeof a === 'boolean' && typeof b === 'boolean') return a || b;
+  return b === undefined || b === null || b === '' ? a : b;
+}
+function adopt(id, st) {
+  stashCur();
+  let loc = null, sv = null;
+  try { loc = S.uid === id ? S : JSON.parse(localStorage.getItem(stashKey(id))); } catch (e) {}
+  try { sv = st ? JSON.parse(st) : null; } catch (e) {}
+  const n = merge(merge({name: '', color: 0, hair: 0, progress: 0, sea: 0, started: false, place: 'forest'}, loc || {}), sv || {}), p = sv || loc;
+  if (p) { n.color = p.color | 0; n.hair = p.hair | 0; }
+  n.uid = id; S = n; norm(); save();
+}
+const idOk = v => /^[가-힣a-z0-9]{2,8}$/.test(v);
+const setMsg = (id, text, ok) => { const m = $(id); m.textContent = text; m.className = 'msg' + (text ? (ok ? ' ok' : ' bad') : ''); };
+let busy = false, idT = 0;
+const setBusy = (on, up) => { busy = on; const b = $(up ? 'uBtn' : 'lBtn'); b.disabled = on; b.textContent = on ? '확인 중…' : (up ? '가입하기' : '로그인'); };
+function tab(up) {
+  $('tabIn').classList.toggle('on', !up); $('tabUp').classList.toggle('on', up); $('fIn').hidden = up; $('fUp').hidden = !up;
+  ['lId', 'lPw', 'uId', 'uPw', 'uPw2'].forEach(k => { $(k).value = ''; }); $('lErr').textContent = ''; ['uIdM', 'uPwM', 'uPw2M'].forEach(k => setMsg(k, ''));
+  setTimeout(() => $(up ? 'uId' : 'lId').focus(), 60);
+}
+function showAuth() {
+  closeCard(); document.body.classList.remove('map-on'); mode = 'intro'; placeHero(); snap = true;
+  $('intro').classList.remove('hide'); $('hud').style.display = 'none'; $('goBtn').style.display = 'none'; $('authP').hidden = false; $('makeP').hidden = true; tab(false);
+}
+function enterAs(id, h, r) {
+  setA({id, h, role: r.role}); adopt(id, r.state);
+  if (API) { try { if (r.role === 'teacher') localStorage.setItem(T_KEY, '1'); else localStorage.removeItem(T_KEY); } catch (e) {} }
+  paintT(); introUI(); pushState();
+  if (S.started && S.name) { showMap(); toast(r.role === 'teacher' ? '선생님 모드로 열었어요.' : S.name + ', 어서 와요!'); } else showIntro(true);
+}
+function logout() { pushState(); stashCur(); setA(null); if (API) { try { localStorage.removeItem(T_KEY); } catch (e) {} } paintT(); showAuth(); }
+$('tabIn').addEventListener('click', () => { if (!busy) tab(false); });
+$('tabUp').addEventListener('click', () => { if (!busy) tab(true); });
+$('outBtn').addEventListener('click', logout);
+$('fIn').addEventListener('submit', async e => {
+  e.preventDefault(); if (busy) return;
+  const id = $('lId').value.trim().toLowerCase(), pw = $('lPw').value;
+  if (!id || !pw) { $('lErr').textContent = '아이디와 비밀번호를 써 주세요.'; return; }
+  setBusy(true, false);
+  try {
+    const h = await hashPw(id, pw), r = await api({action: 'login', id, h});
+    if (r.ok) enterAs(id, h, r);
+    else if (r.error === 'badpw') { $('lErr').textContent = '비밀번호가 달라요.'; $('lPw').value = ''; $('lPw').focus(); }
+    else if (r.error === 'noid' || r.error === 'badid') $('lErr').textContent = '없는 아이디예요. 회원가입을 먼저 해요.';
+    else $('lErr').textContent = '로그인하지 못했어요. 다시 해 보세요.';
+  } catch (err) { $('lErr').textContent = '연결이 안 돼요. 잠시 뒤 다시 해 보세요.'; }
+  setBusy(false, false);
+});
+['lId', 'lPw'].forEach(k => $(k).addEventListener('input', () => { $('lErr').textContent = ''; }));
+const fmtId = () => { const v = $('uId').value.trim().toLowerCase(); if (!v) { setMsg('uIdM', ''); return ''; } if (!idOk(v)) { setMsg('uIdM', '한글·영어·숫자 2~8자 (띄어쓰기 없이)'); return ''; } return v; };
+const chkId = () => {
+  clearTimeout(idT); const v = fmtId(); if ($('uPw').value) chkPw(); if (!v) return;
+  setMsg('uIdM', '');
+  idT = setTimeout(async () => { try { const r = await api({action: 'check', id: v}); if ($('uId').value.trim().toLowerCase() !== v) return; if (r.exists) setMsg('uIdM', '이미 있는 아이디예요'); else setMsg('uIdM', '쓸 수 있는 아이디예요 ✓', true); } catch (e) {} }, 400);
+};
+const chkPw = () => { const v = $('uPw').value; if (!v) { setMsg('uPwM', ''); return false; } if (v.length < 4) { setMsg('uPwM', '4자 이상 입력해 주세요'); return false; } if (v.toLowerCase() === $('uId').value.trim().toLowerCase()) { setMsg('uPwM', '아이디와 같은 비밀번호는 쓸 수 없어요'); return false; } if (/^(.)\1+$/.test(v)) { setMsg('uPwM', '같은 글자만 반복할 수 없어요'); return false; } const k = (/[0-9]/.test(v) ? 1 : 0) + (/[a-zA-Z가-힣]/.test(v) ? 1 : 0) + (/[^0-9a-zA-Z가-힣]/.test(v) ? 1 : 0), lv = k >= 3 && v.length >= 8 ? 2 : k >= 2 && v.length >= 6 ? 1 : 0; setMsg('uPwM', '안전도: ' + ['낮음', '보통', '높음'][lv], true); if (!lv) $('uPwM').className = 'msg low'; return true; };
+const chkPw2 = () => { const v = $('uPw2').value; if (!v) { setMsg('uPw2M', ''); return false; } if (v !== $('uPw').value) { setMsg('uPw2M', '비밀번호가 서로 달라요'); return false; } setMsg('uPw2M', '같아요 ✓', true); return true; };
+$('uId').addEventListener('input', e => { if (e.isComposing) return; chkId(); });
+$('uId').addEventListener('compositionend', chkId);
+$('uPw').addEventListener('input', () => { chkPw(); chkPw2(); });
+$('uPw2').addEventListener('input', chkPw2);
+$('fUp').addEventListener('submit', async e => {
+  e.preventDefault(); if (busy) return;
+  if (!$('uId').value.trim()) setMsg('uIdM', '아이디를 써 주세요'); if (!$('uPw').value) setMsg('uPwM', '비밀번호를 써 주세요'); if (!$('uPw2').value) setMsg('uPw2M', '한 번 더 써 주세요');
+  const id = fmtId(), b = chkPw(), c = chkPw2();
+  if (!id) { $('uId').focus(); return; } if (!b) { $('uPw').focus(); return; } if (!c) { $('uPw2').focus(); return; }
+  clearTimeout(idT); setBusy(true, true);
+  try {
+    const h = await hashPw(id, $('uPw').value), r = await api({action: 'signup', id, h});
+    if (r.ok) enterAs(id, h, {role: 'student', state: ''});
+    else if (r.error === 'exists') { setMsg('uIdM', '이미 있는 아이디예요'); $('uId').focus(); }
+    else setMsg('uPw2M', '가입하지 못했어요. 다시 해 보세요.');
+  } catch (err) { setMsg('uPw2M', '연결이 안 돼요. 잠시 뒤 다시 해 보세요.'); }
+  setBusy(false, true);
+});
 introUI(); pinText();
-// 다른 지역에서 '세계 지도' 버튼으로 돌아온 경우(?map=1)엔 이름 입력을 건너뛰고 바로 지도로. 처음 열 때는 기존처럼 입장 화면
-if (new URLSearchParams(location.search).get('map') === '1' && S.started && S.name) { showIntro(false); showMap(); history.replaceState(null, '', location.pathname); }
-else showIntro(false);
+// 다른 지역에서 '세계 지도' 버튼으로 돌아온 경우(?map=1)엔 로그인한 탭이면 바로 지도로. 처음 열 때는 로그인 화면
+if (new URLSearchParams(location.search).get('map') === '1' && A && S.uid === A.id && S.started && S.name) { showAuth(); showMap(); history.replaceState(null, '', location.pathname); }
+else showAuth();
 frame();
 })();
 </script>
