@@ -490,6 +490,8 @@ const INFO = {
 function select(id) {
   if (leaving || mode !== 'map') return;
   if (selected === id) { closeCard(); return; }
+  /* 갈 곳이 하나뿐인 곳(숲·바다·오두막·등대)은 팝업 없이 바로 들어간다. 고를 것이 있는 곳(화산섬·시험 탑·메이커 마을·숨은 섬)만 팝업 (2026-11-26 원장님) */
+  if (['forest', 'sea', 'cabin', 'teacher'].indexOf(id) >= 0 && INFO[id].btns().length === 1 && !PLACES.find(p => p.id === id).soon) { PLACES.forEach(p => p.el.classList.toggle('on', p.id === id)); enter(id); return; }
   selected = id; const pl = PLACES.find(p => p.id === id), info = INFO[id], box = $('cBtns');
   PLACES.forEach(p => p.el.classList.toggle('on', p.id === id));
   $('cTag').className = 'tag' + (pl.soon || !info.btns().length ? ' soon' : ''); $('cTag').textContent = pl.soon ? '준비 중' : (info.btns().length ? '들어갈 수 있어요' : (id === 'teacher' ? '선생님 전용' : '연결 예정'));
