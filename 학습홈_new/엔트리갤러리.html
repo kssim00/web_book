@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>총정리 캠프 · 엔트리 숲</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#eef6e6;color:#22381a;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:14px 28px;background:rgba(238,246,230,.92);backdrop-filter:blur(8px)}
+.back{font-size:14px;font-weight:700;color:#5b7a48}
+.back:hover{color:#22381a}
+.seg{display:inline-flex;background:#fff;border-radius:999px;padding:4px;box-shadow:0 2px 8px rgba(34,56,26,.08)}
+.seg button{padding:8px 18px;border-radius:999px;font-size:15px;font-weight:800;color:#7c9a69}
+.seg button.on{background:#4f9a2c;color:#fff}
+.cnt{margin-left:auto;font-size:14px;font-weight:800;color:#5b7a48}
+main{max-width:1180px;margin:0 auto;padding:10px 28px 60px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
+.c{position:relative;display:block;text-align:left;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 3px 12px rgba(34,56,26,.10);transition:transform .15s,box-shadow .15s}
+.c:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(34,56,26,.18)}
+.c .th{position:relative;aspect-ratio:16/9;background:#d6ebc8 center/cover no-repeat}
+.c .th::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;background:rgba(34,56,26,.35);opacity:0;transition:opacity .15s}
+.c:hover .th::after{opacity:1}
+.c .t{padding:11px 14px 13px;font-size:15.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c.done .th::before{content:"⭐";position:absolute;right:8px;top:8px;z-index:1;font-size:20px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.pv{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(20,35,14,.6);padding:20px}
+.pv.show{display:flex}
+.box{width:min(980px,100%);height:min(720px,100%);display:flex;flex-direction:column;background:#fff;border-radius:20px;overflow:hidden}
+.bar{display:flex;align-items:center;gap:10px;padding:12px 16px 12px 20px}
+.bar b{font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn{padding:8px 16px;border-radius:999px;font-size:14px;font-weight:800;background:#eef4e8;color:#22381a}
+.btn:hover{background:#dfeace}
+.btn.go{background:#4f9a2c;color:#fff}
+.btn.go:hover{background:#458726}
+.btn.x{padding:8px 12px}
+.box iframe{flex:1;border:0;width:100%;background:#f6faf2}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="back" id="back" href="엔트리숲.html">← 숲</a>
+  <div class="seg" id="seg"></div>
+  <span class="cnt" id="cnt"></span>
+</div>
+<main><div class="grid" id="grid"></div></main>
+<div class="pv" id="pv"><div class="box">
+  <div class="bar"><b id="pvT"></b><button class="btn go" id="pvGo">미션지</button><button class="btn" id="pvFin">완료</button><button class="btn x" id="pvX">✕</button></div>
+  <iframe id="pvF" title="미리 해보기" allow="camera; microphone"></iframe>
+</div></div>
+<script>document.write('<script src="lib/entry_course.js?t=' + Date.now() + '"><\/script><script src="lib/entry_missions.js?t=' + Date.now() + '"><\/script><script src="lib/entry_previews.js?t=' + Date.now() + '"><\/script>');</script>
+<script>
+(() => {
+const $ = id => document.getElementById(id), KEY = 'studyhome_new_3d_demo';
+let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
+if (!S.entry || typeof S.entry !== 'object') S.entry = {}; if (!S.entry.done) S.entry.done = {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const MS = window.ENTRY_MISSIONS || {}, PVL = window.ENTRY_PREVIEWS || [], C = window.ENTRY_COURSE || [];
+/* 갤러리로 보여 줄 묶음: 총정리 캠프(rv)만. 복습 길(선택 길)은 배운 직후에 해야 해서 숲길에 그대로 둔다 (2026-11-26) */
+const rv = C.find(n => n.id === 'rv');
+const ZONES = [rv && {id: 'rv', at: 'rv', title: '⛺ ' + rv.title, ms: rv.ms}].filter(Boolean);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const Q = new URLSearchParams(location.search), DONE = Q.get('done');
+let cur = Math.max(0, ZONES.findIndex(n => n.id === Q.get('z'))), open = null;
+if (DONE && ZONES.some(n => n.ms.some(m => m[0] === DONE))) { S.entry.done[DONE] = 1; save(); }
+if (DONE || Q.get('at')) history.replaceState(null, '', location.pathname + '?z=' + (ZONES[cur] ? ZONES[cur].id : ''));
+$('seg').innerHTML = ZONES.map((n, i) => '<button data-i="' + i + '">' + esc(n.title) + '</button>').join('');
+const pvUrl = m => { const x = MS[m[0]]; if (x && x.preview) return x.preview; return PVL.indexOf(m[0]) >= 0 ? '엔트리미리보기.html?f=' + encodeURIComponent('2_미리해보기/엔트리/' + m[0] + '.ent') + '&t=' + encodeURIComponent(m[2]) : ''; };
+function paint() {
+  const Z = ZONES[cur]; if (!Z) return;
+  [...$('seg').children].forEach((b, i) => b.classList.toggle('on', i === cur)); $('back').href = '엔트리숲.html?at=' + (Z.at || Z.ms[0][0]);
+  $('cnt').textContent = '⭐ ' + Z.ms.filter(m => S.entry.done[m[0]]).length + ' / ' + Z.ms.length;
+  $('grid').innerHTML = Z.ms.map((m, i) => '<button class="c' + (S.entry.done[m[0]] ? ' done' : '') + '" data-i="' + i + '"><div class="th" style="background-image:url(thumb/엔트리/' + m[0] + '.jpg)"></div><div class="t">' + esc(m[2]) + '</div></button>').join('');
+}
+function show(i) {
+  const m = ZONES[cur].ms[i]; open = m; $('pvT').textContent = m[2];
+  $('pvF').src = pvUrl(m) || 'about:blank';
+  $('pvGo').style.display = MS[m[0]] ? '' : 'none';
+  $('pvFin').textContent = S.entry.done[m[0]] ? '⭐ 완료함' : '완료';
+  $('pv').classList.add('show');
+}
+function hide() { $('pv').classList.remove('show'); $('pvF').src = 'about:blank'; open = null; }
+$('seg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { cur = +b.dataset.i; paint(); scrollTo(0, 0); } });
+$('grid').addEventListener('click', e => { const c = e.target.closest('.c'); if (c) show(+c.dataset.i); });
+$('pvX').addEventListener('click', hide);
+$('pv').addEventListener('click', e => { if (e.target.id === 'pv') hide(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+$('pvGo').addEventListener('click', () => { if (open) location.href = '미션.html?id=' + open[0] + '&f=2&n=' + encodeURIComponent(open[1]) + '&g=' + ZONES[cur].id; });
+$('pvFin').addEventListener('click', () => { if (!open) return; if (S.entry.done[open[0]]) delete S.entry.done[open[0]]; else S.entry.done[open[0]] = 1; save(); $('pvFin').textContent = S.entry.done[open[0]] ? '⭐ 완료함' : '완료'; paint(); });
+paint();
+})();
+</script>
+<script src="lib/sync.js"></script>
+</body>
+</html>

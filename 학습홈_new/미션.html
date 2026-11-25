@@ -113,11 +113,13 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 const $ = id => document.getElementById(id);
 const Q = new URLSearchParams(location.search), ID = Q.get('id'), K = parseInt(Q.get('k'), 10) || 0;
 const F2 = Q.get('f') === '2', FOREST = F2 ? '엔트리숲.html' : '탐험_3D.html', NLAB = Q.get('n');
+/* 갤러리(총정리 캠프)에서 온 미션은 숲길이 아니라 갤러리로 돌아간다 */
+const GZ = Q.get('g'), HOME = GZ ? '엔트리갤러리.html?z=' + encodeURIComponent(GZ) + '&' : FOREST + '?';
 const M = (window.ENTRY_MISSIONS || {})[ID];
 const KEY = 'studyhome_new_3d_demo', SKEY = 'studyhome_new_entry_steps';
 let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
 const prog = S.progress | 0;
-$('backBtn').addEventListener('click', () => { location.href = FOREST + '?at=' + (F2 ? ID : K); });
+$('backBtn').addEventListener('click', () => { location.href = HOME + 'at=' + (F2 ? ID : K); });
 $('tag').textContent = (F2 && NLAB ? NLAB : '미션 ' + (K + 1)) + ' 미션';
 if (!M) { $('page').innerHTML = '<div class="empty">이 미션의 안내는 아직 준비 중이에요.<br>숲길로 돌아가 다른 미션을 해 봐요.</div>'; return; }
 document.title = M.title + ' · 엔트리 미션';
@@ -208,7 +210,7 @@ const E = (S.entry && S.entry.done) || {};
 const isDone = F2 ? !!E[ID] : K < prog, isNow = F2 ? !isDone : K === prog;
 $('doneBtn').textContent = isNow ? '미션 완료 ⭐' : (isDone ? '✓ 완료한 미션' : '숲길로 ›');
 if (isDone) $('doneBtn').classList.add('was');
-$('doneBtn').addEventListener('click', () => { location.href = FOREST + (isNow ? '?done=' : '?at=') + (F2 ? ID : K); });
+$('doneBtn').addEventListener('click', () => { location.href = HOME + (isNow ? 'done=' : 'at=') + (F2 ? ID : K); });
 
 /* 완성작 해보기: 한 번 불러온 창은 닫아도 남겨 둬서, 다시 열면 바로 보임 */
 let loaded = false;

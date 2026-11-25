@@ -115,17 +115,20 @@ function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('sh
 const L = [];
 window.ENTRY_COURSE.forEach(n => {
   if (n.zone === 'gate') L.push({id: n.id, gate: true, t: n.title, desc: n.desc, ai: n.id === 'g2', lm: n.title});
+  else if (n.id === 'rv') L.push({id: n.id, gal: true, no: '•', t: n.title, needs: '', rev: false, ai: false, kind: n.id, lm: n.title, sub: '배운 것을 섞어 쓰는 총정리 · 골라서 만들기', ids: n.ms.map(m => m[0])});   /* 총정리 캠프: 팻말 하나 → 엔트리갤러리.html. 일부만 해도 되므로 다음 길로 가는 순서(ORDER)에는 넣지 않는다 (2026-11-26) */
   else n.ms.forEach((m, i) => L.push({id: m[0], no: m[1], t: m[2], needs: m[3] || '', rev: !!n.opt, ai: n.zone === 'ai', kind: n.id,
     lm: i === 0 && (n.id === 'sg' || n.id === 'rv' || n.id === 'a1') ? n.title : (i === 0 && n.opt ? '복습 길' : null), sub: n.opt ? '선택 · 복습' : n.title + ' · ' + n.sub}));
 });
 const N = L.length, IDX = Object.fromEntries(L.map((x, i) => [x.id, i]));
-const ORDER = L.filter(x => !x.rev).map(x => x.id);
+L.forEach((x, i) => (x.ids || []).forEach(id => { if (IDX[id] === undefined) IDX[id] = i; }));
+const ORDER = L.filter(x => !x.rev && !x.gal).map(x => x.id);
 const passed = it => it.id === 'g3' ? !!S.entry.cos3 : !!S.entry.cos2;
-const isDone = i => L[i].gate ? passed(L[i]) : !!S.entry.done[L[i].id];
+const galDone = it => it.ids.filter(id => S.entry.done[id]).length;
+const isDone = i => L[i].gate ? passed(L[i]) : L[i].gal ? galDone(L[i]) === L[i].ids.length : !!S.entry.done[L[i].id];
 const nowIdx = () => { const id = ORDER.find(id => !isDone(IDX[id])); return id ? IDX[id] : -1; };
 const stOf = i => isDone(i) ? 'done' : i === nowIdx() ? 'now' : 'open';
 const stars = () => Object.keys(S.entry.done).filter(k => S.entry.done[k]).length;
-const label = it => it.gate ? it.t : (/^P\d$/.test(it.no) ? (it.rev ? '복습' : it.no) : it.no);
+const label = it => it.gate ? it.t : it.gal ? '⛺' : (/^P\d$/.test(it.no) ? (it.rev ? '복습' : it.no) : it.no);
 
 /* ── 3D ── */
 let renderer; try { renderer = new T.WebGLRenderer({canvas: $('gl'), antialias: true}); } catch (e) { $('nogl').style.display = 'flex'; return; }
@@ -378,14 +381,17 @@ $('pvGo').addEventListener('click', () => { if (pvI >= 0) openMission(pvI); });
 function showCard(i) {
   sel = i; const it = L[i], st = stOf(i), box = $('cBtns'); box.innerHTML = '';
   const tag = $('cTag'); tag.className = 'tag' + (st === 'done' && !it.gate ? ' done' : it.gate ? ' gate' : it.rev ? ' rev' : it.ai ? ' ai' : '');
-  tag.textContent = it.gate ? '관문' : st === 'done' ? '⭐ 완료한 미션' : st === 'now' ? '지금 할 미션' : it.rev ? '선택 · 복습' : '미션';
-  $('cTitle').textContent = it.gate ? (it.id === 'g3' ? '🏅 ' : '🎖️ ') + it.t : it.no + ' · ' + it.t; $('cDesc').textContent = it.gate ? it.desc : it.sub;
+  tag.textContent = it.gate ? '관문' : it.gal ? '총정리' : st === 'done' ? '⭐ 완료한 미션' : st === 'now' ? '지금 할 미션' : it.rev ? '선택 · 복습' : '미션';
+  $('cTitle').textContent = it.gate ? (it.id === 'g3' ? '🏅 ' : '🎖️ ') + it.t : it.gal ? it.t : it.no + ' · ' + it.t; $('cDesc').textContent = it.gate ? it.desc : it.sub;
   $('cDev').textContent = (it.needs || '').split(' ').filter(Boolean).map(d => DEV[d]).join(' · ') + ((it.needs || '') ? ' 필요' : '');
   if (it.gate) {
     const k = it.id === 'g3' ? 'cos3' : 'cos2';
     $('cDesc').textContent = (passed(it) ? '🎉 합격했어요! ' : '') + it.desc;
     box.appendChild(btn('go', '🗼 COS 시험 연습 하러 가기', () => window.open('https://kssim00.github.io/coden_edu/cos_entry_lab/index.html', '_blank')));
     if (TEACHER()) box.appendChild(btn('t', passed(it) ? '🔑 합격 표시 지우기' : '🔑 합격 표시하기 (선생님)', () => { S.entry[k] = !passed(it); save(); paint(); showCard(i); if (S.entry[k]) { toast(k === 'cos3' ? '🏅 COS 3급 합격! 다음 길이 열렸어요.' : '🎖️ COS 2급 합격!'); const ni = nowIdx(); if (ni > i) setTimeout(() => goTo(ni), 1200); } }));
+  } else if (it.gal) {
+    $('cDesc').textContent = it.sub + ' · ⭐ ' + galDone(it) + ' / ' + it.ids.length;
+    box.appendChild(btn('go', '▶ 들어가기', () => { location.href = '엔트리갤러리.html?z=' + it.id; }));
   } else if (MS[it.id]) {
     box.appendChild(btn('go', '▶ 미리 해보기', () => openPv(i)));
     if (st === 'done') box.appendChild(btn('ln off', '완료 취소', () => { delete S.entry.done[it.id]; save(); paint(); showCard(i); }));
