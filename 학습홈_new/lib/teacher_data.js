@@ -16,7 +16,7 @@ window.TEACHER_LINKS = [
 window.TEACHER_HOME = 'file:///C:/Users/kssim/Downloads/클로드/학습홈_new/';
 
 window.TEACHER_FILES = [
-  {t: '엔트리', sub: [{t: '와이즈 지도안', dir: '../학습리포트/와이즈_엔트리지도안/', files: ['1-1','1-2','1-3','1-4','2-1','2-2','2-3','2-4','3-1','3-2','3-3','3-4','4-1','4-2'].map(n => [n, n + '.pdf'])}]},
+  {t: '엔트리', sub: []},
   {t: '스크래치', sub: []},
   {t: '파이썬', sub: [{t: '코딩하루 PPT', dir: 'file:///N:/개인/60. 파이썬/코딩하루_파이썬/파이썬_PPT/', files: [['파이썬 1권', '파이썬1권_코딩하루.pptx']]}]},
   {t: '그 밖에', sub: []}
