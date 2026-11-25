@@ -500,21 +500,13 @@
         .mission-hint-content li + li { margin-top: 5px; }
         .mission-hint-content .code-box-set { margin: 14px 0 0; }
         .mission-hint { margin-top: 12px; }
-            /* 교사용 답지: 선생님 모드(학습홈_admin)일 때만 빨간 답이 보인다 */
-        .t-ans { margin: 10px 0 4px; padding: 10px 16px; border: 1.5px dashed #e03131; border-radius: 10px; background: #fff5f5; text-align: left; }
-        .t-ans-label { color: #e03131; font-size: 12px !important; font-weight: 800; }
-        .t-ans pre { margin: 4px 0 0; padding: 0; background: transparent; color: #e03131; font-family: Consolas, 'Courier New', monospace; font-size: 16px; line-height: 1.6; white-space: pre-wrap; tab-size: 8; }
-        .t-ans-inline { margin-left: 8px; color: #e03131; font-weight: 800; white-space: nowrap; }
-        .t-ans-line { margin-top: 8px; color: #e03131; font-weight: 800; }
-        body.teacher-mode .quiz-set-item .select-item.t-correct, body.teacher-mode .quiz-set-item .select-item.t-correct * { color: #e03131 !important; font-weight: 800; }
-        body.teacher-mode .quiz-set-item .select-item.t-correct::after { content: " ← 정답"; font-size: 13px; }
     </style>
 </head>
 <body>
     
-      <div class="toc-sidebar" id="tocSidebar">
+      <div class="toc-sidebar collapsed" id="tocSidebar">
         <button class="toc-sidebar-toggle" id="tocToggleBtn" onclick="toggleToc()" title="목차 접기/펼치기">
-          <div id="tocChevron" style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-right:7px solid #9ca3af;transition:all 0.2s;"></div>
+          <div id="tocChevron" style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:7px solid #9ca3af;transition:all 0.2s;"></div>
         </button>
         <h3 class="toc-title">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #2AC1A5;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
@@ -1073,27 +1065,6 @@ builtins.input = _input
             updateHintLabel();
         });
     </script>
-    <script type="application/json" id="t-answers">[{"code": "name = \"홍길동\"\nage = 16\nprint(\"이름 :\", name)\nprint(\"나이 :\", age)"}, {"inputs": ["4", "3", "8.0", "1", "2"]}, {"code": "money = 10000\ntotal = 3200\nchange = money - total\nprint(\"거스름돈은 \", change, \"원입니다.\", sep=\"\")\nprint(\"1,000원권: \", change // 1000, \"장\", sep=\"\")\nprint(\"100원짜리 동전: \", change % 1000 // 100, \"개\", sep=\"\")"}, {"code": "power = 150\nprint(\"모험을 시작합니다!\")\nprint(\"현재 공격력:\", power)\nprint()\npower *= 2\nprint(\"힘의 포션을 마셨어요. 공격력이 2배가 됐어요!\")\nprint(\"현재 공격력:\", power)\nprint()\npower -= 30\nprint(\"이런! 독버섯을 먹어서 공격력이 30 줄었어요.\")\nprint(\"최종 공격력:\", power)"}, {"code": "width = 8\nheight = 5\nprint(\"가로 길이:\", width)\nprint(\"세로 길이:\", height)\nprint(\"넓이:\", width * height)"}]</script>
-    <script>
-        /* 교사용 답지 */
-        (function () {
-            var t = false; try { t = localStorage.getItem('학습홈_admin') === '1'; } catch (e) {}
-            if (!t) return;
-            document.body.classList.add('teacher-mode');
-            var A = []; try { A = JSON.parse(document.getElementById('t-answers').textContent); } catch (e) {}
-            var el = function (tag, cls, txt) { var d = document.createElement(tag); d.className = cls; if (txt != null) d.textContent = txt; return d; };
-            document.querySelectorAll('.mission-coding-title').forEach(function (ti, i) {
-                var a = A[i]; if (!a) return;
-                var m = ti.closest('[data-module-id]') || ti.closest('.module-wrapper') || ti.parentNode.parentNode;
-                if (a.inputs) m.querySelectorAll('.subjective-input').forEach(function (inp, k) { if (a.inputs[k] != null) inp.insertAdjacentElement('afterend', el('span', 't-ans-inline', '답: ' + a.inputs[k])); });
-                if (a.code) { var d = el('div', 't-ans'); d.appendChild(el('div', 't-ans-label', '정답')); d.appendChild(el('pre', '', a.code)); m.appendChild(d); }
-            });
-            document.querySelectorAll('.quiz-set-item').forEach(function (q) {
-                var c = q.getAttribute('data-correct'), s = q.getAttribute('data-correct-answer'), o = q.querySelectorAll('.select-item');
-                if (o.length && c !== null && c !== '' && o[parseInt(c, 10)]) o[parseInt(c, 10)].classList.add('t-correct');
-                else if (s) q.appendChild(el('div', 't-ans-line', '정답: ' + s));
-            });
-        })();
-    </script>
+<script src="py_teacher.js"></script>
 </body>
 </html>

@@ -40,6 +40,7 @@ body.toc-open .tocTab{left:157px;opacity:.85}
 body.toc-open iframe{left:170px;width:calc(100% - 170px)}
 iframe{transition:left .25s ease,width .25s ease}
 
+.toc[hidden],.tocTab[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -74,6 +75,11 @@ if (isNaN(i) || i < 0 || i >= flat.length) i = TUR ? Math.min(S.py[PK], flat.len
 const cur = flat[i], plain = TUR ? D.TURTLE_URL + '?lesson=' + i : D.BASE + cur.file, url = TUR ? plain + '&embed=1' : plain;
 document.title = cur.title + ' · 파이썬 교재';
 $('frame').src = url;
+// 문법 교재 안의 목차는 접힌 채로 시작한다(편집기에서 다시 내보낸 교재는 펼쳐진 채로 나오므로 여기서 한 번 접는다)
+if (!TUR) $('frame').addEventListener('load', () => { try { const w = $('frame').contentWindow, sb = w.document.getElementById('tocSidebar'); if (sb && !sb.classList.contains('collapsed') && typeof w.toggleToc === 'function') w.toggleToc(); } catch (e) {} });
+// 선생님이면 문법 교재에 교사용 답지(py_teacher.js)를 얹는다 — 편집기에서 다시 내보낸 교재에도 빨간 답이 보이도록
+if (!TUR) { let T = false; try { T = localStorage.getItem('학습홈_admin') === '1'; } catch (e) {}
+  if (T) $('frame').addEventListener('load', () => { try { const d = $('frame').contentDocument; if (!d || !d.body || d.querySelector('script[src*="py_teacher.js"]')) return; const sc = d.createElement('script'); sc.src = D.BASE + 'py_teacher.js'; d.body.appendChild(sc); } catch (e) {} }); }
 $('pos').textContent = (i + 1) + ' / ' + flat.length;
 $('pos').title = (TUR ? '터틀 ' : '문법 ') + cur.ch.replace(/\s+/g, ' ') + ' · ' + cur.title;
 const BEACH = TUR && S.pyAt === 'beach', HOMEURL = BEACH ? '해변.html?back=1' : '화산섬.html', HOMENAME = BEACH ? '해변길' : '화산섬';
@@ -87,8 +93,9 @@ next.title = last ? HOMENAME + '로 돌아가기' : '다음: ' + flat[i + 1].tit
 next.addEventListener('click', () => { if (isNow) { if (TUR) S.py.t = i + 1; else { GD.push(cur.file); S.py.g = GD.length; } save(); } if (last) location.href = HOMEURL; else go(i + 1); });
 $('treeBtn').addEventListener('click', () => { location.href = HOMEURL; });
 $('newTab').addEventListener('click', () => window.open(plain, '_blank'));
-// 목차 서랍(터틀·문법): 평소엔 접혀 있고 왼쪽 작은 탭으로 연다. 열림 상태는 차시를 넘겨도 유지
-{
+// 목차 서랍(터틀만): 평소엔 접혀 있고 왼쪽 작은 탭으로 연다. 열림 상태는 차시를 넘겨도 유지
+// 문법 교재는 교재 안에 목차가 있어 서랍을 두지 않는다(목차가 두 개로 보여서 뺌)
+if (TUR) {
   const toc = $('toc'), tab = $('tocTab'), TK = 'studyhome_new_toc_open';
   toc.hidden = false; tab.hidden = false;
   const ol = document.createElement('ol'); toc.appendChild(ol);

@@ -328,7 +328,7 @@ body.teacher-mode .t-correct,body.teacher-mode .t-correct *{color:#e03131!import
 body.teacher-mode .t-correct::after{content:" ← 정답";font-size:13px;color:#e03131}
 </style>
 </head>
-<body>
+<body class="nav-collapsed">
 
 <button class="nav-toggle" id="navToggle" aria-label="목차 열기/닫기"></button>
 
@@ -1182,7 +1182,7 @@ common(['a', 'b', 'c'], ['a', 'e', 'i']) → a</div>
       <div class="challenge-title">랭킹 구하기</div>
       <p>점수 리스트에서 각 점수의 순위(<b>자신보다 높은 점수 수 + 1</b>)를 구하는 이중 반복문 문제예요.</p>
       <div class="io-example">score = [78, 88, 90, 76, 79, 88, 95, 96, 85, 68]
-출력: [8, 6, 3, 9, 7, 6, 2, 1, 5, 10]</div>
+출력: [8, 4, 3, 9, 7, 4, 2, 1, 6, 10]</div>
       <details><summary>💡 힌트</summary><div class="drill-feedback show" style="background:var(--accent-soft); color:var(--ink);">ranking = [1] * len(score) 로 초기화 후, 이중 for문으로 각 점수보다 높은 점수가 있으면 ranking[i] += 1 합니다.</div></details>
       <textarea class="code-editor" id="code-c2-4">score = [78, 88, 90, 76, 79, 88, 95, 96, 85, 68]
 ranking = [1] * len(score)

@@ -5056,5 +5056,26 @@ function doPost(e) {
     return ContentService.createTextOutput('ok').setMimeType(ContentService
 */
 </script>
+<script>
+/* 선생님 모드: 파이썬 문법교재를 열 때 교사용 답지(py_teacher.js)를 얹는다 — 편집기에서 다시 내보낸 교재에도 빨간 답이 보이도록 */
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('a.py-toc-lesson');
+  if (!a || e.target.closest('.py-toc-lesson-icon') || !/\/python_[^\/]*\.html/.test(a.href)) return;
+  var t = false; try { t = localStorage.getItem('학습홈_admin') === '1'; } catch (err) {}
+  if (!t) return;
+  var w = window.open(a.href, '_blank'); if (!w) return;
+  e.preventDefault();
+  var n = 0, timer = setInterval(function () {
+    try {
+      if (w.closed || ++n > 150) { clearInterval(timer); return; }
+      var d = w.document;
+      if (d.readyState === 'complete' && d.body && /python_/.test(w.location.pathname)) {
+        clearInterval(timer);
+        if (!d.querySelector('script[src*="py_teacher.js"]')) { var s = d.createElement('script'); s.src = 'py_teacher.js'; d.body.appendChild(s); }
+      }
+    } catch (err) { clearInterval(timer); }
+  }, 200);
+});
+</script>
 </body>
 </html>
