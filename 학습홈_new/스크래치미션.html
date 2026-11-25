@@ -97,11 +97,13 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.6px;line-height:1.3}
 (() => {
 const $ = id => document.getElementById(id);
 const Q = new URLSearchParams(location.search), ID = Q.get('id'), SEA = '스크래치바다.html';
+/* 게임 만들기·오락실 미션은 바다가 아니라 게임 갤러리로 돌아간다 */
+const GAL = /^x_/.test(ID || '') ? '게임갤러리.html?z=arc' : /^g\d_/.test(ID || '') ? '게임갤러리.html?z=gm' : '', HOME = GAL || SEA, SEP = GAL ? '&' : '?';
 const M = (window.SCRATCH_MISSIONS || {})[ID];
 const KEY = 'studyhome_new_3d_demo';
 let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
 const TEACHER = (() => { try { return localStorage.getItem('학습홈_admin') === '1'; } catch (e) { return false; } })();
-$('backBtn').addEventListener('click', () => { location.href = SEA + '?at=' + encodeURIComponent(ID || ''); });
+$('backBtn').addEventListener('click', () => { location.href = HOME + SEP + 'at=' + encodeURIComponent(ID || ''); });
 if (!M) { $('page').innerHTML = '<div class="empty">이 미션의 안내는 아직 준비 중이에요.<br>바닷길로 돌아가 다른 미션을 해 봐요.</div>'; return; }
 const NO = Q.get('n') || M.no || '';
 document.title = M.title + ' · 스크래치 미션';
@@ -174,7 +176,7 @@ $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-f]'
 const isDone = !!(S.scratch && S.scratch.done && S.scratch.done[ID]);
 document.querySelectorAll('[data-done]').forEach(b => {
   b.textContent = isDone ? '✓ 완료한 미션' : '미션 완료 ⭐'; if (isDone) b.classList.add('was');
-  b.addEventListener('click', () => { location.href = SEA + (isDone ? '?at=' : '?done=') + encodeURIComponent(ID); });
+  b.addEventListener('click', () => { location.href = HOME + SEP + (isDone ? 'at=' : 'done=') + encodeURIComponent(ID); });
 });
 
 /* 완성작: 스크래치 미리 해보기 창. 닫으면 멈춤 */

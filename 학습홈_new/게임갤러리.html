@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>게임 갤러리 · 스크래치 바다</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#e9f6fb;color:#16324a;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:14px 28px;background:rgba(233,246,251,.92);backdrop-filter:blur(8px)}
+.back{font-size:14px;font-weight:700;color:#4d7890}
+.back:hover{color:#16324a}
+.seg{display:inline-flex;background:#fff;border-radius:999px;padding:4px;box-shadow:0 2px 8px rgba(22,50,74,.08)}
+.seg button{padding:8px 18px;border-radius:999px;font-size:15px;font-weight:800;color:#6b8ea3}
+.seg button.on{background:#1f8fc4;color:#fff}
+.cnt{margin-left:auto;font-size:14px;font-weight:800;color:#4d7890}
+main{max-width:1180px;margin:0 auto;padding:10px 28px 60px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px}
+.c{position:relative;display:block;text-align:left;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 3px 12px rgba(22,50,74,.10);transition:transform .15s,box-shadow .15s}
+.c:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(22,50,74,.18)}
+.c .th{position:relative;aspect-ratio:4/3;background:#cfe9f4 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:54px}
+.c .th::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;background:rgba(22,50,74,.35);opacity:0;transition:opacity .15s}
+.c:hover .th::after{opacity:1}
+.c .t{padding:11px 14px 13px;font-size:15.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c .no{color:#1f8fc4;margin-right:6px}
+.c.done .th::before{content:"⭐";position:absolute;right:8px;top:8px;z-index:1;font-size:20px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.pv{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(10,30,45,.6);padding:20px}
+.pv.show{display:flex}
+.box{width:min(980px,100%);height:min(720px,100%);display:flex;flex-direction:column;background:#fff;border-radius:20px;overflow:hidden}
+.bar{display:flex;align-items:center;gap:10px;padding:12px 16px 12px 20px}
+.bar b{font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn{padding:8px 16px;border-radius:999px;font-size:14px;font-weight:800;background:#eef6fa;color:#16324a}
+.btn:hover{background:#dcecf4}
+.btn.go{background:#1f8fc4;color:#fff}
+.btn.go:hover{background:#1a7dac}
+.btn.x{padding:8px 12px}
+.box iframe{flex:1;border:0;width:100%;background:#f4fafc}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="back" id="back" href="스크래치바다.html">← 바다</a>
+  <div class="seg" id="seg"></div>
+  <span class="cnt" id="cnt"></span>
+</div>
+<main><div class="grid" id="grid"></div></main>
+<div class="pv" id="pv"><div class="box">
+  <div class="bar"><b id="pvT"></b><button class="btn go" id="pvGo">미션지</button><button class="btn" id="pvFin">완료</button><button class="btn x" id="pvX">✕</button></div>
+  <iframe id="pvF" title="미리 해보기"></iframe>
+</div></div>
+<script>document.write('<script src="lib/scratch_course.js?t=' + Date.now() + '"><\/script><script src="lib/scratch_missions.js?t=' + Date.now() + '"><\/script><script src="lib/scratch_previews.js?t=' + Date.now() + '"><\/script>');</script>
+<script>
+(() => {
+const $ = id => document.getElementById(id), KEY = 'studyhome_new_3d_demo';
+let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
+if (!S.scratch || typeof S.scratch !== 'object') S.scratch = {}; if (!S.scratch.done) S.scratch.done = {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const MS = window.SCRATCH_MISSIONS || {}, PV = window.SCRATCH_PV || {};
+const ZONES = (window.SCRATCH_COURSE || []).filter(n => n.zone === 'game' || n.zone === 'opt');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const Q = new URLSearchParams(location.search), DONE = Q.get('done');
+let cur = Math.max(0, ZONES.findIndex(n => n.id === Q.get('z'))), open = null;
+/* 미션지에서 '미션 완료'를 누르고 돌아온 경우 */
+if (DONE && ZONES.some(n => n.ms.some(m => m[0] === DONE))) { S.scratch.done[DONE] = 1; save(); }
+if (DONE || Q.get('at')) history.replaceState(null, '', location.pathname + '?z=' + (ZONES[cur] ? ZONES[cur].id : ''));
+$('seg').innerHTML = ZONES.map((n, i) => '<button data-i="' + i + '">' + esc(n.title) + '</button>').join('');
+function paint() {
+  const Z = ZONES[cur]; if (!Z) return;
+  [...$('seg').children].forEach((b, i) => b.classList.toggle('on', i === cur)); $('back').href = '스크래치바다.html?at=' + Z.id;
+  const real = Z.ms.filter(m => !m[4]);
+  $('cnt').textContent = '⭐ ' + real.filter(m => S.scratch.done[m[0]]).length + ' / ' + real.length;
+  $('grid').innerHTML = Z.ms.map((m, i) => {
+    const no = m[1] === '선택' || m[1] === '쉼터' ? '' : '<span class="no">' + esc(m[1]) + '</span>';
+    const th = m[4] ? '<div class="th" style="background-color:#ffe9b8">🎮</div>' : '<div class="th" style="background-image:url(thumb/스크래치/' + m[0] + '.jpg)"></div>';
+    return '<button class="c' + (S.scratch.done[m[0]] ? ' done' : '') + '" data-i="' + i + '">' + th + '<div class="t">' + no + esc(m[2]) + '</div></button>';
+  }).join('');
+}
+function show(i) {
+  const m = ZONES[cur].ms[i]; if (m[4]) { window.open(m[4], '_blank'); return; }
+  open = m; $('pvT').textContent = (m[1] === '선택' ? '' : m[1] + ' · ') + m[2];
+  $('pvF').src = PV[m[0]] ? '스크래치미리보기.html?id=' + m[0] + '&t=' + encodeURIComponent(m[2]) : 'about:blank';
+  $('pvGo').style.display = MS[m[0]] ? '' : 'none';
+  $('pvFin').textContent = S.scratch.done[m[0]] ? '⭐ 완료함' : '완료';
+  $('pv').classList.add('show');
+}
+function hide() { $('pv').classList.remove('show'); $('pvF').src = 'about:blank'; open = null; }
+$('seg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { cur = +b.dataset.i; paint(); scrollTo(0, 0); } });
+$('grid').addEventListener('click', e => { const c = e.target.closest('.c'); if (c) show(+c.dataset.i); });
+$('pvX').addEventListener('click', hide);
+$('pv').addEventListener('click', e => { if (e.target.id === 'pv') hide(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+$('pvGo').addEventListener('click', () => { if (open) location.href = '스크래치미션.html?id=' + open[0] + (open[1] && open[1] !== '선택' && open[1] !== '쉼터' ? '&n=' + encodeURIComponent(open[1]) : ''); });
+$('pvFin').addEventListener('click', () => { if (!open) return; if (S.scratch.done[open[0]]) delete S.scratch.done[open[0]]; else S.scratch.done[open[0]] = 1; save(); $('pvFin').textContent = S.scratch.done[open[0]] ? '⭐ 완료함' : '완료'; paint(); });
+paint();
+})();
+</script>
+<script src="lib/sync.js"></script>
+</body>
+</html>
