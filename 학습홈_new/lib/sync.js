@@ -1,7 +1,7 @@
 /* 학습홈 2.0 — 회원·진도 저장
    STUDY_API: 회원용 구글 Apps Script 웹 앱 주소(…/exec). 비어 있으면 가입 정보·진도는 그 컴퓨터에만 저장된다.
    로그인한 학생의 진도(S)가 바뀌면 화면을 떠날 때·1분마다 구글 시트로 보낸다. */
-window.STUDY_API = '';
+window.STUDY_API = 'https://script.google.com/macros/s/AKfycbxUN1NQaLn6mi2jgkFWTXlfvwH4KMeEj0lhIfIBpyHBU6qn7do1kgeHLYc3xUq2vzD6/exec';
 (function () {
   var KEY = 'studyhome_new_3d_demo', AKEY = '학습홈_auth', last = null;
   var read = function () { try { return localStorage.getItem(KEY); } catch (e) { return null; } };

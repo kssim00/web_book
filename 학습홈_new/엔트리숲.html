@@ -35,7 +35,7 @@ body.card-on .zoom{right:auto;left:18px}
 .lb.m.sel{outline:2px solid #ff8f5a}
 .lb.lm{background:#2c3a22;color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;pointer-events:none}
 .lb.lm.gate{background:#c79a2a;pointer-events:auto}.lb.lm.ai{background:#5b4bc4}
-.lb.me{background:#ff8f5a;color:#fff;border-radius:999px;padding:4px 10px;font-size:12px;pointer-events:none}
+.lb.me{background:#ff8f5a;color:#fff;border-radius:999px;padding:4px 10px;font-size:12px;pointer-events:none;transform:translate(-50%,5px)}
 .lb.hide{display:none}
 .lb.tip{background:#ff8f5a;color:#fff;border-radius:999px;padding:6px 13px;font-size:14px;pointer-events:none;animation:tipb 1s ease-in-out infinite}
 .lb.tip:after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#ff8f5a}
@@ -513,7 +513,7 @@ function frame() {
     e.b.classList.toggle('hide', !show); e.b.style.left = ((tmp.x * .5 + .5) * W) + 'px'; e.b.style.top = ((-tmp.y * .5 + .5) * Hh) + 'px';
   });
   { let tv = false; if (!S.entry.tapped && ni >= 0 && !L[ni].gate && !far && sel < 0 && !walking && !(VIEW === 'C' && Math.abs(hu - U[ni]) < 1e-4)) { const sg = signs[ni]; tmp.set(sg.g.position.x, sg.g.position.y + (VIEW === 'C' ? 4 : sg.top + .2), sg.g.position.z); tipEl.textContent = VIEW === 'C' ? '👆 칸을 눌러 보세요' : '👆 팻말을 눌러 보세요'; const d = tmp.distanceTo(cam.position); tmp.project(cam); tv = tmp.z < 1 && d < 70 && Math.abs(tmp.x) < 1 && Math.abs(tmp.y) < .9; tipEl.style.left = ((tmp.x * .5 + .5) * W) + 'px'; tipEl.style.top = ((-tmp.y * .5 + .5) * Hh) + 'px'; } tipEl.classList.toggle('hide', !tv); }
-  tmp.copy(hero.position); tmp.y += 6; tmp.project(cam); meEl.style.left = ((tmp.x * .5 + .5) * W) + 'px'; meEl.style.top = ((-tmp.y * .5 + .5) * Hh) + 'px'; meEl.classList.toggle('hide', !far);
+  tmp.copy(hero.position); tmp.project(cam); meEl.style.left = ((tmp.x * .5 + .5) * W) + 'px'; meEl.style.top = ((-tmp.y * .5 + .5) * Hh) + 'px'; meEl.classList.toggle('hide', !far);
 }
 frame();
 })();
