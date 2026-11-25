@@ -442,8 +442,6 @@ function placeAt(i) { heroI = i; hu = U[i]; walking = null; keyBack = false; }
 function skipWalk() { if (!walking) return; const w = walking; placeAt(w.i); snap = true; if (w.then) w.then(); }
 function goTo(i, then) { hideCard();
   if (walking && walking.i === i) { skipWalk(); return; }
-  /* 선생님 로그인(🔑) 중에는 걷지 않고 바로 이동 */
-  if (TEACHER()) { placeAt(i); snap = true; (then || (() => showCard(i)))(); return; }
   if (zoomT > .5 && VIEW !== 'C') zoomT = .12; walking = {to: U[i], i, then: then || (() => showCard(i))}; }
 function finish(id) {
   if (S.entry.done[id]) return; const i = IDX[id]; S.entry.done[id] = 1; save(); paint(); hideCard();
