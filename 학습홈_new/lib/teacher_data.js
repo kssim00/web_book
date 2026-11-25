@@ -11,6 +11,10 @@ window.TEACHER_LINKS = [
   {g: '관리', items: [['진도 대시보드', 'https://kssim00.github.io/coden_edu/dash12.html'], ['예전 학습홈', '../study_home.html'], ['수업 리포트', '../학습리포트/coding_report_system_v6_ai.html', 'local'], ['깃허브 web_book', 'https://github.com/kssim00/web_book'], ['깃허브 coden_edu', 'https://github.com/kssim00/coden_edu']]}
 ];
 
+/* 수업자료는 이 컴퓨터의 "열기 도우미"(클로드\\등대_열기도우미, codenopen: 주소)로 원본을 연다.
+   TEACHER_HOME = 이 컴퓨터에서 학습홈_new 폴더의 주소. 상대 경로(dir)는 여기를 기준으로 푼다. */
+window.TEACHER_HOME = 'file:///C:/Users/kssim/Downloads/클로드/학습홈_new/';
+
 window.TEACHER_FILES = [
   {t: '엔트리', sub: [{t: '와이즈 지도안', dir: '../학습리포트/와이즈_엔트리지도안/', files: ['1-1','1-2','1-3','1-4','2-1','2-2','2-3','2-4','3-1','3-2','3-3','3-4','4-1','4-2'].map(n => [n, n + '.pdf'])}]},
   {t: '스크래치', sub: []},

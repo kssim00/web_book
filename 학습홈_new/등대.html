@@ -176,14 +176,14 @@ $('aOk').onclick = () => {
 paintLinks();
 
 /* 수업자료 */
-$('fileNote').textContent = LOCAL ? '' : '수업자료는 학원 컴퓨터에서 등대를 열었을 때만 열려요. (인터넷에는 올리지 않아요)';
-/* 파워포인트·워드·엑셀은 브라우저가 열지 못하므로(내려받기만 됨) 오피스 프로그램으로 원본을 바로 연다 */
-const OFFICE = {ppt: 'ms-powerpoint', pptx: 'ms-powerpoint', pps: 'ms-powerpoint', ppsx: 'ms-powerpoint', doc: 'ms-word', docx: 'ms-word', xls: 'ms-excel', xlsx: 'ms-excel'};
+$('fileNote').textContent = '수업자료는 열기 도우미를 설치한 이 컴퓨터에서만 열려요. (파일은 인터넷에 올리지 않아요)';
+/* 수업자료는 브라우저가 아니라 이 컴퓨터의 "열기 도우미"(클로드\\등대_열기도우미 → 설치.bat, codenopen: 주소)가 원본 파일을 연다.
+   그래서 인터넷 주소(github.io)의 등대에서도 열리고, 연 파일을 고쳐 저장하면 원본이 바뀐다. */
+const HOME = window.TEACHER_HOME || location.href;
 function fileChip(s, f) {
-  const abs = /^file:/i.test(s.dir), app = OFFICE[(f[1].split('.').pop() || '').toLowerCase()];
-  if (!LOCAL && !(abs && app)) return '<span class="chip off">' + inner(f[0], f[1]) + '</span>';
-  let u = s.dir + f[1]; try { u = new URL(u, location.href).href; } catch (e) {}
-  return app ? '<a class="chip" href="' + esc(app + ':ofe|u|' + u) + '">' + inner(f[0], f[1]) + '</a>' : '<a class="chip" target="_blank" href="' + esc(u) + '">' + inner(f[0], f[1]) + '</a>';
+  let u = s.dir + f[1]; try { u = new URL(u, HOME).href; } catch (e) {}
+  if (!/^file:/i.test(u)) return '<span class="chip off">' + inner(f[0], f[1]) + '</span>';
+  return '<a class="chip" href="' + esc('codenopen:' + u) + '">' + inner(f[0], f[1]) + '</a>';
 }
 $('fileTree').innerHTML = FILES.map((F, i) => {
   const n = F.sub.reduce((a, s) => a + s.files.length, 0);
