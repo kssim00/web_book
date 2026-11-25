@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사진 스티커 앱 만들기 - 웹 슬라이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF7E8; --paper:#FFFFFF; --ink:#2B2A33; --muted:#8A8578;
+    --coral:#FF6F5E; --coral-soft:#FFE3DF;
+    --teal:#1FA398; --teal-soft:#DCF5F1;
+    --sun:#FFC93C; --sun-soft:#FFF3D2;
+    --grape:#8C6FF7; --grape-soft:#EAE3FF;
+    --film:#2E2A26; --line:#EEE3CE;
+  }
+  *{box-sizing:border-box;}
+  html,body{ height:100%; margin:0; }
+  body{ background:var(--cream); color:var(--ink); font-family:'Gowun Dodum', sans-serif; line-height:1.65; font-size:16px; overflow:hidden; }
+  h1,h2,h3,h4,.display{ font-family:'Jua', sans-serif; font-weight:400; letter-spacing:-0.5px; }
+
+  /* ---- filmstrip / progress dots ---- */
+  .filmstrip{
+    height:34px; background:var(--film); display:flex; align-items:center; justify-content:center;
+    gap:6px; padding:0 16px; overflow-x:auto; position:fixed; top:0; left:0; right:0; z-index:60;
+  }
+  .filmstrip .dot{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.35); flex:0 0 auto; cursor:pointer; transition:transform .15s, background .15s; }
+  .filmstrip .dot:hover{ background:rgba(255,255,255,0.6); }
+  .filmstrip .dot.active{ background:var(--coral); transform:scale(1.7); }
+
+  /* ---- slides shell ---- */
+  .slides{ position:relative; width:100%; height:100%; padding-top:34px; }
+  .slide{ display:none; position:absolute; inset:0; top:34px; overflow-y:auto; padding:44px 24px 110px; flex-direction:column; align-items:center; }
+  .slide.active{ display:flex; }
+  .slide-inner{ max-width:880px; width:100%; }
+
+  .eyebrow{
+    display:inline-block; background:var(--paper); border:2px dashed var(--coral); color:var(--coral);
+    font-family:'Jua', sans-serif; font-size:13px; padding:5px 14px; border-radius:999px; margin-bottom:14px;
+  }
+  h1.title{ font-size:clamp(30px, 5.5vw, 46px); margin:0 0 14px; text-align:center; }
+  h1.title span{ color:var(--coral); }
+  .subtitle{ max-width:600px; margin:0 auto 30px; color:#5b5748; font-size:16.5px; text-align:center; }
+  .polaroid-strip{ display:flex; justify-content:center; gap:14px; flex-wrap:wrap; }
+  .polaroid{ background:var(--paper); padding:10px 10px 24px; width:112px; box-shadow:0 8px 18px rgba(46,42,38,0.12); transform:rotate(var(--r,0deg)); border-radius:4px; }
+  .polaroid:nth-child(1){ --r:-6deg; } .polaroid:nth-child(2){ --r:4deg; }
+  .polaroid:nth-child(3){ --r:-3deg; } .polaroid:nth-child(4){ --r:6deg; }
+  .polaroid .ph{ height:80px; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:32px; }
+  .polaroid .cap{ display:block; text-align:center; font-family:'Jua', sans-serif; font-size:11.5px; margin-top:8px; color:#5b5748; }
+
+  .section-head{ margin-bottom:22px; text-align:center; }
+  .section-num{ font-family:'Jua', sans-serif; color:var(--coral); font-size:13.5px; display:block; margin-bottom:6px; }
+  h2.section-title{ font-size:25px; margin:0 0 8px; }
+  .section-desc{ color:#5b5748; margin:0 auto; max-width:660px; font-size:15px; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; width:100%; }
+  @media (max-width:600px){ .grid2{ grid-template-columns:1fr; } }
+  .feature-card{ background:var(--paper); border-radius:18px; padding:18px; border:2px solid var(--line); }
+  .feature-card .icon{ width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:10px; }
+  .feature-card h3{ margin:0 0 5px; font-size:18px; }
+  .feature-card p{ margin:0; color:#5b5748; font-size:14px; }
+  .feature-card.c1 .icon{ background:var(--coral-soft); }
+  .feature-card.c2 .icon{ background:var(--teal-soft); }
+  .feature-card.c3 .icon{ background:var(--sun-soft); }
+  .feature-card.c4 .icon{ background:var(--grape-soft); }
+
+  .prep-list{ list-style:none; margin:0; padding:0; display:grid; gap:11px; width:100%; }
+  .prep-list li{ display:flex; align-items:flex-start; gap:14px; background:var(--paper); border-radius:14px; padding:13px 18px; border:2px solid var(--line); font-size:14.5px; }
+  .prep-list .num{ flex:0 0 auto; width:28px; height:28px; border-radius:50%; background:var(--coral); color:#fff; font-family:'Jua', sans-serif; display:flex; align-items:center; justify-content:center; font-size:14px; }
+
+  .table-scroll{ overflow-x:auto; border-radius:16px; border:2px solid var(--line); width:100%; }
+  table{ width:100%; border-collapse:collapse; background:var(--paper); min-width:560px; }
+  thead th{ font-family:'Jua', sans-serif; font-size:12.5px; text-align:left; background:var(--film); color:#fff; padding:10px 12px; }
+  tbody td{ padding:9px 12px; border-top:1px solid var(--line); font-size:13px; vertical-align:top; }
+  tbody tr:nth-child(even){ background:#FFFBF2; }
+  td.emoji{ font-size:18px; width:36px; }
+  td.name{ font-family:'Jua', sans-serif; color:var(--coral); white-space:nowrap; }
+
+  .tip{ margin-top:14px; background:var(--sun-soft); border:2px dashed var(--sun); border-radius:14px; padding:12px 18px; font-size:14px; width:100%; }
+  .tip b{ font-family:'Jua', sans-serif; font-weight:400; }
+
+  .guide-box{ background:var(--teal-soft); border:2px solid var(--teal); border-radius:14px; padding:16px 20px; font-size:14.5px; width:100%; }
+  .guide-box b{ font-family:'Jua', sans-serif; color:#127b73; font-weight:400; }
+  .guide-box ul{ margin:6px 0 0; padding-left:20px; }
+  .guide-box li{ margin-bottom:6px; }
+
+  .warn-box{ background:#FFEDEA; border:2px dashed var(--coral); border-radius:14px; padding:12px 18px; margin-top:14px; font-size:13.5px; width:100%; }
+  .warn-box b{ font-family:'Jua', sans-serif; color:var(--coral); font-weight:400; }
+
+  .drawer-chip{ display:inline-flex; align-items:center; gap:5px; background:var(--grape-soft); color:#5b4b9e; font-size:11.5px; padding:5px 12px; border-radius:999px; margin:0 6px 8px 0; }
+
+  .group-card{ background:var(--paper); border:2px solid var(--line); border-radius:18px; padding:22px 26px; width:100%; }
+  .group-card h4{ margin:0 0 14px; font-size:19px; display:flex; align-items:center; gap:10px; justify-content:center; }
+  .group-card .gnum{ flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:var(--coral); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:14px; }
+  .group-card ul{ margin:0; padding-left:22px; }
+  .group-card li{ margin-bottom:10px; font-size:15px; }
+  .group-card .prop{ display:inline-block; background:var(--sun-soft); border-radius:6px; padding:1px 8px; font-size:13px; color:#8a6d00; margin-left:2px; }
+  .group-card .where{ display:inline-block; background:var(--teal-soft); border-radius:6px; padding:1px 8px; font-size:13px; color:#127b73; margin-left:2px; }
+
+  .feature-block{ width:100%; }
+  .feature-block h3{ display:flex; align-items:center; gap:10px; font-size:20px; margin:0 0 10px; justify-content:center; }
+  .feature-block h3 .dot{ width:14px; height:14px; border-radius:4px; display:inline-block; }
+  .fb0 .dot{ background:var(--muted); } .fb1 .dot{ background:var(--coral); }
+  .fb2 .dot{ background:var(--teal); } .fb3 .dot{ background:var(--teal); }
+  .fb4 .dot{ background:var(--sun); }  .fb5 .dot{ background:var(--grape); }
+  .drawer-chips{ text-align:center; margin-bottom:10px; }
+
+  .block-event{ background:var(--paper); border-radius:14px; padding:14px 16px 16px; border:2px solid var(--line); border-left:8px solid var(--accent, var(--coral)); }
+  .block-event-header{ font-family:'Jua', sans-serif; font-size:14px; background:var(--accent-soft, var(--coral-soft)); display:inline-block; padding:6px 14px; border-radius:10px; margin-bottom:10px; }
+  .block-action-list{ margin-left:18px; display:flex; flex-direction:column; gap:8px; }
+  .block-action{ background:#FBF8F0; border:1px solid var(--line); border-left:4px solid var(--accent, var(--coral)); border-radius:8px; padding:9px 12px; font-size:13.5px; }
+  .fb0 .block-event{ --accent:var(--muted); --accent-soft:#EFEBDD; } .fb0 .block-action{ --accent:var(--muted); }
+  .fb1 .block-event{ --accent:var(--coral); --accent-soft:var(--coral-soft); } .fb1 .block-action{ --accent:var(--coral); }
+  .fb2 .block-event, .fb3 .block-event{ --accent:var(--teal); --accent-soft:var(--teal-soft); }
+  .fb2 .block-action, .fb3 .block-action{ --accent:var(--teal); }
+  .fb4 .block-event{ --accent:var(--sun); --accent-soft:var(--sun-soft); } .fb4 .block-action{ --accent:var(--sun); }
+  .fb5 .block-event{ --accent:var(--grape); --accent-soft:var(--grape-soft); } .fb5 .block-action{ --accent:var(--grape); }
+  .block-event + .block-event{ margin-top:12px; }
+  .fb-note{ margin:12px 0 0; font-size:13.5px; color:#5b5748; text-align:center; }
+
+  .checklist{ display:grid; gap:9px; width:100%; }
+  .checklist label{ display:flex; align-items:center; gap:12px; background:var(--paper); border:2px solid var(--line); border-radius:12px; padding:11px 16px; font-size:14.5px; cursor:pointer; }
+  .checklist input[type=checkbox]{ width:19px; height:19px; accent-color:var(--teal); flex:0 0 auto; }
+
+  .faq-box{ background:var(--paper); border:2px solid var(--line); border-radius:14px; padding:16px 20px; width:100%; }
+  .faq-item{ border-top:1px solid var(--line); padding:10px 0; }
+  .faq-item:first-child{ border-top:none; padding-top:0; }
+  .faq-item p.q2{ margin:0 0 4px; font-family:'Jua', sans-serif; font-size:14px; }
+  .faq-item p.a2{ margin:0; font-size:13.5px; color:#5b5748; }
+
+  .think-item{ background:var(--paper); border:2px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:12px; width:100%; }
+  .think-item p.q{ margin:0 0 10px; font-family:'Jua', sans-serif; font-size:15px; }
+  .write-line{ border-bottom:2px dotted #C9C2AC; height:24px; }
+
+  .glossary{ display:flex; flex-wrap:wrap; gap:9px; justify-content:center; }
+  .glossary span{ background:var(--paper); border:2px solid var(--line); border-radius:999px; padding:8px 16px; font-size:13.5px; }
+  .glossary b{ font-family:'Jua', sans-serif; color:var(--coral); font-weight:400; }
+
+  .closing p{ text-align:center; color:#5b5748; font-size:15.5px; }
+
+  /* ---- phone mockups ---- */
+  .compare-wrap{ display:flex; gap:26px; justify-content:center; flex-wrap:wrap; width:100%; }
+  .phone-card{ width:250px; }
+  .phone-card .phone-label{ font-family:'Jua', sans-serif; font-size:15px; text-align:center; margin-bottom:8px; }
+  .phone-card .phone-label .tagline{ display:block; font-family:'Gowun Dodum', sans-serif; font-size:12px; color:#8A8578; margin-top:3px; }
+  .phone-frame{ background:var(--film); border-radius:32px; padding:12px 11px 14px; box-shadow:0 14px 28px rgba(46,42,38,0.22); position:relative; }
+  .phone-speaker{ width:46px; height:6px; background:rgba(255,255,255,0.25); border-radius:4px; margin:0 auto 9px; }
+  .phone-screen{ position:relative; width:100%; height:370px; background:#FAF7EE; border-radius:16px; overflow:hidden; }
+  .nonvisible-tray{ display:flex; gap:8px; justify-content:center; margin-top:9px; }
+  .nv-chip{ background:rgba(255,255,255,0.12); border:1px dashed rgba(255,255,255,0.4); color:#fff; font-size:9.5px; padding:4px 8px; border-radius:8px; }
+
+  .d-titlebar{ height:22px; background:#F1EBD9; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:10px; color:#8A8578; }
+  .d-tag{ position:absolute; top:-9px; left:0; background:var(--coral); color:#fff; font-size:7.5px; padding:2px 6px; border-radius:6px; white-space:nowrap; z-index:3; font-family:'Gowun Dodum', sans-serif; }
+  .d-topbtn{ position:absolute; top:28px; left:9px; right:9px; height:24px; background:#ECE7D8; border:1.5px solid #D8D2BE; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:9.5px; color:#5b5748; }
+  .d-canvas{
+    position:absolute; top:64px; left:9px; right:9px; height:138px; border:2px dashed #C9C2AC; border-radius:8px;
+    background-color:#FDFBF4;
+    background-image:
+      linear-gradient(45deg, #F1EBDA 25%, transparent 25%), linear-gradient(-45deg, #F1EBDA 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #F1EBDA 75%), linear-gradient(-45deg, transparent 75%, #F1EBDA 75%);
+    background-size:14px 14px; background-position:0 0, 0 7px, 7px -7px, -7px 0px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .d-canvas span.placeholder-txt{ font-size:9px; color:#B7B0A0; }
+  .d-group{ position:absolute; left:9px; right:9px; display:flex; gap:5px; }
+  .d-emoji-btn{ flex:1; background:#fff; border:1.5px dashed #C9C2AC; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; }
+  .d-textbox2{ flex:1; height:24px; background:#fff; border:1.5px solid #D8D2BE; border-radius:6px; font-size:8px; color:#B7B0A0; display:flex; align-items:center; padding:0 7px; }
+  .d-smallbtn2{ flex:0 0 50px; height:24px; background:#ECE7D8; border:1.5px solid #D8D2BE; border-radius:6px; font-size:8px; color:#8A8578; display:flex; align-items:center; justify-content:center; }
+  .d-halfbtn{ flex:1; height:26px; background:#ECE7D8; border:1.5px solid #D8D2BE; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#5b5748; }
+
+  /* interactive live app */
+  .live-app{ position:absolute; inset:0; display:flex; flex-direction:column; background:#fff; }
+  .live-titlebar{ flex:0 0 22px; background:#F1EBD9; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:10px; color:#8A8578; }
+  .live-topbtn{ flex:0 0 26px; margin:6px 8px 0; border:none; border-radius:6px; background:var(--coral); color:#fff; font-family:'Jua', sans-serif; font-size:11px; cursor:pointer; }
+  .live-topbtn:active{ transform:scale(0.97); }
+  .live-canvas-wrap{ flex:0 0 204px; margin:6px 8px; position:relative; border-radius:8px; overflow:hidden; background:#FAF7EE; border:1.5px solid var(--line); }
+  #liveCanvas{ width:100%; height:100%; display:block; cursor:crosshair; touch-action:none; }
+  .live-hint-pill{ position:absolute; bottom:5px; left:50%; transform:translateX(-50%); background:rgba(20,18,14,0.55); color:#fff; font-size:8px; padding:3px 9px; border-radius:999px; pointer-events:none; white-space:nowrap; }
+  .live-controls-row{ flex:0 0 auto; display:flex; gap:5px; margin:5px 8px 0; }
+  .live-emoji-btn2{ flex:1; height:28px; border:1.5px solid #D8D2BE; background:#fff; border-radius:6px; font-size:14px; cursor:pointer; padding:0; }
+  .live-emoji-btn2:active{ transform:scale(0.9); }
+  .live-textinput{ flex:1; height:26px; border:1.5px solid #D8D2BE; border-radius:6px; font-size:10px; padding:0 8px; font-family:'Gowun Dodum', sans-serif; min-width:0; }
+  .live-addbtn{ flex:0 0 50px; height:26px; border:none; border-radius:6px; background:var(--sun); color:var(--ink); font-family:'Jua', sans-serif; font-size:10px; cursor:pointer; }
+  .live-savebtn, .live-cancelbtn{ flex:1; height:28px; border:none; border-radius:6px; color:#fff; font-family:'Jua', sans-serif; font-size:10.5px; cursor:pointer; }
+  .live-savebtn{ background:var(--grape); } .live-cancelbtn{ background:#B7B0A0; }
+  .live-bottom-row{ margin-bottom:8px; }
+  .live-alert{ position:absolute; inset:0; background:rgba(20,18,14,0.45); display:none; align-items:center; justify-content:center; z-index:5; }
+  .live-alert.show{ display:flex; }
+  .live-alert-box{ background:#fff; border-radius:14px; padding:14px 16px; width:76%; text-align:center; box-shadow:0 10px 24px rgba(0,0,0,0.25); }
+  .live-alert-box p{ margin:0 0 9px; font-size:11px; font-family:'Jua', sans-serif; }
+  .live-alert-ok{ display:inline-block; background:var(--coral); color:#fff; font-family:'Jua', sans-serif; font-size:10px; padding:5px 16px; border-radius:999px; border:none; cursor:pointer; }
+
+  /* ---- deck nav ---- */
+  .deck-nav{
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:12px;
+    background:var(--paper); border:2px solid var(--line); border-radius:999px; padding:7px 10px;
+    box-shadow:0 8px 22px rgba(46,42,38,0.18); z-index:70;
+  }
+  .deck-nav button{ width:36px; height:36px; border-radius:50%; border:none; background:var(--coral); color:#fff; font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .deck-nav button:disabled{ background:#D8D2BE; cursor:not-allowed; }
+  .deck-nav button.fs{ background:var(--film); font-size:14px; }
+  .deck-nav .counter{ font-family:'Jua', sans-serif; font-size:12.5px; color:#5b5748; min-width:46px; text-align:center; }
+  .kbd-hint{ position:fixed; bottom:64px; left:50%; transform:translateX(-50%); font-size:12px; color:#8A8578; background:var(--paper); border:1px solid var(--line); padding:4px 12px; border-radius:999px; z-index:65; opacity:0.9; }
+
+  @media (max-width:640px){
+    .slide{ padding:34px 16px 120px; }
+    h1.title{ font-size:28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="filmstrip" id="filmstrip"></div>
+
+<div class="slides" id="slides">
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div style="text-align:center;">
+        <span class="eyebrow">🎓 초등학교 4~5학년 · 앱인벤터</span>
+        <h1 class="title">나만의 <span>사진 스티커 앱</span> 만들기 📸</h1>
+        <p class="subtitle">사진을 찍고, 이모티콘과 말풍선으로 꾸민 다음, 완성된 사진을 저장하는 나만의 카메라 앱을 한 단계씩 만들어 봐요!</p>
+      </div>
+      <div class="polaroid-strip">
+        <div class="polaroid"><div class="ph" style="background:var(--coral-soft);">📸</div><span class="cap">사진찍기</span></div>
+        <div class="polaroid"><div class="ph" style="background:var(--teal-soft);">🎭</div><span class="cap">이모티콘 꾸미기</span></div>
+        <div class="polaroid"><div class="ph" style="background:var(--sun-soft);">💬</div><span class="cap">말풍선 넣기</span></div>
+        <div class="polaroid"><div class="ph" style="background:var(--grape-soft);">💾</div><span class="cap">저장 · 취소</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head">
+        <span class="section-num">미리보기</span>
+        <h2 class="section-title">오늘 만들 앱, 어떤 모습일까요?</h2>
+        <p class="section-desc">앱을 만들기 전에, 우리 앱에 어떤 기능이 들어가는지 먼저 살펴봐요.</p>
+      </div>
+      <div class="grid2">
+        <div class="feature-card c1"><div class="icon">📸</div><h3>사진찍기</h3><p>버튼을 누르면 카메라가 켜지고, 사진을 찍어서 화면에 보여줘요.</p></div>
+        <div class="feature-card c2"><div class="icon">🎭</div><h3>이모티콘 꾸미기</h3><p>사진 위 자리를 콕 찍고 이모티콘 버튼을 누르면 그 자리에 스티커가 나타나요.</p></div>
+        <div class="feature-card c3"><div class="icon">💬</div><h3>말풍선 넣기</h3><p>자리를 콕 찍고, 하고 싶은 말을 써서 버튼을 누르면 글자가 나타나요.</p></div>
+        <div class="feature-card c4"><div class="icon">💾</div><h3>저장 · 취소</h3><p>완성한 사진은 저장 버튼으로 저장하고, 마음에 안 들면 취소로 다시 시작해요.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head">
+        <span class="section-num">미리 살펴보기</span>
+        <h2 class="section-title">설계 화면과 실행 화면 비교 🖥️📱</h2>
+        <p class="section-desc">배치만 해둔 모습과, 실제로 실행했을 때의 모습을 비교해 봐요.</p>
+      </div>
+      <div class="compare-wrap">
+        <div class="phone-card">
+          <p class="phone-label">🖥️ 설계 화면<span class="tagline">부품을 배치만 한 상태</span></p>
+          <div class="phone-frame">
+            <div class="phone-speaker"></div>
+            <div class="phone-screen">
+              <div class="d-titlebar">PhotoSticker</div>
+              <div class="d-topbtn">📸 사진찍기<span class="d-tag">TakePictureButton</span></div>
+              <div class="d-canvas"><span class="d-tag">캔버스1</span><span class="placeholder-txt">사진이 여기 나와요</span></div>
+              <div class="d-group" style="top:216px; height:26px;">
+                <span class="d-tag">EmojiRow</span>
+                <div class="d-emoji-btn">⭐</div><div class="d-emoji-btn">❤️</div><div class="d-emoji-btn">👑</div><div class="d-emoji-btn">😀</div>
+              </div>
+              <div class="d-group" style="top:256px; height:24px;">
+                <span class="d-tag">SpeechRow</span>
+                <div class="d-textbox2">말풍선 글자 입력</div><div class="d-smallbtn2">넣기</div>
+              </div>
+              <div class="d-group" style="top:296px; height:26px;">
+                <span class="d-tag">BottomRow</span>
+                <div class="d-halfbtn">저장</div><div class="d-halfbtn">취소</div>
+              </div>
+            </div>
+            <div class="nonvisible-tray"><span class="nv-chip">📷 카메라1</span><span class="nv-chip">🔔 알림1</span></div>
+          </div>
+        </div>
+        <div class="phone-card">
+          <p class="phone-label">📱 실행 화면 <span style="color:var(--coral);">(직접 눌러보세요!)</span><span class="tagline">사진찍기 → 콕 찍기 → 꾸미기 → 저장</span></p>
+          <div class="phone-frame">
+            <div class="phone-speaker"></div>
+            <div class="phone-screen">
+              <div class="live-app">
+                <div class="live-titlebar">PhotoSticker</div>
+                <button class="live-topbtn" id="liveTakePic">📸 사진찍기</button>
+                <div class="live-canvas-wrap">
+                  <canvas id="liveCanvas" width="212" height="204"></canvas>
+                  <span class="live-hint-pill">👆 콕 찍고 꾸며보세요</span>
+                  <div class="live-alert" id="liveAlert">
+                    <div class="live-alert-box">
+                      <p id="liveAlertMsg">사진이 저장되었어요! 📸</p>
+                      <button class="live-alert-ok" id="liveAlertOk">확인</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="live-controls-row">
+                  <button class="live-emoji-btn2" data-emoji="⭐">⭐</button>
+                  <button class="live-emoji-btn2" data-emoji="❤️">❤️</button>
+                  <button class="live-emoji-btn2" data-emoji="👑">👑</button>
+                  <button class="live-emoji-btn2" data-emoji="😀">😀</button>
+                </div>
+                <div class="live-controls-row">
+                  <input class="live-textinput" id="liveSpeechInput" type="text" placeholder="말풍선 글자 입력" maxlength="14">
+                  <button class="live-addbtn" id="liveSpeechAdd">넣기</button>
+                </div>
+                <div class="live-controls-row live-bottom-row">
+                  <button class="live-savebtn" id="liveSaveBtn">💾 저장</button>
+                  <button class="live-cancelbtn" id="liveCancelBtn">❌ 취소</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head">
+        <span class="section-num">준비하기</span>
+        <h2 class="section-title">시작하기 전에 준비해요</h2>
+      </div>
+      <ol class="prep-list">
+        <li><span class="num">1</span><span><b>ai2.appinventor.mit.edu</b> 사이트에 접속해요.</span></li>
+        <li><span class="num">2</span><span>구글(Google) 계정으로 로그인해요.</span></li>
+        <li><span class="num">3</span><span>화면 오른쪽 위 언어 메뉴에서 <b>한국어</b>를 골라요.</span></li>
+        <li><span class="num">4</span><span>왼쪽 위 <b>[프로젝트] → [새 프로젝트 시작하기]</b>를 눌러요.</span></li>
+        <li><span class="num">5</span><span>프로젝트 이름을 <b>PhotoSticker</b> 처럼 정해요. 영어·숫자만 가능, 띄어쓰기 불가!</span></li>
+      </ol>
+      <div class="tip"><b>Tip.</b> 이 슬라이드는 <b>한국어 화면</b>을 기준으로 설명해요. 메뉴 이름이 영어로 보이면 3번을 다시 해 봐요.</div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head">
+        <span class="section-num">1단계</span>
+        <h2 class="section-title">화면 꾸미기 (디자이너)</h2>
+        <p class="section-desc">왼쪽 팔레트에서 부품을 찾아 뷰어로 끌어다 놓아요. 다음 장부터 순서대로 배치해요.</p>
+      </div>
+      <div class="guide-box">
+        <b>먼저 알아두기 ① 이름 바꾸는 법</b> — 컴포넌트 목록에서 이름 클릭 → <b>이름 바꾸기</b> 클릭 → 새 이름 입력 → 확인
+        <br><br>
+        <b>먼저 알아두기 ② 속성 바꾸는 법</b> — 컴포넌트 목록에서 부품 클릭 → 오른쪽 <b>속성</b> 표에서 값 변경
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">1단계 · 배치 1 / 5</span></div>
+      <div class="group-card">
+        <h4><span class="gnum">1</span>사진찍기 버튼 놓기</h4>
+        <ul>
+          <li><span class="where">사용자 인터페이스 서랍</span> → <b>버튼</b>을 화면 맨 위로 끌어다 놓아요.</li>
+          <li>이름을 <b>TakePictureButton</b> 으로 바꿔요.</li>
+          <li>속성에서 <b>텍스트</b>를 <span class="prop">📸 사진찍기</span> 로 바꿔요.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">1단계 · 배치 2 / 5</span></div>
+      <div class="group-card">
+        <h4><span class="gnum">2</span>사진을 보여줄 캔버스 놓기</h4>
+        <ul>
+          <li><span class="where">그리기 &amp; 애니메이션 서랍</span> → <b>캔버스</b>를 버튼 아래에 놓아요.</li>
+          <li>이름은 <b>캔버스1</b> 그대로 둬요.</li>
+          <li><b>너비</b>는 <span class="prop">부모에 맞추기</span>, <b>높이</b>는 <span class="prop">300 픽셀</span> 정도로 정해요.</li>
+          <li><b>글꼴 크기</b>를 <span class="prop">40</span> 으로 정해요. 스티커와 글자가 이 크기로 그려져요. (그대로 두면 너무 작아요!)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">1단계 · 배치 3 / 5</span></div>
+      <div class="group-card">
+        <h4><span class="gnum">3</span>이모티콘 버튼 4개 놓기</h4>
+        <ul>
+          <li><span class="where">레이아웃 서랍</span> → <b>수평배치</b>를 캔버스1 아래에 놓아요. 이름: <b>EmojiRow</b></li>
+          <li><span class="where">사용자 인터페이스 서랍</span> → <b>버튼</b> 4개를 EmojiRow 안에 나란히 놓아요.</li>
+          <li>이름: <b>BtnStar / BtnHeart / BtnCrown / BtnSmile</b></li>
+          <li>텍스트: <span class="prop">⭐</span> <span class="prop">❤️</span> <span class="prop">👑</span> <span class="prop">😀</span>, 글꼴 크기: <span class="prop">24</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">1단계 · 배치 4 / 5</span></div>
+      <div class="group-card">
+        <h4><span class="gnum">4</span>말풍선 입력 칸 놓기</h4>
+        <ul>
+          <li><span class="where">레이아웃 서랍</span> → <b>수평배치</b>를 EmojiRow 아래에 놓아요. 이름: <b>SpeechRow</b></li>
+          <li><b>텍스트박스</b>를 SpeechRow 안에 놓아요. 이름: <b>SpeechBox</b>, 힌트: <span class="prop">말풍선 글자 입력</span></li>
+          <li><b>버튼</b>을 오른쪽에 놓아요. 이름: <b>SpeechButton</b>, 텍스트: <span class="prop">넣기</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">1단계 · 배치 5 / 5</span></div>
+      <div class="group-card">
+        <h4><span class="gnum">5</span>저장 · 취소 버튼과 알림 놓기</h4>
+        <ul>
+          <li><span class="where">레이아웃 서랍</span> → <b>수평배치</b>를 SpeechRow 아래에 놓아요. 이름: <b>BottomRow</b></li>
+          <li><b>버튼</b> 2개를 BottomRow 안에 놓아요: <b>SaveButton</b>(텍스트: <span class="prop">💾 저장</span>), <b>CancelButton</b>(텍스트: <span class="prop">❌ 취소</span>)</li>
+          <li><span class="where">사용자 인터페이스 서랍</span> → <b>알림</b> (화면에 안 보임) → 이름 <b>알림1</b> 그대로</li>
+          <li><span class="where">미디어 서랍</span> → <b>카메라</b> (화면에 안 보임) → 이름 <b>카메라1</b> 그대로</li>
+        </ul>
+      </div>
+      <div class="warn-box"><b>실수 조심!</b> 표에 적힌 이름 그대로 지어야 2단계 블록에서 부품을 쉽게 찾을 수 있어요.</div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">1단계 · 정리</span><h2 class="section-title">한눈에 보기 (부품 요약표)</h2></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th></th><th>이름</th><th>종류 · 서랍</th><th>역할</th></tr></thead>
+          <tbody>
+            <tr><td class="emoji">📸</td><td class="name">TakePictureButton</td><td>버튼 · 사용자 인터페이스</td><td>사진을 찍어요.</td></tr>
+            <tr><td class="emoji">🖼️</td><td class="name">캔버스1</td><td>캔버스 · 그리기&amp;애니메이션</td><td>사진을 보여주고 그림·글자를 그려요.</td></tr>
+            <tr><td class="emoji">😀</td><td class="name">BtnStar~Smile</td><td>버튼×4 · EmojiRow 안</td><td>이모티콘을 캔버스에 그려요.</td></tr>
+            <tr><td class="emoji">💬</td><td class="name">SpeechBox/Button</td><td>텍스트박스·버튼 · SpeechRow 안</td><td>말풍선 글자를 입력·표시해요.</td></tr>
+            <tr><td class="emoji">💾</td><td class="name">SaveButton</td><td>버튼 · BottomRow 안</td><td>사진을 저장해요.</td></tr>
+            <tr><td class="emoji">❌</td><td class="name">CancelButton</td><td>버튼 · BottomRow 안</td><td>다시 시작해요.</td></tr>
+            <tr><td class="emoji">🔔</td><td class="name">알림1</td><td>알림 · 사용자 인터페이스 (안 보임)</td><td>메시지창을 보여줘요.</td></tr>
+            <tr><td class="emoji">📷</td><td class="name">카메라1</td><td>카메라 · 미디어 (안 보임)</td><td>사진을 찍는 기능이에요.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head">
+        <span class="section-num">2단계</span>
+        <h2 class="section-title">블록으로 기능 만들기 (블록)</h2>
+        <p class="section-desc">오른쪽 위 <b>블록</b> 버튼을 눌러 블록 화면으로 이동해요.</p>
+      </div>
+      <div class="guide-box">
+        <b>블록 조립하는 법</b>
+        <ul>
+          <li>왼쪽 <b>Screen1</b> 목록에서 컴포넌트 이름을 클릭하면 블록 서랍이 열려요.</li>
+          <li>블록을 끌어서 오른쪽 작업 공간에 놓아요.</li>
+          <li>가까이 가져가면 <b>딸깍</b> 소리와 함께 자동으로 붙어요.</li>
+          <li>블록에서 <b>마우스 오른쪽 → 복제하기</b>로 복사할 수 있어요.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">2단계 · 블록 준비</span></div>
+      <div class="feature-block fb0">
+        <h3><span class="dot"></span>⓪ 위치를 기억할 변수 만들기</h3>
+        <div class="drawer-chips"><span class="drawer-chip">🟧 변수 서랍</span></div>
+        <div class="block-event"><div class="block-event-header">전역변수 만들기 TouchX · 초기값 0</div></div>
+        <div class="block-event"><div class="block-event-header">전역변수 만들기 TouchY · 초기값 0</div></div>
+        <p class="fb-note">🧠 이모티콘이나 말풍선을 어디에 그릴지 기억해 둘 상자 두 개를 미리 만들어요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">2단계 · 블록 1 / 5</span></div>
+      <div class="feature-block fb1">
+        <h3><span class="dot"></span>① 사진찍기 기능</h3>
+        <div class="drawer-chips"><span class="drawer-chip">🔴 TakePictureButton</span><span class="drawer-chip">🔴 카메라1</span><span class="drawer-chip">🔵 캔버스1</span></div>
+        <div class="block-event">
+          <div class="block-event-header">언제 TakePictureButton.클릭했을때</div>
+          <div class="block-action-list"><div class="block-action">실행 → 호출 카메라1.사진찍기</div></div>
+        </div>
+        <div class="block-event">
+          <div class="block-event-header">언제 카메라1.사진찍은후 (이미지)</div>
+          <div class="block-action-list"><div class="block-action">실행 → 지정하기 캔버스1.배경이미지 값 ← 가져오기 <b>이미지</b></div></div>
+        </div>
+        <p class="fb-note">📸 버튼을 누르면 카메라가 켜지고, 찍은 사진이 캔버스1의 배경이 돼요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">2단계 · 블록 2 / 5</span></div>
+      <div class="feature-block fb2">
+        <h3><span class="dot"></span>② 콕 찍은 위치 기억하기</h3>
+        <div class="drawer-chips"><span class="drawer-chip">🔵 캔버스1</span><span class="drawer-chip">🟧 변수</span></div>
+        <div class="block-event">
+          <div class="block-event-header">언제 캔버스1.터치했을때 (x, y, …)</div>
+          <div class="block-action-list">
+            <div class="block-action">실행 → 지정하기 전역변수 TouchX 값 ← 가져오기 <b>x</b></div>
+            <div class="block-action">그리고 → 지정하기 전역변수 TouchY 값 ← 가져오기 <b>y</b></div>
+          </div>
+        </div>
+        <p class="fb-note">👆 사진 위를 콕 찍으면 그 위치가 TouchX·TouchY에 저장돼요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">2단계 · 블록 3 / 5</span></div>
+      <div class="feature-block fb3">
+        <h3><span class="dot"></span>③ 이모티콘 스티커 붙이기</h3>
+        <div class="drawer-chips"><span class="drawer-chip">🔴 BtnStar 등 4개</span><span class="drawer-chip">🔵 캔버스1</span><span class="drawer-chip">🟩 텍스트</span></div>
+        <div class="block-event">
+          <div class="block-event-header">언제 BtnStar.클릭했을때</div>
+          <div class="block-action-list"><div class="block-action">실행 → 호출 캔버스1.텍스트그리기 (텍스트: "⭐", x: 가져오기 TouchX, y: 가져오기 TouchY)</div></div>
+        </div>
+        <p class="fb-note">🎭 이 블록을 <b>복제하기</b>로 복사해서 나머지 3개를 만들고, 이벤트와 글자만 ❤️·👑·😀 로 바꿔주면 끝이에요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">2단계 · 블록 4 / 5</span></div>
+      <div class="feature-block fb4">
+        <h3><span class="dot"></span>④ 말풍선 넣기 기능</h3>
+        <div class="drawer-chips"><span class="drawer-chip">🔴 SpeechButton</span><span class="drawer-chip">🔴 SpeechBox</span><span class="drawer-chip">🔵 캔버스1</span></div>
+        <div class="block-event">
+          <div class="block-event-header">언제 SpeechButton.클릭했을때</div>
+          <div class="block-action-list"><div class="block-action">실행 → 호출 캔버스1.텍스트그리기 (텍스트: SpeechBox.텍스트, x: 가져오기 TouchX, y: 가져오기 TouchY)</div></div>
+        </div>
+        <p class="fb-note">💬 자리를 콕 찍고 글자를 쓴 뒤 버튼을 누르면 그 자리에 글자가 나타나요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">2단계 · 블록 5 / 5</span></div>
+      <div class="feature-block fb5">
+        <h3><span class="dot"></span>⑤ 저장하기 · 취소하기 기능</h3>
+        <div class="drawer-chips"><span class="drawer-chip">🔴 Save/CancelButton</span><span class="drawer-chip">🔵 캔버스1</span><span class="drawer-chip">🔔 알림1</span><span class="drawer-chip">🟤 제어</span></div>
+        <div class="block-event">
+          <div class="block-event-header">언제 SaveButton.클릭했을때</div>
+          <div class="block-action-list">
+            <div class="block-action">실행 → <b>평가하지만 결과 무시하기</b> ( 호출 캔버스1.저장하기 )</div>
+            <div class="block-action">그리고 → 호출 알림1.경고창보이기 (알림: "사진이 저장되었어요! 📸")</div>
+          </div>
+        </div>
+        <div class="block-event">
+          <div class="block-event-header">언제 CancelButton.클릭했을때</div>
+          <div class="block-action-list">
+            <div class="block-action">실행 → 호출 캔버스1.지우기</div>
+            <div class="block-action">그리고 → 지정하기 캔버스1.배경이미지 값 ← "" (빈 텍스트)</div>
+          </div>
+        </div>
+        <p class="fb-note">💾 저장하기는 값을 돌려주는 블록이라 <b>제어 서랍</b>의 <b>평가하지만 결과 무시하기</b>로 감싸야 해요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head">
+        <span class="section-num">3단계</span>
+        <h2 class="section-title">테스트해요! ✅</h2>
+        <p class="section-desc">스마트폰에 <b>MIT AI2 Companion</b> 앱을 설치하고, 위쪽 메뉴 <b>[연결] → [AI 컴패니언]</b>을 눌러 나오는 QR코드를 찍어요.</p>
+      </div>
+      <div class="checklist">
+        <label><input type="checkbox"> 사진찍기 버튼을 누르면 카메라가 켜지나요?</label>
+        <label><input type="checkbox"> 찍은 사진이 캔버스1에 잘 보이나요?</label>
+        <label><input type="checkbox"> 자리를 콕 찍고 이모티콘 버튼을 누르면 그 자리에 나타나나요?</label>
+        <label><input type="checkbox"> 이모티콘 4개(⭐❤️👑😀)가 모두 작동하나요?</label>
+        <label><input type="checkbox"> 말풍선 글자가 콕 찍은 자리에 나타나나요?</label>
+        <label><input type="checkbox"> 저장하면 "저장되었어요!" 메시지가 뜨나요?</label>
+        <label><input type="checkbox"> 취소하면 모두 지워지나요?</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><h2 class="section-title">🔧 잘 안 될 때는?</h2></div>
+      <div class="faq-box">
+        <div class="faq-item"><p class="q2">이모티콘이나 글자가 안 나타나요.</p><p class="a2">사진 위를 먼저 콕 찍었는지 확인해요. 안 찍으면 TouchX·TouchY가 0이라 왼쪽 위에 그려질 수 있어요.</p></div>
+        <div class="faq-item"><p class="q2">스티커나 글자가 너무 작아요.</p><p class="a2">디자이너에서 캔버스1의 <b>글꼴 크기</b>를 40쯤으로 키워요. 더 크게 하고 싶으면 숫자를 더 올려요.</p></div>
+        <div class="faq-item"><p class="q2">저장 버튼을 눌러도 메시지가 안 떠요.</p><p class="a2">저장하기 블록을 <b>평가하지만 결과 무시하기</b>로 잘 감쌌는지 확인해요.</p></div>
+        <div class="faq-item"><p class="q2">블록에 빨간 느낌표(⚠)가 보여요.</p><p class="a2">빈 소켓이 있거나 모양이 다른 블록이 끼워진 거예요. 하나씩 확인해요.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head">
+        <span class="section-num">생각을 넓혀요</span>
+        <h2 class="section-title">나만의 아이디어를 적어봐요 🌟</h2>
+      </div>
+      <div class="think-item"><p class="q">1. 이모티콘 버튼을 하나 더 추가한다면? 이유도 써보세요.</p><div class="write-line"></div></div>
+      <div class="think-item"><p class="q">2. 말풍선에 어떤 말을 넣고 싶나요?</p><div class="write-line"></div></div>
+      <div class="think-item"><p class="q">3. 저장했을 때 어떤 메시지가 뜨면 더 재미있을까요?</p><div class="write-line"></div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="section-head"><span class="section-num">정리하기</span><h2 class="section-title">오늘 배운 낱말 📚</h2></div>
+      <div class="glossary">
+        <span><b>컴포넌트</b> — 화면을 이루는 부품</span>
+        <span><b>이벤트</b> — "언제 ~했을 때"</span>
+        <span><b>블록</b> — 조립하는 퍼즐 조각</span>
+        <span><b>속성</b> — 컴포넌트가 가진 성질</span>
+        <span><b>팔레트</b> — 부품을 꺼내오는 서랍</span>
+        <span><b>매개변수</b> — 이벤트가 알려주는 정보</span>
+        <span><b>전역변수</b> — 계속 기억하는 상자</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner closing">
+      <h2 class="section-title" style="text-align:center;">수고했어요! 🎉</h2>
+      <p>천천히 하나씩 만들어봐요. 실수해도 괜찮아요, 다시 만들면 되니까요! 😊</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="kbd-hint" id="kbdHint">← → 방향키 또는 아래 버튼으로 넘겨요</div>
+<div class="deck-nav">
+  <button id="prevBtn" aria-label="이전">‹</button>
+  <span class="counter" id="counter">1 / 1</span>
+  <button id="nextBtn" aria-label="다음">›</button>
+  <button id="fsBtn" class="fs" aria-label="전체화면">⛶</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const filmstrip = document.getElementById('filmstrip');
+  const counter = document.getElementById('counter');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const fsBtn = document.getElementById('fsBtn');
+  const kbdHint = document.getElementById('kbdHint');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.addEventListener('click', () => show(i));
+    filmstrip.appendChild(dot);
+  });
+  const dots = Array.from(filmstrip.children);
+
+  function show(i){
+    current = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+    dots.forEach((d, idx) => d.classList.toggle('active', idx === current));
+    counter.textContent = (current + 1) + ' / ' + slides.length;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+    if (current > 0 && kbdHint) { kbdHint.style.display = 'none'; }
+  }
+
+  prevBtn.addEventListener('click', () => show(current - 1));
+  nextBtn.addEventListener('click', () => show(current + 1));
+  fsBtn.addEventListener('click', () => {
+    try{
+      if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen(); }
+    }catch(e){}
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)) { e.preventDefault(); show(current + 1); }
+    else if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) { e.preventDefault(); show(current - 1); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? show(current + 1) : show(current - 1); }
+  }, {passive:true});
+
+  show(0);
+</script>
+
+<script>
+  // ---- 실행 화면 인터랙티브 데모 (캔버스1.터치했을때 / 텍스트그리기 / 저장하기 / 지우기 흉내) ----
+  (function(){
+    const canvas = document.getElementById('liveCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const cw = canvas.width, ch = canvas.height;
+
+    let lastX = 0, lastY = 0;       // 전역변수 TouchX, TouchY 흉내 (초기값 0)
+    let stickers = [];              // {emoji, x, y}
+    let texts = [];                 // {text, x, y}
+    let bgMode = 'none';            // 'none' | 'gradient' | 'camera'
+    let gradientIndex = -1;
+    let bgSnapshot = null;          // 카메라로 찍은 프레임을 담아둘 오프스크린 캔버스
+    let tapTimer = null;
+    let showTap = false;
+
+    const gradients = [
+      ['#8FD3E8', '#B7E4C7', '#7FCB93'],
+      ['#FFD59E', '#FF9E9E', '#8C6FF7'],
+      ['#B7E4C7', '#FFF3C4', '#FFC93C'],
+      ['#A0D9EF', '#6FA8DC', '#2E2A26']
+    ];
+
+    function roundRect(x, y, w, h, r){
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawCover(source, sw, sh){
+      const scale = Math.max(cw / sw, ch / sh);
+      const nw = sw * scale, nh = sh * scale;
+      const nx = (cw - nw) / 2, ny = (ch - nh) / 2;
+      ctx.drawImage(source, nx, ny, nw, nh);
+    }
+
+    function drawBackground(){
+      if(bgMode === 'camera' && bgSnapshot){
+        ctx.drawImage(bgSnapshot, 0, 0, cw, ch);
+      } else if(bgMode === 'gradient'){
+        const stops = gradients[gradientIndex];
+        const g = ctx.createLinearGradient(0, 0, 0, ch);
+        stops.forEach((c, i) => g.addColorStop(i / (stops.length - 1), c));
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, cw, ch);
+      } else {
+        ctx.fillStyle = '#FAF7EE';
+        ctx.fillRect(0, 0, cw, ch);
+        ctx.fillStyle = '#B7B0A0';
+        ctx.font = '10px "Gowun Dodum", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('📸 사진찍기를 눌러보세요', cw / 2, ch / 2);
+      }
+    }
+
+    function redraw(){
+      ctx.clearRect(0, 0, cw, ch);
+      drawBackground();
+
+      texts.forEach(t => {
+        ctx.font = '12px "Jua", sans-serif';
+        const tw = ctx.measureText(t.text).width;
+        const boxW = tw + 16, boxH = 22;
+        let bx = t.x - boxW / 2, by = t.y - boxH / 2;
+        bx = Math.max(2, Math.min(cw - boxW - 2, bx));
+        by = Math.max(2, Math.min(ch - boxH - 2, by));
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        roundRect(bx, by, boxW, boxH, 8);
+        ctx.fill();
+        ctx.fillStyle = '#2B2A33';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(t.text, bx + boxW / 2, by + boxH / 2 + 1);
+      });
+
+      stickers.forEach(s => {
+        ctx.font = '26px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(s.emoji, s.x, s.y);
+      });
+
+      if(showTap){
+        ctx.strokeStyle = 'rgba(255,111,94,0.9)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.arc(lastX, lastY, 10, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    function pulseTap(){
+      showTap = true;
+      redraw();
+      clearTimeout(tapTimer);
+      tapTimer = setTimeout(() => { showTap = false; redraw(); }, 650);
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      lastX = Math.round((e.clientX - rect.left) * (cw / rect.width));
+      lastY = Math.round((e.clientY - rect.top) * (ch / rect.height));
+      pulseTap();
+    });
+
+    function placeEmoji(emoji){
+      stickers.push({ emoji, x: lastX, y: lastY });
+      redraw();
+    }
+    document.querySelectorAll('.live-emoji-btn2').forEach(btn => {
+      btn.addEventListener('click', () => placeEmoji(btn.dataset.emoji));
+    });
+
+    const speechInput = document.getElementById('liveSpeechInput');
+    document.getElementById('liveSpeechAdd').addEventListener('click', () => {
+      const val = (speechInput.value || '').trim();
+      if(!val) return;
+      texts.push({ text: val, x: lastX, y: lastY });
+      speechInput.value = '';
+      redraw();
+    });
+    speechInput.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') document.getElementById('liveSpeechAdd').click();
+    });
+
+    const takeBtn = document.getElementById('liveTakePic');
+    takeBtn.addEventListener('click', async () => {
+      const originalLabel = takeBtn.textContent;
+      takeBtn.textContent = '📸 여는 중...';
+      let gotCamera = false;
+      try{
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.muted = true;
+        await video.play();
+        await new Promise(r => setTimeout(r, 250));
+        const off = document.createElement('canvas');
+        off.width = cw; off.height = ch;
+        const offCtx = off.getContext('2d');
+        const scale = Math.max(cw / video.videoWidth, ch / video.videoHeight);
+        const nw = video.videoWidth * scale, nh = video.videoHeight * scale;
+        offCtx.drawImage(video, (cw - nw) / 2, (ch - nh) / 2, nw, nh);
+        bgSnapshot = off;
+        bgMode = 'camera';
+        stream.getTracks().forEach(t => t.stop());
+        gotCamera = true;
+      }catch(err){
+        gotCamera = false;
+      }
+      if(!gotCamera){
+        gradientIndex = (gradientIndex + 1) % gradients.length;
+        bgMode = 'gradient';
+      }
+      stickers = []; texts = [];
+      takeBtn.textContent = originalLabel;
+      redraw();
+    });
+
+    const alertBox = document.getElementById('liveAlert');
+    document.getElementById('liveSaveBtn').addEventListener('click', () => {
+      alertBox.classList.add('show');
+      try{
+        canvas.toBlob((blob) => {
+          if(!blob) return;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'my_photo_sticker.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 1500);
+        });
+      }catch(e){ /* 다운로드가 막힌 환경이면 알림창만 보여줘요 */ }
+    });
+    document.getElementById('liveAlertOk').addEventListener('click', () => {
+      alertBox.classList.remove('show');
+    });
+
+    document.getElementById('liveCancelBtn').addEventListener('click', () => {
+      stickers = []; texts = [];
+      bgMode = 'none'; bgSnapshot = null;
+      redraw();
+    });
+
+    redraw();
+  })();
+</script>
+
+</body>
+</html>

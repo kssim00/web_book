@@ -119,7 +119,7 @@ function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('sh
 const L = [];
 window.SCRATCH_COURSE.forEach(n => {
   if (n.zone === 'gate') L.push({id: n.id, gate: true, t: n.title, desc: n.desc, lm: n.title});
-  else n.ms.forEach((m, i) => L.push({id: m[0], no: m[1], t: m[2], needs: m[3] || '', rev: n.zone === 'opt', rest: n.zone === 'rest', ai: n.zone === 'game' || n.zone === 'opt', kind: n.zone === 'rest' ? 'rest' : n.id,
+  else n.ms.forEach((m, i) => L.push({id: m[0], no: m[1], t: m[2], needs: m[3] || '', url: m[4] || '', rev: n.zone === 'opt', rest: n.zone === 'rest', ai: n.zone === 'game' || n.zone === 'opt', kind: n.zone === 'rest' ? 'rest' : n.id,
     lm: i === 0 && n.zone !== 'base' ? n.title : null, sub: n.zone === 'opt' ? '선택 · 골라서 만들기' : n.title + ' · ' + n.sub, desc: n.desc}));
 });
 const N = L.length, IDX = Object.fromEntries(L.map((x, i) => [x.id, i]));
@@ -378,6 +378,9 @@ function showCard(i) {
     $('cDesc').textContent = (passed(it) ? '🎉 합격했어요! ' : '') + it.desc;
     box.appendChild(btn('go', '🗼 COS 시험 연습 하러 가기', () => window.open('https://kssim00.github.io/coden_edu/cos_scratch2_lab/index.html', '_blank')));
     if (TEACHER()) box.appendChild(btn('t', passed(it) ? '🔑 합격 표시 지우기' : '🔑 합격 표시하기 (선생님)', () => { S.scratch[k] = !passed(it); save(); paint(); showCard(i); if (S.scratch[k]) { toast('🏅 COS 2급 합격! 게임 만들기 섬이 열렸어요.'); const ni = nowIdx(); if (ni > i) setTimeout(() => goTo(ni), 1200); } }));
+  } else if (it.url) {
+    $('cDesc').textContent = it.sub;
+    box.appendChild(btn('go', '▶ 열기', () => window.open(it.url, '_blank')));
   } else if (MS[it.id]) {
     box.appendChild(btn('go', '▶ 미리 해보기', () => openPv(i)));
   } else {

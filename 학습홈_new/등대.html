@@ -222,7 +222,7 @@ function paintTools() {
     const ms = (n.ms || []).filter(m => !q || (m[1] + ' ' + m[2]).indexOf(q) >= 0); if (!ms.length) return '';
     return '<div class="sec">' + esc(n.title) + (n.opt ? ' · 선택' : '') + '</div>' + ms.map(m =>
       '<div class="m' + (done[m[0]] ? ' done' : '') + (m[0] === now ? ' now' : '') + '"><span class="no">' + esc(m[1]) + '</span><span class="t">' + esc(m[2]) + '</span>' +
-      '<a target="_blank" href="' + sheet(cur, m) + '">미션지</a>' + (hasPv(cur, m[0]) ? '<a target="_blank" href="' + pv(cur, m) + '">완성작</a>' : '') +
+      (m[4] ? '<a target="_blank" href="' + esc(m[4]) + '">열기</a>' : '<a target="_blank" href="' + sheet(cur, m) + '">미션지</a>' + (hasPv(cur, m[0]) ? '<a target="_blank" href="' + pv(cur, m) + '">완성작</a>' : '')) +
       (n.opt ? '' : '<button data-id="' + m[0] + '" data-t="' + esc(m[1] + ' ' + m[2]) + '">진도</button>') + '</div>').join('');
   }).join('') || '<p class="note">찾는 미션이 없어요.</p>';
   document.querySelectorAll('.m button').forEach(b => b.onclick = () => setNow(b.dataset.id, b.dataset.t));

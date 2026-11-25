@@ -1,0 +1,2854 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>스크래치 게임 퀘스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1:wght@400;600;700;800&family=Press+Start+2P&display=swap">
+<style>
+/* Layout: 무대 좌표 격자(480×360) 위에 레벨 지도 → 개념 도장 → 레벨 학습지(실행화면+코드+빈칸+퀴즈) 순서로 쌓는 한 장짜리 퀘스트 북 */
+:root{
+  --bg:#EEF2F8; --bg-grid:#DCE3EF; --panel:#FFFFFF; --panel-2:#F6F8FC;
+  --ink:#141B2E; --ink-2:#4A5570; --line:#D3DAE8;
+  --accent:#FF7A1A; --accent-ink:#B04A00; --blue:#2F6BFF; --good:#13A36B; --bad:#E0364C;
+  --code-bg:#F9FAFD;
+  --f-display:"Black Han Sans","Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"Gothic A1","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-pixel:"Press Start 2P","Courier New",monospace;
+  --c-motion:#4C97FF; --c-looks:#9966FF; --c-sound:#CF63CF; --c-events:#E6A800; --c-control:#FFAB19;
+  --c-sensing:#5CB1D6; --c-operators:#59C059; --c-variables:#FF8C1A; --c-list:#FF661A;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1322; --bg-grid:#1A2236; --panel:#161D31; --panel-2:#1C243B;
+  --ink:#E9EDF7; --ink-2:#A6B0C8; --line:#2B3552;
+  --accent:#FF8A33; --accent-ink:#FFB37A; --blue:#6B97FF; --good:#3CCB8F; --bad:#FF6B7E;
+  --code-bg:#11182A; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0E1322; --bg-grid:#1A2236; --panel:#161D31; --panel-2:#1C243B;
+  --ink:#E9EDF7; --ink-2:#A6B0C8; --line:#2B3552;
+  --accent:#FF8A33; --accent-ink:#FFB37A; --blue:#6B97FF; --good:#3CCB8F; --bad:#FF6B7E;
+  --code-bg:#11182A; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65;
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:40px 40px;background-position:-1px -1px}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:20px 80px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;letter-spacing:.01em;text-wrap:balance;margin:0}
+h2{font-size:clamp(26px,4vw,34px);line-height:1.2}
+h3{font-size:22px;line-height:1.3}
+p{margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.muted{color:var(--ink-2)}
+.pix{font-family:var(--f-pixel);font-size:11px;letter-spacing:.04em}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:center;padding-block:28px 32px}
+.hero h1{font-size:clamp(40px,7vw,72px);line-height:1.02}
+.hero h1 .o{color:var(--accent)}
+.hero .lead{font-size:18px;margin-top:14px;max-width:34em;color:var(--ink-2)}
+.hero-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);font-size:14px;font-weight:600}
+.xpbar{margin-top:22px;background:var(--panel);border:2px solid var(--ink);border-radius:10px;padding:12px 14px}
+.xpbar .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.xpbar .track{height:16px;border:2px solid var(--ink);border-radius:6px;margin-top:8px;overflow:hidden;background:var(--panel-2)}
+.xpbar .fill{height:100%;background:repeating-linear-gradient(90deg,var(--accent) 0 14px,var(--accent-ink) 14px 16px);width:0;transition:width .4s}
+.stage-frame{background:var(--panel);border:2px solid var(--ink);border-radius:12px;padding:10px;box-shadow:6px 6px 0 var(--ink)}
+.stage-frame canvas{display:block;width:100%;height:auto;border-radius:6px;background:#fff}
+.stage-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.flag,.stop{width:30px;height:30px;border-radius:6px;border:1px solid var(--line);background:var(--panel-2);display:grid;place-items:center}
+.flag svg{width:18px;height:18px}
+.stop span{width:14px;height:14px;background:var(--bad);border-radius:3px;display:block}
+.stage-bar .name{font-weight:700;font-size:14px;margin-left:auto;color:var(--ink-2)}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:2px solid var(--ink);margin-inline:-16px;padding:8px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-weight:700;font-size:14px;padding:6px 12px;border-radius:8px;border:1px solid transparent}
+.nav a:hover{border-color:var(--line);background:var(--panel)}
+.nav a.on{background:var(--ink);color:var(--bg)}
+
+section.block{margin-top:44px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.sec-head .eyebrow{font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--accent-ink);text-transform:uppercase}
+
+/* level map */
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.lvcard{position:relative;text-align:left;background:var(--panel);border:2px solid var(--ink);border-radius:12px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px;color:var(--ink);transition:transform .12s, box-shadow .12s}
+.lvcard:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink)}
+.lvcard.sel{box-shadow:4px 4px 0 var(--accent);border-color:var(--accent)}
+.lvcard .top{display:flex;align-items:center;justify-content:space-between}
+.lvcard .lv{font-family:var(--f-pixel);font-size:10px;background:var(--ink);color:var(--bg);padding:5px 7px;border-radius:5px}
+.lvcard .stars{color:var(--accent);letter-spacing:2px;font-size:14px}
+.lvcard .ico{font-size:34px;line-height:1}
+.lvcard .t{font-family:var(--f-display);font-size:20px;line-height:1.2}
+.lvcard .tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink-2)}
+.tag.v{background:color-mix(in srgb,var(--c-variables) 18%,transparent);border-color:color-mix(in srgb,var(--c-variables) 50%,transparent);color:var(--accent-ink)}
+.tag.cl{background:color-mix(in srgb,var(--c-control) 18%,transparent);border-color:color-mix(in srgb,var(--c-control) 50%,transparent);color:var(--accent-ink)}
+.tag.li{background:color-mix(in srgb,var(--c-list) 18%,transparent);border-color:color-mix(in srgb,var(--c-list) 55%,transparent);color:var(--accent-ink)}
+.lvcard .done{position:absolute;top:-10px;right:-10px;background:var(--good);color:#fff;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px;border:2px solid var(--ink);transform:rotate(8deg)}
+.tier{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-top:6px;font-weight:800;color:var(--ink-2);font-size:14px}
+.tier::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
+
+/* concept dojo */
+.dojo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.card.big{grid-column:1/-1}
+.card h3{display:flex;align-items:center;gap:10px}
+.card h3 .k{font-family:var(--f-pixel);font-size:10px;padding:5px 7px;border-radius:5px;color:#fff}
+.card .desc{margin-top:8px}
+.card .desc b{color:var(--accent-ink)}
+.demo{margin-top:14px;background:var(--panel-2);border:1px dashed var(--line);border-radius:10px;padding:14px}
+.demo svg{display:block;max-width:100%;height:auto}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.btn{border:2px solid var(--ink);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 12px;font-weight:700;font-size:14px}
+.btn:hover{background:var(--panel-2)}
+.btn.pri{background:var(--accent);color:#1b0d00;border-color:var(--ink)}
+.btn.sm{padding:3px 9px;font-size:13px}
+.bblk{display:inline-block;color:#fff;font-weight:700;font-size:13px;padding:4px 10px;border-radius:5px;border:none}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+.listmon{display:inline-flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;background:var(--panel);min-width:180px;max-width:100%;font-size:13px}
+.listmon .h{font-weight:800;text-align:center;padding:3px 6px;border-bottom:1px solid var(--line)}
+.listmon ol{list-style:none;margin:0;padding:4px;display:flex;flex-direction:column;gap:3px;max-height:230px;overflow:auto}
+.listmon li{display:flex;align-items:center;gap:6px}
+.listmon li .i{width:22px;text-align:right;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.listmon li .v{flex:1;background:var(--c-list);color:#fff;border-radius:4px;padding:1px 8px;font-weight:700;min-height:22px}
+.listmon .f{border-top:1px solid var(--line);padding:3px 8px;display:flex;justify-content:space-between;color:var(--ink-2)}
+.listmon li.new .v{animation:pop .4s}
+@keyframes pop{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+.varmon{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-weight:700;font-size:14px}
+.varmon .val{background:var(--c-variables);color:#fff;border-radius:999px;padding:0 10px;min-width:36px;text-align:center;font-variant-numeric:tabular-nums}
+input[type=text]{font:inherit;border:2px solid var(--line);border-radius:8px;padding:5px 9px;background:var(--panel);color:var(--ink);min-width:0}
+
+/* level detail */
+.level{background:var(--panel);border:2px solid var(--ink);border-radius:16px;padding:22px;box-shadow:8px 8px 0 var(--ink)}
+.lv-head{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.lv-head .big-ico{font-size:56px;line-height:1;width:84px;height:84px;display:grid;place-items:center;background:var(--panel-2);border:2px solid var(--ink);border-radius:14px}
+.lv-head .meta{flex:1;min-width:240px}
+.lv-head h2 small{display:block;font-family:var(--f-pixel);font-size:11px;color:var(--accent-ink);margin-bottom:8px}
+.lv-head .src{font-size:13px;color:var(--ink-2);margin-top:6px}
+.lv-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;margin-top:22px}
+.panel-t{font-family:var(--f-display);font-size:19px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.panel-t .n{font-family:var(--f-pixel);font-size:10px;background:var(--accent);color:#1b0d00;border-radius:4px;padding:4px 6px}
+.mission{background:var(--panel-2);border-radius:10px;padding:12px 14px;border-left:5px solid var(--accent)}
+.mission ul{margin:6px 0 0;padding-left:20px}
+.ctrls{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ctrls .key{min-width:44px;height:40px;border:2px solid var(--ink);border-bottom-width:4px;border-radius:8px;background:var(--panel);color:var(--ink);font-weight:800;font-size:15px;padding:0 10px;touch-action:none;user-select:none;-webkit-user-select:none}
+.ctrls .key:active,.ctrls .key.down{transform:translateY(2px);border-bottom-width:2px;background:var(--panel-2)}
+.hint{font-size:13px;color:var(--ink-2);margin-top:6px}
+.sprites{display:flex;flex-wrap:wrap;gap:8px}
+.sprite{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--panel-2);font-size:14px}
+.sprite .e{font-size:24px}
+.sprite b{display:block;line-height:1.2}
+.sprite span{font-size:12px;color:var(--ink-2)}
+
+.codebox{background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:12px;overflow-x:auto}
+.code-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.code-tabs button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:3px 12px;font-weight:700;font-size:13px}
+.code-tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.scripts{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.script{display:inline-flex;flex-direction:column;align-items:flex-start;filter:drop-shadow(0 1px 0 rgba(0,0,0,.18))}
+.b{position:relative;color:#fff;font-weight:700;font-size:13px;line-height:1.3;padding:7px 10px 7px 10px;border-radius:5px;background:var(--cc);white-space:nowrap;display:flex;align-items:center;gap:5px;min-height:34px}
+.b.hat{border-radius:22px 22px 5px 5px;padding-top:14px;min-width:120px}
+.b + .b,.b + .c,.c + .b,.c + .c{margin-top:-1px}
+.c{display:flex;flex-direction:column;align-items:flex-start}
+.c > .head{border-radius:5px 5px 5px 0}
+.c > .body{border-left:16px solid var(--cc);padding:1px 0;min-height:22px;display:flex;flex-direction:column;align-items:flex-start}
+.c > .mid{border-radius:0 5px 5px 0;min-height:28px}
+.c > .foot{background:var(--cc);height:16px;width:64px;border-radius:0 0 5px 5px}
+.in{background:#fff;color:#333;border-radius:999px;padding:1px 8px;min-width:22px;text-align:center;font-weight:600}
+.dd{background:rgba(0,0,0,.16);border:1px solid rgba(0,0,0,.12);border-radius:5px;padding:1px 7px;font-weight:700}
+.dd::after{content:" ▾";font-size:10px}
+.bool{background:var(--cc);border:1px solid rgba(0,0,0,.15);clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%);padding:3px 14px;display:inline-flex;align-items:center;gap:5px}
+.rep{background:var(--cc);border:1px solid rgba(0,0,0,.15);border-radius:999px;padding:2px 9px;display:inline-flex;align-items:center;gap:5px}
+.cat-m{--cc:var(--c-motion)} .cat-l{--cc:var(--c-looks)} .cat-s{--cc:var(--c-sound)} .cat-e{--cc:var(--c-events)}
+.cat-c{--cc:var(--c-control)} .cat-n{--cc:var(--c-sensing)} .cat-o{--cc:var(--c-operators)} .cat-v{--cc:var(--c-variables)} .cat-L{--cc:var(--c-list)}
+.badge{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#141B2E;color:#fff;font-size:11px;font-weight:800;border:2px solid #fff;margin-left:4px;flex:none}
+.blank-sel{font:inherit;font-weight:800;font-size:13px;border:2px dashed #141B2E;background:#FFF6C9;color:#141B2E;border-radius:999px;padding:0 4px;min-width:60px}
+.blank-sel.ok{background:#C9F5DF;border-style:solid;border-color:var(--good)}
+.blank-sel.no{background:#FFD4DA;border-style:solid;border-color:var(--bad)}
+.explain{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.explain li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.explain li .badge{margin:2px 0 0;background:var(--ink);border-color:var(--panel);color:var(--panel)}
+.key-idea{margin-top:18px;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+.key-idea .kh{background:var(--ink);color:var(--bg);font-weight:800;padding:6px 12px;font-size:14px}
+.key-idea .kb{padding:12px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+.key-idea svg{max-width:260px;height:auto}
+.lv-bottom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:24px}
+.quiz .q{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel-2)}
+.quiz .q p{font-weight:700}
+.quiz .opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.quiz .opts button{text-align:left;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;font-size:15px}
+.quiz .opts button.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 15%,var(--panel))}
+.quiz .opts button.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--panel))}
+.quiz .why{margin-top:8px;font-size:14px;color:var(--ink-2)}
+.entry-t{width:100%;border-collapse:collapse;font-size:14px}
+.entry-t th,.entry-t td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.entry-t th{font-size:12px;letter-spacing:.06em;color:var(--ink-2)}
+.chal{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.chal li{display:flex;gap:10px;align-items:flex-start}
+.chal input{width:20px;height:20px;margin-top:3px;accent-color:var(--accent);flex:none}
+textarea{font:inherit;width:100%;min-height:76px;border:2px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--panel);color:var(--ink);resize:vertical}
+.clear-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding-top:16px;border-top:2px dashed var(--line)}
+.pager{display:flex;gap:8px}
+.result{font-weight:800;margin-left:8px}
+.result.ok{color:var(--good)} .result.no{color:var(--bad)}
+
+/* glossary */
+.gloss{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 10px}
+.gloss table{min-width:640px}
+.footer{margin-top:50px;font-size:13px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px}
+
+@media (max-width:860px){
+  .hero,.lv-grid,.lv-bottom,.dojo,.split{grid-template-columns:minmax(0,1fr)}
+  .key-idea .kb{grid-template-columns:minmax(0,1fr)}
+  .level{padding:16px;box-shadow:5px 5px 0 var(--ink)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* svg & extra */
+svg .t{fill:var(--ink);font-family:var(--f-body);font-size:13px;font-weight:700}
+svg .tw{fill:#fff;font-family:var(--f-body);font-size:13px;font-weight:800}
+svg .muted-t{fill:var(--ink-2)}
+.s-ink{fill:var(--ink)} .s-panel{fill:var(--panel)} .s-p2{fill:var(--panel-2)} .s-acc{fill:var(--accent)} .s-blue{fill:var(--blue)}
+.s-var{fill:var(--c-variables)} .s-list{fill:var(--c-list)} .s-good{fill:var(--good)} .s-bad{fill:var(--bad)} .s-events{fill:var(--c-events)}
+.k-ink{stroke:var(--ink)} .k-line{stroke:var(--line)} .k-acc{stroke:var(--accent)} .k-blue{stroke:var(--blue)}
+.cat-p{--cc:#0FBD8C}
+.swatch{display:inline-block;width:16px;height:16px;border-radius:50%;background:#FF2D2D;border:2px solid #fff;vertical-align:middle}
+.sprite-code + .sprite-code{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.sp-label{font-size:13px;color:var(--ink-2);margin-bottom:8px}
+.clone-el{position:absolute;font-size:28px;line-height:1;background:none;border:0;padding:0;transform:translate(-50%,-50%);cursor:pointer}
+@keyframes flash{0%{background:color-mix(in srgb,var(--c-events) 40%,var(--panel-2))}100%{background:var(--panel-2)}}
+.demo.flash{animation:flash 1.2s}
+.eyebrow{font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--accent-ink)}
+.coord-wrap canvas{cursor:crosshair;touch-action:none}
+.src-list{margin:8px 0 0;padding-left:18px;columns:2;column-gap:28px}
+.src-list li{break-inside:avoid;margin-bottom:4px}
+@media (max-width:640px){.src-list{columns:1}}
+.key-idea svg{width:260px;max-width:100%}
+#listSvg svg{width:240px;max-width:100%}
+#varSvg svg{width:160px;max-width:100%}
+#bcSvg svg{width:100%;max-width:300px}
+.cat-k{--cc:#FF6680}
+#snakeLists .listmon{min-width:104px;flex:1 1 104px;max-width:180px}
+#snakeLists .listmon ol{max-height:200px}
+
+</style>
+<div class="wrap">
+<header class="hero">
+ <div style="min-width:0">
+  <p class="eyebrow">초등 6학년 · 엔트리 기초 다음 단계</p>
+  <h1>스크래치<br><span class="o">게임 퀘스트</span></h1>
+  <p class="lead">유튜브 게임 만들기 영상 28개(한국어 19개 + 영어 9개)를 쉬운 순서대로 22개 레벨로 정리했어요. 실행화면에서 먼저 놀아 보고, 코드를 한 줄씩 읽고, 빈칸과 퀴즈로 확인해요. 엔트리에서 배운 <b>복제본·변수·리스트</b>가 스크래치에서는 어떻게 생겼는지도 함께 비교해요.</p>
+  <div class="hero-stats"><span class="chip">레벨 22개</span><span class="chip">원본 영상 28개</span><span class="chip">바로 해 보는 미니 게임 22개</span></div>
+  <div class="xpbar" aria-live="polite"><div class="row"><b id="xpRank">코딩 새싹</b><span class="pix" id="xpNum">0 XP</span></div><div class="track"><div class="fill" id="xpFill"></div></div><div class="row" style="margin-top:6px"><span class="hint" id="xpCount" style="margin:0">클리어 0 / 22</span><span class="hint" style="margin:0">기록은 이 브라우저에만 저장돼요</span></div></div>
+ </div>
+ <div class="stage-frame coord-wrap" style="min-width:0">
+  <div class="stage-bar"><b style="font-size:14px">무대 좌표 탐험기</b><span class="name">480 × 360</span></div>
+  <canvas id="coord" aria-label="스크래치 무대 좌표 탐험기: 마우스를 움직이면 x, y 좌표가 보여요"></canvas>
+  <p class="hint">마우스(손가락)를 움직여 보세요. 무대 가운데가 (0, 0), 가로는 x: -240 ~ 240, 세로는 y: -180 ~ 180이에요. 모든 레벨의 코드가 이 좌표로 움직여요.</p>
+ </div>
+</header>
+<nav class="nav" aria-label="바로가기"><a href="#sec-map">레벨 지도</a><a href="#sec-dojo">개념 도장</a><a href="#sec-level">레벨 학습지</a><a href="#sec-dict">블록 사전</a></nav>
+<section class="block" id="sec-map"><div class="sec-head"><div><p class="eyebrow">LEVEL MAP</p><h2>레벨 지도</h2></div><p class="muted" style="max-width:34em">별이 많을수록 어려워요. 1단계부터 차례대로 깨면 복제본 → 변수 → 리스트 순서로 실력이 쌓여요. 카드를 누르면 아래에 학습지가 열려요.</p></div><div class="map" id="map"></div></section>
+<section class="block" id="sec-dojo"><div class="sec-head"><div><p class="eyebrow">CONCEPT DOJO</p><h2>개념 도장</h2></div><p class="muted" style="max-width:34em">게임에 계속 나오는 다섯 가지 개념을 직접 눌러 보며 익혀요. 막히면 언제든 여기로 돌아오세요.</p></div><div class="dojo" id="dojo"></div></section>
+<section class="block" id="sec-level"><div class="sec-head"><div><p class="eyebrow">WORKSHEET</p><h2>레벨 학습지</h2></div><p class="muted" style="max-width:34em">① 실행해 보기 → ③ 코드 읽기 → ⑤ 빈칸 → ⑥ 퀴즈 → ⑧ 도전 과제 순서로 풀어요. 다 했으면 맨 아래 "레벨 클리어!"</p></div><div id="level"></div></section>
+<section class="block" id="sec-dict"><div class="sec-head"><div><p class="eyebrow">BLOCK DICTIONARY</p><h2>블록 사전: 스크래치 ↔ 엔트리</h2></div><p class="muted" style="max-width:34em">엔트리에서 쓰던 블록이 스크래치에서는 이름이 조금 달라요. 모양과 색깔로 찾아보세요.</p></div><div id="dict"></div></section>
+<footer class="footer">
+ <b>원본 영상과 레벨</b>
+ <ul class="src-list">
+  <li>LV1 유치원생도 만들 수 있는 점프 게임 (15분)</li>
+  <li>LV2 스크래치 게임 고양이 달리기 (배경이 달린다)</li>
+  <li>LV3 How to Make a Motor Bike Game in Scratch</li>
+  <li>LV4 초등학교 3학년이 30분 만에 만든 쥐잡기 게임</li>
+  <li>LV5 20분이면 게임 하나 뚝딱: 야구공 때리기</li>
+  <li>LV6 Lecture 05 · Create Fish Shark Game in Scratch</li>
+  <li>LV7 스크래치 블록 코딩 사격 게임</li>
+  <li>LV8 20분 만에 원숭이 바나나 잡기</li>
+  <li>LV9 20분 만에 똥 피하기 + 똥 피하기 실행 영상</li>
+  <li>LV10 스크래치로 만든 미친 공룡 피하기</li>
+  <li>LV11 똥 터뜨리기 게임 만들기</li>
+  <li>LV12 코딩으로 비행기 게임 만들기 + 슈팅 Project 1</li>
+  <li>LV13 How To Make A Zombie Shooter Game in Scratch · Part 1</li>
+  <li>LV14 Scratch Tutorial: How to create 3D Minecraft</li>
+  <li>LV15 Lecture 19 · How to Make Golf Peaks Game in Scratch</li>
+  <li>LV16 리듬 게임 만들기 (25분)</li>
+  <li>LV17 스크래치로 만든 슈팅 게임 (유령 사냥)</li>
+  <li>LV18 How to make a Fish Frenzy Game in Scratch · Part 1</li>
+  <li>LV19 How to make a Surviv-like game in Scratch Pt 1</li>
+  <li>LV20 Scratch 2D Minecraft Easy Tutorial Ep 1</li>
+  <li>LV21 스네이크 게임 · 무한의 계단 · 슈퍼 고양이 · 돌 피하기 · 게임 모음 실행 영상</li>
+  <li>LV22 Make a 3D Engine in Scratch · E1: Wireframe 3D</li>
+ </ul>
+ <p style="margin-top:10px">코드는 영상 화면에 나온 블록을 읽어 한국어 스크래치 블록 이름으로 정리했어요(숫자 일부는 영상 진행 중 바뀐 최종값). 영어 영상의 블록 이름은 한국어 스크래치 메뉴 이름으로 바꿨어요. 레벨 18·19·22는 원본이 길고 어려워서 핵심만 남겨 줄였고, 레벨 21은 실행 장면만 있는 영상들이라 리스트를 배우기 좋게 코드를 새로 설계했어요. 실행화면은 이 페이지에서 바로 돌아가도록 같은 규칙으로 다시 만든 연습판이에요.</p>
+</footer>
+</div>
+
+<script>
+/* ===== 레벨 데이터 =====
+ 코드 표기법: 줄 맨 앞 글자 = 블록 종류
+ m 동작 l 형태 s 소리 e 이벤트 c 제어 n 감지 o 연산 v 변수 L 리스트 p 펜
+ ^ = 모자 블록, @ = 감싸는 블록 시작, else = 아니면, end = 끝
+ (숫자) 입력칸, [선택] 드롭다운, <n ...> 판단 블록, {v ...} 값 블록, (?a) 빈칸, #1 설명 번호, %F 초록 깃발 */
+const LEVELS = [
+/* ---------------- LV 1 ---------------- */
+{ id:'jump', no:1, tier:1, stars:1, icon:'🐱', title:'점프! 곰 피하기',
+  video:'유치원생도 만들 수 있는 점프 게임 (15분)',
+  concepts:[['키 입력'],['반복하기','cl'],['좌표'],['변수: 점수','v']],
+  mission:'달려오는 곰을 스페이스 키로 점프해서 피해요. 곰이 한 번 지나갈 때마다 점수가 1점 올라가요.',
+  rules:['스페이스 키 = 점프','곰에 닿으면 모든 것이 멈춰요','곰을 넘을 때마다 점수 +1'],
+  controls:['space'], game:'jump',
+  sprites:[['🐱','고양이','주인공'],['🐻','곰','장애물 (Bear-walking)'],['🏜️','배경','Desert']],
+  code:[
+   {sprite:'고양이', scripts:[`
+e^ %F 클릭했을 때
+m x: (-180) y: (-120) (으)로 이동하기 #1
+c@ 무한 반복하기
+ c@ 만약 <n [스페이스] 키를 눌렀는가?> (이)라면 #2
+  s [야옹] 재생하기
+  c@ (20) 번 반복하기 #3
+   m y좌표를 (10) 만큼 바꾸기
+  end
+  c@ (20) 번 반복하기
+   m y좌표를 (-10) 만큼 바꾸기
+  end
+ end
+end`]},
+   {sprite:'곰', scripts:[`
+e^ %F 클릭했을 때
+v [점수] 을(를) (0) 로 정하기 #4
+l 크기를 (50) %로 정하기
+m (-90) 도 방향 보기
+c@ 무한 반복하기
+ m x: (200) y: (-130) (으)로 이동하기 #5
+ m (1.5) 초 동안 x: (-240) y: (-130) (으)로 이동하기
+ v [점수] 을(를) (1) 만큼 바꾸기 #6
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [고양이] 에 닿았는가?> (이)라면 #7
+  c 멈추기 [모두]
+ end
+end`]}],
+  explain:[
+   '고양이는 무대 왼쪽 아래 (x: -180, y: -120)에서 시작해요.',
+   '<b>무한 반복</b> 안에서 계속 "스페이스 키를 눌렀나?"를 검사해요. 반복 밖에 두면 딱 한 번만 검사하고 끝나요!',
+   '10씩 20번 올라가면 200만큼 올라가요. 그다음 -10씩 20번 내려와서 제자리로 돌아와요.',
+   '게임을 시작할 때마다 <b>점수 변수를 0으로</b> 정해요. 안 그러면 지난번 점수가 남아 있어요.',
+   '곰은 오른쪽 끝(x: 200)에 나타나서 1.5초 동안 왼쪽 끝(x: -240)까지 미끄러지듯 이동해요.',
+   '곰이 왼쪽 끝에 도착했다 = 고양이가 피했다! 그래서 이때 점수를 1만큼 바꿔요.',
+   '곰이 고양이에 닿으면 <b>멈추기 [모두]</b>로 게임 전체가 끝나요.'],
+  idea:{t:'점프 = 올라간 만큼 똑같이 내려오기', svg:'jump',
+    d:'y좌표를 <b>+10씩 20번</b> 바꾸면 200 위로, <b>-10씩 20번</b> 바꾸면 200 아래로 가요. 두 숫자의 곱이 같아야 제자리에 착지해요. 15번 올라가고 20번 내려오면 땅속으로 들어가 버려요!'},
+  blank:{sprite:'곰', dsl:`
+e^ %F 클릭했을 때
+v [점수] 을(를) (?a) 로 정하기
+c@ 무한 반복하기
+ m x: (?b) y: (-130) (으)로 이동하기
+ m (1.5) 초 동안 x: (-240) y: (-130) (으)로 이동하기
+ v [점수] 을(를) (?c) 만큼 바꾸기
+end`, opts:{a:['0','1','10'],b:['-240','0','200'],c:['-1','1','10']}, ans:{a:'0',b:'200',c:'1'}},
+  quiz:[
+   {q:'고양이가 y좌표를 10만큼씩 20번 올라갔어요. 정확히 제자리로 내려오려면?',o:['y좌표를 -10만큼 20번 바꾼다','y좌표를 10만큼 20번 바꾼다','y좌표를 -20만큼 20번 바꾼다'],a:0,w:'올라간 거리 = 10×20 = 200. 내려올 거리도 (-10)×20 = -200이어야 제자리예요.'},
+   {q:'곰이 왼쪽으로 사라진 뒤에도 계속 다시 나타나는 이유는?',o:['곰이 복제되어서','무한 반복 안에서 x:200으로 다시 이동하기 때문','무대가 둥글어서'],a:1,w:'반복이 한 바퀴 돌 때마다 곰이 오른쪽 끝(x:200)으로 순간이동해서 다시 출발해요.'},
+   {q:'"멈추기 [모두]" 블록이 하는 일은?',o:['곰만 멈춘다','소리만 끈다','모든 스프라이트의 모든 코드를 멈춘다'],a:2,w:'게임 오버를 만들 때 가장 간단한 방법이에요. 엔트리의 "모든 코드 멈추기"와 같아요.'}],
+  entry:[['x: () y: () (으)로 이동하기','x: () y: () 위치로 이동하기'],['y좌표를 () 만큼 바꾸기','y 좌표를 () 만큼 바꾸기'],['(1.5)초 동안 x: y: (으)로 이동하기','(1.5)초 동안 x: y: 위치로 이동하기'],['[점수] 을(를) 1 만큼 바꾸기','[점수] 에 1 만큼 더하기'],['멈추기 [모두]','모든 코드 멈추기']],
+  challenge:['점프 높이를 바꿔 보기 (15번 올라가고 15번 내려오기)','곰이 1초 만에 지나가게 해서 더 어렵게 만들기','점수가 10점이 넘으면 곰이 빨라지게 만들기 (힌트: 변수 "시간"을 만들어 1.5 대신 넣기)']
+},
+/* ---------------- LV 2 ---------------- */
+{ id:'run', no:2, tier:1, stars:1, icon:'🧱', title:'배경이 달린다! 고양이 달리기',
+  video:'스크래치 게임 고양이 달리기 만들기 (배경이 달린다)',
+  concepts:[['배경 스크롤'],['비교 연산 <'],['모양 바꾸기 애니메이션']],
+  mission:'레벨 1 점프 게임에 <b>움직이는 벽돌 배경</b>을 붙여요. 고양이는 제자리인데 배경이 왼쪽으로 흘러가서 고양이가 달리는 것처럼 보여요.',
+  rules:['스페이스 키 = 점프','벽돌 배경 2장이 번갈아 흘러가요','곰은 걷는 모양으로 바뀌며 다가와요'],
+  controls:['space'], game:'run',
+  sprites:[['🐱','고양이','레벨 1과 같아요'],['🐻','곰','걷기 애니메이션 추가'],['🧱','Wall 1','벽돌 배경 ①'],['🧱','Wall 1 (2)','벽돌 배경 ② (복사본)']],
+  code:[
+   {sprite:'Wall 1', scripts:[`
+e^ %F 클릭했을 때
+l [맨 뒤쪽] 으로 순서 바꾸기 #1
+m x: (0) y: (0) (으)로 이동하기 #2
+c@ 무한 반복하기
+ m x좌표를 (-3) 만큼 바꾸기 #3
+ c@ 만약 <o {m x좌표} ＜ (-465)> (이)라면 #4
+  m x: (465) y: (0) (으)로 이동하기
+ end
+end`]},
+   {sprite:'Wall 1 (2)', scripts:[`
+e^ %F 클릭했을 때
+l [맨 뒤쪽] 으로 순서 바꾸기
+m x: (465) y: (0) (으)로 이동하기 #5
+c@ 무한 반복하기
+ m x좌표를 (-3) 만큼 바꾸기
+ c@ 만약 <o {m x좌표} ＜ (-465)> (이)라면
+  m x: (465) y: (0) (으)로 이동하기
+ end
+end`]},
+   {sprite:'곰', scripts:[`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ l 다음 모양으로 바꾸기 #6
+ c (0.1) 초 기다리기
+end`]}],
+  explain:[
+   '벽돌 배경도 스프라이트예요. <b>맨 뒤쪽</b>으로 보내야 고양이와 곰을 가리지 않아요.',
+   '첫 번째 벽돌은 무대 한가운데(x: 0)에서 시작해요.',
+   '반복할 때마다 왼쪽으로 3씩 이동해요. 이 숫자가 커지면 배경이 더 빨리 흘러가요.',
+   'x좌표가 -465보다 작아지면(왼쪽으로 다 빠져나가면) 오른쪽 끝 x: 465로 순간이동해서 다시 들어와요.',
+   '두 번째 벽돌은 첫 번째 바로 오른쪽(x: 465)에서 출발해요. 두 장이 기차처럼 줄지어 달려요.',
+   '모양을 0.1초마다 바꾸면 곰이 걷는 것처럼 보여요. 만화책을 빠르게 넘기는 것과 같은 원리예요.'],
+  idea:{t:'벽돌 두 장 = 끝없이 도는 컨베이어 벨트', svg:'scroll',
+    d:'스크래치는 스프라이트가 무대 밖으로 <b>완전히</b> 나가지 못하게 15픽셀쯤 붙잡아 둬요. 폭이 480인 벽돌은 x: -465까지만 갈 수 있어요. 그래서 -465를 "다 나갔다"는 기준으로 쓰고, 오른쪽 끝 465로 돌려보내는 거예요.'},
+  blank:{sprite:'Wall 1', dsl:`
+e^ %F 클릭했을 때
+l [맨 뒤쪽] 으로 순서 바꾸기
+m x: (0) y: (0) (으)로 이동하기
+c@ 무한 반복하기
+ m x좌표를 (?a) 만큼 바꾸기
+ c@ 만약 <o {m x좌표} ＜ (?b)> (이)라면
+  m x: (?c) y: (0) (으)로 이동하기
+ end
+end`, opts:{a:['3','-3','0'],b:['465','-465','0'],c:['465','-465','0']}, ans:{a:'-3',b:'-465',c:'465'}},
+  quiz:[
+   {q:'배경이 왼쪽으로 흘러가면 고양이는 어떻게 보일까요?',o:['왼쪽으로 달리는 것처럼','오른쪽으로 달리는 것처럼','가만히 서 있는 것처럼'],a:1,w:'기차 창밖 풍경이 뒤로 가면 기차가 앞으로 가는 것처럼 느껴지는 것과 같아요.'},
+   {q:'배경 스프라이트가 고양이를 가리지 않게 하는 블록은?',o:['숨기기','맨 뒤쪽으로 순서 바꾸기','크기를 50%로 정하기'],a:1,w:'스프라이트는 종이를 겹쳐 놓은 것처럼 층이 있어요. 배경은 맨 뒤 층으로 보내요.'},
+   {q:'x좌표를 -3 대신 -6만큼 바꾸면?',o:['배경이 2배 빨라진다','배경이 오른쪽으로 간다','배경이 멈춘다'],a:0,w:'한 번에 움직이는 거리가 2배가 되니까 속도도 2배예요.'}],
+  entry:[['[맨 뒤쪽] 으로 순서 바꾸기','맨 뒤로 보내기'],['(x좌표) ＜ (-465)','(자신의 x 좌표값) ＜ (-465)'],['다음 모양으로 바꾸기','다음 모양으로 바꾸기']],
+  challenge:['배경 속도를 변수 "속도"로 바꾸고, 점수가 오를수록 빨라지게 하기','구름 배경을 하나 더 만들어 벽돌보다 천천히(-1) 흐르게 해서 입체감 만들기','곰 대신 사자 모양도 나오게 하기 (모양을 난수로 정하기)']
+},
+/* ---------------- LV 3 ---------------- */
+{ id:'mouse', no:3, tier:1, stars:2, icon:'🐭', title:'쥐잡기',
+  video:'초등학교 3학년이 30분 만에 만든 쥐잡기 게임',
+  concepts:[['방향키 4개'],['난수','cl'],['무작위 위치'],['변수: 점수','v']],
+  mission:'방향키로 고양이를 움직여서 이리저리 도망 다니는 쥐를 잡아요. 쥐를 잡으면 점수 +1, 쥐는 다른 곳에 다시 나타나요.',
+  rules:['방향키 ↑ ↓ ← → 로 고양이 이동','쥐는 1초마다 아무 곳으로나 미끄러져 가요','쥐에 닿으면 점수 +1'],
+  controls:['up','down','left','right'], game:'mouse',
+  sprites:[['🐱','Cat 2','술래'],['🐭','Mouse 1','도망자'],['🛏️','배경','Bedroom + 배경음악']],
+  code:[
+   {sprite:'Cat 2', scripts:[`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [위쪽 화살표] 키를 눌렀는가?> (이)라면 #1
+  m y좌표를 (10) 만큼 바꾸기
+ end
+ c@ 만약 <n [아래쪽 화살표] 키를 눌렀는가?> (이)라면
+  m y좌표를 (-10) 만큼 바꾸기
+ end
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (10) 만큼 바꾸기
+ end
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (-10) 만큼 바꾸기
+ end
+end`]},
+   {sprite:'Mouse 1', scripts:[`
+e^ %F 클릭했을 때
+v [점수] 을(를) (0) 로 정하기
+l 크기를 (70) %로 정하기
+c@ 무한 반복하기
+ l 보이기 #2
+ m {o (0) 부터 (360) 사이의 난수} 도 방향 보기 #3
+ m (1) 초 동안 [랜덤 위치] (으)로 이동하기 #4
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [Cat 2] 에 닿았는가?> (이)라면 #5
+  v [점수] 을(를) (1) 만큼 바꾸기
+  s [Meow] 재생하기
+  l 숨기기 #6
+ end
+end`]}],
+  explain:[
+   '방향키 하나마다 "만약" 블록 하나씩. 위/아래는 y좌표, 왼쪽/오른쪽은 x좌표를 바꿔요.',
+   '반복이 시작될 때마다 쥐를 다시 보이게 해요. (잡혀서 숨었던 쥐가 다시 나타나는 순간!)',
+   '<b>난수</b>는 주사위예요. 0부터 360 사이의 아무 수가 나와서 쥐가 매번 다른 방향을 봐요.',
+   '"1초 동안 랜덤 위치로 이동하기"는 순간이동이 아니라 1초에 걸쳐 <b>미끄러지듯</b> 움직여요.',
+   '쥐 스프라이트가 스스로 "고양이에 닿았나?"를 계속 검사해요.',
+   '잡히면 숨어요. 다음 반복 처음의 "보이기"에서 새 위치로 다시 나타나요.'],
+  idea:{t:'난수 = 컴퓨터가 굴리는 주사위', svg:'dice',
+    d:'<b>(1) 부터 (6) 사이의 난수</b>는 주사위를 굴린 것과 같아요. 매번 결과가 달라서 게임이 지루하지 않아요. 방향(0~360), 위치(x: -240~240), 시간(1~3초) 어디에든 넣을 수 있어요.'},
+  blank:{sprite:'Mouse 1', dsl:`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [(?a)] 에 닿았는가?> (이)라면
+  v [점수] 을(를) (?b) 만큼 바꾸기
+  s [Meow] 재생하기
+  l (?c)
+ end
+end`, opts:{a:['벽','Cat 2','마우스 포인터'],b:['0','1','-1'],c:['숨기기','보이기','다음 모양으로 바꾸기']}, ans:{a:'Cat 2',b:'1',c:'숨기기'}},
+  quiz:[
+   {q:'"랜덤 위치로 이동하기"와 "1초 동안 랜덤 위치로 이동하기"의 차이는?',o:['차이 없다','앞은 순간이동, 뒤는 1초 동안 미끄러지듯 이동','앞은 느리고 뒤는 빠르다'],a:1,w:'"~초 동안"이 붙으면 그 시간에 걸쳐 부드럽게 움직여요.'},
+   {q:'쥐가 잡힌 뒤 영원히 안 나타난다면 무엇이 빠졌을까요?',o:['보이기','소리 재생','점수 정하기'],a:0,w:'숨기기 했으면 어딘가에서 보이기를 해 줘야 다시 나타나요.'},
+   {q:'(0) 부터 (360) 사이의 난수 블록은 어떤 분류(색깔)일까요?',o:['동작(파랑)','연산(초록)','변수(주황)'],a:1,w:'계산을 해 주는 블록은 모두 초록색 연산 블록이에요.'}],
+  entry:[['(0) 부터 (360) 사이의 난수','(0) 부터 (360) 사이의 무작위 수'],['(1)초 동안 [랜덤 위치]로 이동하기','엔트리는 "랜덤 위치"가 없어요 → (1)초 동안 x:(무작위 수) y:(무작위 수) 위치로 이동하기'],['[Cat 2] 에 닿았는가?','(고양이) 에 닿았는가?']],
+  challenge:['잡을수록 쥐가 빨라지게: 변수 "도망시간"을 1로 시작해서 잡을 때마다 -0.1','쥐를 2마리로 늘리기 (스프라이트 복사)','30번 반복 뒤 끝나는 시간 제한 만들기']
+},
+/* ---------------- LV 4 ---------------- */
+{ id:'baseball', no:4, tier:2, stars:2, icon:'⚾', title:'야구공 때리기',
+  video:'코딩을 하나도 몰라도 20분이면 게임 하나 뚝딱! 야구공 때리기 게임',
+  concepts:[['변수 2개','v'],['벽에 닿으면 튕기기'],['신호 보내기','cl']],
+  mission:'마우스로 방망이를 움직여 날아오는 야구공을 쳐요. 칠 때마다 점수 +1, 그리고 <b>공이 점점 빨라져요!</b>',
+  rules:['마우스를 움직이면 타자가 따라와요','공을 칠 때마다 점수 +1, 공속도 +1','공은 벽에 닿으면 튕겨요'],
+  controls:['mouse'], game:'baseball', hard:'바닥 = 아웃',
+  sprites:[['🧢','Batter','타자 (모양 4개)'],['⚾','Baseball','야구공'],['🏟️','배경','Baseball 2']],
+  code:[
+   {sprite:'Baseball', scripts:[`
+e^ %F 클릭했을 때
+v [점수] 을(를) (0) 로 정하기 #1
+v [공속도] 을(를) (20) 로 정하기
+m x: (0) y: (180) (으)로 이동하기
+c (1) 초 기다리기
+c@ 무한 반복하기
+ m {v 공속도} 만큼 움직이기 #2
+ m 벽에 닿으면 튕기기
+ c@ 만약 <n [Batter] 에 닿았는가?> (이)라면 #3
+  s [Basketball Bounce] 재생하기
+  m {o (130) 부터 (-130) 사이의 난수} 도 방향 보기
+  m (100) 만큼 움직이기
+  v [공속도] 을(를) (1) 만큼 바꾸기 #4
+  v [점수] 을(를) (1) 만큼 바꾸기
+  e [메시지1] 신호 보내기 #5
+ end
+end`]},
+   {sprite:'Batter', scripts:[`
+e^ %F 클릭했을 때
+m x: (0) y: (-180) (으)로 이동하기
+c (0.2) 초 기다리기
+c@ 무한 반복하기
+ m [마우스 포인터] (으)로 이동하기
+ m 벽에 닿으면 튕기기
+end`,`
+e^ [메시지1] 신호를 받았을 때 #6
+l 다음 모양으로 바꾸기`]}],
+  explain:[
+   '변수를 <b>두 개</b> 써요. "점수"는 0에서, "공속도"는 20에서 출발해요.',
+   '숫자 칸에 <b>공속도 변수</b>를 끼워 넣었어요. 공속도가 20이면 20만큼, 25면 25만큼 움직여요.',
+   '방망이에 맞으면 위쪽 아무 방향(-130°~130°)으로 튕겨 나가요. 100만큼 확 밀어서 방망이에서 떨어뜨려요.',
+   '맞을 때마다 공속도가 1씩 커지니까 공이 점점 빨라져요. 변수 하나로 난이도를 조절했어요!',
+   '공 스프라이트가 "메시지1" 신호를 방송해요.',
+   '타자는 신호를 받으면 다음 모양(휘두르는 자세)으로 바뀌어요. 스프라이트끼리 대화하는 방법이에요.'],
+  idea:{t:'변수는 이름표가 붙은 상자', svg:'twovars',
+    d:'"공속도" 상자에 20이 들어 있으면 <b>{공속도} 만큼 움직이기</b> = <b>20 만큼 움직이기</b>예요. 상자 속 숫자를 바꾸면 그 상자를 쓰는 모든 블록이 한꺼번에 바뀌어요.'},
+  blank:{sprite:'Baseball', dsl:`
+c@ 만약 <n [Batter] 에 닿았는가?> (이)라면
+ v [(?a)] 을(를) (1) 만큼 바꾸기
+ v [점수] 을(를) (1) 만큼 바꾸기
+ e [메시지1] (?b)
+end`, opts:{a:['점수','공속도','방향'],b:['신호 보내기','신호를 받았을 때','말하기']}, ans:{a:'공속도',b:'신호 보내기'}},
+  quiz:[
+   {q:'공속도가 20일 때 공을 3번 쳤어요. 지금 공속도는?',o:['20','23','60'],a:1,w:'칠 때마다 1씩 더하니까 20 + 1 + 1 + 1 = 23이에요.'},
+   {q:'"메시지1" 신호의 역할은?',o:['점수를 올린다','공이 타자에게 "휘둘러!"라고 알린다','배경을 바꾼다'],a:1,w:'신호는 방송이에요. 보내는 쪽과 받는 쪽 스프라이트가 달라도 돼요.'},
+   {q:'이 게임에는 "게임 끝"이 없어요. 공이 바닥에 닿으면 끝나게 하려면?',o:['만약 <y좌표 < -170> 이라면 멈추기 [모두]','공속도를 0으로 정하기','타자를 숨기기'],a:0,w:'공의 y좌표가 바닥 근처보다 작아지면 놓친 거예요. 아래 실행화면의 "도전 모드"로 확인해 보세요.'}],
+  entry:[['{공속도} 만큼 움직이기','이동 방향으로 (공속도 값) 만큼 움직이기'],['벽에 닿으면 튕기기','화면 끝에 닿으면 튕기기'],['[메시지1] 신호 보내기','(메시지1) 신호 보내기'],['[메시지1] 신호를 받았을 때','(메시지1) 신호를 받았을 때']],
+  challenge:['공이 바닥에 닿으면 "아웃!"을 말하고 끝나게 하기','변수 "목숨"을 3으로 만들고, 3번 놓치면 끝나게 하기','공속도가 30이 넘으면 배경 바꾸기 (야간 경기!)']
+},
+/* ---------------- LV 5 ---------------- */
+{ id:'shoot', no:5, tier:2, stars:2, icon:'🎯', title:'과일 사격',
+  video:'스크래치 블록 코딩 사격 게임 20분이면 만들어요',
+  concepts:[['복제본','cl'],['그리고 (AND)'],['~까지 반복하기','cl']],
+  mission:'사방으로 날아다니는 과일을 조준점으로 맞혀요. 조준점이 과일에 닿은 상태에서 <b>클릭</b>해야 점수가 올라가요.',
+  rules:['마우스 = 조준점','과일 위에서 클릭하면 명중','오렌지 1점, 딸기 2점'],
+  controls:['mouse'], game:'shoot',
+  sprites:[['⊕','조준점','직접 그린 스프라이트'],['🍊','Orange 2','복제 공장'],['🍓','Strawberry','오렌지 코드 복사'],['🎂','Cake','오렌지 코드 복사']],
+  code:[
+   {sprite:'조준점', scripts:[`
+e^ %F 클릭했을 때
+v [점수] 을(를) (0) 로 정하기
+c@ 무한 반복하기
+ m [마우스 포인터] (으)로 이동하기 #1
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n 마우스를 클릭했는가?> (이)라면
+  s [Pew] 재생하기
+  c (0.5) 초 기다리기
+ end
+end`]},
+   {sprite:'Orange 2', scripts:[`
+e^ %F 클릭했을 때
+l 크기를 (70) %로 정하기
+l 숨기기 #2
+c@ 무한 반복하기
+ c (0.5) 초 기다리기
+ c [나 자신] 복제하기 #3
+end`,`
+c^ 복제되었을 때 #4
+l 보이기
+m x: {o (-100) 부터 (100) 사이의 난수} y: {o (-100) 부터 (100) 사이의 난수} (으)로 이동하기
+m {o (1) 부터 (359) 사이의 난수} 도 방향 보기
+c@ <n [벽] 에 닿았는가?> 까지 반복하기 #5
+ m (3) 만큼 움직이기
+ l 다음 모양으로 바꾸기
+ c@ 만약 <o <n [조준점] 에 닿았는가?> 그리고 <n 마우스를 클릭했는가?>> (이)라면 #6
+  v [점수] 을(를) (1) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+end
+c 이 복제본 삭제하기 #7`]}],
+  explain:[
+   '조준점은 계속 마우스 포인터 위치로 이동해요. 이게 "마우스 따라다니기"의 기본이에요.',
+   '<b>원본 오렌지는 숨겨요.</b> 원본은 복제본을 찍어 내는 공장 역할만 해요.',
+   '0.5초마다 나 자신을 복제해요. 1초에 2개씩 새 오렌지가 생겨요.',
+   '<b>복제되었을 때</b>는 새로 태어난 복제본만 실행하는 코드예요. 복제본마다 위치와 방향이 난수라서 제각각 날아가요.',
+   '"벽에 닿았는가 까지 반복"은 벽에 닿는 순간 반복을 멈추고 아래 블록으로 내려가요.',
+   '<b>그리고</b>: 조준점에 닿았다 + 마우스를 클릭했다, 두 가지가 <b>모두 참</b>일 때만 명중이에요.',
+   '벽에 닿아 반복이 끝나면 복제본을 지워요. 안 지우면 화면 가장자리에 복제본이 쌓여요!'],
+  idea:{t:'복제본 = 붕어빵 틀로 찍어 낸 붕어빵', svg:'clone',
+    d:'원본(틀)은 숨어서 0.5초마다 복제본(붕어빵)을 찍어 내요. 복제본들은 <b>같은 코드</b>를 가지고 있지만 각자 <b>따로따로</b> 실행돼요. 그래서 난수를 쓰면 하나하나 다른 곳으로 날아가요.'},
+  blank:{sprite:'Orange 2', dsl:`
+c^ (?a)
+l 보이기
+c@ <n [벽] 에 닿았는가?> 까지 반복하기
+ m (3) 만큼 움직이기
+ c@ 만약 <o <n [조준점] 에 닿았는가?> (?b) <n 마우스를 클릭했는가?>> (이)라면
+  v [점수] 을(를) (1) 만큼 바꾸기
+  c (?c)
+ end
+end`, opts:{a:['복제되었을 때','클릭했을 때','나 자신 복제하기'],b:['그리고','또는','아니다'],c:['이 복제본 삭제하기','나 자신 복제하기','숨기기']}, ans:{a:'복제되었을 때',b:'그리고',c:'이 복제본 삭제하기'}},
+  quiz:[
+   {q:'원본 오렌지를 "숨기기" 하는 이유는?',o:['원본은 복제본을 만드는 공장이라 화면에 안 보여도 되니까','원본이 너무 커서','숨겨야 복제가 되니까'],a:0,w:'원본이 보이면 가운데에 가만히 서 있는 오렌지가 하나 생겨요. 맞혀도 사라지지 않는 이상한 과일이 돼요.'},
+   {q:'<조준점에 닿았는가?> <b>그리고</b> <마우스를 클릭했는가?> 가 참이 되는 경우는?',o:['둘 중 하나만 참일 때','둘 다 참일 때','둘 다 거짓일 때'],a:1,w:'"그리고"는 둘 다, "또는"은 하나만 참이어도 돼요.'},
+   {q:'"이 복제본 삭제하기"를 빼먹으면 어떻게 될까요?',o:['아무 일도 없다','벽에 닿은 복제본이 계속 쌓여서 느려진다','원본이 삭제된다'],a:1,w:'스크래치는 복제본을 최대 300개까지만 만들 수 있어요. 다 쓴 복제본은 꼭 지워요.'}],
+  entry:[['[나 자신] 복제하기','(자신)의 복제본 만들기'],['복제되었을 때','복제본이 처음 생성되었을 때'],['이 복제본 삭제하기','이 복제본 삭제하기'],['<> 까지 반복하기','<> 이(가) 될 때까지 반복하기'],['<> 그리고 <>','<> 그리고 <>']],
+  challenge:['폭탄 스프라이트를 만들어 맞히면 점수 -5','케이크는 3점, 대신 더 빠르게(6만큼) 날아가게 하기','레벨 16처럼 30초 타이머를 붙이기']
+},
+/* ---------------- LV 6 ---------------- */
+{ id:'banana', no:6, tier:2, stars:2, icon:'🍌', title:'원숭이 바나나 잡기',
+  video:'20분 만에 원숭이 바나나 잡기 게임 만들기',
+  concepts:[['복제본 떨어뜨리기','cl'],['x좌표 난수'],['변수: 점수','v']],
+  mission:'하늘에서 바나나가 계속 떨어져요. 원숭이를 좌우로 움직여서 바나나를 받으면 점수 +1!',
+  rules:['← → 키로 원숭이 이동','바나나에 닿으면 점수 +1','놓친 바나나는 바닥에서 사라져요'],
+  controls:['left','right'], game:'banana',
+  sprites:[['🐵','Monkey','받는 사람 (모양 3개)'],['🍌','Bananas','복제 공장'],['🌳','배경','Woods + Guitar Chords 음악']],
+  code:[
+   {sprite:'Monkey', scripts:[`
+e^ %F 클릭했을 때
+v [점수] 을(를) (0) 로 정하기
+l 크기를 (50) %로 정하기
+m x: (0) y: (-140) (으)로 이동하기
+c@ 무한 반복하기
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면 #1
+  m x좌표를 (10) 만큼 바꾸기
+  l 다음 모양으로 바꾸기
+ end
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (-10) 만큼 바꾸기
+  l 다음 모양으로 바꾸기
+ end
+ m 벽에 닿으면 튕기기
+end`]},
+   {sprite:'Bananas', scripts:[`
+e^ %F 클릭했을 때
+l 크기를 (60) %로 정하기
+l 숨기기
+c@ 무한 반복하기
+ c [나 자신] 복제하기 #2
+ m x: {o (-200) 부터 (200) 사이의 난수} y: (140) (으)로 이동하기 #3
+ c (0.3) 초 기다리기
+end`,`
+c^ 복제되었을 때
+l 보이기
+c@ 무한 반복하기
+ m y좌표를 (-5) 만큼 바꾸기 #4
+ c@ 만약 <n [벽] 에 닿았는가?> (이)라면
+  c 이 복제본 삭제하기 #5
+ end
+ c@ 만약 <n [Monkey] 에 닿았는가?> (이)라면 #6
+  v [점수] 을(를) (1) 만큼 바꾸기
+  s [Bite] 재생하기
+  c 이 복제본 삭제하기
+ end
+end`]}],
+  explain:[
+   '키를 누를 때마다 다음 모양으로 바꿔서 원숭이가 걷는 것처럼 보여요.',
+   '원본 바나나가 자기 자신을 복제해요. <b>복제본은 그 순간 원본의 위치를 그대로 물려받아요.</b>',
+   '복제하고 나서 원본이 다른 x 위치로 이동해요. 그래서 다음 복제본은 다른 곳에서 떨어져요.',
+   '복제본은 y좌표를 -5씩 바꿔서 아래로 떨어져요.',
+   '바닥(벽)에 닿으면 놓친 거예요. 복제본을 지워요.',
+   '원숭이에 닿으면 점수 +1, 냠 소리, 그리고 <b>바로 삭제</b>해요.'],
+  idea:{t:'복제본은 태어날 때 원본을 똑같이 물려받아요', svg:'inherit',
+    d:'복제본은 복제되는 순간의 원본 <b>위치·크기·모양·숨김 상태</b>를 그대로 물려받아요. 원본이 숨겨져 있으면 복제본도 숨은 채로 태어나요. 그래서 "복제되었을 때" 바로 아래에 <b>보이기</b>가 꼭 있어요.'},
+  blank:{sprite:'Bananas', dsl:`
+c^ 복제되었을 때
+l (?a)
+c@ 무한 반복하기
+ m y좌표를 (?b) 만큼 바꾸기
+ c@ 만약 <n [Monkey] 에 닿았는가?> (이)라면
+  v [점수] 을(를) (1) 만큼 바꾸기
+  c (?c)
+ end
+end`, opts:{a:['보이기','숨기기','다음 모양으로 바꾸기'],b:['5','-5','140'],c:['이 복제본 삭제하기','멈추기 [모두]','0.3 초 기다리기']}, ans:{a:'보이기',b:'-5',c:'이 복제본 삭제하기'}},
+  quiz:[
+   {q:'모든 바나나가 똑같은 자리에서만 떨어져요. 무엇이 빠졌을까요?',o:['x좌표 난수로 이동하기','보이기','소리 재생'],a:0,w:'원본이 매번 다른 x 위치로 옮겨 가야 복제본도 여러 곳에서 태어나요.'},
+   {q:'원숭이에 닿았을 때 "이 복제본 삭제하기"를 빼면?',o:['점수가 1점만 오른다','닿아 있는 동안 점수가 계속 올라간다','바나나가 위로 올라간다'],a:1,w:'반복이 1초에 30번쯤 돌아요. 바나나가 원숭이를 지나가는 동안 매번 +1이 돼서 한 개에 5~10점이 올라가요.'},
+   {q:'바나나를 더 자주 떨어뜨리려면?',o:['0.3초를 0.1초로','-5를 -10으로','크기를 60에서 30으로'],a:0,w:'복제 사이의 기다리는 시간이 짧을수록 더 자주 만들어져요. (-10은 더 빨리 떨어지게 하는 거예요.)'}],
+  entry:[['y좌표를 (-5) 만큼 바꾸기','y 좌표를 (-5) 만큼 바꾸기'],['[벽] 에 닿았는가?','(벽) 에 닿았는가?'],['[Bite] 재생하기','소리 (Bite) 재생하기']],
+  challenge:['썩은 바나나(갈색 모양)도 떨어지게 하고 받으면 점수 -1','떨어지는 속도를 -3 ~ -8 사이의 난수로 만들기','점수가 20점이면 "성공!"을 말하고 멈추기']
+},
+/* ---------------- LV 7 ---------------- */
+{ id:'poop', no:7, tier:2, stars:2, icon:'💩', title:'똥 피하기',
+  video:'20분 만에 스크래치로 똥 피하기 게임 만들기',
+  concepts:[['복제본','cl'],['게임 오버'],['회전 방식']],
+  mission:'바나나 게임을 뒤집어요! 이번엔 떨어지는 똥을 <b>피해야</b> 해요. 피한 똥이 바닥에 닿으면 점수 +1, 고양이에 닿으면 게임 끝!',
+  rules:['← → 키로 고양이 이동','바닥에 닿은 똥 = 점수 +1','똥에 닿으면 "게임끝"'],
+  controls:['left','right'], game:'poop',
+  sprites:[['🐱','스프라이트1','피하는 고양이'],['💩','똥','복제 공장']],
+  code:[
+   {sprite:'스프라이트1', scripts:[`
+e^ %F 클릭했을 때
+l 크기를 (70) %로 정하기
+m x: (0) y: (-140) (으)로 이동하기
+c@ 무한 반복하기
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면
+  m (90) 도 방향 보기 #1
+  m x좌표를 (10) 만큼 바꾸기
+ end
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  m (-90) 도 방향 보기
+  m x좌표를 (-10) 만큼 바꾸기
+ end
+end`]},
+   {sprite:'똥', scripts:[`
+e^ %F 클릭했을 때
+v [점수] 을(를) (0) 로 정하기
+l 크기를 (20) %로 정하기
+l 숨기기
+c@ 무한 반복하기
+ c [나 자신] 복제하기
+ s [Squish Pop] 재생하기
+ m x: {o (-200) 부터 (200) 사이의 난수} y: (140) (으)로 이동하기
+ c (0.2) 초 기다리기 #2
+end`,`
+c^ 복제되었을 때
+l 보이기
+c@ 무한 반복하기
+ c@ 만약 <n [벽] 에 닿았는가?> (이)라면 #3
+  v [점수] 을(를) (1) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+ c@ 만약 <n [스프라이트1] 에 닿았는가?> (이)라면 #4
+  s [Lose] 재생하기
+  l (게임끝) 을(를) (2) 초 동안 말하기
+  c 멈추기 [모두]
+ end
+ m y좌표를 (-5) 만큼 바꾸기
+end`]}],
+  explain:[
+   '왼쪽으로 갈 때 -90도를 보게 해요. 고양이 정보창에서 <b>회전 방식</b>을 "왼쪽/오른쪽"으로 바꿔야 거꾸로 뒤집히지 않아요.',
+   '0.2초마다 똥이 하나씩! 숫자를 줄이면 똥 폭탄이 쏟아져요.',
+   '똥이 바닥에 닿았다 = 고양이가 피했다. 그래서 <b>이때</b> 점수를 올려요.',
+   '고양이에 닿으면 "게임끝"을 2초 동안 말한 뒤 모두 멈춰요.'],
+  idea:{t:'같은 코드, 반대 규칙', svg:'compare',
+    d:'바나나 게임과 블록은 거의 같아요. 바뀐 건 <b>"닿았을 때 무엇을 하느냐"</b>뿐이에요. 바나나: 원숭이에 닿으면 +1점. 똥: 바닥에 닿으면 +1점, 고양이에 닿으면 게임 오버. 게임 규칙은 "만약" 블록 안에서 정해져요.'},
+  blank:{sprite:'똥', dsl:`
+c^ 복제되었을 때
+l 보이기
+c@ 무한 반복하기
+ c@ 만약 <n [(?a)] 에 닿았는가?> (이)라면
+  v [점수] 을(를) (1) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+ c@ 만약 <n [(?b)] 에 닿았는가?> (이)라면
+  l (게임끝) 을(를) (2) 초 동안 말하기
+  c 멈추기 [(?c)]
+ end
+ m y좌표를 (-5) 만큼 바꾸기
+end`, opts:{a:['벽','스프라이트1','마우스 포인터'],b:['벽','스프라이트1','똥'],c:['모두','이 스크립트','이 스프라이트에 있는 다른 스크립트']}, ans:{a:'벽',b:'스프라이트1',c:'모두'}},
+  quiz:[
+   {q:'고양이가 왼쪽으로 갈 때 거꾸로 뒤집혀요. 어떻게 고칠까요?',o:['회전 방식을 "왼쪽/오른쪽"으로 바꾼다','크기를 바꾼다','-90을 90으로 바꾼다'],a:0,w:'기본 회전 방식은 "회전하기"라서 -90도를 보면 머리가 아래로 가요.'},
+   {q:'이 게임에서 점수가 올라가는 순간은?',o:['똥이 고양이에 닿을 때','똥이 바닥(벽)에 닿을 때','키를 누를 때'],a:1,w:'피한 똥 = 바닥까지 떨어진 똥이에요.'},
+   {q:'똥이 떨어지는 속도를 2배로 하려면?',o:['y좌표를 -10만큼 바꾸기','기다리기를 0.4초로','크기를 40%로'],a:0,w:'한 번에 움직이는 거리를 2배로 하면 돼요.'}],
+  entry:[['(90) 도 방향 보기','방향을 (90)°로 정하기'],['회전 방식: 왼쪽/오른쪽','회전 방식: 좌우 회전 (오브젝트 정보창)'],['(게임끝) 을(를) (2) 초 동안 말하기','(게임끝) 을(를) (2) 초 동안 말하기']],
+  challenge:['변수 "목숨"을 3으로 시작해서 똥에 닿으면 -1, 0이 되면 게임 끝','시간이 지날수록 똥이 빨라지게: 변수 "똥속도"를 -5로 시작해서 5초마다 -1','황금 똥(드물게 나옴)을 받으면 +10점']
+},
+/* ---------------- LV 8 ---------------- */
+{ id:'dino', no:8, tier:3, stars:3, icon:'🦖', title:'미친 공룡 피하기',
+  video:'스크래치로 만든 미친 공룡 피하기 게임',
+  concepts:[['만약~아니면','cl'],['난수로 선택'],['색깔 효과'],['신호','cl']],
+  mission:'왼쪽과 오른쪽에서 색이 바뀌는 공룡들이 마구 달려와요. 고양이는 마우스를 따라다녀요. 공룡을 피해 살아남아요!',
+  rules:['고양이가 마우스 쪽으로 따라와요','공룡은 왼쪽 또는 오른쪽에서 랜덤하게 등장','공룡이 반대편 벽에 닿으면 점수 +1'],
+  controls:['mouse'], game:'dino',
+  sprites:[['🐱','스프라이트1','마우스를 따라오는 고양이'],['🦖','Dinosaur5','복제 공장']],
+  code:[
+   {sprite:'Dinosaur5', scripts:[`
+e^ %F 클릭했을 때
+l 크기를 (50) %로 정하기
+v [점수] 을(를) (0) 로 정하기
+l 숨기기
+c@ 무한 반복하기
+ c (0.5) 초 기다리기
+ c [나 자신] 복제하기
+end`,`
+c^ 복제되었을 때
+l 보이기
+c@ 만약 <o {o (1) 부터 (2) 사이의 난수} = (1)> (이)라면 #1
+ m (90) 도 방향 보기
+ m x: (-200) y: {o (-130) 부터 (130) 사이의 난수} (으)로 이동하기
+else
+ m (-90) 도 방향 보기
+ m x: (200) y: {o (-130) 부터 (130) 사이의 난수} (으)로 이동하기
+end
+c@ <n [벽] 에 닿았는가?> 까지 반복하기
+ l 다음 모양으로 바꾸기
+ l [색깔] 효과를 {o (1) 부터 (200) 사이의 난수} (으)로 정하기 #2
+ m (10) 만큼 움직이기
+ c@ 만약 <n [스프라이트1] 에 닿았는가?> (이)라면
+  e [게임끝] 신호 보내기 #3
+ end
+end
+v [점수] 을(를) (1) 만큼 바꾸기 #4
+c 이 복제본 삭제하기`]},
+   {sprite:'스프라이트1', scripts:[`
+e^ %F 클릭했을 때
+m x: (0) y: (0) (으)로 이동하기
+l 크기를 (50) %로 정하기
+c@ 무한 반복하기
+ m [마우스 포인터] 쪽 보기 #5
+ m (10) 만큼 움직이기
+ l 다음 모양으로 바꾸기
+ m 벽에 닿으면 튕기기
+end`,`
+e^ [게임끝] 신호를 받았을 때 #6
+l (게임끝) 을(를) (0.5) 초 동안 말하기
+c 멈추기 [모두]`]}],
+  explain:[
+   '<b>동전 던지기!</b> 1 또는 2가 나와요. 1이면 왼쪽(x:-200)에서 오른쪽(90도)으로, 아니면 오른쪽(x:200)에서 왼쪽(-90도)으로 달려요.',
+   '색깔 효과를 매번 난수로 정해서 공룡이 무지개색으로 번쩍여요. "미친 공룡"인 이유!',
+   '공룡이 고양이에 닿으면 <b>게임끝 신호</b>를 방송해요.',
+   '반복이 끝났다 = 벽까지 무사히 달렸다 = 고양이가 피했다! 점수 +1 하고 사라져요.',
+   '"마우스 포인터 쪽 보기 + 10만큼 움직이기" = 마우스를 쫓아가기. (레벨 7의 "마우스 포인터로 이동"은 순간이동이에요.)',
+   '고양이가 신호를 받아서 직접 "게임끝"이라고 말해요. 말하는 주인공은 고양이니까 고양이에게 코드를 둬요.'],
+  idea:{t:'만약 ~ 아니면 = 갈림길', svg:'coin',
+    d:'<b>만약 &lt;조건&gt; (이)라면 ~ 아니면 ~</b> 블록은 길이 두 갈래로 나뉘어요. 조건이 참이면 위쪽 길, 거짓이면 아래쪽 길로 가요. 난수와 함께 쓰면 "반반 확률"을 만들 수 있어요.'},
+  blank:{sprite:'Dinosaur5', dsl:`
+c^ 복제되었을 때
+l 보이기
+c@ 만약 <o {o (1) 부터 (?a) 사이의 난수} = (1)> (이)라면
+ m (90) 도 방향 보기
+ m x: (?b) y: {o (-130) 부터 (130) 사이의 난수} (으)로 이동하기
+else
+ m (-90) 도 방향 보기
+ m x: (?c) y: {o (-130) 부터 (130) 사이의 난수} (으)로 이동하기
+end`, opts:{a:['1','2','10'],b:['-200','200','0'],c:['-200','200','0']}, ans:{a:'2',b:'-200',c:'200'}},
+  quiz:[
+   {q:'(1) 부터 (2) 사이의 난수 = 1 이 참일 확률은?',o:['절반 (50%)','항상','10%'],a:0,w:'1 아니면 2, 두 가지 중 하나가 나오니까 반반이에요.'},
+   {q:'공룡이 고양이에게 직접 "멈춰!"라고 하지 않고 신호를 쓰는 이유는?',o:['신호가 더 예뻐서','말하고 멈추는 일은 고양이가 해야 하니까, 고양이에게 알려 주는 것','공룡은 말을 못 해서'],a:1,w:'한 스프라이트의 일을 다른 스프라이트가 시킬 때 신호를 써요.'},
+   {q:'공룡을 위·아래에서도 나오게 하려면 난수를 어떻게 바꿀까요?',o:['(1) 부터 (4) 사이의 난수','(1) 부터 (1) 사이의 난수','(0) 부터 (2) 사이의 난수'],a:0,w:'네 방향이니까 1~4를 뽑아서 1=왼쪽, 2=오른쪽, 3=위, 4=아래로 나눠요.'}],
+  entry:[['만약 <> (이)라면 / 아니면','만일 <> (이)라면 / 아니면'],['[마우스 포인터] 쪽 보기','(마우스포인터) 쪽 바라보기'],['[색깔] 효과를 ()(으)로 정하기','(색깔) 효과를 () (으)로 정하기'],['{난수} = (1)','(무작위 수) = (1)']],
+  challenge:['공룡이 위·아래에서도 나오게 하기 (1~4 난수)','점수 30점마다 공룡 속도 +2 (변수 "공룡속도")','5초 동안 무적이 되는 별 아이템 만들기']
+},
+/* ---------------- LV 9 ---------------- */
+{ id:'popper', no:9, tier:3, stars:3, icon:'🚀', title:'똥 터뜨리기',
+  video:'똥 터뜨리기 게임 만들기 (쌩초보도 20분이면 뚝딱)',
+  concepts:[['복제본 2종류','cl'],['스프라이트 위치로 이동'],['0.02초의 비밀']],
+  mission:'똥 피하기를 슈팅 게임으로! 로켓을 움직여 스페이스 키로 공을 쏘고, 떨어지는 똥을 맞혀 터뜨려요.',
+  rules:['← → 키로 로켓 이동','스페이스 키 = 발사','공에 맞은 똥 = 점수 +1'],
+  controls:['left','right','space'], game:'popper',
+  sprites:[['🚀','Rocketship','발사대'],['🟡','Ball','총알 공장'],['💩','똥','적 공장']],
+  code:[
+   {sprite:'Ball', scripts:[`
+e^ %F 클릭했을 때
+l 크기를 (30) %로 정하기
+l 숨기기
+c@ 무한 반복하기
+ m [Rocketship] (으)로 이동하기 #1
+ c@ 만약 <n [스페이스] 키를 눌렀는가?> (이)라면
+  c [나 자신] 복제하기 #2
+  s [pop] 재생하기
+  c (0.2) 초 기다리기
+ end
+end`,`
+c^ 복제되었을 때
+l 보이기
+c@ 무한 반복하기
+ m y좌표를 (5) 만큼 바꾸기 #3
+ c@ 만약 <n [벽] 에 닿았는가?> (이)라면
+  c 이 복제본 삭제하기
+ end
+ c@ 만약 <n [똥] 에 닿았는가?> (이)라면
+  c (0.02) 초 기다리기 #4
+  c 이 복제본 삭제하기
+ end
+end`]},
+   {sprite:'똥', scripts:[`
+e^ %F 클릭했을 때
+l 크기를 (20) %로 정하기
+v [점수] 을(를) (0) 로 정하기
+l 숨기기
+c@ 무한 반복하기
+ c [나 자신] 복제하기
+ m x: {o (-200) 부터 (200) 사이의 난수} y: (140) (으)로 이동하기
+ c (1) 초 기다리기
+end`,`
+c^ 복제되었을 때
+l 보이기
+c@ 무한 반복하기
+ c@ 만약 <n [Ball] 에 닿았는가?> (이)라면 #5
+  s [Drum Boing] 재생하기
+  c (0.02) 초 기다리기
+  v [점수] 을(를) (1) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+ c@ 만약 <n [벽] 에 닿았는가?> (이)라면
+  c 이 복제본 삭제하기
+ end
+ m y좌표를 (-3) 만큼 바꾸기
+end`]},
+   {sprite:'Rocketship', scripts:[`
+e^ %F 클릭했을 때
+l 크기를 (50) %로 정하기
+m x: (0) y: (-160) (으)로 이동하기
+c@ 무한 반복하기
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (-10) 만큼 바꾸기
+  l 다음 모양으로 바꾸기
+ end
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (10) 만큼 바꾸기
+  l 다음 모양으로 바꾸기
+ end
+end`]}],
+  explain:[
+   '숨어 있는 원본 공이 <b>계속 로켓을 따라다녀요.</b> 그래서 복제본은 항상 로켓 위치에서 태어나요.',
+   '스페이스를 누르면 복제! 0.2초 기다리기가 있어서 꾹 눌러도 너무 많이 나가지 않아요.',
+   '복제된 공은 위로 5씩 날아가요.',
+   '<b>0.02초의 비밀:</b> 공이 똥에 닿자마자 사라지면, 똥은 "공에 닿았다"는 걸 느낄 틈이 없어요. 아주 잠깐 기다려서 똥도 확인할 시간을 줘요.',
+   '똥 쪽에서도 "공에 닿았나?"를 검사해서 점수를 올리고 사라져요. 두 복제본이 서로를 확인하는 거예요.'],
+  idea:{t:'0.02초 = 둘 다 "닿았다"를 느낄 시간', svg:'timing',
+    d:'스크래치에서는 스프라이트들이 <b>차례대로</b> 코드를 실행해요. 공이 먼저 "닿았다! 삭제!" 해 버리면 그다음 차례인 똥은 공을 볼 수 없어요. 그래서 공은 0.02초 기다렸다 사라지고, 그 사이에 똥이 점수를 올려요.'},
+  blank:{sprite:'Ball', dsl:`
+e^ %F 클릭했을 때
+l 숨기기
+c@ 무한 반복하기
+ m [(?a)] (으)로 이동하기
+ c@ 만약 <n [스페이스] 키를 눌렀는가?> (이)라면
+  c [나 자신] (?b)
+ end
+end`, opts:{a:['Rocketship','마우스 포인터','랜덤 위치'],b:['복제하기','숨기기','삭제하기']}, ans:{a:'Rocketship',b:'복제하기'}},
+  quiz:[
+   {q:'공(총알)이 항상 로켓에서 발사되는 이유는?',o:['원본 공이 계속 로켓 위치로 이동하고, 복제본은 그 위치를 물려받아서','공이 로켓보다 작아서','로켓이 공을 복제해서'],a:0,w:'레벨 8에서 배운 "복제본은 원본을 물려받는다"가 여기서 쓰여요.'},
+   {q:'공 복제본에서 "0.02초 기다리기"를 지우면?',o:['공이 더 빨라진다','똥이 점수를 못 올리는 경우가 생긴다','게임이 멈춘다'],a:1,w:'공이 먼저 사라지면 똥은 공에 닿았다는 걸 모르고 그냥 떨어져요.'},
+   {q:'점수를 올리는 코드는 어디에 있을까요?',o:['공 복제본','똥 복제본','로켓'],a:1,w:'맞은 쪽(똥)이 "공에 닿았다"를 확인하고 점수를 올려요.'}],
+  entry:[['[Rocketship] (으)로 이동하기','(로켓) 위치로 이동하기'],['[스페이스] 키를 눌렀는가?','(스페이스) 키가 눌러져 있는가?'],['(0.02) 초 기다리기','(0.02) 초 기다리기']],
+  challenge:['똥이 바닥에 닿으면 목숨 -1, 0이면 게임 끝','공을 세 갈래(왼쪽 위, 위, 오른쪽 위)로 쏘기','큰 똥은 3번 맞혀야 터지게 하기']
+},
+/* ---------------- LV 10 ---------------- */
+{ id:'space', no:10, tier:3, stars:3, icon:'🪐', title:'우주 비행기 슈팅',
+  video:'코딩으로 비행기 게임 만들기 (슈팅 게임, 25분) + 슈팅 Project 1',
+  concepts:[['가로 슈팅'],['복제본 2종류','cl'],['게임 오버']],
+  mission:'로켓을 위·아래로 움직이며 번개를 쏴서 오른쪽에서 날아오는 행성을 부숴요. 행성에 부딪히면 게임 끝!',
+  rules:['↑ ↓ 키로 로켓 이동','스페이스 = 번개 발사','행성에 닿으면 "게임끝!"'],
+  controls:['up','down','space'], game:'space',
+  sprites:[['🚀','Rocketship','왼쪽의 주인공'],['⚡','Lightning','총알 공장'],['🪐','Planet2','적 공장'],['🌃','배경','Space City']],
+  code:[
+   {sprite:'Rocketship', scripts:[`
+e^ %F 클릭했을 때
+l 크기를 (50) %로 정하기
+m x: (-200) y: (0) (으)로 이동하기
+m (180) 도 방향 보기 #1
+c@ 무한 반복하기
+ c@ 만약 <n [아래쪽 화살표] 키를 눌렀는가?> (이)라면
+  m y좌표를 (-10) 만큼 바꾸기
+ end
+ c@ 만약 <n [위쪽 화살표] 키를 눌렀는가?> (이)라면
+  m y좌표를 (10) 만큼 바꾸기
+ end
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [Planet2] 에 닿았는가?> (이)라면 #2
+  l (게임끝!) 을(를) (2) 초 동안 말하기
+  c 멈추기 [모두]
+ end
+end`]},
+   {sprite:'Lightning', scripts:[`
+e^ %F 클릭했을 때
+m (0) 도 방향 보기
+c@ 무한 반복하기
+ l 크기를 (30) %로 정하기
+ m [Rocketship] (으)로 이동하기
+ c@ 만약 <n [스페이스] 키를 눌렀는가?> (이)라면
+  c [나 자신] 복제하기
+  l 숨기기 #3
+  s [Pew] 재생하기
+  c (0.3) 초 기다리기
+ end
+end`,`
+c^ 복제되었을 때
+c@ 무한 반복하기
+ l 보이기
+ m x좌표를 (20) 만큼 바꾸기 #4
+ c@ 만약 <n [벽] 에 닿았는가?> (이)라면
+  c 이 복제본 삭제하기
+ end
+ c@ 만약 <n [Planet2] 에 닿았는가?> (이)라면
+  c (0.02) 초 기다리기
+  c 이 복제본 삭제하기
+ end
+end`]},
+   {sprite:'Planet2', scripts:[`
+e^ %F 클릭했을 때
+v [점수] 을(를) (0) 로 정하기
+c@ 무한 반복하기
+ c [나 자신] 복제하기
+ m x: (180) y: {o (-180) 부터 (180) 사이의 난수} (으)로 이동하기 #5
+ l 숨기기
+ c (0.5) 초 기다리기
+end`,`
+c^ 복제되었을 때
+c@ 무한 반복하기
+ l 보이기
+ c@ 만약 <n [Lightning] 에 닿았는가?> (이)라면
+  s [Bonk] 재생하기
+  c (0.02) 초 기다리기
+  v [점수] 을(를) (1) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+ c@ 만약 <n [벽] 에 닿았는가?> (이)라면
+  c 이 복제본 삭제하기
+ end
+ m x좌표를 (-15) 만큼 바꾸기 #6
+end`]}],
+  explain:[
+   '로켓 그림은 위를 보고 있어요. 방향 90도가 "그림 그대로"이니까, 180도로 하면 시계 방향으로 90도 돌아서 <b>오른쪽</b>을 봐요.',
+   '게임 오버 검사는 로켓이 해요. "게임끝!"이라고 말하는 주인공이 로켓이니까요.',
+   '복제한 <b>다음에</b> 숨겨요. 원본은 로켓 뒤에 숨어 있고, 복제본은 "보이기"로 나타나요.',
+   '총알은 오른쪽으로 20씩! 가로 슈팅이니까 x좌표를 바꿔요.',
+   '행성은 오른쪽 끝(x:180)의 아무 높이에서 태어나요.',
+   '행성은 왼쪽으로 -15씩 날아와요.'],
+  idea:{t:'세로 슈팅 vs 가로 슈팅', svg:'axes',
+    d:'레벨 11(세로)과 레벨 12(가로)은 같은 게임이에요. <b>y좌표</b>를 바꾸면 위아래, <b>x좌표</b>를 바꾸면 좌우로 움직여요. 총알: y +5 ↔ x +20, 적: y -3 ↔ x -15. 축만 바꿨어요!'},
+  blank:{sprite:'Planet2', dsl:`
+c^ 복제되었을 때
+c@ 무한 반복하기
+ l 보이기
+ c@ 만약 <n [Lightning] 에 닿았는가?> (이)라면
+  c (0.02) 초 기다리기
+  v [점수] 을(를) (1) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+ m (?a) 를 (?b) 만큼 바꾸기
+end`, opts:{a:['x좌표','y좌표','크기'],b:['15','-15','0']}, ans:{a:'x좌표',b:'-15'}},
+  quiz:[
+   {q:'로켓에 "180도 방향 보기"를 넣은 이유는?',o:['로켓 그림이 위를 보고 있어서 오른쪽을 보게 돌리려고','로켓을 뒤집으려고','속도를 빠르게 하려고'],a:0,w:'스크래치 방향: 0=위, 90=오른쪽(기본), 180=아래, -90=왼쪽. 그림을 90도 돌리는 효과예요.'},
+   {q:'번개(총알)를 2배 빠르게 하려면?',o:['x좌표를 40만큼 바꾸기','0.3초를 0.6초로','크기를 60%로'],a:0,w:'한 번에 움직이는 거리를 20 → 40으로!'},
+   {q:'레벨 11과 레벨 12의 가장 큰 차이는?',o:['복제본을 안 쓴다','움직이는 축(y ↔ x)과 게임 오버가 있다','변수가 없다'],a:1,w:'원리는 같고, 방향과 규칙만 달라요.'}],
+  entry:[['(180) 도 방향 보기','방향을 (180)°로 정하기'],['x좌표를 (20) 만큼 바꾸기','x 좌표를 (20) 만큼 바꾸기'],['[Planet2] 에 닿았는가?','(행성) 에 닿았는가?']],
+  challenge:['점수 20점마다 행성 속도 -2 (더 빨라지기)','보스 행성: 변수 "보스체력" 10, 맞을 때마다 -1','배경 음악과 폭발 모양 추가하기']
+},
+/* ---------------- LV 11 ---------------- */
+{ id:'rhythm', no:11, tier:4, stars:4, icon:'🎵', title:'리듬 게임',
+  video:'리듬 게임 만들기 (스크래치 코딩으로 25분이면 만든다)',
+  concepts:[['변수: 속도(음수)','v'],['그리고 판정'],['무대 코드'],['키 1~4']],
+  mission:'네 줄로 과일이 떨어져요. 과일이 맨 아래 판정 과일에 겹치는 순간 <b>1·2·3·4 키</b>를 눌러요. 맞힐수록 점점 빨라져요!',
+  rules:['사과=1, 바나나=2, 딸기=3, 수박=4','겹친 순간 키를 누르면 점수 +1','맞힐 때마다 속도가 -0.5 (더 빨라짐)'],
+  controls:['1','2','3','4'], game:'rhythm',
+  sprites:[['🎼','무대','변수 정하기 + 음악'],['🍎','Apple','판정선 (1번 줄)'],['🍎','Apple2','떨어지는 과일 공장'],['🍌🍓🍉','나머지 줄','같은 코드, 키와 x만 다름']],
+  code:[
+   {sprite:'무대', scripts:[`
+e^ %F 클릭했을 때
+v [점수] 을(를) (0) 로 정하기
+v [속도] 을(를) (-5) 로 정하기 #1
+c@ 무한 반복하기
+ s [Dance Around] 끝까지 재생하기
+end`]},
+   {sprite:'Apple (판정선)', scripts:[`
+e^ %F 클릭했을 때
+l 보이기
+m x: (-180) y: (-130) (으)로 이동하기
+c@ 무한 반복하기
+ c@ 만약 <n [1] 키를 눌렀는가?> (이)라면 #2
+  c (0.2) 초 기다리기
+  l 숨기기
+  c (0.2) 초 기다리기
+  l 보이기
+ end
+end`]},
+   {sprite:'Apple2 (떨어지는 과일)', scripts:[`
+e^ %F 클릭했을 때
+m x: (-180) y: (130) (으)로 이동하기
+c@ 무한 반복하기
+ l 숨기기
+ c {o (3) 부터 (6) 사이의 난수} 초 기다리기 #3
+ c [나 자신] 복제하기
+end`,`
+c^ 복제되었을 때
+l 보이기
+c@ <n [벽] 에 닿았는가?> 까지 반복하기
+ m y좌표를 {v 속도} 만큼 바꾸기 #4
+ c@ 만약 <o <n [Apple] 에 닿았는가?> 그리고 <n [1] 키를 눌렀는가?>> (이)라면 #5
+  l 크기를 (20) 만큼 바꾸기
+  c (0.1) 초 기다리기
+  l 크기를 (-20) 만큼 바꾸기
+  v [점수] 을(를) (1) 만큼 바꾸기
+  v [속도] 을(를) (-0.5) 만큼 바꾸기 #6
+  s [Bite] 재생하기
+  c 이 복제본 삭제하기
+ end
+end
+c 이 복제본 삭제하기`]}],
+  explain:[
+   '여러 스프라이트가 같이 쓰는 변수는 <b>무대</b>에서 정해 두면 깔끔해요. 속도는 <b>-5</b>, 음수예요!',
+   '키를 누르면 판정 과일이 깜빡여서 "눌렀다"는 걸 보여 줘요.',
+   '3~6초 중 아무 때나 과일이 나와요. 예측할 수 없어서 집중해야 해요.',
+   'y좌표를 <b>속도</b>만큼 바꿔요. 속도가 -5니까 아래로 5씩 떨어져요.',
+   '판정선에 닿았다 <b>그리고</b> 1키를 눌렀다 → 명중! 크기가 커졌다 작아지는 "뿅" 효과를 줘요.',
+   '속도에 -0.5를 더하면 -5.5, -6, -6.5… 숫자가 작아질수록 <b>더 빨리</b> 떨어져요.'],
+  idea:{t:'음수 속도: 더하는데 빨라진다?', svg:'numline',
+    d:'아래로 떨어지는 건 y가 줄어드는 것이니까 속도는 음수예요. <b>-0.5만큼 바꾸기</b> = 0.5를 빼기. -5 → -5.5 → -6… 0에서 멀어질수록 한 번에 움직이는 거리가 커져서 빨라져요.'},
+  blank:{sprite:'Apple2', dsl:`
+c^ 복제되었을 때
+l 보이기
+c@ <n [벽] 에 닿았는가?> 까지 반복하기
+ m y좌표를 {v (?a)} 만큼 바꾸기
+ c@ 만약 <o <n [Apple] 에 닿았는가?> 그리고 <n [(?b)] 키를 눌렀는가?>> (이)라면
+  v [점수] 을(를) (1) 만큼 바꾸기
+  v [속도] 을(를) (?c) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+end`, opts:{a:['점수','속도','x좌표'],b:['1','스페이스','2'],c:['0.5','-0.5','-5']}, ans:{a:'속도',b:'1',c:'-0.5'}},
+  quiz:[
+   {q:'속도가 -5에서 시작해서 과일을 4번 맞혔어요. 지금 속도는?',o:['-3','-7','-9'],a:1,w:'-5 + (-0.5 × 4) = -5 - 2 = -7이에요.'},
+   {q:'키를 계속 꾹 누르고 있으면 다 맞아 버려요. 왜일까요?',o:['"키를 눌렀는가?"는 누르고 있는 동안 계속 참이라서','과일이 느려서','변수가 2개라서'],a:0,w:'진짜 리듬 게임처럼 만들려면 "키를 누른 순간"만 판정해야 해요. 도전 과제로 해결해 보세요!'},
+   {q:'과일이 3~6초 사이 난수로 나오는 이유는?',o:['리듬을 예측하기 어렵게 만들려고','컴퓨터가 느려서','과일이 4종류라서'],a:0,w:'항상 똑같은 간격이면 너무 쉬워요.'}],
+  entry:[['[Dance Around] 끝까지 재생하기','소리 (Dance Around) 재생하고 기다리기'],['y좌표를 {속도} 만큼 바꾸기','y 좌표를 (속도 값) 만큼 바꾸기'],['크기를 (20) 만큼 바꾸기','크기를 (20) 만큼 바꾸기']],
+  challenge:['꾹 누르기 방지: 변수 "눌림"을 만들어 키를 뗐다가 다시 눌러야 판정되게 하기','변수 "미스"를 만들어 놓친 과일이 3개면 게임 끝','콤보 변수: 연속으로 맞히면 +1, 놓치면 0']
+},
+/* ---------------- LV 12 ---------------- */
+{ id:'ghost', no:12, tier:4, stars:4, icon:'👻', title:'유령 사냥 30초',
+  video:'스크래치로 만든 슈팅 게임 (유령 사냥)',
+  concepts:[['타이머','v'],['변수 4개','v'],['신호 start / game over','cl'],['성공률 계산']],
+  mission:'30초 동안 나타나는 유령을 최대한 많이 잡아요. 조준점 한가운데에 유령을 맞추고 클릭! 끝나면 <b>성공률(%)</b>이 나와요.',
+  rules:['마우스 = 조준점, 클릭 = 발사','time이 0이 되면 게임 끝','성공률 = 잡은 유령 ÷ 나타난 유령 × 100'],
+  controls:['mouse'], game:'ghost',
+  sprites:[['🎬','무대','카운트다운 + 타이머'],['👻','Ghost','복제 공장'],['⊕','조준점','클릭하면 가운데가 빨개짐'],['🏁','game over','성공률 보여 주기']],
+  code:[
+   {sprite:'무대', scripts:[`
+e^ %F 클릭했을 때
+v [time] 을(를) (30) 로 정하기 #1
+v [score] 을(를) (0) 로 정하기
+v [ghost] 을(를) (0) 로 정하기
+l 배경을 [3] (으)로 바꾸기
+c (1) 초 기다리기
+l 배경을 [2] (으)로 바꾸기
+c (1) 초 기다리기
+l 배경을 [1] (으)로 바꾸기
+c (1) 초 기다리기
+l 배경을 [Neon Tunnel] (으)로 바꾸기
+e [start] 신호 보내기 #2`,`
+e^ [start] 신호를 받았을 때
+c@ <o {v time} = (0)> 까지 반복하기 #3
+ c (1) 초 기다리기
+ v [time] 을(를) (-1) 만큼 바꾸기
+end
+e [game over] 신호 보내기`]},
+   {sprite:'Ghost', scripts:[`
+e^ [start] 신호를 받았을 때
+c@ 무한 반복하기
+ c {o (0.1) 부터 (2) 사이의 난수} 초 기다리기
+ c [나 자신] 복제하기
+end`,`
+c^ 복제되었을 때
+v [ghost] 을(를) (1) 만큼 바꾸기 #4
+m x: {o (-180) 부터 (180) 사이의 난수} y: {o (-140) 부터 (140) 사이의 난수} (으)로 이동하기
+l 보이기
+m {o (1) 부터 (360) 사이의 난수} 도 방향 보기
+c@ <n [벽] 에 닿았는가?> 까지 반복하기
+ m {o (1) 부터 (10) 사이의 난수} 만큼 움직이기
+ l 다음 모양으로 바꾸기
+ c@ 만약 <n %RED 색에 닿았는가?> (이)라면 #5
+  s [Coin] 재생하기
+  v [score] 을(를) (1) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+end
+c 이 복제본 삭제하기`]},
+   {sprite:'조준점', scripts:[`
+e^ [start] 신호를 받았을 때
+l 보이기
+c@ 무한 반복하기
+ m [마우스 포인터] (으)로 이동하기
+ l 모양을 [모양1] (으)로 바꾸기
+ c@ 만약 <n 마우스를 클릭했는가?> (이)라면 #6
+  s [Zoop] 재생하기
+  l 모양을 [모양2] (으)로 바꾸기
+  c (0.1) 초 기다리기
+ end
+end`]},
+   {sprite:'game over', scripts:[`
+e^ [game over] 신호를 받았을 때
+v [success rate] 을(를) {o {o {o {v score} / {v ghost}} × (100)} 의 반올림} 로 정하기 #7
+l 보이기
+c 멈추기 [모두]`]}],
+  explain:[
+   '변수 4개: <b>time</b>(남은 시간), <b>score</b>(잡은 유령), <b>ghost</b>(나타난 유령), <b>success rate</b>(성공률).',
+   '3, 2, 1 카운트다운 배경을 보여 준 뒤 <b>start</b> 신호로 모두에게 "시작!"을 알려요.',
+   '<b>타이머</b>: 1초 기다리고 time을 1 빼기를, time이 0이 될 때까지 반복해요. 30번 돌면 30초!',
+   '유령이 태어날 때마다 ghost 변수 +1. 나중에 성공률을 계산할 때 써요.',
+   '유령이 <b>빨간색</b>에 닿으면 명중이에요. 빨간색은 클릭한 순간의 조준점 한가운데에만 있어요.',
+   '조준점 모양1엔 빨간 점이 없고, 클릭하면 0.1초 동안 모양2(빨간 점)로 바뀌어요. 그래서 <b>클릭 + 정중앙</b>일 때만 맞아요.',
+   '성공률 = score ÷ ghost × 100을 <b>반올림</b>. 예) 12마리 중 9마리 → 75%'],
+  idea:{t:'타이머와 성공률 계산', svg:'timer',
+    d:'타이머는 특별한 블록이 아니라 <b>1초마다 1씩 줄어드는 변수</b>예요. 성공률은 변수 두 개(score, ghost)를 나누고 100을 곱해서 만들어요. 변수로 계산을 하면 게임이 "기록"을 남길 수 있어요.'},
+  blank:{sprite:'무대', dsl:`
+e^ [start] 신호를 받았을 때
+c@ <o {v time} = (?a)> 까지 반복하기
+ c (?b) 초 기다리기
+ v [time] 을(를) (?c) 만큼 바꾸기
+end
+e [game over] 신호 보내기`, opts:{a:['0','30','1'],b:['1','0.1','30'],c:['1','-1','30']}, ans:{a:'0',b:'1',c:'-1'}},
+  quiz:[
+   {q:'time이 30에서 시작하면 "time = 0까지 반복"은 몇 번 돌까요?',o:['1번','30번','무한 번'],a:1,w:'한 번 돌 때마다 1씩 줄어서 30번 만에 0이 돼요. 1초씩 기다리니까 30초!'},
+   {q:'유령이 20마리 나왔고 15마리를 잡았어요. 성공률은?',o:['15%','75%','133%'],a:1,w:'15 ÷ 20 × 100 = 75예요.'},
+   {q:'클릭하지 않았는데 조준점 위를 지나간 유령이 안 잡히는 이유는?',o:['조준점 모양1에는 빨간색이 없어서','유령이 투명해서','score가 0이라서'],a:0,w:'빨간 점은 클릭한 0.1초 동안만 생겨요. 색깔로 판정하는 재미있는 방법이에요.'}],
+  entry:[['<{time} = (0)> 까지 반복하기','<(time 값) = 0> 이(가) 될 때까지 반복하기'],['{score} / {ghost}','(score 값) / (ghost 값)'],['() 의 반올림','(  )의 반올림값'],['타이머를 변수로 직접 만들기','엔트리에는 "초시계" 블록도 있어요 (초시계 시작하기 / 초시계 값)']],
+  challenge:['가끔 나오는 황금 유령: 잡으면 +5점','"최고기록" 변수: 이번 score가 더 크면 바꾸기','남은 시간이 10초 이하면 배경 음악을 빠르게 바꾸기']
+},
+/* ---------------- LV 13 (BOSS) ---------------- */
+{ id:'snake', no:13, tier:5, stars:5, icon:'🐍', title:'보스 레벨: 리스트로 만드는 스네이크',
+  video:'Snake Game (Google vs Scratch) · 무한의 계단 · 슈퍼 고양이 실행 영상',
+  concepts:[['리스트','li'],['리스트 길이','li'],['n번째 항목','li'],['펜 도장찍기']],
+  mission:'뱀이 사과를 먹을수록 길어져요. 뱀의 몸통이 <b>지나온 길</b>을 기억해야 하는데, 이걸 <b>리스트</b>로 해요. 오른쪽 리스트 창에서 숫자가 들어가고 빠지는 걸 지켜보세요!',
+  rules:['방향키로 뱀 머리 방향 바꾸기','사과를 먹으면 뱀길이 +1','벽이나 내 몸에 부딪히면 끝'],
+  controls:['up','down','left','right'], game:'snake',
+  boss:true, listHint:'↑ 실제 리스트 창이에요. 뱀이 한 칸 움직일 때마다 1번째에 새 위치가 들어가고, 마지막 칸이 지워져요.',
+  sprites:[['🟢','머리','움직이며 위치를 리스트에 저장'],['✏️','몸통','리스트를 읽어서 도장찍기'],['🍎','사과','먹히면 다른 곳으로']],
+  code:[
+   {sprite:'머리', scripts:[`
+e^ %F 클릭했을 때
+L [X기록] 의 항목을 모두 삭제하기 #1
+L [Y기록] 의 항목을 모두 삭제하기
+v [뱀길이] 을(를) (3) 로 정하기
+m x: (0) y: (0) (으)로 이동하기
+c@ 무한 반복하기
+ m (20) 만큼 움직이기
+ L {m x좌표} 을(를) [X기록] 리스트의 (1) 번째에 넣기 #2
+ L {m y좌표} 을(를) [Y기록] 리스트의 (1) 번째에 넣기
+ c@ 만약 <o {L [X기록] 의 길이} ＞ {v 뱀길이}> (이)라면 #3
+  L [X기록] 리스트의 {L [X기록] 의 길이} 번째 항목 삭제하기
+  L [Y기록] 리스트의 {L [Y기록] 의 길이} 번째 항목 삭제하기
+ end
+ e [몸통 그리기] 신호 보내고 기다리기
+ c (0.15) 초 기다리기
+end`]},
+   {sprite:'몸통', scripts:[`
+e^ [몸통 그리기] 신호를 받았을 때
+p 모두 지우기
+v [i] 을(를) (1) 로 정하기 #4
+c@ {L [X기록] 의 길이} 번 반복하기
+ m x: {L [X기록] 리스트의 {v i} 번째 항목} y: {L [Y기록] 리스트의 {v i} 번째 항목} (으)로 이동하기 #5
+ p 도장찍기
+ v [i] 을(를) (1) 만큼 바꾸기
+end`]},
+   {sprite:'사과', scripts:[`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [머리] 에 닿았는가?> (이)라면 #6
+  v [뱀길이] 을(를) (1) 만큼 바꾸기
+  m x: {o {o (-11) 부터 (11) 사이의 난수} × (20)} y: {o {o (-8) 부터 (8) 사이의 난수} × (20)} (으)로 이동하기
+ end
+end`]}],
+  explain:[
+   '<b>리스트</b>는 번호가 붙은 칸들이에요. 게임을 시작할 때 비워요.',
+   '머리가 움직일 때마다 지금 위치를 리스트 <b>1번째</b>에 넣어요. 1번이 항상 최신 위치, 번호가 클수록 오래된 위치예요.',
+   '리스트가 뱀길이보다 길어지면 <b>맨 마지막(가장 오래된) 항목</b>을 지워요. 그래서 리스트에는 딱 뱀 길이만큼만 남아요.',
+   '"i"는 몇 번째 칸을 읽을지 가리키는 손가락 변수예요.',
+   'i번째 X기록, i번째 Y기록으로 이동해서 도장을 찍어요. i를 1씩 늘리면서 리스트 전체를 한 바퀴 읽어요.',
+   '사과를 먹으면 뱀길이가 1 늘어요. 그러면 다음번엔 마지막 항목을 지우지 않으니까 리스트가 1칸 길어져요 = 뱀이 길어져요!'],
+  idea:{t:'변수는 상자 1개, 리스트는 번호 붙은 서랍장', svg:'list',
+    d:'변수에는 값이 딱 <b>하나</b>만 들어가요. 뱀처럼 위치를 <b>여러 개</b> 기억해야 할 땐 리스트를 써요. 리스트는 1번, 2번, 3번… 번호(인덱스)로 꺼내 보고, 넣고, 지울 수 있어요. "리스트의 길이"는 서랍이 몇 칸인지 알려 줘요.'},
+  blank:{sprite:'머리', dsl:`
+c@ 무한 반복하기
+ m (20) 만큼 움직이기
+ L {m x좌표} 을(를) [X기록] 리스트의 (?a) 번째에 넣기
+ c@ 만약 <o {L [X기록] 의 (?b)} ＞ {v 뱀길이}> (이)라면
+  L [X기록] 리스트의 {L [X기록] 의 길이} 번째 항목 (?c)
+ end
+end`, opts:{a:['1','2','0'],b:['길이','1번째 항목','이름'],c:['삭제하기','넣기','바꾸기']}, ans:{a:'1',b:'길이',c:'삭제하기'}},
+  quiz:[
+   {q:'뱀의 몸통 위치 10개를 기억해야 해요. 가장 알맞은 것은?',o:['변수 10개 만들기','리스트 1개(또는 X, Y 2개) 만들기','스프라이트 10개 만들기'],a:1,w:'같은 종류의 값이 여러 개면 리스트! 뱀이 100칸이 되어도 리스트는 그대로예요.'},
+   {q:'리스트 [5, 8, 2, 9]에서 "3번째 항목"은?',o:['8','2','9'],a:1,w:'1번째부터 세요: 5(1), 8(2), 2(3), 9(4). 스크래치·엔트리 리스트는 0이 아니라 1번부터 시작해요.'},
+   {q:'[5, 8, 2, 9]의 "길이"는?',o:['4','9','24'],a:0,w:'길이 = 항목이 몇 개인지. 안에 든 숫자 크기와는 상관없어요.'}],
+  entry:[['[X기록] 의 항목을 모두 삭제하기','(X기록) 의 모든 항목 삭제하기'],['{x좌표} 을(를) [X기록] 리스트의 (1) 번째에 넣기','(x 좌표값) 을(를) (X기록) 의 (1) 번째에 넣기'],['[X기록] 의 길이','(X기록) 항목 수'],['[X기록] 리스트의 (i) 번째 항목','(X기록) 의 (i) 번째 항목'],['(n) 번째 항목 삭제하기','(n) 번째 항목을 (X기록) 에서 삭제하기']],
+  challenge:['내 몸에 부딪히면 끝: X기록·Y기록의 2번째~마지막 항목 중 지금 머리 위치와 같은 게 있으면 게임 끝','무한의 계단: 리스트 "계단방향"에 왼쪽/오른쪽을 무작위로 100개 넣고, 플레이어가 맞는 방향을 누르면 다음 칸으로','최고 기록 5개를 리스트 "랭킹"에 저장하기']
+}
+];
+
+/* 레벨 묶음(티어) 이름 */
+const TIERS = {1:'1단계 · 움직이고 점프하기',2:'2단계 · 복제본 공장 돌리기',3:'3단계 · 복제본끼리 싸우기',4:'4단계 · 변수로 규칙 만들기',5:'보스 · 리스트'};
+
+/* 블록 사전 (스크래치 ↔ 엔트리) */
+const GLOSSARY = [
+ ['이벤트','e','%F 클릭했을 때','시작하기 버튼을 클릭했을 때'],
+ ['제어','c','무한 반복하기','계속 반복하기'],
+ ['제어','c','(10) 번 반복하기','(10) 번 반복하기'],
+ ['제어','c','만약 <> (이)라면','만일 <> (이)라면'],
+ ['제어','c','<> 까지 반복하기','<> 이(가) 될 때까지 반복하기'],
+ ['제어','c','멈추기 [모두]','모든 코드 멈추기'],
+ ['제어','c','[나 자신] 복제하기','(자신)의 복제본 만들기'],
+ ['제어','c','복제되었을 때','복제본이 처음 생성되었을 때'],
+ ['제어','c','이 복제본 삭제하기','이 복제본 삭제하기'],
+ ['변수','v','[점수] 을(를) (0) 로 정하기','(점수) 를 (0) 로 정하기'],
+ ['변수','v','[점수] 을(를) (1) 만큼 바꾸기','(점수) 에 (1) 만큼 더하기'],
+ ['연산','o','(1) 부터 (10) 사이의 난수','(1) 부터 (10) 사이의 무작위 수'],
+ ['감지','n','[벽] 에 닿았는가?','(벽) 에 닿았는가?'],
+ ['동작','m','벽에 닿으면 튕기기','화면 끝에 닿으면 튕기기'],
+ ['동작','m','[마우스 포인터] 쪽 보기','(마우스포인터) 쪽 바라보기'],
+ ['이벤트','e','[게임끝] 신호 보내기','(게임끝) 신호 보내기'],
+ ['리스트','L','(값) 을(를) [목록] 에 추가하기','(값) 항목을 (목록) 에 추가하기'],
+ ['리스트','L','[목록] 의 (1) 번째 항목 삭제하기','(1) 번째 항목을 (목록) 에서 삭제하기'],
+ ['리스트','L','[목록] 의 길이','(목록) 항목 수'],
+ ['리스트','L','[목록] 의 (i) 번째 항목','(목록) 의 (i) 번째 항목']
+];
+
+/* ===== 추가 레벨 9개 (영어 유튜브 영상) ===== */
+const NEW_LEVELS = [
+/* ---------------- 오토바이 ---------------- */
+{ id:'motor', tier:1, stars:1, icon:'🏍️', title:'오토바이 공중제비',
+  video:'How to Make a Motor Bike Game in Scratch (영어 영상)',
+  concepts:[['모양 애니메이션'],['반복으로 한 바퀴 돌기','cl'],['게임 오버 모양']],
+  mission:'도로를 달리는 오토바이로 다가오는 자동차를 뛰어넘어요. <b>↑ 키</b>를 누르면 공중으로 올라가 한 바퀴 공중제비! 자동차에 닿으면 Game Over.',
+  rules:['↑ 키 = 공중제비 점프 (한 바퀴 회전)','↓ 키 = 앞바퀴 들기 (2초)','자동차는 3초마다 다른 차로 모양이 바뀌어요'],
+  controls:['up','down'], game:'motor',
+  sprites:[['🛣️','ROAD','모양이 바뀌며 도로가 달려요'],['🏍️','Motorcycle','주인공'],['🚗','car1','자동차 (모양: car1·car2·car3·Game Over)']],
+  code:[
+   {sprite:'ROAD', scripts:[`
+e^ %F 클릭했을 때
+m x: (-3) y: (-58) (으)로 이동하기
+c@ 무한 반복하기
+ l 다음 모양으로 바꾸기 #1
+end`]},
+   {sprite:'Motorcycle', scripts:[`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [아래쪽 화살표] 키를 눌렀는가?> (이)라면 #2
+  m (30) 도 방향 보기
+  c (2) 초 기다리기
+  m (90) 도 방향 보기
+ end
+ c@ 만약 <n [위쪽 화살표] 키를 눌렀는가?> (이)라면 #3
+  c@ (20) 번 반복하기
+   m y좌표를 (5) 만큼 바꾸기
+  end
+  c@ (24) 번 반복하기 #4
+   m ↺ (15) 도 돌기
+  end
+  c@ (20) 번 반복하기
+   m y좌표를 (-5) 만큼 바꾸기
+  end
+  m (90) 도 방향 보기
+ end
+end`,`
+e^ %F 클릭했을 때
+m x: (-197) y: (-96) (으)로 이동하기
+c@ 무한 반복하기
+ s [MOTORCYCLE ENGINE] 끝까지 재생하기
+end`]},
+   {sprite:'car1', scripts:[`
+e^ %F 클릭했을 때
+l [맨 앞쪽] 으로 순서 바꾸기
+c@ 무한 반복하기
+ m x: (291) y: (-137) (으)로 이동하기 #5
+ m (3) 초 동안 x: (-298) y: (-146) (으)로 이동하기
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ l 모양을 [car1] (으)로 바꾸기 #6
+ c (3) 초 기다리기
+ l 모양을 [car2] (으)로 바꾸기
+ c (3) 초 기다리기
+ l 모양을 [car3] (으)로 바꾸기
+ c (3) 초 기다리기
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [Motorcycle] 에 닿았는가?> (이)라면 #7
+  l 모양을 [Game Over] (으)로 바꾸기
+  m x: (0) y: (14) (으)로 이동하기
+  c 멈추기 [모두]
+ end
+end`]}],
+  explain:[
+   '도로 그림을 여러 장(모양) 그려 두고 계속 다음 모양으로 바꾸면 차선이 흘러가서 도로가 달리는 것처럼 보여요.',
+   '↓ 키: 30도를 보면 앞바퀴를 번쩍 든 모습(윌리)이 돼요. 2초 뒤 다시 90도(정면).',
+   '↑ 키: <b>올라가기 → 돌기 → 내려오기</b>가 차례대로 실행돼요. 5씩 20번 = 100만큼 올라가요.',
+   '<b>15도씩 24번 = 360도</b>. 정확히 한 바퀴를 돌아서 처음 모습으로 돌아와요.',
+   '자동차는 오른쪽 끝(x: 291)에서 3초 동안 왼쪽 끝(x: -298)으로 미끄러져요. 반복하니까 계속 다시 와요.',
+   '같은 스프라이트 안에 반복이 <b>여러 개</b> 동시에 돌아가요. 하나는 움직이고, 하나는 3초마다 모양(차 종류)을 바꿔요.',
+   'Game Over 글자는 <b>자동차의 4번째 모양</b>이에요. 오토바이에 닿으면 그 모양으로 바꾸고 화면 가운데로 옮긴 뒤 모두 멈춰요.'],
+  idea:{t:'15도 × 24번 = 360도 한 바퀴', svg:'flip',
+    d:'한 바퀴는 360도예요. 돌 각도 × 반복 횟수가 <b>360</b>이면 딱 한 바퀴 돌고 원래 모습으로 착지해요. 30도 × 12번, 10도 × 36번도 한 바퀴! 15도 × 20번(300도)으로 바꾸면 비스듬하게 착지해요.'},
+  blank:{sprite:'Motorcycle', dsl:`
+c@ 만약 <n [위쪽 화살표] 키를 눌렀는가?> (이)라면
+ c@ (20) 번 반복하기
+  m y좌표를 (?a) 만큼 바꾸기
+ end
+ c@ (?b) 번 반복하기
+  m ↺ (15) 도 돌기
+ end
+ c@ (20) 번 반복하기
+  m y좌표를 (?c) 만큼 바꾸기
+ end
+end`, opts:{a:['5','-5','15'],b:['12','24','36'],c:['5','-5','24']}, ans:{a:'5',b:'24',c:'-5'}},
+  quiz:[
+   {q:'15도씩 24번 돌면 모두 몇 도 돌까요?',o:['180도','360도','24도'],a:1,w:'15 × 24 = 360. 정확히 한 바퀴예요.'},
+   {q:'자동차가 car1 → car2 → car3로 바뀌는 이유는?',o:['3초마다 모양을 바꾸는 반복이 따로 돌고 있어서','자동차 3대가 복제돼서','배경이 바뀌어서'],a:0,w:'한 스프라이트에 "클릭했을 때" 스크립트가 여러 개 있으면 모두 동시에 실행돼요.'},
+   {q:'Game Over 글자는 어떻게 띄웠을까요?',o:['자동차 스프라이트에 Game Over 모양을 하나 더 그려 두고, 닿으면 그 모양으로 바꿨다','배경을 지웠다','말하기 블록을 썼다'],a:0,w:'모양은 그림이면 뭐든 될 수 있어요. 글자 그림도 모양이에요.'}],
+  entry:[['↺ (15) 도 돌기','방향을 (-15)° 만큼 회전하기'],['모양을 [car1] (으)로 바꾸기','(car1) 모양으로 바꾸기'],['[맨 앞쪽] 으로 순서 바꾸기','맨 앞으로 가져오기'],['[소리] 끝까지 재생하기','소리 (엔진) 재생하고 기다리기']],
+  challenge:['변수 "점수"를 만들어 자동차가 왼쪽 끝에 도착할 때마다 +1','자동차가 지나가는 시간을 (2) 부터 (4) 사이의 난수로 바꾸기','두 바퀴 공중제비: 몇 번 반복으로 바꾸면 될까? (15도 × ?번 = 720도)']
+},
+/* ---------------- 상어 ---------------- */
+{ id:'shark', tier:2, stars:2, icon:'🦈', title:'상어의 물고기 사냥',
+  video:'Lecture 05 · Create Fish Shark Game in Scratch (영어 영상)',
+  concepts:[['복제본 10마리','cl'],['돌기 + 움직이기'],['회전 방식'],['변수: score','v']],
+  mission:'바다에 물고기 10마리가 헤엄쳐요. 방향키로 상어를 움직여 물고기를 잡아먹어요. 물고기는 모두 <b>복제본</b>이라서 코드는 딱 하나예요!',
+  rules:['↑ ↓ ← → 키로 상어 이동','상어에 닿은 물고기는 사라지고 score +1','10마리를 다 먹으면 성공'],
+  controls:['up','down','left','right'], game:'shark',
+  sprites:[['🐟','Fish','복제 공장 (모양 여러 개)'],['🦈','Shark 2','방향키로 움직이는 사냥꾼'],['🌊','배경','Underwater 2']],
+  code:[
+   {sprite:'Fish', scripts:[`
+e^ %F 클릭했을 때
+v [score] 을(를) (0) 로 정하기
+l 보이기 #1
+c@ (10) 번 반복하기 #2
+ c [나 자신] 복제하기
+ m [랜덤 위치] (으)로 이동하기
+ l 다음 모양으로 바꾸기 #3
+end
+l 숨기기`,`
+c^ 복제되었을 때
+c@ 무한 반복하기
+ m ↻ (3) 도 돌기 #4
+ m (3) 만큼 움직이기
+ m ↺ (3) 도 돌기
+ m 벽에 닿으면 튕기기
+ m 회전 방식을 [왼쪽-오른쪽] (으)로 정하기 #5
+ c@ 만약 <n [Shark 2] 에 닿았는가?> (이)라면 #6
+  v [score] 을(를) (1) 만큼 바꾸기
+  c 이 복제본 삭제하기
+ end
+end`]},
+   {sprite:'Shark 2', scripts:[`
+e^ %F 클릭했을 때
+m 회전 방식을 [왼쪽-오른쪽] (으)로 정하기
+c@ 무한 반복하기
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면 #7
+  m (90) 도 방향 보기
+  m x좌표를 (5) 만큼 바꾸기
+ end
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  m (-90) 도 방향 보기
+  m x좌표를 (-5) 만큼 바꾸기
+ end
+ c@ 만약 <n [위쪽 화살표] 키를 눌렀는가?> (이)라면
+  m y좌표를 (5) 만큼 바꾸기
+ end
+ c@ 만약 <n [아래쪽 화살표] 키를 눌렀는가?> (이)라면
+  m y좌표를 (-5) 만큼 바꾸기
+ end
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ l 다음 모양으로 바꾸기 #8
+ c (0.5) 초 기다리기
+end`]}],
+  explain:[
+   '맨 처음에 원본을 <b>보이기</b>! 지난 게임이 끝날 때 원본이 숨어 있었다면, 복제본도 숨은 채로 태어나기 때문이에요(레벨 8에서 배운 "물려받기").',
+   '10번 반복하면서 복제 → 원본이 다른 곳으로 이동 → 또 복제. 그래서 10마리가 모두 다른 곳에 생겨요.',
+   '모양을 바꾸면서 복제하니까 물고기 종류도 제각각이에요.',
+   '오른쪽으로 3도 → 3만큼 앞으로 → 왼쪽으로 3도. 이걸 반복하면 꼬리를 흔들며 헤엄치는 것처럼 보여요.',
+   '<b>회전 방식 왼쪽-오른쪽</b>: 벽에 튕겨서 방향이 바뀌어도 물고기가 뒤집히지 않고 좌우만 바뀌어요.',
+   '각 복제본이 "상어에 닿았나?"를 스스로 검사해요. 잡히면 score +1 하고 사라져요.',
+   '상어는 방향키로 움직여요. 좌우로 갈 때는 그쪽을 바라봐요.',
+   '0.5초마다 모양을 바꿔서 입을 뻐끔뻐끔 벌려요.'],
+  idea:{t:'복제본 10마리, 코드는 1개', svg:'school',
+    d:'물고기 10마리를 스프라이트 10개로 만들면 코드도 10번 복사해야 해요. 복제본을 쓰면 <b>"복제되었을 때" 코드 하나</b>를 10마리가 각자 따로 실행해요. 50마리로 늘려도 숫자 10만 50으로 바꾸면 끝!'},
+  blank:{sprite:'Fish', dsl:`
+e^ %F 클릭했을 때
+v [score] 을(를) (0) 로 정하기
+l (?a)
+c@ (?b) 번 반복하기
+ c [나 자신] 복제하기
+ m [랜덤 위치] (으)로 이동하기
+end
+l (?c)`, opts:{a:['보이기','숨기기'],b:['1','10','100'],c:['숨기기','보이기']}, ans:{a:'보이기',b:'10',c:'숨기기'}},
+  quiz:[
+   {q:'원본 물고기를 맨 처음에 "보이기" 하는 이유는?',o:['원본이 숨어 있으면 복제본도 숨은 채로 태어나니까','원본도 잡아먹으려고','점수를 올리려고'],a:0,w:'복제본은 원본의 숨김/보임 상태까지 물려받아요.'},
+   {q:'"↻3도 → 3만큼 움직이기 → ↺3도"를 반복하면?',o:['살랑살랑 흔들리며 헤엄친다','제자리에서 빙빙 돈다','멈춘다'],a:0,w:'돌았다가 다시 돌아오니까 방향은 그대로, 몸만 살짝 흔들려요.'},
+   {q:'10마리를 다 먹으면 score는?',o:['1','10','0'],a:1,w:'한 마리에 1점씩, 10마리면 10점이에요.'}],
+  entry:[['회전 방식을 [왼쪽-오른쪽] (으)로 정하기','회전 방식을 (좌우 회전)으로 정하기'],['↻ (3) 도 돌기','방향을 (3)° 만큼 회전하기'],['[랜덤 위치] (으)로 이동하기','x:(무작위 수) y:(무작위 수) 위치로 이동하기'],['[나 자신] 복제하기','(자신)의 복제본 만들기']],
+  challenge:['score가 10이 되면 "다 먹었다!"를 말하고 멈추기','20초 타이머 붙이기 (레벨 16의 time 변수처럼)','복어(Pufferfish)를 만들어 먹으면 score -3']
+},
+/* ---------------- 좀비 ---------------- */
+{ id:'zombie', tier:3, stars:3, icon:'🧟', title:'좀비 슈터',
+  video:'How To Make A Zombie Shooter Game in Scratch · Part 1 (영어 영상)',
+  concepts:[['쪽 보기 (조준)'],['다른 스프라이트의 방향'],['복제본 2종류','cl'],['~까지 반복하기','cl']],
+  mission:'플레이어는 항상 마우스 쪽을 조준해요. 마우스를 누르면 총알이 날아가요. 오른쪽에서 계속 몰려오는 좀비를 맞혀요!',
+  rules:['방향키로 플레이어 이동, 마우스로 조준','마우스를 누르고 있으면 총알 연사','좀비는 플레이어를 계속 따라와요'],
+  controls:['up','down','left','right','mouse'], game:'zombie', hard:'좀비에 닿으면 게임 끝',
+  sprites:[['🔫','Player','동그라미 + 총'],['▬','Bullet','총알 공장'],['🧟','Zombie','좀비 공장']],
+  code:[
+   {sprite:'Player', scripts:[`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (10) 만큼 바꾸기
+ end
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (-10) 만큼 바꾸기
+ end
+ c@ 만약 <n [위쪽 화살표] 키를 눌렀는가?> (이)라면
+  m y좌표를 (10) 만큼 바꾸기
+ end
+ c@ 만약 <n [아래쪽 화살표] 키를 눌렀는가?> (이)라면
+  m y좌표를 (-10) 만큼 바꾸기
+ end
+ m [마우스 포인터] 쪽 보기 #1
+end`]},
+   {sprite:'Bullet', scripts:[`
+e^ %F 클릭했을 때
+l 숨기기
+c@ 무한 반복하기
+ c@ 만약 <n 마우스를 클릭했는가?> (이)라면 #2
+  c [Bullet] 복제하기
+  c (0.1) 초 기다리기
+ end
+end`,`
+c^ 복제되었을 때
+l 보이기
+m [Player] (으)로 이동하기 #3
+m {n [Player] 의 [방향]} 도 방향 보기 #4
+m (20) 만큼 움직이기
+c@ <n [벽] 에 닿았는가?> 까지 반복하기
+ m (10) 만큼 움직이기
+end
+c 이 복제본 삭제하기`]},
+   {sprite:'Zombie', scripts:[`
+e^ %F 클릭했을 때
+l 숨기기
+c@ 무한 반복하기
+ c [나 자신] 복제하기
+ c (1) 초 기다리기
+end`,`
+c^ 복제되었을 때
+l 보이기
+m x: (240) y: (0) (으)로 이동하기 #5
+c@ <n [Bullet] 에 닿았는가?> 까지 반복하기 #6
+ m (3) 만큼 움직이기
+ m [Player] 쪽 보기
+end
+c 이 복제본 삭제하기`]}],
+  explain:[
+   '플레이어는 방향키로 움직이면서 <b>항상 마우스 쪽을 봐요</b>. 이게 조준이에요.',
+   '마우스를 누르고 있으면 0.1초마다 총알 복제본이 생겨요 (1초에 10발).',
+   '총알 복제본은 태어나자마자 플레이어 위치로 가요.',
+   '<b>Player의 방향</b>(감지 블록)을 그대로 따라 봐요. 플레이어가 보는 쪽 = 총알이 날아갈 쪽!',
+   '좀비는 오른쪽 끝 가운데(x: 240)에서 나타나요.',
+   '총알에 닿을 때까지 3만큼 걷고, 플레이어 쪽을 다시 봐요. 그래서 플레이어가 도망가도 끝까지 따라와요.'],
+  idea:{t:'조준 = 방향을 따라 하기', svg:'aim',
+    d:'플레이어는 <b>마우스 쪽 보기</b>로 방향을 정하고, 총알은 <b>Player의 방향</b>을 그대로 복사해요. 좀비는 <b>Player 쪽 보기</b>로 계속 방향을 고쳐요. "쪽 보기" 하나로 조준, 발사, 추적이 모두 만들어져요.'},
+  blank:{sprite:'Bullet', dsl:`
+c^ 복제되었을 때
+l 보이기
+m [(?a)] (으)로 이동하기
+m {n [Player] 의 [(?b)]} 도 방향 보기
+c@ <n [벽] 에 닿았는가?> 까지 반복하기
+ m (10) 만큼 움직이기
+end
+c (?c)`, opts:{a:['Player','마우스 포인터','랜덤 위치'],b:['방향','x좌표','크기'],c:['이 복제본 삭제하기','멈추기 [모두]','숨기기']}, ans:{a:'Player',b:'방향',c:'이 복제본 삭제하기'}},
+  quiz:[
+   {q:'총알이 플레이어가 보는 쪽으로 날아가는 이유는?',o:['총알이 Player의 방향을 그대로 따라 보기 때문','총알이 마우스로 순간이동해서','좀비가 끌어당겨서'],a:0,w:'감지 블록 "(Player)의 (방향)"으로 다른 스프라이트의 정보를 읽을 수 있어요.'},
+   {q:'좀비가 반복 안에서 계속 "Player 쪽 보기"를 하면?',o:['플레이어가 움직여도 계속 따라온다','처음 방향으로만 걷는다','멈춘다'],a:0,w:'한 번만 보면 처음 위치로만 가요. 반복 안에서 계속 봐야 추적이 돼요.'},
+   {q:'좀비가 모두 같은 곳에서만 나와요. 여기저기서 나오게 하려면?',o:['y: (-180) 부터 (180) 사이의 난수','x: 0으로','기다리기를 0초로'],a:0,w:'x는 오른쪽 끝(240) 그대로, y만 난수로 바꾸면 오른쪽 아무 높이에서 나타나요.'}],
+  entry:[['[마우스 포인터] 쪽 보기','(마우스포인터) 쪽 바라보기'],['[Player] 의 [방향]','(Player) 의 (방향)'],['[Bullet] 복제하기','(총알)의 복제본 만들기'],['<벽에 닿았는가?> 까지 반복하기','<(벽)에 닿았는가?> 이(가) 될 때까지 반복하기']],
+  challenge:['좀비 등장 높이를 난수로 바꾸고, 왼쪽(x: -240)에서도 나오게 하기','Player에 "만약 Zombie에 닿았는가" → 게임 끝 추가하기','좀비마다 체력 2: "이 스프라이트에서만 사용" 변수로 2방 맞아야 쓰러지게']
+},
+/* ---------------- 3D 마인크래프트 흉내 ---------------- */
+{ id:'mine3d', tier:3, stars:3, icon:'🌳', title:'가짜 3D 숲 걷기',
+  video:'Scratch Tutorial: How to create 3D Minecraft (영어 영상 · 스크래치 2.0)',
+  concepts:[['신호 4개','cl'],['크기로 원근감'],['투명도 효과'],['그리고 2번']],
+  mission:'방향키를 누르면 <b>내가 아니라 세상이</b> 움직여요. ↑로 앞으로 걸으면 나무와 집이 점점 커지고(가까워지고), ← →로 둘러봐요. 나무에 가까이 가서 조준점을 맞추고 스페이스를 누르면 나무가 사라져요!',
+  rules:['↑ ↓ = 앞뒤로 걷기 (크기 바꾸기)','← → = 둘러보기 (x 바꾸기)','크기 130 넘음 + 조준점 + 스페이스 = 벌목'],
+  controls:['up','down','left','right','space'], game:'mine3d',
+  sprites:[['🎮','무대','키를 신호로 바꿔 방송'],['🌳','Sprite2 (나무)','신호를 받아 움직여요'],['🏠','Sprite4 (집)','나무와 같은 코드'],['✚','Sprite3','가운데 조준점'],['🟦','Sprite1','손에 든 블록 (장식)']],
+  code:[
+   {sprite:'무대', scripts:[`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면 #1
+  e [right] 신호 보내기
+ end
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  e [left] 신호 보내기
+ end
+ c@ 만약 <n [위쪽 화살표] 키를 눌렀는가?> (이)라면
+  e [up] 신호 보내기
+ end
+ c@ 만약 <n [아래쪽 화살표] 키를 눌렀는가?> (이)라면
+  e [down] 신호 보내기
+ end
+end`]},
+   {sprite:'Sprite2 (나무)', scripts:[`
+e^ %F 클릭했을 때
+l 보이기
+l 그래픽 효과 지우기
+l 크기를 (100) %로 정하기
+l (1) 단계 뒤로 순서 바꾸기
+m x: (23) y: (-73) (으)로 이동하기`,`
+e^ [right] 신호를 받았을 때 #2
+m x좌표를 (-3) 만큼 바꾸기`,`
+e^ [left] 신호를 받았을 때
+m x좌표를 (3) 만큼 바꾸기`,`
+e^ [up] 신호를 받았을 때 #3
+l 크기를 (1) 만큼 바꾸기`,`
+e^ [down] 신호를 받았을 때
+l 크기를 (-1) 만큼 바꾸기`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <o <o <o {l 크기} ＞ (130)> 그리고 <n [스페이스] 키를 눌렀는가?>> 그리고 <n [Sprite3] 에 닿았는가?>> (이)라면 #4
+  l [투명도] 효과를 (2) 만큼 바꾸기 #5
+ end
+end`]}],
+  explain:[
+   '무대가 키를 보고 <b>신호를 방송</b>해요. 나무, 집, 블록이 모두 같은 신호를 받아 한꺼번에 움직여요.',
+   '오른쪽을 보면 세상은 <b>왼쪽으로</b> 지나가요. 그래서 right 신호를 받으면 x를 -3만큼! 카메라를 흉내 내는 방법이에요.',
+   '가까운 물건은 크게, 먼 물건은 작게 보여요(원근법). up 신호마다 크기 +1이면 다가가는 것처럼 보여요.',
+   '조건 3개: 충분히 가깝고(크기 > 130) <b>그리고</b> 스페이스를 눌렀고 <b>그리고</b> 조준점이 나무 위에 있을 때.',
+   '투명도를 2씩 올려요. 50번이면 100 = 완전히 투명. 나무가 서서히 사라져요.'],
+  idea:{t:'크기로 만드는 가짜 3D', svg:'depth',
+    d:'스크래치 무대는 평평하지만, <b>크기</b>를 바꾸면 앞뒤(거리)를 흉내 낼 수 있어요. 크기 50 = 멀리, 크기 200 = 바로 앞. 신호 하나로 모든 물건의 크기를 함께 바꾸면 내가 걸어가는 것처럼 느껴져요.'},
+  blank:{sprite:'Sprite2 (나무)', dsl:`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <o <o <o {l 크기} ＞ (?a)> 그리고 <n [스페이스] 키를 눌렀는가?>> (?b) <n [Sprite3] 에 닿았는가?>> (이)라면
+  l [(?c)] 효과를 (2) 만큼 바꾸기
+ end
+end`, opts:{a:['130','0','-130'],b:['그리고','또는'],c:['투명도','색깔','소용돌이']}, ans:{a:'130',b:'그리고',c:'투명도'}},
+  quiz:[
+   {q:'↑ 키를 누르면 나무가 커져요. 왜 그렇게 만들었을까요?',o:['가까운 물건은 크게 보이니까, 다가가는 것처럼 보이게','나무가 자라서','버그라서'],a:0,w:'크기 = 거리. 이게 가짜 3D의 핵심이에요.'},
+   {q:'→ 키를 눌렀는데 나무는 왼쪽으로 움직여요. 왜일까요?',o:['내가 오른쪽으로 돌면 세상은 왼쪽으로 지나가 보이니까','신호가 반대로 가서','키가 고장 나서'],a:0,w:'버스 창밖 풍경처럼, 내가 움직이는 반대쪽으로 세상이 움직여요.'},
+   {q:'키마다 신호를 쓰는 이유는?',o:['나무·집·블록이 같은 신호를 받아 한꺼번에 움직이게 하려고','신호가 더 빨라서','키 블록이 없어서'],a:0,w:'물건이 10개여도 신호 하나면 모두 함께 움직여요.'}],
+  entry:[['[up] 신호를 받았을 때','(up) 신호를 받았을 때'],['크기를 (1) 만큼 바꾸기','크기를 (1) 만큼 바꾸기'],['[투명도] 효과를 (2) 만큼 바꾸기','(투명도) 효과를 (2) 만큼 주기'],['(1) 단계 뒤로 순서 바꾸기','뒤로 보내기']],
+  challenge:['크기가 300이 넘으면 더 다가가지 못하게 막기','나무를 복사해서 숲 만들기 (x 위치만 다르게)','up 신호마다 x도 가운데에서 바깥쪽으로 조금씩 퍼지게 해서 더 진짜 같은 3D 만들기']
+},
+/* ---------------- 골프 (중력) ---------------- */
+{ id:'golf', tier:4, stars:3, icon:'⛳', title:'골프 피크: 공 점프',
+  video:'Lecture 19 · How to Make Golf Peaks Game in Scratch (영어 영상)',
+  concepts:[['변수: jump = 중력','v'],['색에 닿았는가'],['다음 배경 = 다음 레벨'],['그리고']],
+  mission:'하얀 공을 굴리고 점프해서 떠 있는 섬을 건너 <b>빨간 깃발</b>까지 가요. 깃발에 닿으면 다음 레벨! 떨어지면 처음 자리로 돌아가요.',
+  rules:['← → = 굴리기, ↑ = 점프 (초록 땅 위에서만)','jump 변수가 매번 1씩 줄어서 공이 떨어져요 = 중력','빨간 깃발 = 다음 배경(레벨)'],
+  controls:['left','right','up'], game:'golf',
+  sprites:[['⚪','white ball','주인공 공'],['🏝️','배경 3장','섬 위치가 다른 레벨 1~3'],['🚩','깃발','배경에 그려진 빨간 깃발']],
+  code:[
+   {sprite:'white ball', scripts:[`
+e^ %F 클릭했을 때
+l 배경을 [black backdrop] (으)로 바꾸기 #1
+m x: (-181) y: (-35) (으)로 이동하기
+c@ 무한 반복하기
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (5) 만큼 바꾸기
+ end
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  m x좌표를 (-5) 만큼 바꾸기
+ end
+end`,`
+e^ %F 클릭했을 때
+v [jump] 을(를) (0) 로 정하기 #2
+c@ 무한 반복하기
+ v [jump] 을(를) (-1) 만큼 바꾸기 #3
+ c@ 만약 <n %GREEN 색에 닿았는가?> (이)라면 #4
+  v [jump] 을(를) (0) 로 정하기
+ end
+ c@ 만약 <o <n [위쪽 화살표] 키를 눌렀는가?> 그리고 <n %GREEN 색에 닿았는가?>> (이)라면 #5
+  s [Pop] 재생하기
+  v [jump] 을(를) (14) 로 정하기
+ end
+ m y좌표를 {v jump} 만큼 바꾸기 #6
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <n %RED 색에 닿았는가?> (이)라면 #7
+  m x: (-181) y: (-35) (으)로 이동하기
+  l 다음 배경으로 바꾸기
+ end
+ c@ 만약 <o {m y좌표} ＜ (-170)> (이)라면 #8
+  m x: (-181) y: (-35) (으)로 이동하기
+ end
+end`]}],
+  explain:[
+   '배경(backdrop) 3장이 레벨 1, 2, 3이에요. 시작할 때 첫 배경으로 돌아가요.',
+   '<b>jump</b>는 "지금 위아래로 얼마나 빠른가"를 담는 변수예요.',
+   '매번 jump를 1씩 줄여요. 이게 <b>중력</b>! 가만히 있으면 -1, -2, -3… 점점 빨리 떨어져요.',
+   '초록 땅에 닿으면 jump를 0으로. 땅 위에서는 떨어지지 않아요.',
+   '↑ 키 <b>그리고</b> 땅 위일 때만 점프! jump를 14로 정하면 14, 13, 12 … 만큼 올라가다가 점점 느려져요.',
+   'y좌표를 jump만큼 바꿔요. 이 한 줄이 올라가기·내려오기를 모두 해요.',
+   '빨간 깃발에 닿으면 처음 자리로 가고 다음 배경 = 다음 레벨!',
+   '섬에서 떨어져 화면 아래(-170)보다 내려가면 처음 자리로 돌아가요.'],
+  idea:{t:'변수 하나로 만드는 중력', svg:'gravity',
+    d:'jump = 14로 점프하면 y는 <b>14, 13, 12, … 1, 0, -1, -2 …</b>씩 바뀌어요. 올라가는 힘이 매번 1씩 줄다가 0이 되는 순간이 꼭대기, 그다음부터는 떨어져요. 그래서 공이 포물선(무지개 모양)을 그려요.'},
+  blank:{sprite:'white ball', dsl:`
+e^ %F 클릭했을 때
+v [jump] 을(를) (0) 로 정하기
+c@ 무한 반복하기
+ v [jump] 을(를) (?a) 만큼 바꾸기
+ c@ 만약 <n %GREEN 색에 닿았는가?> (이)라면
+  v [jump] 을(를) (?b) 로 정하기
+ end
+ m y좌표를 {v (?c)} 만큼 바꾸기
+end`, opts:{a:['-1','1','14'],b:['0','14','-1'],c:['jump','x좌표','점수']}, ans:{a:'-1',b:'0',c:'jump'}},
+  quiz:[
+   {q:'jump = 14로 점프했어요. 공은 언제부터 내려올까요?',o:['jump가 0보다 작아질 때','바로','jump가 14일 때'],a:0,w:'14, 13, … 1까지는 올라가고, 0에서 멈칫, -1부터 내려와요.'},
+   {q:'공중에서 ↑를 눌러도 점프가 안 돼요. 왜일까요?',o:['"그리고 초록색에 닿았는가?" 조건 때문에 땅 위에서만 점프','키가 고장 나서','jump가 0이라서'],a:0,w:'이 조건이 없으면 공중에서 계속 점프하는 "무한 점프"가 돼요.'},
+   {q:'다음 레벨로 넘어가는 방법은?',o:['배경을 여러 장 그려 두고 "다음 배경으로 바꾸기"','스프라이트를 지운다','변수를 지운다'],a:0,w:'섬과 깃발이 배경 그림이라서 배경만 바꾸면 맵 전체가 바뀌어요.'}],
+  entry:[['%GREEN 색에 닿았는가?','엔트리는 땅을 오브젝트로 만들고 (땅) 에 닿았는가? 를 써요'],['다음 배경으로 바꾸기','다음 장면 시작하기 (장면 = 레벨)'],['[jump] 을(를) (14) 로 정하기','(jump) 를 (14) 로 정하기'],['y좌표를 {jump} 만큼 바꾸기','y 좌표를 (jump 값) 만큼 바꾸기']],
+  challenge:['떨어질 때마다 변수 "목숨" -1, 0이 되면 게임 끝','레벨 4 배경을 직접 그려서 추가하기','달나라 모드: 중력 -1을 -0.5로 바꾸면 어떻게 될까?']
+},
+/* ---------------- 피시 프렌지 ---------------- */
+{ id:'frenzy', tier:4, stars:4, icon:'🐠', title:'피시 프렌지: 부드러운 헤엄',
+  video:'How to make a Fish Frenzy Game in Scratch · Part 1 (영어 영상)',
+  concepts:[['변수: speed (가속)','v'],['거리 감지'],['결합하기로 모양 이름'],['펜 + sin 물결']],
+  mission:'물고기가 마우스를 따라 헤엄쳐요. 마우스가 멀면 빨리, 가까우면 천천히! 갑자기 휙 움직이지 않고 <b>부드럽게</b> 빨라지고 느려져요. 위쪽 물결은 펜으로 매번 다시 그린 거예요.',
+  rules:['물고기는 마우스 쪽을 보고 헤엄쳐요','거리가 멀수록 speed가 커져요','작은 먹이를 먹어 보세요 (실행화면 연습용)'],
+  controls:['mouse'], game:'frenzy',
+  sprites:[['🐠','Fish Player','모양 R1~R4, L1~L4'],['🌊','Water','펜으로 물결 그리기']],
+  code:[
+   {sprite:'Fish Player', scripts:[`
+e^ %F 클릭했을 때
+v [animate] 을(를) (0) 로 정하기
+v [speed] 을(를) (0) 로 정하기
+c@ 무한 반복하기
+ m [마우스 포인터] 쪽 보기 #1
+ v [speed] 을(를) {o {o {o {n [마우스 포인터] 까지의 거리} / (20)} - {v speed}} / (5)} 만큼 바꾸기 #2
+ m {v speed} 만큼 움직이기
+ v [animate] 을(를) (0.2) 만큼 바꾸기 #3
+ c@ 만약 <o {m 방향} ＞ (0)> (이)라면 #4
+  l 모양을 {o (R) 와(과) {o {o {o {v animate} 의 [버림]} 나누기 (4) 의 나머지} + (1)} 결합하기} (으)로 바꾸기
+ else
+  l 모양을 {o (L) 와(과) {o {o {o {v animate} 의 [버림]} 나누기 (4) 의 나머지} + (1)} 결합하기} (으)로 바꾸기
+ end
+end`]},
+   {sprite:'Water', scripts:[`
+e^ %F 클릭했을 때
+l 숨기기
+v [Water Level] 을(를) (100) 로 정하기
+c@ 무한 반복하기
+ p 모두 지우기 #5
+ k Create Water
+end`,`
+k^ 정의하기 Create Water #6
+m x: (-240) y: (-180) (으)로 이동하기
+p 펜 굵기를 (5) (으)로 정하기
+p 펜 색깔을 %BLUE (으)로 정하기
+c@ (121) 번 반복하기
+ m y좌표를 (-180) (으)로 정하기
+ p 펜 내리기
+ m y좌표를 {o {v Water Level} + {o {o {o {o {m x좌표} × (2)} + {o {n 타이머} × (200)}} 의 [sin]} × (8)}} (으)로 정하기 #7
+ p 펜 올리기
+ m x좌표를 (4) 만큼 바꾸기
+end`]}],
+  explain:[
+   '물고기는 항상 마우스 쪽을 봐요.',
+   '<b>부드러운 속도</b>: 목표 속도(거리 ÷ 20)와 지금 speed의 차이를 5로 나눈 만큼만 바꿔요. 차이의 1/5씩 따라가니까 휙 바뀌지 않고 스르륵 빨라지고 느려져요.',
+   'animate는 0, 0.2, 0.4 … 계속 커지는 숫자예요. 버림하면 0,0,0,0,0,1,1,… 그래서 5번에 한 번 모양이 바뀌어요.',
+   '오른쪽을 보면(방향 > 0) R, 왼쪽이면 L. <b>결합하기</b>로 "R" + "3" = "R3"처럼 모양 이름을 만들어요. 4로 나눈 나머지 + 1이라서 1, 2, 3, 4, 1, 2 …가 반복돼요.',
+   '매번 화면을 지우고 다시 그려야 물결이 움직여요.',
+   '<b>내 블록</b> Create Water를 만들 때 "화면 새로 고침 없이 실행"에 체크하면 121줄을 한순간에 그려요.',
+   'sin은 -1 ~ 1 사이를 오르내리는 파도 숫자예요. x마다, 시간(타이머)마다 값이 달라서 물결이 출렁여요. × 8이면 물결 높이가 위아래 8씩.'],
+  idea:{t:'차이의 1/5씩 따라가기', svg:'easing',
+    d:'목표 속도가 10이고 지금 0이면: 0 → <b>2</b> → 3.6 → 4.9 → 5.9 … 처음엔 크게, 목표에 가까워질수록 조금씩 바뀌어요. 이 방법(이징)은 카메라, 체력바, 메뉴 애니메이션 등 거의 모든 게임에서 써요.'},
+  blank:{sprite:'Fish Player', dsl:`
+c@ 무한 반복하기
+ m [(?a)] 쪽 보기
+ v [speed] 을(를) {o {o {o {n [마우스 포인터] 까지의 거리} / (20)} - {v speed}} / (5)} 만큼 바꾸기
+ m {v (?b)} 만큼 움직이기
+ v [animate] 을(를) (?c) 만큼 바꾸기
+end`, opts:{a:['마우스 포인터','Water','랜덤 위치'],b:['speed','animate','Water Level'],c:['0.2','100','-1']}, ans:{a:'마우스 포인터',b:'speed',c:'0.2'}},
+  quiz:[
+   {q:'지금 speed는 0, 목표 속도(거리 ÷ 20)는 10이에요. 한 번 계산하면 speed는?',o:['10','2','0.2'],a:1,w:'(10 - 0) ÷ 5 = 2만큼 바꿔요. 다음엔 (10 - 2) ÷ 5 = 1.6만큼 더해서 3.6!'},
+   {q:'(R) 와(과) (3) 결합하기의 결과는?',o:['R3','3R','R+3'],a:0,w:'결합하기는 글자를 이어 붙여요. 그래서 모양 이름을 계산으로 만들 수 있어요.'},
+   {q:'물결을 더 높게 출렁이게 하려면?',o:['× 8을 × 20으로','타이머 × 200을 × 0으로','Water Level을 0으로'],a:0,w:'sin 값(-1 ~ 1)에 곱하는 수가 물결 높이예요. 타이머 × 0이면 물결이 멈춰요.'}],
+  entry:[['[마우스 포인터] 까지의 거리','(마우스포인터) 까지의 거리'],['(R) 와(과) ( ) 결합하기','(R) 과(와) ( ) 를 합치기'],['( ) 나누기 (4) 의 나머지','( ) / (4) 의 나머지'],['( ) 의 [sin]','( ) 의 사인값'],['펜 내리기 / 펜 올리기','그리기 시작하기 / 그리기 멈추기'],['내 블록 (정의하기)','함수 만들기']],
+  challenge:['물 밖(y > Water Level)으로 나가면 중력으로 떨어지게 (레벨 14의 jump처럼)','작은 물고기 복제본을 만들어 먹으면 점수 +1, 내 크기 +5','물결 색을 시간마다 바꾸기 (펜 색깔을 1만큼 바꾸기)']
+},
+/* ---------------- 서바이브 ---------------- */
+{ id:'surviv', tier:4, stars:4, icon:'🥊', title:'서바이벌 배틀: 주먹과 총',
+  video:'How to make a Surviv-like game in Scratch Pt 1 (영어 영상)',
+  concepts:[['변수 X·Y로 이동','v'],['상태 변수 weapon','v'],['난수로 왼손·오른손'],['만약~아니면','cl']],
+  mission:'위에서 내려다보는 배틀 게임이에요. 방향키로 움직이고 마우스로 조준해요. <b>1번 키 = 주먹, 2번 키 = 총</b>. 클릭하면 주먹은 왼손·오른손이 랜덤으로, 총은 반동과 함께 총알이 나가요. 통을 부숴 보세요!',
+  rules:['방향키로 이동 (영상은 WASD), 마우스로 조준','1 = 주먹, 2 = 총 (weapon 변수)','클릭 = 공격'],
+  controls:['up','down','left','right','1','2','mouse'], game:'surviv',
+  sprites:[['🟠','player','몸통'],['✊','hands','모양: idle·r1·r2·l1·l2·AK'],['▬','Sprite1','총알 복제 공장']],
+  code:[
+   {sprite:'player', scripts:[`
+e^ %F 클릭했을 때
+v [X] 을(를) (0) 로 정하기 #1
+v [Y] 을(를) (0) 로 정하기
+c@ 무한 반복하기
+ c@ 만약 <n [오른쪽 화살표] 키를 눌렀는가?> (이)라면
+  v [X] 을(를) (5) 만큼 바꾸기
+ end
+ c@ 만약 <n [왼쪽 화살표] 키를 눌렀는가?> (이)라면
+  v [X] 을(를) (-5) 만큼 바꾸기
+ end
+ c@ 만약 <n [위쪽 화살표] 키를 눌렀는가?> (이)라면
+  v [Y] 을(를) (5) 만큼 바꾸기
+ end
+ c@ 만약 <n [아래쪽 화살표] 키를 눌렀는가?> (이)라면
+  v [Y] 을(를) (-5) 만큼 바꾸기
+ end
+ m x: {v X} y: {v Y} (으)로 이동하기
+end`]},
+   {sprite:'hands', scripts:[`
+e^ %F 클릭했을 때
+v [weapon] 을(를) (0) 로 정하기
+c@ 무한 반복하기
+ c@ 만약 <n [1] 키를 눌렀는가?> (이)라면 #2
+  v [weapon] 을(를) (0) 로 정하기
+ end
+ c@ 만약 <n [2] 키를 눌렀는가?> (이)라면
+  v [weapon] 을(를) (1) 로 정하기
+ end
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ m [player] (으)로 이동하기
+ m [마우스 포인터] 쪽 보기
+ l [맨 앞쪽] 으로 순서 바꾸기
+end`,`
+e^ %F 클릭했을 때
+c@ 무한 반복하기
+ c@ 만약 <o {v weapon} = (0)> (이)라면 #3
+  c@ 만약 <n 마우스를 클릭했는가?> (이)라면
+   v [l/r] 을(를) {o (1) 부터 (2) 사이의 난수} 로 정하기 #4
+   c@ 만약 <o {v l/r} = (1)> (이)라면
+    l 모양을 [r1] (으)로 바꾸기
+    c (0.02) 초 기다리기
+    l 모양을 [r2] (으)로 바꾸기
+    c (0.05) 초 기다리기
+    l 모양을 [idle] (으)로 바꾸기
+   end
+   c@ 만약 <o {v l/r} = (2)> (이)라면
+    l 모양을 [l1] (으)로 바꾸기
+    c (0.02) 초 기다리기
+    l 모양을 [l2] (으)로 바꾸기
+    c (0.05) 초 기다리기
+    l 모양을 [idle] (으)로 바꾸기
+   end
+  end
+ else
+  l 모양을 [AK] (으)로 바꾸기 #5
+  c@ 만약 <n 마우스를 클릭했는가?> (이)라면
+   c [Sprite1] 복제하기
+   c (0.02) 초 기다리기
+   m (-1) 만큼 움직이기 #6
+   c (0.02) 초 기다리기
+   m (1) 만큼 움직이기
+  end
+ end
+end`]},
+   {sprite:'Sprite1 (총알)', scripts:[`
+c^ 복제되었을 때
+m [hands] (으)로 이동하기
+m {o {n [hands] 의 [방향]} + {o (-5) 부터 (5) 사이의 난수}} 도 방향 보기 #7
+l 보이기
+c@ <n [벽] 에 닿았는가?> 까지 반복하기
+ m (25) 만큼 움직이기
+end
+c 이 복제본 삭제하기`]}],
+  explain:[
+   '플레이어 위치를 <b>변수 X, Y</b>에 저장하고, 매번 그 위치로 이동해요. 다른 스프라이트도 X, Y를 읽을 수 있고, 나중에 화면이 따라오는 카메라를 만들기도 쉬워요.',
+   '<b>weapon</b>은 "지금 뭘 들고 있나"를 기억하는 <b>상태 변수</b>예요. 0 = 주먹, 1 = 총.',
+   'weapon이 0이면 주먹 코드, <b>아니면</b> 총 코드. 만약~아니면 하나로 두 무기를 나눠요.',
+   '1~2 난수로 왼손(2)·오른손(1)을 골라요. 0.02초 → 0.05초 모양을 바꾸면 휙 뻗었다 돌아오는 펀치!',
+   '총을 들면 손 모양이 AK로 바뀌어요.',
+   '쏠 때 뒤로 1만큼 갔다 다시 앞으로 1. 아주 작은 움직임이지만 <b>반동</b>처럼 느껴져요.',
+   '총알 방향 = 손의 방향 + (-5 ~ 5 난수). 총알이 살짝씩 흩어져서 진짜 총 같아요.'],
+  idea:{t:'상태 변수: 지금 무엇을 들고 있나?', svg:'state',
+    d:'변수는 점수만 세는 게 아니에요. <b>weapon = 0</b>이면 주먹, <b>weapon = 1</b>이면 총처럼 "지금 상태"를 기억할 수 있어요. 1, 2 키는 상태만 바꾸고, 공격 코드는 상태를 보고 알맞게 움직여요. 무기를 늘리려면 숫자 2, 3…을 추가하면 돼요.'},
+  blank:{sprite:'hands', dsl:`
+c@ 만약 <o {v weapon} = (?a)> (이)라면
+ c@ 만약 <n 마우스를 클릭했는가?> (이)라면
+  v [l/r] 을(를) {o (1) 부터 (?b) 사이의 난수} 로 정하기
+ end
+else
+ l 모양을 [(?c)] (으)로 바꾸기
+end`, opts:{a:['0','1','2'],b:['2','1','10'],c:['AK','idle','r1']}, ans:{a:'0',b:'2',c:'AK'}},
+  quiz:[
+   {q:'weapon이 1일 때 클릭하면 어떻게 될까요?',o:['총알이 나간다','주먹이 나간다','아무 일도 없다'],a:0,w:'weapon = 0이 아니니까 "아니면" 쪽, 총 코드가 실행돼요.'},
+   {q:'총알 방향에 (-5 ~ 5 난수)를 더한 이유는?',o:['총알이 살짝 흩어져서 진짜 총처럼 보이게','총알을 느리게 하려고','방향을 거꾸로 하려고'],a:0,w:'난수를 0 ~ 0으로 하면 레이저처럼 한 줄로만 나가요.'},
+   {q:'(1) 부터 (2) 사이의 난수가 1이면 어느 손이 나갈까요?',o:['오른손 (r1, r2)','왼손 (l1, l2)','양손'],a:0,w:'l/r = 1이면 r 모양, 2면 l 모양이에요.'}],
+  entry:[['[weapon] 을(를) (1) 로 정하기','(weapon) 를 (1) 로 정하기'],['x: {X} y: {Y} (으)로 이동하기','x: (X 값) y: (Y 값) 위치로 이동하기'],['[hands] 의 [방향]','(hands) 의 (방향)'],['만약 ~ 아니면','만일 ~ 아니면']],
+  challenge:['3번 키 = 샷건 (weapon 2): 클릭하면 총알 5발을 한 번에 복제','변수 "탄약" 30: 쏠 때마다 -1, 0이면 못 쏘게, R 키로 재장전','레벨 13 좀비를 데려와서 주먹이나 총으로 물리치기']
+},
+/* ---------------- 2D 마인크래프트 ---------------- */
+{ id:'mine2d', tier:4, stars:4, icon:'⛏️', title:'2D 마인크래프트: 지형 만들기',
+  video:'Scratch 2D Minecraft Easy Tutorial Ep 1 (영어 영상)',
+  concepts:[['반복 안의 반복','cl'],['변수: smooth random','v'],['복제본 수백 개','cl'],['블록 캐기·놓기']],
+  mission:'초록 깃발을 누를 때마다 <b>매번 다른 땅</b>(돌·흙·잔디·꽃)이 자동으로 만들어져요. 블록 하나하나가 모두 복제본이에요! 십자 커서로 블록을 캐고 놓아 보세요.',
+  rules:['방향키 = 커서 이동 (24칸씩)','F 키 = 커서 위 블록 캐기 (복제본 삭제)','스페이스 = 블록 놓기, 1~4 키 = 블록 종류 (block type)'],
+  controls:['up','down','left','right','f','space','1','2','3','4'], game:'mine2d',
+  sprites:[['🟫','Sprite1 (블록)','모양: 잔디·흙·돌·꽃·나무'],['✚','Sprite2 (커서)','방향키로 움직이는 십자']],
+  code:[
+   {sprite:'Sprite1 (블록)', scripts:[`
+e^ %F 클릭했을 때
+l 보이기
+m x좌표를 (-228) (으)로 정하기 #1
+v [smooth random] 을(를) (6) 로 정하기
+v [generation mode] 을(를) (0) 로 정하기
+c@ (20) 번 반복하기 #2
+ m y좌표를 (-168) (으)로 정하기
+ l 모양을 [돌] (으)로 바꾸기
+ v [smooth random] 을(를) {o (-1) 부터 (1) 사이의 난수} 만큼 바꾸기 #3
+ c@ 만약 <o {v smooth random} ＞ (10)> (이)라면
+  v [smooth random] 을(를) (10) 로 정하기
+ end
+ c@ 만약 <o {v smooth random} ＜ (0)> (이)라면
+  v [smooth random] 을(를) (0) 로 정하기
+ end
+ c@ {v smooth random} 번 반복하기 #4
+  c [나 자신] 복제하기
+  m y좌표를 (24) 만큼 바꾸기
+ end
+ l 모양을 [흙] (으)로 바꾸기
+ c@ (3) 번 반복하기
+  c [나 자신] 복제하기
+  m y좌표를 (24) 만큼 바꾸기
+ end
+ l 모양을 [잔디] (으)로 바꾸기
+ c [나 자신] 복제하기 #5
+ c@ 만약 <o {o (1) 부터 (6) 사이의 난수} = (1)> (이)라면 #6
+  m y좌표를 (24) 만큼 바꾸기
+  l 모양을 [꽃] (으)로 바꾸기
+  c [나 자신] 복제하기
+ end
+ m x좌표를 (24) 만큼 바꾸기 #7
+end
+v [generation mode] 을(를) (1) 로 정하기
+l 숨기기`,`
+c^ 복제되었을 때
+c@ 만약 <o {v generation mode} = (1)> (이)라면 #8
+ l 모양을 {v block type} (으)로 바꾸기
+ m [Sprite2] (으)로 이동하기
+end
+c@ 무한 반복하기
+ c@ 만약 <o <n [Sprite2] 에 닿았는가?> 그리고 <n [f] 키를 눌렀는가?>> (이)라면 #9
+  c 이 복제본 삭제하기
+ end
+end`]},
+   {sprite:'Sprite2 (커서)', scripts:[`
+e^ %F 클릭했을 때
+l 보이기
+m x: (-228) y: (-168) (으)로 이동하기`,`
+e^ [오른쪽 화살표] 키를 눌렀을 때
+m x좌표를 (24) 만큼 바꾸기`,`
+e^ [위쪽 화살표] 키를 눌렀을 때
+m y좌표를 (24) 만큼 바꾸기`,`
+e^ [스페이스] 키를 눌렀을 때 #10
+c [Sprite1] 복제하기`]}],
+  explain:[
+   '블록 한 칸은 24픽셀. 왼쪽 끝 첫 칸(x: -228)부터 시작해요.',
+   '<b>바깥 반복 20번 = 세로줄 20개</b>. 24 × 20 = 480, 무대 가로 전체를 채워요.',
+   '<b>smooth random</b>은 이번 줄의 돌 높이예요. 매 줄마다 -1, 0, 1 중 하나만큼만 바뀌어서 옆 줄과 높이가 비슷해요. 그래서 자연스러운 언덕이 돼요. (0 ~ 10 사이로 제한)',
+   '<b>안쪽 반복</b>: 돌 높이만큼 복제하고 24씩 위로. 반복 횟수 칸에 변수를 넣었어요!',
+   '흙 3칸 위에 잔디 1칸.',
+   '6분의 1 확률로 잔디 위에 꽃을 하나 더 놓아요.',
+   '한 줄이 끝나면 오른쪽으로 24 이동해서 다음 줄.',
+   '지형이 다 만들어진 뒤(generation mode = 1)에 생기는 복제본은 <b>플레이어가 놓은 블록</b>이에요. block type 모양으로 바꾸고 커서 위치로 가요.',
+   '복제본마다 "커서에 닿았고 그리고 F 키"를 검사해서, 맞으면 스스로 삭제 = 블록 캐기!',
+   '스페이스를 누르면 블록 스프라이트를 복제 = 블록 놓기. (←, ↓ 키 코드도 같은 모양이에요.)'],
+  idea:{t:'랜덤 걷기로 만드는 자연스러운 산', svg:'terrain',
+    d:'높이를 매번 <b>0~10 난수로 "정하면"</b> 들쑥날쑥 뾰족뾰족해요. 대신 <b>-1~1만큼만 "바꾸면"</b> 옆 줄과 1칸 이상 차이 나지 않아서 진짜 언덕처럼 보여요. 진짜 마인크래프트도 비슷한 아이디어로 땅을 만들어요.'},
+  blank:{sprite:'Sprite1 (블록)', dsl:`
+c@ (20) 번 반복하기
+ v [smooth random] 을(를) {o (?a) 부터 (1) 사이의 난수} 만큼 바꾸기
+ c@ {v (?b)} 번 반복하기
+  c [나 자신] 복제하기
+  m y좌표를 (24) 만큼 바꾸기
+ end
+ m (?c) 를 (24) 만큼 바꾸기
+end`, opts:{a:['-1','0','-10'],b:['smooth random','block type','generation mode'],c:['x좌표','y좌표','크기']}, ans:{a:'-1',b:'smooth random',c:'x좌표'}},
+  quiz:[
+   {q:'높이를 매번 (0 부터 10 사이의 난수)로 "정하면" 땅이 어떻게 될까요?',o:['기둥 높이가 들쑥날쑥 뾰족해진다','더 자연스러운 언덕이 된다','완전히 평평해진다'],a:0,w:'옆 줄과 상관없이 정하니까 10칸 차이도 날 수 있어요. 그래서 "바꾸기"를 써요.'},
+   {q:'화면의 블록 하나하나는 무엇일까요?',o:['스프라이트 1개의 복제본들','스프라이트 수백 개','배경 그림'],a:0,w:'블록 스프라이트 1개가 자신을 복제해서 땅 전체를 만들어요. 그래서 캐기(삭제)가 가능해요.'},
+   {q:'지형을 다 만든 뒤 generation mode를 1로 바꾸는 이유는?',o:['그 뒤에 생기는 복제본은 "플레이어가 놓은 블록"이라서 커서 위치로 보내려고','게임을 끝내려고','지형을 지우려고'],a:0,w:'같은 "복제되었을 때" 코드가 상황(상태 변수)에 따라 다르게 동작해요.'}],
+  entry:[['[나 자신] 복제하기','(자신)의 복제본 만들기'],['{smooth random} 번 반복하기','(smooth random 값) 번 반복하기'],['[f] 키를 눌렀을 때','(f) 키를 눌렀을 때'],['모양을 {block type} (으)로 바꾸기','(block type 값) 모양으로 바꾸기']],
+  challenge:['나무 만들기: 8분의 1 확률로 나무 기둥 3칸 + 잎 블록','캔 블록 수를 세는 변수 "인벤토리": 캐면 +1, 놓으면 -1, 0이면 못 놓게','동굴: 돌 층에서 가끔 복제하지 않고 y만 올려서 빈칸 만들기']
+},
+/* ---------------- BOSS 2: 3D 엔진 ---------------- */
+{ id:'engine3d', tier:5, stars:5, icon:'🧊', title:'보스 2: 리스트로 만드는 3D 상자',
+  video:'Make a 3D Engine in Scratch · E1: Wireframe 3D (영어 영상)',
+  concepts:[['리스트 X·Y·Z','li'],['리스트 속 번호','li'],['sin·cos 회전'],['원근 나누기'],['펜']],
+  mission:'3D 상자는 사실 <b>점 8개와 선 12개</b>예요. 점의 x, y, z 좌표를 리스트에 넣어 두고, 매번 돌린 다음 화면에 비춰서 펜으로 선을 그어요. 방향키로 상자를 돌려 보고, 아래 리스트 창을 지켜보세요!',
+  rules:['← → = 좌우로 돌리기 (yaw)','↑ ↓ = 위아래로 돌리기 (pitch)','X·Y·Z = 꼭짓점 8개, 선A·선B = 이을 점 번호 12쌍'],
+  controls:['left','right','up','down'], game:'engine3d',
+  boss:true, listHint:'↑ 상자를 돌리면 화면X·화면Y 값이 계속 바뀌어요. 진짜 좌표 X·Y·Z와 선A·선B는 그대로예요!',
+  sprites:[['⚙️','Setup','리스트에 점·선 넣기'],['✏️','Render','계산하고 펜으로 그리기'],['🎮','Controls','키로 각도 바꾸기']],
+  code:[
+   {sprite:'Setup', scripts:[`
+e^ %F 클릭했을 때
+L [X] 의 항목을 모두 삭제하기 #1
+L [Y] 의 항목을 모두 삭제하기
+L [Z] 의 항목을 모두 삭제하기
+k 점 추가 (-1) (-1) (-1) #2
+k 점 추가 (1) (-1) (-1)
+k 점 추가 (1) (1) (-1)
+k 점 추가 (-1) (1) (-1)
+k 점 추가 (-1) (-1) (1)
+k 점 추가 (1) (-1) (1)
+k 점 추가 (1) (1) (1)
+k 점 추가 (-1) (1) (1)
+k 선 추가 (1) (2)
+k 선 추가 (2) (3)
+k 선 추가 (3) (4)
+k 선 추가 (4) (1)
+e [render] 신호 보내기`,`
+k^ 정의하기 점 추가 (x) (y) (z) #3
+L {k x} 을(를) [X] 에 추가하기
+L {k y} 을(를) [Y] 에 추가하기
+L {k z} 을(를) [Z] 에 추가하기`]},
+   {sprite:'Render', scripts:[`
+e^ [render] 신호를 받았을 때
+c@ 무한 반복하기
+ p 모두 지우기
+ L [화면X] 의 항목을 모두 삭제하기 #4
+ L [화면Y] 의 항목을 모두 삭제하기
+ v [i] 을(를) (1) 로 정하기
+ c@ {L [X] 의 길이} 번 반복하기 #5
+  v [x] 을(를) {L [X] 리스트의 {v i} 번째 항목} 로 정하기
+  v [y] 을(를) {L [Y] 리스트의 {v i} 번째 항목} 로 정하기
+  v [z] 을(를) {L [Z] 리스트의 {v i} 번째 항목} 로 정하기
+  k 회전 {v yaw} {v pitch} #6
+  L {o {o {v x} × (300)} / {o {v z} + (5)}} 을(를) [화면X] 에 추가하기 #7
+  L {o {o {v y} × (300)} / {o {v z} + (5)}} 을(를) [화면Y] 에 추가하기
+  v [i] 을(를) (1) 만큼 바꾸기
+ end
+ k 선 그리기 #8
+end`,`
+k^ 정의하기 회전 (yaw) (pitch)
+v [x2] 을(를) {o {o {v x} × {o {k yaw} 의 [cos]}} - {o {v z} × {o {k yaw} 의 [sin]}}} 로 정하기
+v [z] 을(를) {o {o {v x} × {o {k yaw} 의 [sin]}} + {o {v z} × {o {k yaw} 의 [cos]}}} 로 정하기
+v [x] 을(를) {v x2} 로 정하기
+v [y2] 을(를) {o {o {v y} × {o {k pitch} 의 [cos]}} - {o {v z} × {o {k pitch} 의 [sin]}}} 로 정하기
+v [z] 을(를) {o {o {v y} × {o {k pitch} 의 [sin]}} + {o {v z} × {o {k pitch} 의 [cos]}}} 로 정하기
+v [y] 을(를) {v y2} 로 정하기`,`
+k^ 정의하기 선 그리기
+v [j] 을(를) (1) 로 정하기
+c@ {L [선A] 의 길이} 번 반복하기 #9
+ m x: {L [화면X] 리스트의 {L [선A] 리스트의 {v j} 번째 항목} 번째 항목} y: {L [화면Y] 리스트의 {L [선A] 리스트의 {v j} 번째 항목} 번째 항목} (으)로 이동하기
+ p 펜 내리기
+ m x: {L [화면X] 리스트의 {L [선B] 리스트의 {v j} 번째 항목} 번째 항목} y: {L [화면Y] 리스트의 {L [선B] 리스트의 {v j} 번째 항목} 번째 항목} (으)로 이동하기
+ p 펜 올리기
+ v [j] 을(를) (1) 만큼 바꾸기
+end`]},
+   {sprite:'Controls', scripts:[`
+e^ %F 클릭했을 때
+v [yaw] 을(를) (30) 로 정하기
+v [pitch] 을(를) (20) 로 정하기
+c@ 무한 반복하기
+ v [yaw] 을(를) {o {o <n [오른쪽 화살표] 키를 눌렀는가?> - <n [왼쪽 화살표] 키를 눌렀는가?>} × (3)} 만큼 바꾸기 #10
+ v [pitch] 을(를) {o {o <n [위쪽 화살표] 키를 눌렀는가?> - <n [아래쪽 화살표] 키를 눌렀는가?>} × (3)} 만큼 바꾸기
+end`]}],
+  explain:[
+   '깃발을 누를 때마다 리스트를 비워요. 안 그러면 점이 16개, 24개… 계속 쌓여요.',
+   '정육면체 꼭짓점 8개는 모두 (±1, ±1, ±1)이에요. 선 추가는 12번 하는데 여기엔 4번만 보여요 (나머지 8개도 같은 모양).',
+   '<b>내 블록 "점 추가"</b>: x, y, z를 각각 X, Y, Z 리스트 맨 뒤에 넣어요. 그래서 <b>i번째 점 = X의 i번째, Y의 i번째, Z의 i번째</b>. (선 추가도 같은 방식으로 선A, 선B에 점 번호를 넣어요.)',
+   '화면 좌표는 매번 새로 계산하니까 비우고 시작해요.',
+   'X 리스트 길이(8)만큼 반복하면서 i번째 점을 꺼내요. 레벨 21 스네이크의 "i 손가락 변수"와 같은 방법!',
+   '<b>회전</b>: sin과 cos로 점을 빙 돌려요. 원 위의 점은 (cos, sin)이라서, 각도만 바꾸면 점이 원을 따라 움직여요.',
+   '<b>원근(투영)</b>: z(먼 정도)로 나누면 먼 점은 가운데로 모이고 가까운 점은 퍼져요. +5는 카메라를 5만큼 떨어뜨리기, × 300은 화면 크기에 맞게 키우기.',
+   '점 8개 계산이 끝나면 선을 그려요.',
+   '선A의 j번째 = 시작 점 번호, 선B의 j번째 = 끝 점 번호. <b>리스트에서 꺼낸 번호로 다른 리스트를 찾는</b> 고급 기술이에요!',
+   '<키를 눌렀는가?>는 참이면 1, 거짓이면 0. 오른쪽 - 왼쪽 = 1, -1, 0이라서 만약 블록 4개 대신 한 줄로 끝!'],
+  idea:{t:'3D → 2D: 멀수록 가운데로', svg:'projection',
+    d:'화면은 평평해서 x, y만 그릴 수 있어요. 그래서 <b>화면X = x × 300 ÷ (z + 5)</b>처럼 z로 나눠요. z가 크면(멀면) 나누는 수가 커져서 점이 가운데로 모이고 작게 보여요. 리스트 X·Y·Z는 "진짜 3D 세상", 리스트 화면X·화면Y는 "카메라에 찍힌 사진"이에요.'},
+  blank:{sprite:'Render', dsl:`
+c@ {L [X] 의 (?a)} 번 반복하기
+ v [x] 을(를) {L [X] 리스트의 {v (?b)} 번째 항목} 로 정하기
+ L {o {o {v x} × (300)} / {o {v z} + (5)}} 을(를) [(?c)] 에 추가하기
+ v [i] 을(를) (1) 만큼 바꾸기
+end`, opts:{a:['길이','1번째 항목','이름'],b:['i','x','yaw'],c:['화면X','X','선A']}, ans:{a:'길이',b:'i',c:'화면X'}},
+  quiz:[
+   {q:'정육면체 상자의 꼭짓점과 선(모서리)은 몇 개일까요?',o:['점 8개, 선 12개','점 6개, 선 8개','점 12개, 선 8개'],a:0,w:'주사위를 보면서 세어 보세요. 위 4개 + 아래 4개 = 8점, 위 4 + 아래 4 + 기둥 4 = 12선.'},
+   {q:'X = [-1, 1, 1, -1, …], Y = [-1, -1, 1, 1, …], Z = [-1, -1, -1, -1, …]일 때 3번째 점은?',o:['(1, 1, -1)','(1, -1, -1)','(-1, 1, -1)'],a:0,w:'세 리스트에서 각각 3번째 항목을 꺼내요: X 1, Y 1, Z -1.'},
+   {q:'선A의 1번째 항목이 1, 선B의 1번째 항목이 2라면?',o:['1번 점과 2번 점을 잇는 선','1과 2를 더한 값','2번째 선'],a:0,w:'선 리스트에는 좌표가 아니라 "점 번호"가 들어 있어요. 그래서 점을 옮겨도 선 리스트는 그대로예요.'}],
+  entry:[['[X] 의 항목을 모두 삭제하기','(X) 의 모든 항목 삭제하기'],['(값) 을(를) [X] 에 추가하기','(값) 항목을 (X) 에 추가하기'],['[X] 리스트의 (i) 번째 항목','(X) 의 (i) 번째 항목'],['[X] 의 길이','(X) 항목 수'],['내 블록: 점 추가 (x)(y)(z)','함수 만들기 (숫자/문자값 3개)'],['( ) 의 [sin] / [cos]','( ) 의 사인값 / 코사인값']],
+  challenge:['피라미드 만들기: 점 5개, 선 8개 (리스트 값만 바꾸면 끝!)','자동으로 천천히 돌게: 무한 반복 안에서 yaw를 1씩 바꾸기','선마다 색을 다르게: 펜 색깔을 (j × 30)으로 정하기']
+}
+];
+
+/* 전체 순서 다시 정하기 (쉬운 것 → 어려운 것) */
+(function(){
+  const ORDER=['jump','run','motor','mouse','baseball','shark','shoot','banana','poop','dino','popper','space','zombie','mine3d','golf','rhythm','ghost','frenzy','surviv','mine2d','snake','engine3d'];
+  const TIER={jump:1,run:1,motor:1,mouse:1,baseball:2,shark:2,shoot:2,banana:2,poop:2,dino:3,popper:3,space:3,zombie:3,mine3d:3,golf:4,rhythm:4,ghost:4,frenzy:4,surviv:4,mine2d:4,snake:5,engine3d:5};
+  const all=[...LEVELS,...NEW_LEVELS];
+  LEVELS.length=0;
+  ORDER.forEach((id,i)=>{const L=all.find(x=>x.id===id);L.no=i+1;L.tier=TIER[id];LEVELS.push(L)});
+  const sn=LEVELS.find(L=>L.id==='snake');sn.title='보스 1: 리스트로 만드는 스네이크';
+})();
+TIERS[5]='보스 · 리스트';
+
+/* ===== 스크래치 블록 그리기 ===== */
+const FLAG_SVG='<svg width="18" height="18" viewBox="0 0 24 24" aria-label="초록 깃발"><path d="M5 3v18" stroke="#2E7D32" stroke-width="2.4" stroke-linecap="round"/><path d="M6 4c4-2 7 2 12 0v9c-5 2-8-2-12 0z" fill="#4CBF56" stroke="#2E7D32" stroke-width="1.4"/></svg>';
+const KEEP=[['(으)로','\u0001'],['을(를)','\u0002'],['(이)라면','\u0003'],['이(가)','\u0004'],['(으)','\u0005']];
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function restore(s){KEEP.forEach(([a,b])=>{s=s.split(b).join(a)});return s}
+function matchBr(s,i){const op='([<{',cl=')]>}';const st=[];for(let k=i;k<s.length;k++){const c=s[k];const oi=op.indexOf(c);if(oi>=0)st.push(cl[oi]);else if(cl.includes(c)){if(st[st.length-1]===c){st.pop();if(!st.length)return k}else return -1}}return -1}
+function inlineB(str,ctx){
+  let out='',buf='',i=0;
+  const flush=()=>{if(buf){out+=escH(restore(buf));buf=''}};
+  while(i<str.length){
+    const ch=str[i];
+    if('([<{'.includes(ch)){
+      const j=matchBr(str,i);
+      if(j<0){buf+=ch;i++;continue}
+      flush();out+=renderBr(ch,str.slice(i+1,j),ctx);i=j+1;
+    }else if(str.startsWith('%F',i)){flush();out+=FLAG_SVG;i+=2}
+    else if(str.startsWith('%RED',i)){flush();out+='<span class="swatch" title="빨간색"></span>';i+=4}
+    else if(str.startsWith('%GREEN',i)){flush();out+='<span class="swatch" style="background:#6BE04C" title="초록색"></span>';i+=6}
+    else if(str.startsWith('%BLUE',i)){flush();out+='<span class="swatch" style="background:#3E7BFF" title="파란색"></span>';i+=5}
+    else{buf+=ch;i++}
+  }
+  flush();return out;
+}
+function renderBr(ch,inner,ctx){
+  if(ch==='('){
+    const m=inner.match(/^\?([a-z])$/);
+    if(m&&ctx&&ctx.opts){const k=m[1];const o=ctx.opts[k]||[];
+      return `<select class="blank-sel" data-k="${k}" aria-label="빈칸 ${k}"><option value="">  ?  </option>${o.map(v=>`<option>${escH(v)}</option>`).join('')}</select>`}
+    return `<span class="in">${inlineB(inner,ctx)}</span>`;
+  }
+  if(ch==='[')return `<span class="dd">${inlineB(inner,ctx)}</span>`;
+  const cm=inner.match(/^([mlsecnovLpk]) ([\s\S]*)$/);
+  const cat=cm?cm[1]:'o',rest=cm?cm[2]:inner;
+  if(ch==='<')return `<span class="bool cat-${cat}">${inlineB(rest,ctx)}</span>`;
+  return `<span class="rep cat-${cat}">${inlineB(rest,ctx)}</span>`;
+}
+function prep(dsl){let s=dsl;KEEP.forEach(([a,b])=>{s=s.split(a).join(b)});return s}
+function renderScript(dsl,ctx){
+  const lines=prep(dsl).trim().split('\n').map(l=>l.trim()).filter(Boolean);
+  let i=0;
+  function seq(){let h='';while(i<lines.length){const L=lines[i];if(L==='end'||L==='else')break;i++;h+=line(L)}return h}
+  function line(L){
+    const m=L.match(/^([mlsecnovLpk])([\^@]?)\s+(.*)$/);
+    if(!m)return '';
+    let [,cat,kind,text]=m,badge='';
+    const bm=text.match(/\s#(\d+)$/);
+    if(bm){badge=`<span class="badge">${bm[1]}</span>`;text=text.slice(0,bm.index)}
+    const content=inlineB(text,ctx)+badge;
+    if(kind==='^')return `<div class="b hat cat-${cat}">${content}</div>`;
+    if(kind==='@'){
+      let h=`<div class="c cat-${cat}"><div class="b head">${content}</div><div class="body">${seq()}</div>`;
+      if(lines[i]==='else'){i++;h+=`<div class="b mid">아니면</div><div class="body">${seq()}</div>`}
+      i++;return h+'<div class="foot"></div></div>';
+    }
+    return `<div class="b cat-${cat}">${content}</div>`;
+  }
+  return `<div class="script">${seq()}</div>`;
+}
+/* 한 줄짜리 블록 (사전/표에서 사용) */
+function miniBlock(cat,text){return `<div class="script"><div class="b cat-${cat}">${inlineB(prep(text),null)}</div></div>`}
+
+/* ===== 개념 그림 (SVG) ===== */
+const T=(x,y,s,cls='t',anchor='middle',size)=>`<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}"${size?` style="font-size:${size}px"`:''}>${s}</text>`;
+const ARW='<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="s-ink"/></marker><marker id="aha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="s-acc"/></marker></defs>';
+const SVGS={
+jump:()=>`<svg viewBox="0 0 280 180" role="img" aria-label="점프 원리 그림">${ARW}
+<line x1="10" y1="150" x2="270" y2="150" class="k-ink" stroke-width="2"/>
+<rect x="40" y="122" width="26" height="26" rx="6" class="s-acc"/>${T(53,140,'🐱','t','middle',16)}
+<rect x="40" y="22" width="26" height="26" rx="6" class="s-p2 k-ink" stroke-dasharray="4 3" stroke-width="1.5"/>
+<line x1="80" y1="140" x2="80" y2="34" class="k-blue" stroke-width="3" marker-end="url(#ah)"/>
+<line x1="100" y1="34" x2="100" y2="140" class="k-acc" stroke-width="3" marker-end="url(#aha)"/>
+${T(150,60,'+10 × 20번 = +200','t','start')}${T(150,116,'−10 × 20번 = −200','t','start')}
+${T(150,140,'합계 0 → 제자리 착지!','t muted-t','start',12)}
+<line x1="20" y1="35" x2="70" y2="35" class="k-line" stroke-dasharray="3 3"/>${T(20,30,'y = 80','t muted-t','start',11)}${T(20,168,'y = −120','t muted-t','start',11)}
+</svg>`,
+scroll:()=>`<svg viewBox="0 0 300 170" role="img" aria-label="배경 스크롤 그림">${ARW}
+<rect x="5" y="40" width="140" height="70" class="s-bad" opacity=".85"/>${T(75,80,'Wall ①','tw')}
+<rect x="145" y="40" width="140" height="70" class="s-acc" opacity=".9"/>${T(215,80,'Wall ②','tw')}
+<rect x="80" y="30" width="140" height="90" fill="none" class="k-ink" stroke-width="3"/>${T(150,24,'무대 (보이는 곳)')}
+<path d="M200 140 L100 140" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>${T(150,158,'매번 x를 −3씩')}
+<path d="M30 36 C 40 4, 260 4, 270 36" fill="none" class="k-blue" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+${T(150,12,'x < −465 이면 x: 465로 순간이동','t','middle',11)}
+</svg>`,
+dice:()=>`<svg viewBox="0 0 280 170" role="img" aria-label="난수 주사위 그림">${ARW}
+<rect x="20" y="40" width="80" height="80" rx="14" class="s-panel k-ink" stroke-width="3"/>
+<circle cx="42" cy="62" r="7" class="s-ink"/><circle cx="78" cy="62" r="7" class="s-ink"/><circle cx="42" cy="98" r="7" class="s-ink"/><circle cx="78" cy="98" r="7" class="s-ink"/>
+${T(60,145,'1~6 난수 → 4')}
+<circle cx="200" cy="80" r="52" class="s-p2 k-line" stroke-width="2"/>
+${T(200,22,'0°')}${T(262,85,'90°','t','start')}${T(200,150,'180°')}${T(138,85,'−90°','t','end')}
+<line x1="200" y1="80" x2="238" y2="46" class="k-acc" stroke-width="4" marker-end="url(#aha)"/>
+${T(200,168,'0~360 난수 방향 → 매번 다름','t','middle',11)}
+</svg>`,
+twovars:()=>`<svg viewBox="0 0 300 170" role="img" aria-label="변수 상자 두 개">${ARW}
+<rect x="20" y="50" width="100" height="70" rx="8" class="s-var"/><rect x="14" y="40" width="112" height="16" rx="4" class="s-acc"/>
+${T(70,34,'점수')}${T(70,98,'3','tw','middle',30)}
+<rect x="170" y="50" width="100" height="70" rx="8" class="s-var"/><rect x="164" y="40" width="112" height="16" rx="4" class="s-acc"/>
+${T(220,34,'공속도')}${T(220,98,'20','tw','middle',30)}
+<line x1="220" y1="124" x2="220" y2="148" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>
+${T(220,165,'{공속도} 만큼 움직이기 = 20만큼','t','middle',11)}${T(70,140,'칠 때마다 +1','t','middle',12)}
+</svg>`,
+clone:()=>`<svg viewBox="0 0 300 180" role="img" aria-label="복제본 그림">${ARW}
+<rect x="10" y="60" width="80" height="60" rx="10" class="s-p2 k-ink" stroke-dasharray="5 4" stroke-width="2"/>
+${T(50,96,'🍊','t','middle',26)}${T(50,140,'원본 (숨김)')}${T(50,156,'= 붕어빵 틀','t','middle',11)}
+<line x1="95" y1="90" x2="140" y2="90" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>${T(118,80,'0.5초마다','t','middle',10)}
+<g>${T(180,46,'🍊','t','middle',24)}<line x1="196" y1="40" x2="226" y2="20" class="k-acc" stroke-width="2" marker-end="url(#aha)"/></g>
+<g>${T(215,104,'🍊','t','middle',24)}<line x1="232" y1="98" x2="272" y2="96" class="k-acc" stroke-width="2" marker-end="url(#aha)"/></g>
+<g>${T(170,152,'🍊','t','middle',24)}<line x1="160" y1="158" x2="135" y2="172" class="k-acc" stroke-width="2" marker-end="url(#aha)"/></g>
+${T(230,150,'복제본마다','t','start',11)}${T(230,164,'따로 움직임','t','start',11)}
+</svg>`,
+inherit:()=>`<svg viewBox="0 0 300 175" role="img" aria-label="복제본 상속 그림">${ARW}
+<rect x="20" y="20" width="70" height="56" rx="10" class="s-p2 k-ink" stroke-dasharray="5 4" stroke-width="2"/>${T(55,56,'🍌','t','middle',24)}${T(55,94,'원본: x=120')}
+<line x1="55" y1="102" x2="55" y2="124" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="20" y="128" width="70" height="40" rx="10" class="s-acc"/>${T(55,154,'복제본 x=120','tw','middle',11)}
+${T(120,38,'복제본이 물려받는 것','t','start')}
+${['위치 (x, y)','크기','모양','숨김/보임 상태','방향'].map((s,i)=>`<rect x="120" y="${52+i*23}" width="14" height="14" rx="3" class="s-good"/>${T(141,63+i*23,s,'t','start',12)}`).join('')}
+</svg>`,
+compare:()=>`<svg viewBox="0 0 300 170" role="img" aria-label="바나나 게임과 똥 게임 비교">
+<rect x="96" y="10" width="96" height="30" rx="6" class="s-good"/>${T(144,30,'🍌 바나나','tw')}
+<rect x="198" y="10" width="96" height="30" rx="6" class="s-bad"/>${T(246,30,'💩 똥','tw')}
+${T(6,72,'주인공에','t','start',12)}${T(6,88,'닿으면','t','start',12)}
+<rect x="96" y="56" width="96" height="40" rx="6" class="s-p2 k-line"/>${T(144,81,'점수 +1')}
+<rect x="198" y="56" width="96" height="40" rx="6" class="s-p2 k-line"/>${T(246,81,'게임끝!')}
+${T(6,128,'바닥에','t','start',12)}${T(6,144,'닿으면','t','start',12)}
+<rect x="96" y="112" width="96" height="40" rx="6" class="s-p2 k-line"/>${T(144,137,'삭제만')}
+<rect x="198" y="112" width="96" height="40" rx="6" class="s-p2 k-line"/>${T(246,137,'점수 +1')}
+</svg>`,
+coin:()=>`<svg viewBox="0 0 300 170" role="img" aria-label="만약 아니면 갈림길">${ARW}
+<circle cx="50" cy="85" r="34" class="s-acc"/>${T(50,80,'1~2','tw','middle',13)}${T(50,98,'난수','tw','middle',13)}
+<path d="M86 75 L140 40" class="k-ink" stroke-width="2" marker-end="url(#ah)"/><path d="M86 95 L140 130" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>
+${T(108,48,'= 1','t','middle',12)}${T(110,132,'아니면','t','middle',12)}
+<rect x="146" y="20" width="146" height="40" rx="8" class="s-good"/>${T(219,45,'왼쪽에서 → 출발','tw','middle',13)}
+<rect x="146" y="110" width="146" height="40" rx="8" class="s-blue"/>${T(219,135,'← 오른쪽에서 출발','tw','middle',13)}
+</svg>`,
+timing:()=>`<svg viewBox="0 0 300 175" role="img" aria-label="0.02초 기다리기 타이밍 그림">${ARW}
+${T(10,20,'차례대로 실행돼요','t','start',12)}
+${T(10,52,'🟡 공','t','start')}${T(10,112,'💩 똥','t','start')}
+<rect x="62" y="36" width="100" height="26" rx="6" class="s-acc"/>${T(112,54,'닿음! 0.02초…','tw','middle',11)}
+<rect x="170" y="36" width="70" height="26" rx="6" class="s-p2 k-line"/>${T(205,54,'삭제','t','middle',12)}
+<rect x="100" y="96" width="130" height="26" rx="6" class="s-good"/>${T(165,114,'공 닿음! 점수 +1','tw','middle',11)}
+<line x1="62" y1="146" x2="290" y2="146" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>${T(176,166,'시간 →','t','middle',11)}
+</svg>`,
+axes:()=>`<svg viewBox="0 0 300 175" role="img" aria-label="x축 y축 그림">${ARW}
+<line x1="20" y1="90" x2="280" y2="90" class="k-line" stroke-width="2"/><line x1="150" y1="10" x2="150" y2="168" class="k-line" stroke-width="2"/>
+<line x1="150" y1="90" x2="150" y2="22" class="k-blue" stroke-width="4" marker-end="url(#ah)"/>${T(160,30,'y +5  (레벨 9: 위로 발사)','t','start',11)}
+<line x1="150" y1="90" x2="262" y2="90" class="k-acc" stroke-width="4" marker-end="url(#aha)"/>${T(270,110,'x +20 (레벨 10)','t','end',11)}
+${T(150,186,'')}${T(26,82,'x −','t','start',11)}${T(156,166,'y −','t','start',11)}
+</svg>`,
+numline:()=>{let s=`<svg viewBox="0 0 300 150" role="img" aria-label="음수 속도 수직선">${ARW}<line x1="16" y1="70" x2="290" y2="70" class="k-ink" stroke-width="2"/>`;
+ for(let v=-8;v<=0;v++){const x=30+(v+8)*32;s+=`<line x1="${x}" y1="64" x2="${x}" y2="76" class="k-ink" stroke-width="2"/>${T(x,96,v,'t','middle',12)}`}
+ [-5,-5.5,-6,-6.5,-7].forEach((v,i)=>{const x=30+(v+8)*32;s+=`<circle cx="${x}" cy="70" r="7" class="s-acc"/>`});
+ s+=`<path d="M126 42 L66 42" class="k-acc" stroke-width="3" marker-end="url(#aha)"/>${T(96,32,'맞힐 때마다 −0.5','t','middle',12)}${T(150,128,'0에서 멀수록 → 한 번에 더 많이 떨어짐 → 빨라짐!','t','middle',12)}</svg>`;return s},
+timer:()=>`<svg viewBox="0 0 300 170" role="img" aria-label="타이머와 성공률 그림">${ARW}
+<rect x="14" y="20" width="80" height="54" rx="8" class="s-var"/>${T(54,14,'time')}${T(54,57,'30','tw','middle',24)}
+<path d="M98 47 L128 47" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>${T(113,38,'1초','t','middle',10)}
+<rect x="132" y="20" width="80" height="54" rx="8" class="s-var"/>${T(172,57,'29','tw','middle',24)}
+${T(252,52,'… 0','t','middle',18)}
+<rect x="14" y="98" width="272" height="56" rx="10" class="s-p2 k-ink" stroke-width="2"/>
+${T(150,121,'성공률 = score ÷ ghost × 100')}${T(150,143,'9 ÷ 12 × 100 = 75 (%)','t','middle',12)}
+</svg>`,
+list:()=>{let s=`<svg viewBox="0 0 300 190" role="img" aria-label="변수와 리스트 비교 그림">
+<rect x="14" y="60" width="72" height="56" rx="8" class="s-var"/>${T(50,52,'변수')}${T(50,96,'7','tw','middle',24)}${T(50,136,'값 1개','t','middle',12)}
+${T(196,18,'리스트: X기록')}`;
+ const v=[60,40,20,0,-20];v.forEach((n,i)=>{const y=28+i*28;s+=`<rect x="130" y="${y}" width="26" height="24" rx="4" class="s-p2 k-line"/>${T(143,y+17,i+1,'t','middle',12)}<rect x="160" y="${y}" width="110" height="24" rx="5" class="s-list"/>${T(215,y+17,n,'tw','middle',13)}`});
+ s+=`${T(200,182,'번호(1,2,3…)로 꺼내요 · 길이 = 5','t','middle',11)}</svg>`;return s},
+broadcast:()=>`<svg viewBox="0 0 300 160" role="img" aria-label="신호 방송 그림">${ARW}
+<rect x="10" y="56" width="80" height="48" rx="10" class="s-acc"/>${T(50,77,'🦖 공룡','tw','middle',12)}${T(50,94,'보내기','tw','middle',11)}
+<path d="M96 80 L150 80" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="150" y="62" width="62" height="36" rx="18" class="s-events"/>${T(181,85,'게임끝','tw','middle',12)}
+<path d="M216 72 L246 38" class="k-ink" stroke-width="2" marker-end="url(#ah)"/><path d="M216 88 L246 122" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="232" y="12" width="64" height="30" rx="8" class="s-p2 k-line"/>${T(264,32,'🐱 받기','t','middle',12)}
+<rect x="232" y="118" width="64" height="30" rx="8" class="s-p2 k-line"/>${T(264,138,'🎵 받기','t','middle',12)}
+</svg>`
+};
+
+/* ===== 추가 개념 그림 ===== */
+Object.assign(SVGS,{
+flip:()=>{let s=`<svg viewBox="0 0 300 180" role="img" aria-label="15도씩 24번 돌면 한 바퀴">${ARW}<circle cx="110" cy="92" r="62" fill="none" class="k-line" stroke-width="2"/>`;
+ for(let k=0;k<24;k++){const a=(-90-k*15)*Math.PI/180;const x=110+62*Math.cos(a),y=92+62*Math.sin(a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${k%6===0?5:3}" class="${k%6===0?'s-acc':'s-ink'}"/>`}
+ s+=`${T(110,24,'0°','t','middle',11)}${T(38,96,'90°','t','middle',11)}${T(110,170,'180°','t','middle',11)}${T(186,96,'270°','t','middle',11)}${T(110,98,'🏍️','t','middle',26)}
+ ${T(200,60,'15° × 24번','t','start',14)}${T(200,84,'= 360°','t','start',18)}${T(200,110,'한 바퀴 돌고','t','start',12)}${T(200,128,'제자리 착지!','t','start',12)}</svg>`;return s},
+school:()=>{let s=`<svg viewBox="0 0 300 180" role="img" aria-label="복제본 물고기 10마리">${ARW}
+<rect x="8" y="64" width="78" height="56" rx="10" class="s-p2 k-ink" stroke-dasharray="5 4" stroke-width="2"/>${T(47,100,'🐟','t','middle',26)}${T(47,138,'원본 (숨김)','t','middle',11)}${T(47,154,'코드 1개','t','middle',11)}
+<line x1="90" y1="92" x2="118" y2="92" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>${T(104,82,'×10','t','middle',11)}`;
+ const P=[[140,30],[190,22],[250,34],[160,72],[220,66],[275,80],[140,118],[200,112],[255,128],[180,160]];
+ P.forEach(([x,y],i)=>{s+=`${T(x,y+8,['🐠','🐟','🐡'][i%3],'t','middle',20)}`});
+ s+=`</svg>`;return s},
+aim:()=>`<svg viewBox="0 0 300 180" role="img" aria-label="조준과 추적">${ARW}
+<circle cx="110" cy="96" r="18" class="s-panel k-ink" stroke-width="3"/><rect x="124" y="90" width="22" height="10" rx="2" class="s-ink" transform="rotate(-24 110 96)"/>
+${T(110,140,'Player','t','middle',12)}
+<line x1="128" y1="86" x2="232" y2="40" class="k-blue" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+${T(248,40,'🖱️','t','middle',18)}${T(196,30,'마우스 쪽 보기','t','middle',11)}
+<rect x="170" y="58" width="16" height="6" class="s-acc" transform="rotate(-24 178 61)"/>${T(212,82,'총알 = Player의 방향','t','middle',11)}
+${T(36,60,'🧟','t','middle',22)}<line x1="48" y1="62" x2="88" y2="84" class="k-acc" stroke-width="2" marker-end="url(#aha)"/>
+${T(40,30,'Player 쪽 보기','t','middle',11)}${T(40,44,'(계속 따라옴)','t','middle',10)}
+</svg>`,
+depth:()=>`<svg viewBox="0 0 300 180" role="img" aria-label="크기로 원근감">${ARW}
+<rect x="0" y="110" width="300" height="70" class="s-good" opacity=".35"/>
+${T(56,118,'🌳','t','middle',22)}${T(56,150,'크기 60','t','middle',11)}${T(56,164,'= 멀리','t','middle',11)}
+${T(150,124,'🌳','t','middle',40)}${T(150,156,'크기 100','t','middle',11)}
+${T(246,138,'🌳','t','middle',72)}${T(246,170,'크기 160 = 코앞!','t','middle',11)}
+<line x1="40" y1="24" x2="264" y2="24" class="k-acc" stroke-width="3" marker-end="url(#aha)"/>${T(150,16,'up 신호 → 크기 +1 (다가가기)','t','middle',12)}
+</svg>`,
+gravity:()=>{let s=`<svg viewBox="0 0 300 180" role="img" aria-label="중력 포물선">${ARW}<line x1="14" y1="160" x2="290" y2="160" class="k-ink" stroke-width="2"/>`;
+ let y=0,v=14,pts=[];for(let k=0;k<=29;k++){pts.push([20+k*9,160-y*0.9]);y+=v;v-=1;if(y<0)break}
+ pts.forEach(([x,yy],k)=>{s+=`<circle cx="${x}" cy="${yy.toFixed(1)}" r="${k%4===0?4.5:3}" class="${k===14?'s-bad':'s-acc'}"/>`});
+ s+=`${T(20+0*9,176,'jump 14','t','start',11)}${T(20+14*9,160-105*0.9-12,'꼭대기: jump 0','t','middle',11)}${T(232,176,'jump -14','t','middle',11)}
+ ${T(78,70,'14,13,12…','t','end',11)}${T(258,90,'…-2,-3','t','start',11)}</svg>`;return s},
+easing:()=>{let s=`<svg viewBox="0 0 300 180" role="img" aria-label="부드럽게 따라가기 그래프">${ARW}
+<line x1="30" y1="150" x2="290" y2="150" class="k-ink" stroke-width="2"/><line x1="30" y1="150" x2="30" y2="18" class="k-ink" stroke-width="2"/>
+<line x1="30" y1="40" x2="290" y2="40" class="k-blue" stroke-width="2" stroke-dasharray="5 4"/>${T(286,34,'목표 속도 10','t','end',11)}`;
+ let v=0;for(let k=0;k<12;k++){const x=40+k*22,y=150-v*11;s+=`<circle cx="${x}" cy="${y.toFixed(1)}" r="4.5" class="s-acc"/>`;if(k<4)s+=`${T(x,y-10,(Math.round(v*10)/10),'t','middle',10)}`;v+=(10-v)/5}
+ s+=`${T(26,154,'0','t','end',10)}${T(160,170,'반복 횟수 →','t','middle',11)}${T(110,110,'차이의 1/5씩 →','t','start',11)}</svg>`;return s},
+state:()=>`<svg viewBox="0 0 300 180" role="img" aria-label="상태 변수 weapon">${ARW}
+<rect x="110" y="66" width="80" height="50" rx="8" class="s-var"/>${T(150,58,'weapon')}${T(150,100,'0 / 1','tw','middle',20)}
+<rect x="10" y="20" width="80" height="44" rx="8" class="s-p2 k-line"/>${T(50,47,'1 키 → 0','t','middle',12)}
+<rect x="10" y="118" width="80" height="44" rx="8" class="s-p2 k-line"/>${T(50,145,'2 키 → 1','t','middle',12)}
+<line x1="92" y1="46" x2="112" y2="70" class="k-ink" stroke-width="2" marker-end="url(#ah)"/><line x1="92" y1="138" x2="112" y2="112" class="k-ink" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="192" y1="80" x2="222" y2="52" class="k-acc" stroke-width="2" marker-end="url(#aha)"/><line x1="192" y1="102" x2="222" y2="130" class="k-acc" stroke-width="2" marker-end="url(#aha)"/>
+${T(258,46,'= 0 → ✊ 주먹','t','middle',12)}${T(258,62,'(왼손/오른손 난수)','t','middle',10)}${T(258,142,'아니면 → 🔫 총','t','middle',12)}
+</svg>`,
+terrain:()=>{let s=`<svg viewBox="0 0 300 180" role="img" aria-label="랜덤 걷기 지형과 그냥 난수 비교">`;
+ const A=[3,4,4,5,6,6,5,5,4,4,5,6],B=[2,8,1,9,3,7,0,10,4,9,1,6];
+ const col=(arr,x0,lab)=>{let o=`${T(x0+66,16,lab,'t','middle',11)}`;arr.forEach((h,i)=>{for(let k=0;k<h;k++){o+=`<rect x="${x0+i*11}" y="${160-(k+1)*11}" width="10" height="10" class="${k===h-1?'s-good':'s-list'}"/>`}});return o};
+ s+=col(A,6,'smooth: -1~1만큼 바꾸기');s+=col(B,160,'그냥 0~10 난수로 정하기');
+ s+=`${T(72,176,'자연스러운 언덕 ✔','t','middle',11)}${T(226,176,'뾰족뾰족 ✘','t','middle',11)}</svg>`;return s},
+projection:()=>`<svg viewBox="0 0 300 180" role="img" aria-label="원근 투영">${ARW}
+<polygon points="40,40 110,40 110,110 40,110" fill="none" class="k-blue" stroke-width="3"/>
+<polygon points="70,64 100,64 100,94 70,94" fill="none" class="k-acc" stroke-width="2"/>
+<line x1="40" y1="40" x2="70" y2="64" class="k-line" stroke-width="2"/><line x1="110" y1="40" x2="100" y2="64" class="k-line" stroke-width="2"/><line x1="40" y1="110" x2="70" y2="94" class="k-line" stroke-width="2"/><line x1="110" y1="110" x2="100" y2="94" class="k-line" stroke-width="2"/>
+${T(75,30,'가까운 면 (z 작음) = 크게','t','middle',10)}${T(75,128,'먼 면 (z 큼) = 작게, 가운데로','t','middle',10)}
+<rect x="170" y="28" width="122" height="96" rx="8" class="s-p2 k-ink" stroke-width="2"/>
+${T(231,54,'화면X =','t','middle',13)}${T(231,76,'x × 300','t','middle',13)}<line x1="196" y1="84" x2="266" y2="84" class="k-ink" stroke-width="2"/>${T(231,102,'z + 5','t','middle',13)}
+${T(231,150,'z로 나누기 = 원근법','t','middle',12)}
+</svg>`
+});
+
+/* ===== 미니 게임 엔진 (스크래치 좌표계: 가로 480, 세로 360, 가운데가 0,0 / 1초에 30번 반복) ===== */
+const W=480,H=360;
+const rnd=(a,b)=>{if(Number.isInteger(a)&&Number.isInteger(b)){const lo=Math.min(a,b),hi=Math.max(a,b);return lo+Math.floor(Math.random()*(hi-lo+1))}return Math.min(a,b)+Math.random()*Math.abs(b-a)};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const near=(a,b,r)=>Math.hypot(a.x-b.x,a.y-b.y)<r;
+const EMO={};
+function emoji(e,size){const k=e+'|'+size;if(EMO[k])return EMO[k];const c=document.createElement('canvas');const p=Math.ceil(size*1.35);c.width=c.height=p;const g=c.getContext('2d');g.textAlign='center';g.textBaseline='middle';g.font=`${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;g.fillText(e,p/2,p/2+size*0.06);EMO[k]=c;return c}
+let AC=null,MUTE=false;
+function sfx(t){if(MUTE)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();const f={hit:880,over:160,shoot:520,jump:440,pop:660}[t]||600;o.type=t==='over'?'sawtooth':'square';o.frequency.setValueAtTime(f,AC.currentTime);if(t==='over')o.frequency.exponentialRampToValueAtTime(60,AC.currentTime+.5);if(t==='jump')o.frequency.exponentialRampToValueAtTime(880,AC.currentTime+.12);g.gain.setValueAtTime(.05,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+(t==='over'?.55:.12));o.connect(g).connect(AC.destination);o.start();o.stop(AC.currentTime+(t==='over'?.6:.14))}catch(e){}}
+
+class Stage{
+  constructor(canvas,game,opts={}){
+    this.cv=canvas;this.g=canvas.getContext('2d');this.game=game;this.opts=opts;
+    this.keys={};this.mouse={x:0,y:0,down:false};this.running=false;this.over=false;this.raf=0;
+    canvas.width=W*2;canvas.height=H*2;this.g.setTransform(2,0,0,2,0,0);
+    if(game.mouse)canvas.style.touchAction='none';
+    const pos=e=>{const r=canvas.getBoundingClientRect();this.mouse.x=clamp((e.clientX-r.left)/r.width*W-240,-240,240);this.mouse.y=clamp(180-(e.clientY-r.top)/r.height*H,-180,180)};
+    canvas.addEventListener('pointermove',e=>{pos(e)});
+    canvas.addEventListener('pointerdown',e=>{pos(e);this.mouse.down=true;Stage.active=this;if(game.mouse&&!this.running&&!this.over)this.start()});
+    window.addEventListener('pointerup',()=>{this.mouse.down=false});
+    canvas.addEventListener('pointerleave',()=>{this.mouse.down=false});
+    this.reset();this.render();
+  }
+  reset(){this.t=0;this.over=false;this.say=null;this.vars={};this.lists=null;this.game.init(this)}
+  start(){Stage.active=this;cancelAnimationFrame(this.raf);this.reset();this.running=true;this.last=performance.now();this.acc=0;const loop=now=>{if(!this.running)return;this.acc+=Math.min(200,now-this.last);this.last=now;while(this.acc>=1000/30&&this.running){this.acc-=1000/30;this.t++;this.game.tick(this)}this.render();if(this.running)this.raf=requestAnimationFrame(loop)};this.raf=requestAnimationFrame(loop);this.onState&&this.onState()}
+  stop(){this.running=false;cancelAnimationFrame(this.raf);this.render();this.onState&&this.onState()}
+  end(msg,who){this.over=true;this.running=false;if(msg&&who)this.say={text:msg,x:who.x,y:who.y+28};this.overMsg=msg||'게임 끝';sfx('over');this.render();this.onState&&this.onState()}
+  destroy(){this.running=false;cancelAnimationFrame(this.raf)}
+  /* 그리기 도우미 */
+  px(x){return x+240} py(y){return 180-y}
+  img(e,x,y,size,o={}){const c=emoji(e,size);const g=this.g;g.save();g.translate(this.px(x),this.py(y));if(o.rot)g.rotate(o.rot*Math.PI/180);if(o.flip)g.scale(-1,1);if(o.scale)g.scale(o.scale,o.scale);if(o.hue){g.filter=`hue-rotate(${o.hue}deg) saturate(1.6)`}if(o.alpha!=null)g.globalAlpha=o.alpha;g.drawImage(c,-c.width/2,-c.height/2);g.restore()}
+  monitors(list){const g=this.g;let x=6;g.font='bold 12px "Gothic A1",sans-serif';list.forEach(([n,v])=>{const vs=String(typeof v==='number'?Math.round(v*100)/100:v);const w1=g.measureText(n).width,w2=Math.max(26,g.measureText(vs).width+14);const w=w1+w2+16;g.fillStyle='rgba(255,255,255,.92)';g.strokeStyle='#C7CEDB';rr(g,x,6,w,22,4);g.fill();g.stroke();g.fillStyle='#575E75';g.textAlign='left';g.textBaseline='middle';g.fillText(n,x+6,17.5);g.fillStyle='#FF8C1A';rr(g,x+w1+10,9,w2,16,8);g.fill();g.fillStyle='#fff';g.textAlign='center';g.fillText(vs,x+w1+10+w2/2,17.5);x+=w+6})}
+  bubble(text,x,y){const g=this.g;g.font='bold 14px "Gothic A1",sans-serif';const w=g.measureText(text).width+20;let bx=clamp(this.px(x)-10,4,W-w-4),by=clamp(this.py(y)-46,4,H-40);g.fillStyle='#fff';g.strokeStyle='#C7CEDB';g.lineWidth=2;rr(g,bx,by,w,30,12);g.fill();g.stroke();g.beginPath();g.moveTo(bx+16,by+30);g.lineTo(bx+12,by+40);g.lineTo(bx+28,by+30);g.fill();g.fillStyle='#333';g.textAlign='left';g.textBaseline='middle';g.fillText(text,bx+10,by+15);g.lineWidth=1}
+  render(){const g=this.g;g.clearRect(0,0,W,H);this.game.draw(this,g);if(this.say)this.bubble(this.say.text,this.say.x,this.say.y);
+    if(!this.running){g.fillStyle=this.over?'rgba(15,20,35,.55)':'rgba(15,20,35,.35)';g.fillRect(0,0,W,H);g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff';
+      if(this.over){g.font='32px "Black Han Sans",sans-serif';g.fillText(this.overMsg||'게임 끝',240,150);g.font='bold 15px "Gothic A1",sans-serif';const sc=this.game.result?this.game.result(this):'';if(sc)g.fillText(sc,240,190);g.fillText('초록 깃발을 누르면 다시 시작',240,222)}
+      else if(this.t>0){g.font='26px "Black Han Sans",sans-serif';g.fillText('멈춤',240,160);g.font='bold 14px "Gothic A1",sans-serif';g.fillText('초록 깃발을 누르면 처음부터 다시 시작',240,196)}
+      else{g.fillStyle='#4CBF56';rr(g,190,140,100,60,14);g.fill();g.fillStyle='#fff';g.beginPath();g.moveTo(228,154);g.lineTo(258,170);g.lineTo(228,186);g.fill();g.font='bold 14px "Gothic A1",sans-serif';g.fillText(this.game.mouse?'무대를 클릭하거나 깃발을 눌러 시작':'초록 깃발을 눌러 시작',240,224)}}}
+}
+Stage.active=null;
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+const KEYMAP={'f':'f','F':'f','ㄹ':'f',' ':'space','ArrowLeft':'left','ArrowRight':'right','ArrowUp':'up','ArrowDown':'down','1':'1','2':'2','3':'3','4':'4'};
+window.addEventListener('keydown',e=>{const k=KEYMAP[e.key];const S=Stage.active;if(!k||!S||!S.running)return;const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'))return;e.preventDefault();S.keys[k]=true});
+window.addEventListener('keyup',e=>{const k=KEYMAP[e.key];const S=Stage.active;if(k&&S)S.keys[k]=false});
+
+/* ---- 배경 그리기 ---- */
+function bgDesert(S,g){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#8FD3F4');gr.addColorStop(1,'#D8F1FA');g.fillStyle=gr;g.fillRect(0,0,W,H);g.fillStyle='#C9774A';g.beginPath();g.moveTo(250,250);g.lineTo(290,150);g.lineTo(380,150);g.lineTo(420,250);g.fill();g.fillStyle='#B5653C';g.fillRect(300,170,60,80);g.fillStyle='#F2D38B';g.fillRect(0,250,W,110);g.fillStyle='#E5C26F';for(let i=0;i<8;i++)g.fillRect((i*67+S.t*0)%W,290+(i%3)*18,40,4);g.fillStyle='#3E9A3A';rr(g,52,150,18,110,8);g.fill();rr(g,32,180,14,40,6);g.fill();rr(g,74,170,14,36,6);g.fill()}
+let BRICK=null;
+function brick(){if(BRICK)return BRICK;const c=document.createElement('canvas');c.width=480;c.height=360;const g=c.getContext('2d');g.fillStyle='#8E2B33';g.fillRect(0,0,480,250);for(let r=0;r<12;r++){for(let i=-1;i<13;i++){const x=i*40+(r%2?20:0),y=r*21;g.fillStyle=['#B63A44','#A9333D','#C04450','#9E2F39'][(i*7+r*3)&3];g.fillRect(x+1,y+1,38,19)}}g.fillStyle='#A8ADB3';g.fillRect(0,250,480,110);g.fillStyle='#8C9197';g.fillRect(0,250,480,8);g.fillRect(0,300,480,4);g.strokeStyle='#979CA2';for(let i=0;i<6;i++){g.beginPath();g.moveTo(i*90+30,262);g.lineTo(i*90+70,296);g.stroke()}BRICK=c;return c}
+function bgRoom(g){g.fillStyle='#FFE6B8';g.fillRect(0,0,W,H);g.fillStyle='#F7D08A';g.fillRect(0,250,W,110);g.fillStyle='#7FC8F8';rr(g,330,40,110,90,6);g.fill();g.strokeStyle='#fff';g.lineWidth=4;g.beginPath();g.moveTo(385,40);g.lineTo(385,130);g.moveTo(330,85);g.lineTo(440,85);g.stroke();g.lineWidth=1;g.fillStyle='#3FBF9F';rr(g,40,200,170,70,10);g.fill();g.fillStyle='#fff';rr(g,50,190,60,24,8);g.fill();g.fillStyle='#B5653C';g.fillRect(250,200,70,60)}
+function bgField(g){g.fillStyle='#2B9C93';g.fillRect(0,0,W,90);g.fillStyle='#3B4A5C';g.fillRect(0,90,W,26);g.fillStyle='#6DBE45';g.fillRect(0,116,W,244);g.fillStyle='#C98B4C';g.beginPath();g.ellipse(240,250,230,60,0,0,Math.PI*2);g.fill();g.fillStyle='#6DBE45';g.beginPath();g.ellipse(240,250,150,34,0,0,Math.PI*2);g.fill();g.strokeStyle='#fff';g.lineWidth=3;g.strokeRect(170,236,50,26);g.strokeRect(260,236,50,26);g.lineWidth=1;g.fillStyle='rgba(255,255,255,.25)';for(let i=0;i<30;i++){g.fillRect(i*16,20+(i%4)*14,8,8)}}
+function bgSpace(S,g){g.fillStyle='#1B1F4B';g.fillRect(0,0,W,H);for(let i=0;i<40;i++){const x=(i*97+S.t*(1+i%3))%W;const y=(i*53)%H;g.fillStyle=i%5?'#9EA8FF':'#FFE27A';g.fillRect(W-x,y,2+(i%3),2+(i%3))}g.fillStyle='#2F3A86';g.beginPath();g.ellipse(240,400,330,120,0,0,Math.PI*2);g.fill()}
+function bgTunnel(S,g){g.fillStyle='#14164A';g.fillRect(0,0,W,H);g.strokeStyle='#E05BFF';g.lineWidth=2;const k=(S.t%30)/30;for(let i=0;i<6;i++){const s=Math.pow(.6,i-k);const w=480*s,h=360*s;g.globalAlpha=Math.min(1,s);g.strokeRect(240-w/2,180-h/2,w,h)}g.globalAlpha=.6;g.strokeStyle='#6E7BFF';[[0,0],[480,0],[0,360],[480,360]].forEach(([x,y])=>{g.beginPath();g.moveTo(x,y);g.lineTo(240+(x-240)*.08,180+(y-180)*.08);g.stroke()});g.globalAlpha=1;g.fillStyle='#000';g.fillRect(220,165,40,30);g.lineWidth=1}
+const plain=(c)=>(S,g)=>{g.fillStyle=c;g.fillRect(0,0,W,H)};
+
+/* ---- 공통 도우미 ---- */
+function keyMove(S,o,dx,lr=true,ud=false){if(lr){if(S.keys.right){o.x+=dx;o.face=1}if(S.keys.left){o.x-=dx;o.face=-1}}if(ud){if(S.keys.up)o.y+=dx;if(S.keys.down)o.y-=dx}o.x=clamp(o.x,-225,225);o.y=clamp(o.y,-165,165)}
+function every(S,key,ticks){S._ev=S._ev||{};if(S._ev[key]==null)S._ev[key]=0;if(S.t>=S._ev[key]){S._ev[key]=S.t+(typeof ticks==='function'?ticks():ticks);return true}return false}
+
+const GAMES={
+/* 1 점프 */
+jump:{init(S){S.cat={x:-180,y:-120,j:0};S.bear={x:200,y:-130,k:0};S.vars={점수:0};S.walls=[0,465]},
+ tick(S){const c=S.cat,b=S.bear;if(c.j===0&&S.keys.space){c.j=40;sfx('jump')}if(c.j>0){c.y+=c.j>20?10:-10;c.j--}
+  b.k++;b.x=200+(-240-200)*(b.k/45);if(b.k>=45){S.vars.점수++;b.k=0;b.x=200}
+  if(S.scroll){S.walls=S.walls.map(x=>{x-=3;return x< -465?465:x})}
+  if(Math.abs(c.x-b.x)<40&&Math.abs(c.y-b.y)<38)S.end('게임 끝!',c)},
+ draw(S,g){if(S.scroll){const im=brick();S.walls.forEach(x=>g.drawImage(im,S.px(x)-240,0))}else bgDesert(S,g);
+  S.img('🐻',S.bear.x,S.bear.y+4,52,{flip:false,scale:S.scroll&&(Math.floor(S.t/3)%2)?1.06:1});S.img('🐱',S.cat.x,S.cat.y,46,{flip:true});S.monitors([['점수',S.vars.점수]])},
+ result:S=>`점수 ${S.vars.점수}점`},
+/* 3 쥐잡기 */
+mouse:{init(S){S.cat={x:-120,y:-60};S.m={x:120,y:60,fx:120,fy:60,tx:120,ty:60,k:30,vis:true,dir:90};S.vars={점수:0}},
+ tick(S){const c=S.cat,m=S.m;keyMove(S,c,10,true,true);
+  if(m.k>=30){m.vis=true;m.dir=rnd(0,360);m.fx=m.x;m.fy=m.y;m.tx=rnd(-220,220);m.ty=rnd(-160,160);m.k=0}
+  m.k++;m.x=m.fx+(m.tx-m.fx)*m.k/30;m.y=m.fy+(m.ty-m.fy)*m.k/30;
+  if(m.vis&&near(c,m,42)){S.vars.점수++;m.vis=false;sfx('hit')}},
+ draw(S,g){bgRoom(g);if(S.m.vis)S.img('🐭',S.m.x,S.m.y,34,{rot:S.m.dir-90});S.img('🐱',S.cat.x,S.cat.y,50,{flip:S.cat.face!==-1});S.monitors([['점수',S.vars.점수]])},
+ result:S=>`잡은 쥐 ${S.vars.점수}마리`},
+/* 4 야구 */
+baseball:{mouse:true,init(S){S.bat={x:0,y:-150,sw:0};S.ball={x:0,y:165,dir:rnd(150,210),wait:30};S.vars={점수:0,공속도:20}},
+ tick(S){const b=S.bat,o=S.ball;b.x=clamp(S.mouse.x,-200,200);b.y=clamp(S.mouse.y,-160,160);if(b.sw>0)b.sw--;
+  if(o.wait>0){o.wait--;return}
+  const steps=Math.ceil(S.vars.공속도/5);for(let i=0;i<steps;i++){const d=S.vars.공속도/steps;o.x+=d*Math.sin(o.dir*Math.PI/180);o.y+=d*Math.cos(o.dir*Math.PI/180);
+   if(o.x>228){o.x=228;o.dir=-o.dir}if(o.x<-228){o.x=-228;o.dir=-o.dir}if(o.y>168){o.y=168;o.dir=180-o.dir}
+   if(o.y<-168){if(S.opts.hard){S.end('아웃!',o);return}o.y=-168;o.dir=180-o.dir}
+   if(Math.abs(o.x-b.x)<48&&Math.abs(o.y-b.y)<22){o.dir=rnd(-130,130);o.x+=100*Math.sin(o.dir*Math.PI/180);o.y+=100*Math.cos(o.dir*Math.PI/180);o.x=clamp(o.x,-228,228);o.y=clamp(o.y,-168,168);S.vars.공속도++;S.vars.점수++;b.sw=8;sfx('hit');break}}},
+ draw(S,g){bgField(g);const b=S.bat;g.save();g.translate(S.px(b.x),S.py(b.y));g.rotate((-15+(b.sw?(8-b.sw)*-12:0))*Math.PI/180);g.fillStyle='#8B5A2B';rr(g,-50,-7,100,14,7);g.fill();g.fillStyle='#5E3B19';rr(g,-50,-5,22,10,4);g.fill();g.restore();S.img('⚾',S.ball.x,S.ball.y,26);S.monitors([['점수',S.vars.점수],['공속도',S.vars.공속도]])},
+ result:S=>`점수 ${S.vars.점수} · 공속도 ${S.vars.공속도}`},
+/* 5 과일 사격 */
+shoot:{mouse:true,init(S){S.cl=[];S.vars={점수:0};S._ev={}},
+ tick(S){[['🍊',1,15],['🍓',2,21],['🎂',3,30]].forEach(([e,p,w])=>{if(every(S,e,w))S.cl.push({e,p,x:rnd(-100,100),y:rnd(-100,100),dir:rnd(1,359),f:0})});
+  S.cl=S.cl.filter(c=>{c.x+=3*Math.sin(c.dir*Math.PI/180);c.y+=3*Math.cos(c.dir*Math.PI/180);c.f++;
+   if(Math.abs(c.x)>222||Math.abs(c.y)>162)return false;
+   if(near(c,S.mouse,24)&&S.mouse.down){S.vars.점수+=c.p;sfx('pop');return false}return true})},
+ draw(S,g){plain('#FFFFFF')(S,g);g.fillStyle='#F1F4FA';for(let i=0;i<12;i++)g.fillRect(i*40,0,1,H);for(let i=0;i<9;i++)g.fillRect(0,i*40,W,1);
+  S.cl.forEach(c=>S.img(c.e,c.x,c.y,c.e==='🎂'?40:36,{rot:(c.f%20<10)?-6:6}));const m=S.mouse,x=S.px(m.x),y=S.py(m.y);g.strokeStyle=m.down?'#E0364C':'#141B2E';g.lineWidth=2.5;g.beginPath();g.arc(x,y,16,0,Math.PI*2);g.moveTo(x-22,y);g.lineTo(x+22,y);g.moveTo(x,y-22);g.lineTo(x,y+22);g.stroke();g.lineWidth=1;S.monitors([['점수',S.vars.점수]])},
+ result:S=>`점수 ${S.vars.점수}점`},
+/* 6 바나나 */
+banana:{init(S){S.mk={x:0,y:-140,face:1};S.cl=[];S.fx=rnd(-200,200);S.vars={점수:0};S._ev={}},
+ tick(S){keyMove(S,S.mk,10);if(every(S,'b',9)){S.cl.push({x:S.fx,y:140});S.fx=rnd(-200,200)}
+  S.cl=S.cl.filter(c=>{c.y-=5;if(c.y<-162)return false;if(near(c,S.mk,40)){S.vars.점수++;sfx('pop');return false}return true})},
+ draw(S,g){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#CDEBC4');gr.addColorStop(1,'#E9D3B4');g.fillStyle=gr;g.fillRect(0,0,W,H);g.fillStyle='#7BAE5A';g.beginPath();g.ellipse(60,60,90,60,0,0,Math.PI*2);g.ellipse(420,40,110,60,0,0,Math.PI*2);g.fill();g.fillStyle='#C4A27A';g.fillRect(0,300,W,60);
+  S.cl.forEach(c=>S.img('🍌',c.x,c.y,32));S.img('🐵',S.mk.x,S.mk.y,48,{scale:(S.keys.left||S.keys.right)&&(S.t%6<3)?1.05:1});S.monitors([['점수',S.vars.점수]])},
+ result:S=>`받은 바나나 ${S.vars.점수}개`},
+/* 7 똥 피하기 */
+poop:{init(S){S.cat={x:0,y:-140,face:1};S.cl=[];S.fx=rnd(-200,200);S.vars={점수:0};S._ev={}},
+ tick(S){keyMove(S,S.cat,10);if(every(S,'p',6)){S.cl.push({x:S.fx,y:140});S.fx=rnd(-200,200)}
+  for(const c of S.cl){if(c.dead)continue;if(c.y<-168){S.vars.점수++;c.dead=true;continue}if(Math.abs(c.x-S.cat.x)<28&&Math.abs(c.y-S.cat.y)<30){S.end('게임끝',S.cat);return}c.y-=5}
+  S.cl=S.cl.filter(c=>!c.dead)},
+ draw(S,g){plain('#FFFFFF')(S,g);g.fillStyle='#EEF0F4';g.fillRect(0,330,W,30);S.cl.forEach(c=>S.img('💩',c.x,c.y,26));S.img('🐱',S.cat.x,S.cat.y,46,{flip:S.cat.face!==-1});S.monitors([['점수',S.vars.점수]])},
+ result:S=>`피한 똥 ${S.vars.점수}개`},
+/* 8 공룡 */
+dino:{mouse:true,init(S){S.cat={x:0,y:0};S.cl=[];S.vars={점수:0};S._ev={}},
+ tick(S){const c=S.cat,m=S.mouse;const d=Math.hypot(m.x-c.x,m.y-c.y);if(d>10){c.x+=(m.x-c.x)/d*10;c.y+=(m.y-c.y)/d*10}else{c.x=m.x;c.y=m.y}c.x=clamp(c.x,-220,220);c.y=clamp(c.y,-160,160);
+  if(every(S,'d',15)){const L=rnd(1,2)===1;S.cl.push({x:L?-200:200,y:rnd(-130,130),v:L?10:-10,hue:0})}
+  for(const z of S.cl){z.hue=rnd(1,200)*1.8;z.x+=z.v;if(Math.abs(z.x)>222){z.dead=true;S.vars.점수++;continue}if(near(z,c,36)){S.end('게임끝',c);return}}
+  S.cl=S.cl.filter(z=>!z.dead)},
+ draw(S,g){plain('#FFFFFF')(S,g);g.strokeStyle='#E6EAF2';for(let i=1;i<6;i++){g.beginPath();g.moveTo(0,i*60);g.lineTo(W,i*60);g.stroke()}S.cl.forEach(z=>S.img('🦖',z.x,z.y,40,{flip:z.v>0,hue:z.hue}));S.img('🐱',S.cat.x,S.cat.y,40);S.monitors([['점수',S.vars.점수]])},
+ result:S=>`피한 공룡 ${S.vars.점수}마리`},
+/* 9 똥 터뜨리기 */
+popper:{init(S){S.r={x:0,y:-160};S.balls=[];S.poops=[];S.fx=rnd(-200,200);S.cool=0;S.vars={점수:0};S._ev={}},
+ tick(S){keyMove(S,S.r,10);if(S.cool>0)S.cool--;if(S.keys.space&&S.cool===0){S.balls.push({x:S.r.x,y:S.r.y,die:-1});S.cool=6;sfx('shoot')}
+  if(every(S,'p',30)){S.poops.push({x:S.fx,y:140});S.fx=rnd(-200,200)}
+  for(const b of S.balls){if(b.die>0){b.die--;if(b.die===0)b.dead=true;continue}b.y+=5;if(b.y>170){b.dead=true;continue}if(S.poops.some(p=>near(p,b,26)))b.die=1}
+  for(const p of S.poops){if(S.balls.some(b=>!b.dead&&near(p,b,26))){S.vars.점수++;p.dead=true;sfx('pop');continue}if(p.y<-168){p.dead=true;continue}p.y-=3}
+  S.balls=S.balls.filter(b=>!b.dead);S.poops=S.poops.filter(p=>!p.dead)},
+ draw(S,g){plain('#FFFFFF')(S,g);S.poops.forEach(p=>S.img('💩',p.x,p.y,30));g.fillStyle='#FFC93C';S.balls.forEach(b=>{g.beginPath();g.arc(S.px(b.x),S.py(b.y),7,0,Math.PI*2);g.fill()});S.img('🚀',S.r.x,S.r.y,40,{rot:-45});S.monitors([['점수',S.vars.점수]])},
+ result:S=>`터뜨린 똥 ${S.vars.점수}개`},
+/* 10 우주 슈팅 */
+space:{init(S){S.r={x:-200,y:0};S.bul=[];S.pl=[];S.cool=0;S.vars={점수:0};S._ev={}},
+ tick(S){keyMove(S,S.r,10,false,true);if(S.cool>0)S.cool--;if(S.keys.space&&S.cool===0){S.bul.push({x:S.r.x,y:S.r.y,die:-1});S.cool=9;sfx('shoot')}
+  if(every(S,'p',15))S.pl.push({x:180,y:clamp(rnd(-180,180),-150,150)});
+  for(const b of S.bul){if(b.die>0){b.die--;if(!b.die)b.dead=true;continue}b.x+=20;if(b.x>232){b.dead=true;continue}if(S.pl.some(p=>Math.abs(p.x-b.x)<30&&Math.abs(p.y-b.y)<26))b.die=1}
+  for(const p of S.pl){if(S.bul.some(b=>!b.dead&&Math.abs(p.x-b.x)<30&&Math.abs(p.y-b.y)<26)){S.vars.점수++;p.dead=true;sfx('pop');continue}if(p.x<-222){p.dead=true;continue}p.x-=15;if(near(p,S.r,40)){S.end('게임끝!',S.r);return}}
+  S.bul=S.bul.filter(b=>!b.dead);S.pl=S.pl.filter(p=>!p.dead)},
+ draw(S,g){bgSpace(S,g);S.pl.forEach(p=>S.img('🪐',p.x,p.y,40));S.bul.forEach(b=>S.img('⚡',b.x,b.y,24,{rot:90}));S.img('🚀',S.r.x,S.r.y,44,{rot:45});S.monitors([['점수',S.vars.점수]])},
+ result:S=>`부순 행성 ${S.vars.점수}개`},
+/* 11 리듬 */
+rhythm:{init(S){S.lanes=[['🍎','1',-180],['🍌','2',-60],['🍓','3',60],['🍉','4',180]].map(([e,k,x])=>({e,k,x,next:rnd(3,6)*30,blink:0,prev:false}));S.cl=[];S.vars={점수:0,속도:-5}},
+ tick(S){S.lanes.forEach((L,i)=>{if(S.t>=L.next){S.cl.push({lane:i,x:L.x,y:130,pop:0});L.next=S.t+Math.round(rnd(3,6)*30)}const kd=!!S.keys[L.k];if(kd&&!L.prev)L.blink=12;L.prev=kd;if(L.blink>0)L.blink--});
+  S.cl=S.cl.filter(c=>{if(c.pop>0){c.pop--;return c.pop>0}c.y+=S.vars.속도;if(c.y<-168)return false;const L=S.lanes[c.lane];if(Math.abs(c.y-(-130))<34&&S.keys[L.k]){S.vars.점수++;S.vars.속도-=.5;c.pop=4;sfx('hit');return true}return true})},
+ draw(S,g){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#E9F7FF');gr.addColorStop(1,'#D3ECFA');g.fillStyle=gr;g.fillRect(0,0,W,H);g.fillStyle='rgba(47,107,255,.07)';S.lanes.forEach(L=>g.fillRect(S.px(L.x)-40,0,80,H));
+  S.lanes.forEach(L=>{const hid=L.blink>6;if(!hid)S.img(L.e,L.x,-130,52,{alpha:.95});g.fillStyle='#141B2E';g.font='bold 14px "Gothic A1",sans-serif';g.textAlign='center';g.fillText(L.k+'번 키',S.px(L.x),S.py(-168))});
+  S.cl.forEach(c=>S.img(S.lanes[c.lane].e,c.x,c.y,44,{scale:c.pop?1.4:1,alpha:c.pop?.6:1}));S.monitors([['점수',S.vars.점수],['속도',S.vars.속도]])},
+ result:S=>`점수 ${S.vars.점수} · 마지막 속도 ${S.vars.속도}`},
+/* 12 유령 */
+ghost:{mouse:true,init(S){S.cl=[];S.phase=0;S.vars={ghost:0,score:0,time:30};S.next=0;S.red=0},
+ tick(S){if(S.phase===0){if(S.t>=90){S.phase=1;S.next=S.t+Math.round(rnd(.1,2)*30);S.tStart=S.t}return}
+  if((S.t-S.tStart)%30===0&&S.t>S.tStart){S.vars.time--;if(S.vars.time<=0){S.vars['success rate']=S.vars.ghost?Math.round(S.vars.score/S.vars.ghost*100):0;S.end('Game Over');return}}
+  if(S.t>=S.next){S.vars.ghost++;S.cl.push({x:rnd(-180,180),y:rnd(-140,140),dir:rnd(1,360)});S.next=S.t+Math.max(3,Math.round(rnd(.1,2)*30))}
+  if(S.red>0)S.red--;if(S.mouse.down&&S.red===0)S.red=3;
+  S.cl=S.cl.filter(c=>{const s=rnd(1,10);c.x+=s*Math.sin(c.dir*Math.PI/180);c.y+=s*Math.cos(c.dir*Math.PI/180);if(Math.abs(c.x)>222||Math.abs(c.y)>162)return false;if(S.red>0&&near(c,S.mouse,16)){S.vars.score++;sfx('hit');return false}return true})},
+ draw(S,g){bgTunnel(S,g);if(S.phase===0&&S.running){g.fillStyle='#FFFFFF';g.font='120px "Black Han Sans",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(String(3-Math.floor(S.t/30)),240,190)}
+  S.cl.forEach(c=>S.img('👻',c.x,c.y,38,{scale:1+(Math.floor(S.t/4)%2)*.05}));
+  const m=S.mouse,x=S.px(m.x),y=S.py(m.y);g.strokeStyle='#E8ECF6';g.lineWidth=2.5;g.beginPath();g.arc(x,y,22,0,Math.PI*2);g.moveTo(x-30,y);g.lineTo(x+30,y);g.moveTo(x,y-30);g.lineTo(x,y+30);g.stroke();g.beginPath();g.arc(x,y,9,0,Math.PI*2);g.stroke();if(S.red>0){g.fillStyle='#FF2D2D';g.beginPath();g.arc(x,y,8,0,Math.PI*2);g.fill()}g.lineWidth=1;
+  const mons=[['ghost',S.vars.ghost],['score',S.vars.score],['time',S.vars.time]];if(S.vars['success rate']!=null)mons.push(['success rate',S.vars['success rate']+'%']);S.monitors(mons)},
+ result:S=>`유령 ${S.vars.ghost}마리 중 ${S.vars.score}마리 · 성공률 ${S.vars['success rate']??0}%`},
+/* 13 스네이크 (리스트) */
+snake:{init(S){S.h={x:0,y:0,dir:'right',want:'right'};S.lists={X기록:[],Y기록:[]};S.vars={뱀길이:3,점수:0};S.ap={x:100,y:60};S.step=0;S.lastNew=-1},
+ tick(S){const h=S.h;const opp={left:'right',right:'left',up:'down',down:'up'};['up','down','left','right'].forEach(k=>{if(S.keys[k]&&opp[k]!==h.dir)h.want=k});
+  S.step++;if(S.step<5)return;S.step=0;h.dir=h.want;
+  h.x+={left:-20,right:20}[h.dir]||0;h.y+={up:20,down:-20}[h.dir]||0;
+  if(Math.abs(h.x)>220||Math.abs(h.y)>160){S.end('벽에 쾅!',h);return}
+  const X=S.lists.X기록,Y=S.lists.Y기록;
+  for(let i=0;i<X.length-1;i++){if(X[i]===h.x&&Y[i]===h.y){S.end('내 몸에 쾅!',h);return}}
+  X.unshift(h.x);Y.unshift(h.y);S.lastNew=S.t;
+  if(X.length>S.vars.뱀길이){X.pop();Y.pop()}
+  if(h.x===S.ap.x&&h.y===S.ap.y){S.vars.뱀길이++;S.vars.점수++;sfx('pop');let tries=0;do{S.ap={x:rnd(-11,11)*20,y:rnd(-8,8)*20};tries++}while(tries<50&&X.some((x,i)=>x===S.ap.x&&Y[i]===S.ap.y))}
+  S.onList&&S.onList()},
+ draw(S,g){plain('#FFFFFF')(S,g);g.fillStyle='#F1F4FA';for(let x=-220;x<=220;x+=20)g.fillRect(S.px(x)-10,0,1,H);for(let y=-160;y<=160;y+=20)g.fillRect(0,S.py(y)-10,W,1);
+  S.img('🍎',S.ap.x,S.ap.y,20);const X=S.lists.X기록,Y=S.lists.Y기록;for(let i=X.length-1;i>=0;i--){g.fillStyle=i===0?'#0B8A4D':'#3CCB7F';rr(g,S.px(X[i])-9,S.py(Y[i])-9,18,18,4);g.fill();if(i<3&&X.length){g.fillStyle='#fff';g.font='bold 10px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(i+1,S.px(X[i]),S.py(Y[i]))}}
+  if(!X.length){g.fillStyle='#0B8A4D';rr(g,S.px(S.h.x)-9,S.py(S.h.y)-9,18,18,4);g.fill()}
+  S.monitors([['뱀길이',S.vars.뱀길이],['점수',S.vars.점수]])},
+ result:S=>`뱀길이 ${S.vars.뱀길이} · 먹은 사과 ${S.vars.점수}개`}
+};
+GAMES.run={...GAMES.jump,init(S){GAMES.jump.init(S);S.scroll=true}};
+
+/* ===== 추가 미니 게임 9개 ===== */
+const RAD=Math.PI/180;
+const dirTo=(a,b)=>Math.atan2(b.x-a.x,b.y-a.y)/RAD;
+const step=(o,d,dir)=>{o.x+=d*Math.sin(dir*RAD);o.y+=d*Math.cos(dir*RAD)};
+function bgCity(S,g){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#8ED8F8');gr.addColorStop(1,'#D9F2FC');g.fillStyle=gr;g.fillRect(0,0,W,H);
+ g.fillStyle='#FFD43B';g.beginPath();g.arc(420,48,26,0,Math.PI*2);g.fill();
+ const B=[[10,120,50],[66,90,40],[112,140,56],[176,100,44],[226,70,60],[292,120,40],[340,95,52],[398,130,46],[448,105,40]];
+ B.forEach(([x,h,w],i)=>{g.fillStyle=i%2?'#7FA7C4':'#9DBBD3';g.fillRect(x,230-h,w,h);g.fillStyle='rgba(255,255,255,.55)';for(let r=0;r<h/16-1;r++)for(let c=0;c<w/12-1;c++)g.fillRect(x+5+c*12,230-h+6+r*16,6,9)});
+ g.fillStyle='#6B7280';g.fillRect(0,230,W,130);g.fillStyle='#4B5563';g.fillRect(0,230,W,8);
+ g.fillStyle='#F3F4F6';const off=(S.road||0)%60;for(let x=-60;x<W+60;x+=60)g.fillRect(x-off,300,34,6)}
+
+Object.assign(GAMES,{
+/* 오토바이 */
+motor:{init(S){S.bike={x:-197,y:-96,dir:90,ph:null,k:0,wh:0};S.car={x:291,y:-137,k:0};S.passed=0;S.road=0},
+ tick(S){S.road+=9;const b=S.bike,c=S.car;
+  if(!b.ph){if(S.keys.up){b.ph='rise';b.k=0;sfx('jump')}else if(S.keys.down&&!b.wh){b.dir=30;b.wh=60}}
+  if(b.wh){b.wh--;if(!b.wh&&!b.ph)b.dir=90}
+  if(b.ph==='rise'){b.y+=5;if(++b.k>=20){b.ph='turn';b.k=0;b.wh=0;b.dir=90}}
+  else if(b.ph==='turn'){b.dir-=15;if(++b.k>=24){b.ph='fall';b.k=0}}
+  else if(b.ph==='fall'){b.y-=5;if(++b.k>=20){b.ph=null;b.dir=90}}
+  c.k++;c.x=291+(-298-291)*c.k/90;c.y=-137-9*c.k/90;if(c.k>=90){c.k=0;S.passed++}
+  if(Math.abs(c.x-b.x)<62&&b.y<-66){S.end('Game Over')}},
+ draw(S,g){bgCity(S,g);const c=S.car;S.img(['🚗','🚙','🚕'][Math.floor(S.t/90)%3],c.x,c.y,64);
+  S.img('🏍️',S.bike.x,S.bike.y,58,{flip:true,rot:S.bike.dir-90});
+  if(S.over){g.save();g.font='italic 54px "Black Han Sans",sans-serif';g.textAlign='center';g.fillStyle='#E0242F';g.strokeStyle='#fff';g.lineWidth=4;g.strokeText('Game Over',240,120);g.fillText('Game Over',240,120);g.restore()}},
+ result:S=>`넘은 자동차 ${S.passed}대`},
+/* 상어 */
+shark:{init(S){S.sh={x:0,y:-40,face:-1};S.vars={score:0};S.cl=[];for(let i=0;i<10;i++)S.cl.push({x:rnd(-210,210),y:rnd(-140,140),dir:rnd(1,359),e:['🐠','🐟','🐡'][i%3]})},
+ tick(S){const s=S.sh;if(S.keys.right){s.x+=5;s.face=1}if(S.keys.left){s.x-=5;s.face=-1}if(S.keys.up)s.y+=5;if(S.keys.down)s.y-=5;s.x=clamp(s.x,-215,215);s.y=clamp(s.y,-155,155);
+  S.cl=S.cl.filter(f=>{f.dir+=3;step(f,3,f.dir);f.dir-=3;if(Math.abs(f.x)>222){f.x=clamp(f.x,-222,222);f.dir=-f.dir}if(Math.abs(f.y)>160){f.y=clamp(f.y,-160,160);f.dir=180-f.dir}
+   if(near(f,s,38)){S.vars.score++;sfx('pop');return false}return true});
+  if(!S.cl.length)S.end('다 먹었다!',s)},
+ draw(S,g){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#3FB6E8');gr.addColorStop(1,'#1F6FB8');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  g.fillStyle='rgba(255,255,255,.12)';for(let i=0;i<6;i++){g.beginPath();g.moveTo(40+i*80,0);g.lineTo(80+i*80,0);g.lineTo(20+i*80+Math.sin(S.t/20+i)*10,H);g.lineTo(i*80,H);g.fill()}
+  g.fillStyle='#E9C98A';g.beginPath();g.ellipse(240,372,300,40,0,0,Math.PI*2);g.fill();
+  [[40,'#2E9E57'],[420,'#E05BA4'],[380,'#F2A03D'],[90,'#5BC86B']].forEach(([x,c],i)=>{g.strokeStyle=c;g.lineWidth=7;g.beginPath();g.moveTo(x,360);for(let k=1;k<6;k++)g.lineTo(x+Math.sin(S.t/25+k+i)*7,360-k*16);g.stroke()});g.lineWidth=1;
+  S.cl.forEach(f=>S.img(f.e,f.x,f.y,30,{flip:Math.sin(f.dir*RAD)>0}));
+  S.img('🦈',S.sh.x,S.sh.y,58,{flip:S.sh.face>0,scale:Math.floor(S.t/15)%2?1.04:1});S.monitors([['score',S.vars.score]])},
+ result:S=>`먹은 물고기 ${S.vars.score}마리`},
+/* 좀비 */
+zombie:{mouse:true,init(S){S.p={x:0,y:0,dir:90};S.bul=[];S.zs=[];S.cool=0;S.hits=0;S._ev={}},
+ tick(S){const p=S.p;keyMove(S,p,10,true,true);p.dir=dirTo(p,S.mouse);
+  if(S.cool>0)S.cool--;if(S.mouse.down&&!S.cool){const b={x:p.x,y:p.y,dir:p.dir};step(b,20,b.dir);S.bul.push(b);S.cool=3;sfx('shoot')}
+  S.bul=S.bul.filter(b=>{step(b,10,b.dir);return Math.abs(b.x)<240&&Math.abs(b.y)<180});
+  if(every(S,'z',30))S.zs.push({x:240,y:0});
+  S.zs=S.zs.filter(z=>{if(S.bul.some(b=>near(b,z,22))){S.hits++;sfx('pop');return false}z.dir=dirTo(z,p);step(z,3,z.dir);return true});
+  if(S.opts.hard&&S.zs.some(z=>near(z,p,28)))S.end('잡혔다!',p)},
+ draw(S,g){g.fillStyle='#CFE3A4';g.fillRect(0,0,W,H);g.strokeStyle='rgba(0,0,0,.05)';for(let i=0;i<W;i+=30){g.beginPath();g.moveTo(i,0);g.lineTo(i,H);g.stroke()}
+  g.fillStyle='#C2423A';S.bul.forEach(b=>{g.save();g.translate(S.px(b.x),S.py(b.y));g.rotate((b.dir-90)*RAD);g.fillRect(-7,-2.5,14,5);g.restore()});
+  S.zs.forEach(z=>S.img('🧟',z.x,z.y,36,{flip:z.x<S.p.x}));
+  const p=S.p;g.save();g.translate(S.px(p.x),S.py(p.y));g.rotate((p.dir-90)*RAD);g.fillStyle='#fff';g.strokeStyle='#141B2E';g.lineWidth=3;g.fillRect(10,-5,26,10);g.strokeRect(10,-5,26,10);g.beginPath();g.arc(0,0,14,0,Math.PI*2);g.fill();g.stroke();g.restore();g.lineWidth=1},
+ result:S=>`쓰러뜨린 좀비 ${S.hits}마리`},
+/* 가짜 3D 숲 */
+mine3d:{init(S){S.obj=[{t:'house',x:-150,y:-60,size:70,gh:0},{t:'tree',x:23,y:-73,size:100,gh:0,main:true},{t:'tree',x:170,y:-80,size:80,gh:0},{t:'tree',x:-60,y:-70,size:60,gh:0}];S.chopped=0;S.cross={x:0,y:-10}},
+ tick(S){const k=S.keys;S.obj.forEach(o=>{if(k.right)o.x-=3;if(k.left)o.x+=3;if(k.up)o.size+=1;if(k.down)o.size=Math.max(10,o.size-1);
+  if(o.t==='tree'&&!o.gone&&o.size>130&&k.space){const s=o.size/100;if(Math.abs(S.cross.x-o.x)<26*s&&Math.abs(S.cross.y-o.y)<60*s){o.gh+=2;if(o.gh>=100){o.gone=true;S.chopped++;sfx('pop')}}}})},
+ draw(S,g){const gr=g.createLinearGradient(0,0,0,200);gr.addColorStop(0,'#BFE6FF');gr.addColorStop(1,'#F4FBFF');g.fillStyle=gr;g.fillRect(0,0,W,200);g.fillStyle='#27E05A';g.fillRect(0,200,W,160);
+  [...S.obj].sort((a,b)=>a.size-b.size).forEach(o=>{if(o.gone)return;const s=o.size/100,X=S.px(o.x),Y=S.py(o.y);g.save();g.globalAlpha=1-o.gh/100;
+   if(o.t==='tree'){g.fillStyle='#D07A12';g.fillRect(X-8*s,Y-20*s,16*s,80*s);g.fillStyle='#1FBF3F';g.fillRect(X-30*s,Y-70*s,60*s,40*s);g.fillStyle='#2BE05A';g.fillRect(X-18*s,Y-88*s,36*s,22*s);g.fillStyle='#16A034';g.fillRect(X-30*s,Y-36*s,26*s,10*s)}
+   else{g.fillStyle='#FF9A1F';g.fillRect(X-34*s,Y-20*s,68*s,70*s);g.fillStyle='#A3060B';g.beginPath();g.moveTo(X-52*s,Y-18*s);g.lineTo(X,Y-62*s);g.lineTo(X+52*s,Y-18*s);g.fill();g.fillStyle='#7A3E06';g.fillRect(X-9*s,Y+18*s,18*s,32*s)}
+   g.restore()});
+  g.save();g.translate(410,300);g.fillStyle='#F7D9A8';g.beginPath();g.moveTo(-60,-30);g.lineTo(-30,-55);g.lineTo(30,-55);g.lineTo(0,-30);g.closePath();g.fill();g.stroke();g.fillStyle='#0FB5C9';g.beginPath();g.moveTo(0,-30);g.lineTo(30,-55);g.lineTo(80,10);g.lineTo(50,40);g.closePath();g.fill();g.stroke();g.fillStyle='#F7D9A8';g.beginPath();g.moveTo(-60,-30);g.lineTo(0,-30);g.lineTo(50,40);g.lineTo(-10,40);g.closePath();g.fill();g.stroke();g.restore();
+  const c=S.cross;g.strokeStyle='#141B2E';g.lineWidth=2.5;g.beginPath();g.moveTo(S.px(c.x)-14,S.py(c.y));g.lineTo(S.px(c.x)+14,S.py(c.y));g.moveTo(S.px(c.x),S.py(c.y)-14);g.lineTo(S.px(c.x),S.py(c.y)+14);g.stroke();g.lineWidth=1;
+  const m=S.obj.find(o=>o.main);S.monitors([['Sprite2: 크기',m.gone?'벌목!':m.size],['벤 나무',S.chopped]])},
+ result:S=>`벤 나무 ${S.chopped}그루`},
+/* 골프 */
+golf:{init(S){S.LV=[
+   {pl:[[-190,-60,100],[-60,-40,80],[50,-10,80],[170,20,80]],flag:[190,20]},
+   {pl:[[-190,-60,100],[-70,-95,70],[30,-45,70],[150,5,80],[40,70,70]],flag:[55,70]},
+   {pl:[[-190,-60,100],[-50,-105,70],[60,-60,70],[-30,10,70],[120,50,80]],flag:[140,50]}];
+  S.lv=0;S.b={x:-181,y:-35};S.vars={jump:0};S.clears=0},
+ tick(S){const b=S.b,L=S.LV[S.lv];if(S.keys.right)b.x+=5;if(S.keys.left)b.x-=5;b.x=clamp(b.x,-232,232);
+  const onG=()=>L.pl.find(([x,y,w])=>b.x>x-w/2-6&&b.x<x+w/2+6&&b.y-8<=y&&b.y+8>=y-14);
+  S.vars.jump-=1;let p=onG();if(p){S.vars.jump=0;if(b.y<p[1]+6)b.y=p[1]+6}
+  if(S.keys.up&&onG()){S.vars.jump=14;sfx('jump')}
+  b.y+=S.vars.jump;
+  const [fx,fy]=L.flag;if(b.x>fx-6&&b.x<fx+26&&b.y>fy+28&&b.y<fy+58){b.x=-181;b.y=-35;S.vars.jump=0;S.lv=(S.lv+1)%3;S.clears++;sfx('hit');if(S.clears>=3){S.end('모든 레벨 클리어!');return}}
+  if(b.y<-170){b.x=-181;b.y=-35;S.vars.jump=0}},
+ draw(S,g){g.fillStyle='#17181C';g.fillRect(0,0,W,H);g.fillStyle='rgba(255,255,255,.03)';for(let i=0;i<60;i++)g.fillRect((i*137)%W,(i*71)%H,3,3);
+  const L=S.LV[S.lv];L.pl.forEach(([x,y,w])=>{const X=S.px(x),Y=S.py(y);g.fillStyle='#B47C7C';g.beginPath();g.moveTo(X-w/2,Y+10);g.lineTo(X+w/2,Y+10);g.lineTo(X+w/4,Y+40);g.lineTo(X-w/5,Y+44);g.closePath();g.fill();g.fillStyle='#8E5A64';g.beginPath();g.moveTo(X,Y+10);g.lineTo(X+w/2,Y+10);g.lineTo(X+w/4,Y+40);g.closePath();g.fill();g.fillStyle='#6BE04C';rr(g,X-w/2,Y-2,w,14,6);g.fill()});
+  const [fx,fy]=L.flag;g.fillStyle='#EDEDED';g.fillRect(S.px(fx)-1,S.py(fy)-60,3,60);g.fillStyle='#E53935';g.beginPath();g.moveTo(S.px(fx)+2,S.py(fy)-60);g.lineTo(S.px(fx)+26,S.py(fy)-52);g.lineTo(S.px(fx)+2,S.py(fy)-42);g.fill();
+  g.fillStyle='#F4F4F4';g.beginPath();g.arc(S.px(S.b.x),S.py(S.b.y),8,0,Math.PI*2);g.fill();
+  g.fillStyle='#fff';g.font='bold 18px "Gothic A1",sans-serif';g.textAlign='left';g.textBaseline='alphabetic';g.fillText('Level '+(S.lv+1),12,56);S.monitors([['jump',S.vars.jump]])},
+ result:S=>`깃발 ${S.clears}개 통과`},
+/* 피시 프렌지 */
+frenzy:{mouse:true,init(S){S.f={x:0,y:-40,dir:90};S.vars={speed:0,animate:0};S.WL=100;S.food=[];S.ate=0;S._ev={};for(let i=0;i<4;i++)S.food.push({x:rnd(-200,200),y:rnd(-160,60)})},
+ tick(S){const f=S.f,v=S.vars;const d=Math.hypot(S.mouse.x-f.x,S.mouse.y-f.y);if(d>2)f.dir=dirTo(f,S.mouse);
+  v.speed+=(d/20-v.speed)/5;step(f,v.speed,f.dir);f.x=clamp(f.x,-232,232);f.y=clamp(f.y,-172,172);v.animate+=0.2;
+  if(every(S,'food',45)&&S.food.length<6)S.food.push({x:rnd(-200,200),y:rnd(-160,60)});
+  S.food=S.food.filter(o=>{if(near(o,f,24)){S.ate++;sfx('pop');return false}return true})},
+ draw(S,g){g.fillStyle='#FFFFFF';g.fillRect(0,0,W,H);const tm=S.t/30;
+  for(let x=-240;x<=240;x+=4){const top=S.WL+Math.sin((x*2+tm*200)*RAD)*8;g.fillStyle='#5C8DF6';g.fillRect(S.px(x)-2.5,S.py(top),5,S.py(-180)-S.py(top))}
+  S.food.forEach(o=>S.img('🦐',o.x,o.y,18));
+  const fr=Math.floor(S.vars.animate)%4,f=S.f;S.img('🐠',f.x,f.y,40,{flip:f.dir>0,rot:[-8,0,8,0][fr]});
+  S.monitors([['speed',S.vars.speed],['모양',(f.dir>0?'R':'L')+(fr+1)],['먹이',S.ate]])},
+ result:S=>`먹은 먹이 ${S.ate}개`},
+/* 서바이브 */
+surviv:{mouse:true,init(S){S.vars={X:0,Y:0,weapon:0,'l/r':0};S.dir=90;S.pun=null;S.bul=[];S.cool=0;S.rec=0;S.broken=0;S.bar=[[-150,90],[160,100],[-170,-110],[150,-100]].map(([x,y])=>({x,y,hp:3}))},
+ tick(S){const v=S.vars,k=S.keys;if(k.right)v.X+=5;if(k.left)v.X-=5;if(k.up)v.Y+=5;if(k.down)v.Y-=5;v.X=clamp(v.X,-220,220);v.Y=clamp(v.Y,-160,160);
+  if(k['1'])v.weapon=0;if(k['2'])v.weapon=1;const p={x:v.X,y:v.Y};S.dir=dirTo(p,S.mouse);
+  if(S.cool>0)S.cool--;if(S.rec>0)S.rec--;
+  if(v.weapon===0){if(S.pun){S.pun.k++;if(S.pun.k===2){const h={x:p.x,y:p.y};step(h,34,S.dir+(S.pun.side===1?14:-14));S.bar.forEach(b=>{if(b.hp>0&&near(h,b,26)){b.hp--;sfx('hit')}})}if(S.pun.k>=5)S.pun=null}
+   else if(S.mouse.down){v['l/r']=rnd(1,2);S.pun={k:0,side:v['l/r']}}}
+  else if(S.mouse.down&&!S.cool){const b={x:p.x,y:p.y,dir:S.dir+rnd(-5,5)};step(b,34,S.dir);S.bul.push(b);S.cool=3;S.rec=2;sfx('shoot')}
+  S.bul=S.bul.filter(b=>{step(b,25,b.dir);const hit=S.bar.find(o=>o.hp>0&&near(o,b,24));if(hit){hit.hp--;return false}return Math.abs(b.x)<240&&Math.abs(b.y)<180});
+  S.bar.forEach(o=>{if(o.hp<=0&&!o.dead){o.dead=S.t;S.broken++;sfx('pop')}if(o.dead&&S.t-o.dead>60){o.x=rnd(-200,200);o.y=rnd(-150,150);o.hp=3;o.dead=0}})},
+ draw(S,g){g.fillStyle='#80AF49';g.fillRect(0,0,W,H);g.strokeStyle='rgba(0,0,0,.08)';for(let i=0;i<W;i+=40){g.beginPath();g.moveTo(i,0);g.lineTo(i,H);g.stroke()}for(let i=0;i<H;i+=40){g.beginPath();g.moveTo(0,i);g.lineTo(W,i);g.stroke()}
+  S.bar.forEach(o=>{if(o.hp>0)S.img('🛢️',o.x,o.y,34,{alpha:.55+o.hp*.15})});
+  g.strokeStyle='#FFE27A';g.lineWidth=3;S.bul.forEach(b=>{g.beginPath();g.moveTo(S.px(b.x),S.py(b.y));g.lineTo(S.px(b.x)-12*Math.sin(b.dir*RAD),S.py(b.y)+12*Math.cos(b.dir*RAD));g.stroke()});g.lineWidth=1;
+  const v=S.vars,X=S.px(v.X),Y=S.py(v.Y);g.save();g.translate(X,Y);g.rotate((S.dir-90)*RAD);g.lineWidth=3;g.strokeStyle='#141B2E';
+  const hand=(x,y)=>{g.fillStyle='#F7C08A';g.beginPath();g.arc(x,y,7,0,Math.PI*2);g.fill();g.stroke()};
+  if(v.weapon===1){const r=S.rec?-3:0;g.fillStyle='#6B3E1E';g.fillRect(8+r,-4,40,8);g.fillStyle='#222';g.fillRect(32+r,-3,22,6);hand(14+r,3);hand(30+r,-2)}
+  else{const ext=s=>S.pun&&S.pun.side===s?(S.pun.k<2?32:S.pun.k<4?26:20):20;hand(ext(2)*Math.cos(-0.7),ext(2)*Math.sin(-0.7));hand(ext(1)*Math.cos(0.7),ext(1)*Math.sin(0.7))}
+  g.fillStyle='#F7C08A';g.beginPath();g.arc(0,0,16,0,Math.PI*2);g.fill();g.stroke();g.restore();g.lineWidth=1;
+  S.monitors([['weapon',v.weapon],['l/r',v['l/r']],['부순 통',S.broken]])},
+ result:S=>`부순 통 ${S.broken}개`},
+/* 2D 마인크래프트 */
+mine2d:{init(S){const B=[];let x=-228,sr=6;for(let c=0;c<20;c++){let y=-168;sr=clamp(sr+rnd(-1,1),0,10);for(let i=0;i<sr;i++){B.push({x,y,t:'돌'});y+=24}for(let i=0;i<3;i++){B.push({x,y,t:'흙'});y+=24}B.push({x,y,t:'잔디'});if(rnd(1,6)===1){y+=24;B.push({x,y,t:'꽃'})}x+=24}
+  S.B=B;S.cur={x:-228,y:-168};S.vars={'block type':1,'smooth random':sr};S.hold={};S.mined=0},
+ tick(S){const k=S.keys,c=S.cur;const rep=(key,fn)=>{if(k[key]){const h=S.hold[key]||0;if(h===0||(h>8&&h%4===0))fn();S.hold[key]=h+1}else S.hold[key]=0};
+  rep('right',()=>c.x=Math.min(228,c.x+24));rep('left',()=>c.x=Math.max(-228,c.x-24));rep('up',()=>c.y=Math.min(168,c.y+24));rep('down',()=>c.y=Math.max(-168,c.y-24));
+  ['1','2','3','4'].forEach(n=>{if(k[n])S.vars['block type']=+n});
+  if(k.f){const n=S.B.length;S.B=S.B.filter(b=>!(b.x===c.x&&b.y===c.y));if(S.B.length<n){S.mined++;sfx('pop')}}
+  rep('space',()=>{if(!S.B.some(b=>b.x===c.x&&b.y===c.y)){S.B.push({x:c.x,y:c.y,t:['잔디','흙','돌','나무'][S.vars['block type']-1]});sfx('hit')}})},
+ draw(S,g){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#62C6F5');gr.addColorStop(1,'#B9E6FB');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  S.B.forEach(b=>{const X=S.px(b.x)-12,Y=S.py(b.y)-12;
+   if(b.t==='돌'){g.fillStyle='#6F6F6F';g.fillRect(X,Y,24,24);g.fillStyle='#5A5A5A';g.fillRect(X+3,Y+4,6,5);g.fillRect(X+14,Y+13,7,6)}
+   else if(b.t==='흙'){g.fillStyle='#7A4A22';g.fillRect(X,Y,24,24);g.fillStyle='#64391A';g.fillRect(X+4,Y+6,5,4);g.fillRect(X+15,Y+15,5,4)}
+   else if(b.t==='잔디'){g.fillStyle='#7A4A22';g.fillRect(X,Y,24,24);g.fillStyle='#3FBF3F';g.fillRect(X,Y,24,8);g.fillRect(X+4,Y+8,4,3);g.fillRect(X+15,Y+8,4,4)}
+   else if(b.t==='나무'){g.fillStyle='#B98A4E';g.fillRect(X,Y,24,24);g.fillStyle='#9C7240';g.fillRect(X,Y+7,24,2);g.fillRect(X,Y+15,24,2)}
+   else{g.fillStyle='#2E8B2E';g.fillRect(X+11,Y+10,2,14);g.fillStyle='#E53935';g.fillRect(X+8,Y+4,8,7);g.fillStyle='#FFD43B';g.fillRect(X+11,Y+6,2,3)}});
+  const c=S.cur,X=S.px(c.x),Y=S.py(c.y);g.strokeStyle='#1F3BD6';g.lineWidth=3;g.beginPath();g.moveTo(X-12,Y);g.lineTo(X+12,Y);g.moveTo(X,Y-12);g.lineTo(X,Y+12);g.stroke();g.lineWidth=1.5;g.strokeRect(X-12,Y-12,24,24);g.lineWidth=1;
+  S.monitors([['block type',S.vars['block type']],['smooth random',S.vars['smooth random']],['복제본',S.B.length]])},
+ result:S=>`캔 블록 ${S.mined}개 · 남은 복제본 ${S.B.length}개`},
+/* 3D 엔진 */
+engine3d:{init(S){S.lists={X:[-1,1,1,-1,-1,1,1,-1],Y:[-1,-1,1,1,-1,-1,1,1],Z:[-1,-1,-1,-1,1,1,1,1],'화면X':[],'화면Y':[],'선A':[1,2,3,4,5,6,7,8,1,2,3,4],'선B':[2,3,4,1,6,7,8,5,5,6,7,8]};S.vars={yaw:30,pitch:20};GAMES.engine3d.calc(S)},
+ calc(S){const L=S.lists,v=S.vars;L['화면X']=[];L['화면Y']=[];const cy=Math.cos(v.yaw*RAD),sy=Math.sin(v.yaw*RAD),cp=Math.cos(v.pitch*RAD),sp=Math.sin(v.pitch*RAD);
+  for(let i=0;i<L.X.length;i++){let x=L.X[i],y=L.Y[i],z=L.Z[i];const x2=x*cy-z*sy;z=x*sy+z*cy;x=x2;const y2=y*cp-z*sp;z=y*sp+z*cp;y=y2;L['화면X'].push(Math.round(x*300/(z+5)*10)/10);L['화면Y'].push(Math.round(y*300/(z+5)*10)/10)}},
+ tick(S){const k=S.keys,v=S.vars;v.yaw+=((k.right?1:0)-(k.left?1:0))*3;v.pitch+=((k.up?1:0)-(k.down?1:0))*3;GAMES.engine3d.calc(S);if(S.t%6===0&&S.onList)S.onList()},
+ draw(S,g){g.fillStyle='#FFFFFF';g.fillRect(0,0,W,H);g.strokeStyle='#F0F2F7';for(let i=0;i<=W;i+=40){g.beginPath();g.moveTo(i,0);g.lineTo(i,H);g.stroke()}for(let i=0;i<=H;i+=40){g.beginPath();g.moveTo(0,i);g.lineTo(W,i);g.stroke()}
+  const L=S.lists,sx=L['화면X'],sy=L['화면Y'];g.lineWidth=3;g.lineCap='round';
+  L['선A'].forEach((a,j)=>{const b=L['선B'][j];g.strokeStyle=`hsl(${j*30},80%,50%)`;g.beginPath();g.moveTo(S.px(sx[a-1]),S.py(sy[a-1]));g.lineTo(S.px(sx[b-1]),S.py(sy[b-1]));g.stroke()});
+  g.lineWidth=1;g.font='bold 11px "Gothic A1",sans-serif';g.textAlign='center';g.textBaseline='middle';
+  sx.forEach((x,i)=>{g.fillStyle='#141B2E';g.beginPath();g.arc(S.px(x),S.py(sy[i]),8,0,Math.PI*2);g.fill();g.fillStyle='#fff';g.fillText(i+1,S.px(x),S.py(sy[i]))});
+  S.monitors([['yaw',S.vars.yaw],['pitch',S.vars.pitch]])},
+ result:S=>`yaw ${S.vars.yaw}° · pitch ${S.vars.pitch}°`}
+});
+
+/* ===== 화면 만들기 ===== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(){try{return JSON.parse(localStorage.getItem('sgq-v1')||'{}')}catch(e){return{}}},set(v){try{localStorage.setItem('sgq-v1',JSON.stringify(v))}catch(e){}}};
+const P=Object.assign({done:{},chal:{},notes:{}},store.get());
+const save=()=>store.set(P);
+const RANKS=[[0,'코딩 새싹'],[400,'스프라이트 조련사'],[900,'복제본 공장장'],[1400,'변수 마법사'],[2000,'리스트 탐험가'],[2400,'게임 마스터']];
+const xpOf=L=>L.boss?200:100;
+const TOTAL=LEVELS.reduce((a,L)=>a+xpOf(L),0);
+const starStr=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+const tagHtml=c=>`<span class="tag ${c[1]||''}">${c[0]}</span>`;
+const KEYLABEL={f:'F',space:'스페이스',left:'←',right:'→',up:'↑',down:'↓','1':'1','2':'2','3':'3','4':'4'};
+
+function updateXP(){const xp=LEVELS.reduce((a,L)=>a+(P.done[L.id]?xpOf(L):0),0);let rank=RANKS[0][1];RANKS.forEach(([v,n])=>{if(xp>=v)rank=n});
+  $('#xpNum').textContent=`${xp} / ${TOTAL} XP`;$('#xpRank').textContent=rank;$('#xpFill').style.width=(xp/TOTAL*100)+'%';
+  const n=Object.values(P.done).filter(Boolean).length;$('#xpCount').textContent=`클리어 ${n} / ${LEVELS.length}`}
+
+/* --- 좌표 탐험기 (히어로) --- */
+function coordExplorer(){const cv=$('#coord');const g=cv.getContext('2d');cv.width=960;cv.height=720;g.setTransform(2,0,0,2,0,0);let p={x:120,y:-60};
+  const draw=()=>{g.fillStyle='#FFFFFF';g.fillRect(0,0,480,360);g.strokeStyle='#E5EAF3';for(let x=0;x<=480;x+=40){g.beginPath();g.moveTo(x,0);g.lineTo(x,360);g.stroke()}for(let y=0;y<=360;y+=40){g.beginPath();g.moveTo(0,y);g.lineTo(480,y);g.stroke()}
+   g.strokeStyle='#9AA6BE';g.lineWidth=2;g.beginPath();g.moveTo(0,180);g.lineTo(480,180);g.moveTo(240,0);g.lineTo(240,360);g.stroke();g.lineWidth=1;
+   g.fillStyle='#4A5570';g.font='bold 12px "Gothic A1",sans-serif';g.textAlign='left';g.fillText('x: -240',6,172);g.textAlign='right';g.fillText('x: 240',474,172);g.textAlign='center';g.fillText('y: 180',272,16);g.fillText('y: -180',276,352);g.fillText('(0, 0)',268,198);
+   const X=p.x+240,Y=180-p.y;g.setLineDash([4,4]);g.strokeStyle='#FF7A1A';g.beginPath();g.moveTo(X,180);g.lineTo(X,Y);g.moveTo(240,Y);g.lineTo(X,Y);g.stroke();g.setLineDash([]);
+   const e=emoji('🐱',40);g.drawImage(e,X-e.width/2,Y-e.height/2);
+   g.fillStyle='#141B2E';rr(g,Math.min(X+18,360),Math.max(Y-40,6),112,28,8);g.fill();g.fillStyle='#fff';g.textAlign='center';g.font='bold 13px "Gothic A1",sans-serif';g.fillText(`x: ${p.x}  y: ${p.y}`,Math.min(X+18,360)+56,Math.max(Y-40,6)+18)};
+  const mv=e=>{const r=cv.getBoundingClientRect();p={x:Math.round(clamp((e.clientX-r.left)/r.width*480-240,-240,240)),y:Math.round(clamp(180-(e.clientY-r.top)/r.height*360,-180,180))};draw()};
+  cv.addEventListener('pointermove',mv);cv.addEventListener('pointerdown',mv);draw();window.__coordDraw=draw;
+  setTimeout(draw,600);}
+
+/* --- 레벨 지도 --- */
+function renderMap(){let h='',tier=0;LEVELS.forEach(L=>{if(L.tier!==tier){tier=L.tier;h+=`<div class="tier">${TIERS[tier]}</div>`}
+  h+=`<button class="lvcard${CUR&&CUR.id===L.id?' sel':''}" data-id="${L.id}" aria-label="레벨 ${L.no} ${L.title}">${P.done[L.id]?'<span class="done">CLEAR</span>':''}
+   <div class="top"><span class="lv">LV ${String(L.no).padStart(2,'0')}</span><span class="stars" aria-label="난이도 ${L.stars}">${starStr(L.stars)}</span></div>
+   <div class="ico" aria-hidden="true">${L.icon}</div><div class="t">${L.title}</div><div class="tags">${L.concepts.map(tagHtml).join('')}</div></button>`});
+  $('#map').innerHTML=h;$$('#map .lvcard').forEach(b=>b.onclick=()=>{openLevel(b.dataset.id,true)})}
+
+/* --- 개념 도장 --- */
+function renderDojo(){
+ $('#dojo').innerHTML=`
+ <div class="card">
+  <h3><span class="k" style="background:var(--c-variables)">VAR</span>변수: 이름표가 붙은 상자</h3>
+  <p class="desc">변수는 <b>숫자나 글자 하나를 담아 두는 상자</b>예요. 상자에 "점수"라고 이름표를 붙이면 게임 내내 그 이름으로 값을 꺼내 쓰고 바꿀 수 있어요. 아래 블록을 눌러 상자 속 값이 어떻게 바뀌는지 보세요.</p>
+  <div class="demo"><div class="split"><div id="varSvg"></div><div>
+   <div class="varmon" aria-live="polite">점수 <span class="val" id="varVal">0</span></div>
+   <div class="btns" style="flex-direction:column;align-items:flex-start">
+    <button class="bblk" style="background:var(--c-variables)" data-v="set0">점수 을(를) 0 로 정하기</button>
+    <button class="bblk" style="background:var(--c-variables)" data-v="add1">점수 을(를) 1 만큼 바꾸기</button>
+    <button class="bblk" style="background:var(--c-variables)" data-v="sub1">점수 을(를) -1 만큼 바꾸기</button>
+    <button class="bblk" style="background:var(--c-variables)" data-v="x2">점수 을(를) (점수 × 2) 로 정하기</button></div></div></div>
+   <p class="hint" id="varLog">"정하기"는 값을 <b>바꿔치기</b>, "바꾸기"는 지금 값에 <b>더하기</b>예요.</p></div>
+  <p class="desc"><b>변수 만들기 창의 두 가지 선택</b><br>· 모든 스프라이트에서 사용: 게임 전체가 함께 쓰는 값 (점수, 시간)<br>· 이 스프라이트에서만 사용: 스프라이트마다, <b>복제본마다 따로</b> 가지는 값 (적 하나하나의 체력)</p>
+ </div>
+ <div class="card">
+  <h3><span class="k" style="background:var(--c-control)">CLONE</span>복제본: 붕어빵 틀 공장</h3>
+  <p class="desc">원본 스프라이트는 <b>틀</b>, 복제본은 틀로 찍어 낸 <b>붕어빵</b>이에요. 복제본은 원본의 코드를 똑같이 가지지만 각자 따로 움직여요. "나 자신 복제하기"를 여러 번 눌러 보고, 복제본을 클릭해서 지워 보세요.</p>
+  <div class="demo"><div id="cloneStage" style="position:relative;height:190px;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden">
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:34px;opacity:.28" title="원본 (숨김)">🍊</div>
+    <div style="position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);font-size:11px;color:var(--ink-2);font-weight:700">원본 (숨김)</div></div>
+   <div class="btns"><button class="bblk" style="background:var(--c-control)" id="cAdd">나 자신 복제하기</button><button class="bblk" style="background:var(--c-control)" id="cFall">복제되었을 때: 아래로 떨어지기</button><button class="btn sm" id="cClear">모두 지우기</button></div>
+   <p class="hint" aria-live="polite" id="cInfo">복제본 0개 · 스크래치는 최대 300개까지 만들 수 있어요</p></div>
+ </div>
+ <div class="card big">
+  <h3><span class="k" style="background:var(--c-list)">LIST</span>리스트: 번호가 붙은 서랍장</h3>
+  <div class="split" style="margin-top:8px">
+   <div><p class="desc">변수 상자에는 값이 <b>딱 하나</b> 들어가요. 과일 10개, 뱀 몸통 위치 50개처럼 <b>같은 종류의 값이 여러 개</b>라면 변수 50개 대신 <b>리스트 1개</b>를 써요. 리스트의 칸에는 1, 2, 3… <b>번호(인덱스)</b>가 붙어 있고, 번호로 꺼내고 넣고 지워요.</p>
+    <div class="demo"><label for="liVal" class="hint" style="margin:0">넣을 값</label> <input type="text" id="liVal" value="수박" maxlength="12" style="width:120px">
+     <div class="btns" style="flex-direction:column;align-items:flex-start">
+      <button class="bblk" style="background:var(--c-list)" data-l="add">(값) 을(를) [과일] 에 추가하기 → 맨 뒤</button>
+      <button class="bblk" style="background:var(--c-list)" data-l="ins1">(값) 을(를) [과일] 리스트의 (1) 번째에 넣기 → 맨 앞</button>
+      <button class="bblk" style="background:var(--c-list)" data-l="del1">[과일] 리스트의 (1) 번째 항목 삭제하기</button>
+      <button class="bblk" style="background:var(--c-list)" data-l="dellast">[과일] 리스트의 (마지막) 항목 삭제하기</button>
+      <button class="bblk" style="background:var(--c-list)" data-l="clear">[과일] 의 항목을 모두 삭제하기</button></div>
+     <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <span class="rep cat-L" style="color:#fff;font-weight:700;font-size:13px">[과일] 의 길이</span> = <b id="liLen" style="font-size:20px">3</b>
+      <span style="width:12px"></span>
+      <span class="rep cat-L" style="color:#fff;font-weight:700;font-size:13px">[과일] 리스트의 <input type="number" id="liIdx" value="2" min="1" style="width:52px;border-radius:999px;border:0;padding:1px 6px"> 번째 항목</span> = <b id="liItem" style="font-size:20px">바나나</b>
+     </div></div></div>
+   <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+    <div class="listmon" id="fruitMon" aria-live="polite"></div>
+    <div id="listSvg"></div>
+    <p class="hint">스크래치와 엔트리의 리스트는 <b>1번부터</b> 세어요. 보스 레벨 21(뱀 게임)과 22(3D 상자)에서 리스트를 본격적으로 써요.</p></div>
+  </div></div>
+ <div class="card">
+  <h3><span class="k" style="background:var(--c-events)">MSG</span>신호: 스프라이트끼리 방송하기</h3>
+  <p class="desc">한 스프라이트가 <b>신호를 보내면</b>, 그 신호를 기다리던 <b>모든</b> 스프라이트가 동시에 움직여요. 레벨 5(타자 휘두르기), 10(게임끝), 16(start / game over)에서 써요.</p>
+  <div class="demo" id="bcDemo"><div id="bcSvg"></div><div class="btns"><button class="bblk" style="background:var(--c-events)" id="bcBtn">게임끝 신호 보내기</button></div><p class="hint" id="bcLog" aria-live="polite">버튼을 눌러 보세요.</p></div>
+ </div>
+ <div class="card">
+  <h3><span class="k" style="background:var(--c-operators)">RND</span>난수: 컴퓨터 주사위</h3>
+  <p class="desc">게임이 매번 다르게 느껴지는 비밀이에요. 적이 나오는 위치, 방향, 시간에 난수를 넣어요. 두 숫자가 모두 정수면 정수만, <b>소수점이 있으면 소수</b>도 나와요.</p>
+  <div class="demo"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px"><span class="rep cat-o" style="color:#fff;font-weight:700;font-size:13px">(<input type="text" id="rA" value="1" style="width:46px;border:0;border-radius:999px;padding:0 6px;min-width:0">) 부터 (<input type="text" id="rB" value="6" style="width:46px;border:0;border-radius:999px;padding:0 6px;min-width:0">) 사이의 난수</span><button class="btn sm pri" id="rBtn">굴리기</button></div>
+   <div style="display:flex;align-items:center;gap:16px;margin-top:10px"><div id="rOut" style="font-family:var(--f-display);font-size:48px;min-width:80px;text-align:center" aria-live="polite">?</div><div class="hint" id="rHist">기록: 없음</div></div></div>
+ </div>`;
+ $('#varSvg').innerHTML=varBoxSvg(0);
+ let vv=0;$$('[data-v]').forEach(b=>b.onclick=()=>{const k=b.dataset.v,old=vv;if(k==='set0')vv=0;if(k==='add1')vv+=1;if(k==='sub1')vv-=1;if(k==='x2')vv*=2;$('#varVal').textContent=vv;$('#varSvg').innerHTML=varBoxSvg(vv);$('#varLog').innerHTML=`${old} → <b>${vv}</b> (${b.textContent})`});
+ /* 복제본 */
+ const cs=$('#cloneStage');let clones=[],falling=false,raf=0;
+ const info=()=>{$('#cInfo').textContent=`복제본 ${clones.length}개 · 스크래치는 최대 300개까지 만들 수 있어요`};
+ $('#cAdd').onclick=()=>{if(clones.length>=40)return;const el=document.createElement('button');el.className='clone-el';el.textContent='🍊';const c={el,x:10+Math.random()*80,y:8+Math.random()*60,v:1+Math.random()*1.5};el.style.left=c.x+'%';el.style.top=c.y+'%';el.title='클릭하면 이 복제본 삭제하기';el.setAttribute('aria-label','복제본, 클릭하면 삭제');el.onclick=()=>{el.remove();clones=clones.filter(z=>z!==c);info()};cs.appendChild(el);clones.push(c);info()};
+ $('#cFall').onclick=()=>{falling=!falling;$('#cFall').textContent=falling?'멈추기':'복제되었을 때: 아래로 떨어지기';cancelAnimationFrame(raf);const step=()=>{clones.forEach(c=>{c.y+=c.v*.6;if(c.y>92){c.el.remove();c.dead=true}else c.el.style.top=c.y+'%'});clones=clones.filter(c=>!c.dead);info();if(falling)raf=requestAnimationFrame(step)};if(falling)raf=requestAnimationFrame(step)};
+ $('#cClear').onclick=()=>{clones.forEach(c=>c.el.remove());clones=[];info()};
+ for(let i=0;i<3;i++)$('#cAdd').onclick();
+ /* 리스트 */
+ let fruits=['사과','바나나','딸기'],lastNew=-1;
+ const lr=()=>{const m=$('#fruitMon');m.innerHTML=`<div class="h">과일</div><ol>${fruits.map((f,i)=>`<li class="${i===lastNew?'new':''}"><span class="i">${i+1}</span><span class="v">${escH(f)}</span></li>`).join('')||'<li class="hint" style="padding:6px">(비어 있음)</li>'}</ol><div class="f"><span>+</span><span>길이 ${fruits.length}</span></div>`;$('#liLen').textContent=fruits.length;const idx=parseInt($('#liIdx').value,10);$('#liItem').textContent=(idx>=1&&idx<=fruits.length)?fruits[idx-1]:'(없음)'};
+ $$('[data-l]').forEach(b=>b.onclick=()=>{const v=($('#liVal').value||'').trim()||'?';const k=b.dataset.l;lastNew=-1;if(k==='add'){fruits.push(v);lastNew=fruits.length-1}if(k==='ins1'){fruits.unshift(v);lastNew=0}if(k==='del1')fruits.shift();if(k==='dellast')fruits.pop();if(k==='clear')fruits=[];lr()});
+ $('#liIdx').oninput=lr;lr();$('#listSvg').innerHTML=SVGS.list();
+ /* 신호 */
+ $('#bcSvg').innerHTML=SVGS.broadcast();
+ $('#bcBtn').onclick=()=>{const d=$('#bcDemo');d.classList.remove('flash');void d.offsetWidth;d.classList.add('flash');$('#bcLog').textContent='📢 게임끝! → 🐱 고양이: "게임끝"이라고 말하기 · 🎵 음악: 멈추기 (동시에 실행)'};
+ /* 난수 */
+ const hist=[];$('#rBtn').onclick=()=>{const a=parseFloat($('#rA').value),b=parseFloat($('#rB').value);if(isNaN(a)||isNaN(b)){$('#rOut').textContent='?';return}let r=rnd(a,b);if(!Number.isInteger(r))r=Math.round(r*100)/100;$('#rOut').textContent=r;hist.unshift(r);$('#rHist').textContent='기록: '+hist.slice(0,10).join(', ')};
+}
+function varBoxSvg(v){return `<svg viewBox="0 0 160 130" role="img" aria-label="변수 상자 점수 ${v}"><rect x="20" y="40" width="120" height="78" rx="10" class="s-var"/><rect x="12" y="28" width="136" height="18" rx="5" class="s-acc"/><rect x="50" y="6" width="60" height="22" rx="4" class="s-panel k-ink" stroke-width="2"/>${T(80,22,'점수','t','middle',13)}${T(80,95,v,'tw','middle',36)}</svg>`}
+
+/* --- 레벨 학습지 --- */
+let CUR=null,STAGE=null;
+function openLevel(id,scroll){const L=LEVELS.find(x=>x.id===id)||LEVELS[0];CUR=L;renderMap();renderLevel(L);try{history.replaceState(null,'','#lv'+L.no)}catch(e){}if(scroll){$('#level').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}}
+function renderLevel(L){
+ if(STAGE){STAGE.destroy();STAGE=null}
+ const idx=LEVELS.indexOf(L),prev=LEVELS[idx-1],next=LEVELS[idx+1];
+ const ctrls=L.controls.filter(c=>c!=='mouse');
+ const mouseHint=L.controls.includes('mouse')?'<p class="hint">마우스로 조종해요. 휴대폰·태블릿은 무대를 손가락으로 끌어요.</p>':'';
+ const keyHint=ctrls.length?`<p class="hint">키보드로 조종해요 (${ctrls.map(k=>KEYLABEL[k]).join(' ')}). 휴대폰은 아래 버튼을 누르세요.</p>`:'';
+ const codeHtml=L.code.map(c=>`<div class="sprite-code"><div class="sp-label">스프라이트: <b>${c.sprite}</b></div><div class="scripts">${c.scripts.map(s=>renderScript(s,null)).join('')}</div></div>`).join('');
+ const chal=P.chal[L.id]||[];
+ $('#level').innerHTML=`<article class="level" aria-labelledby="lvTitle">
+ <div class="lv-head"><div class="big-ico" aria-hidden="true">${L.icon}</div><div class="meta">
+  <h2 id="lvTitle"><small>LEVEL ${String(L.no).padStart(2,'0')} · ${TIERS[L.tier]}</small>${L.title}</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px"><span class="stars" style="color:var(--accent);letter-spacing:2px" aria-label="난이도 ${L.stars}">${starStr(L.stars)}</span>${L.concepts.map(tagHtml).join('')}</div>
+  <p class="src">원본 영상: ${L.video}</p></div></div>
+ <div class="lv-grid">
+  <div style="min-width:0">
+   <h3 class="panel-t"><span class="n">1</span>실행해 보기</h3>
+   <div class="stage-frame"><div class="stage-bar"><button class="flag" id="gFlag" aria-label="초록 깃발: 시작">${FLAG_SVG}</button><button class="stop" id="gStop" aria-label="멈추기"><span></span></button>
+    <label class="hint" style="margin:0;display:flex;align-items:center;gap:4px"><input type="checkbox" id="gSnd" ${MUTE?'':'checked'}> 소리</label>
+    ${L.hard?`<label class="hint" style="margin:0;display:flex;align-items:center;gap:4px"><input type="checkbox" id="gHard"> 도전 모드: ${L.hard}</label>`:''}
+    <span class="name">${L.title}</span></div>
+    <canvas id="gCanvas" aria-label="${L.title} 실행화면"></canvas>
+    ${ctrls.length?`<div class="ctrls">${ctrls.map(k=>`<button class="key" data-k="${k}" aria-label="${KEYLABEL[k]} 키">${KEYLABEL[k]}</button>`).join('')}</div>`:''}</div>
+   ${keyHint}${mouseHint}
+   ${L.listHint?`<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px" id="snakeLists"></div><p class="hint">${L.listHint}</p>`:''}
+   <div class="mission" style="margin-top:14px"><b>미션</b> ${L.mission}<ul>${L.rules.map(r=>`<li>${r}</li>`).join('')}</ul></div>
+  </div>
+  <div style="min-width:0">
+   <h3 class="panel-t"><span class="n">2</span>등장하는 스프라이트</h3>
+   <div class="sprites">${L.sprites.map(([e,n,r])=>`<div class="sprite"><span class="e" aria-hidden="true">${e}</span><div><b>${n}</b><span>${r}</span></div></div>`).join('')}</div>
+   <h3 class="panel-t" style="margin-top:18px"><span class="n">3</span>코드 읽기</h3>
+   <div class="codebox">${codeHtml}</div>
+   <ol class="explain">${L.explain.map((t,i)=>`<li><span class="badge">${i+1}</span><span>${t}</span></li>`).join('')}</ol>
+  </div></div>
+ <div class="key-idea"><div class="kh">4 · 핵심 개념 — ${L.idea.t}</div><div class="kb"><p>${L.idea.d}</p>${SVGS[L.idea.svg]?SVGS[L.idea.svg]():''}</div></div>
+ <div class="lv-bottom">
+  <div style="min-width:0">
+   <h3 class="panel-t"><span class="n">5</span>빈칸 채우기 <span class="hint" style="font-family:var(--f-body);margin:0">스프라이트: ${L.blank.sprite}</span></h3>
+   <div class="codebox" id="blankBox"><div class="scripts">${renderScript(L.blank.dsl,{opts:L.blank.opts})}</div></div>
+   <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px"><button class="btn pri" id="blankCheck">정답 확인</button><button class="btn" id="blankShow">정답 보기</button><span class="result" id="blankRes" aria-live="polite"></span></div>
+   <h3 class="panel-t" style="margin-top:22px"><span class="n">6</span>퀴즈</h3>
+   <div class="quiz">${L.quiz.map((q,qi)=>`<div class="q" data-q="${qi}"><p>Q${qi+1}. ${q.q}</p><div class="opts">${q.o.map((o,oi)=>`<button data-o="${oi}">${String.fromCharCode(9312+oi)} ${escH(o)}</button>`).join('')}</div><p class="why" hidden></p></div>`).join('')}</div>
+  </div>
+  <div style="min-width:0">
+   <h3 class="panel-t"><span class="n">7</span>엔트리로 바꾸면?</h3>
+   <div style="overflow-x:auto"><table class="entry-t"><thead><tr><th>스크래치 블록</th><th>엔트리 블록</th></tr></thead><tbody>${L.entry.map(([a,b])=>`<tr><td>${escH(a)}</td><td>${escH(b)}</td></tr>`).join('')}</tbody></table></div>
+   <h3 class="panel-t" style="margin-top:22px"><span class="n">8</span>도전 과제</h3>
+   <ul class="chal">${L.challenge.map((c,ci)=>`<li><input type="checkbox" id="ch-${L.id}-${ci}" ${chal[ci]?'checked':''}><label for="ch-${L.id}-${ci}">${c}</label></li>`).join('')}</ul>
+   <h3 class="panel-t" style="margin-top:22px"><span class="n">9</span>생각 노트</h3>
+   <label for="note-${L.id}" class="hint" style="display:block;margin:0 0 6px">이 게임에서 내가 바꿔 보고 싶은 규칙은? 어떤 블록을 고치면 될까?</label>
+   <textarea id="note-${L.id}" placeholder="예) 똥이 3개 닿아야 끝나게 하고 싶다 → 변수 '목숨'을 만들어서…">${escH(P.notes[L.id]||'')}</textarea>
+  </div></div>
+ <div class="clear-row"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><button class="btn pri" id="clearBtn">${P.done[L.id]?'✔ 클리어 완료 (취소하려면 누르기)':`레벨 클리어! +${xpOf(L)} XP`}</button></div>
+  <div class="pager">${prev?`<button class="btn" data-go="${prev.id}">← LV ${prev.no}</button>`:''}${next?`<button class="btn" data-go="${next.id}">LV ${next.no} →</button>`:''}</div></div>
+ </article>`;
+ /* 게임 */
+ const S=new Stage($('#gCanvas'),GAMES[L.game],{});STAGE=S;
+ const syncHard=()=>{const h=$('#gHard');S.opts.hard=!!(h&&h.checked)};
+ $('#gFlag').onclick=()=>{syncHard();S.start();$('#gFlag').blur()};$('#gStop').onclick=()=>S.stop();
+ $('#gSnd').onchange=e=>{MUTE=!e.target.checked};
+ $$('.ctrls .key').forEach(b=>{const k=b.dataset.k;const on=e=>{e.preventDefault();Stage.active=S;if(!S.running&&!S.over&&S.t===0)S.start();S.keys[k]=true;b.classList.add('down')};const off=()=>{S.keys[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off)});
+ if(L.listHint){const draw=()=>{const box=$('#snakeLists');if(!box)return;const Ls=S.lists||{};const mon=(n,a)=>`<div class="listmon"><div class="h">${n}</div><ol>${a.map((v,i)=>`<li class="${i===0&&L.id==='snake'?'new':''}"><span class="i">${i+1}</span><span class="v">${typeof v==='number'?Math.round(v*10)/10:v}</span></li>`).join('')||'<li class="hint" style="padding:6px">(비어 있음)</li>'}</ol><div class="f"><span>+</span><span>길이 ${a.length}</span></div></div>`;box.innerHTML=Object.keys(Ls).map(k=>mon(k,Ls[k])).join('')};S.onList=draw;S.onState=draw;draw()}
+ /* 빈칸 */
+ const sels=$$('#blankBox .blank-sel');
+ $('#blankCheck').onclick=()=>{let ok=0;sels.forEach(s=>{const good=s.value===L.blank.ans[s.dataset.k];s.classList.toggle('ok',good);s.classList.toggle('no',!good);if(good)ok++});const r=$('#blankRes');r.textContent=ok===sels.length?`${sels.length}개 모두 정답! 🎉`:`${sels.length}개 중 ${ok}개 정답. 빨간 칸을 다시 생각해 봐요.`;r.className='result '+(ok===sels.length?'ok':'no')};
+ $('#blankShow').onclick=()=>{sels.forEach(s=>{s.value=L.blank.ans[s.dataset.k];s.classList.add('ok');s.classList.remove('no')});$('#blankRes').textContent='정답을 채웠어요. 왜 이 값인지 설명해 볼까요?';$('#blankRes').className='result'};
+ /* 퀴즈 */
+ $$('.quiz .q').forEach(qd=>{const q=L.quiz[+qd.dataset.q];$$('button',qd).forEach(b=>b.onclick=()=>{const o=+b.dataset.o;$$('button',qd).forEach(x=>x.classList.remove('ok','no'));b.classList.add(o===q.a?'ok':'no');if(o!==q.a)$$('button',qd)[q.a].classList.add('ok');const w=$('.why',qd);w.hidden=false;w.innerHTML=(o===q.a?'<b style="color:var(--good)">정답!</b> ':'<b style="color:var(--bad)">아쉬워요.</b> ')+q.w})});
+ /* 도전 · 노트 · 클리어 */
+ L.challenge.forEach((c,ci)=>{$('#ch-'+L.id+'-'+ci).onchange=e=>{P.chal[L.id]=P.chal[L.id]||[];P.chal[L.id][ci]=e.target.checked;save()}});
+ let nt=0;$('#note-'+L.id).oninput=e=>{clearTimeout(nt);nt=setTimeout(()=>{P.notes[L.id]=e.target.value;save()},400)};
+ $('#clearBtn').onclick=()=>{P.done[L.id]=!P.done[L.id];save();updateXP();renderMap();$('#clearBtn').textContent=P.done[L.id]?'✔ 클리어 완료 (취소하려면 누르기)':`레벨 클리어! +${xpOf(L)} XP`};
+ $$('[data-go]').forEach(b=>b.onclick=()=>openLevel(b.dataset.go,true));
+}
+
+/* --- 블록 사전 --- */
+function renderDict(){$('#dict').innerHTML=`<div class="gloss"><table class="entry-t"><thead><tr><th>분류</th><th>스크래치 블록</th><th>엔트리 블록</th></tr></thead><tbody>${GLOSSARY.map(([k,c,s,e])=>`<tr><td><span class="tag">${k}</span></td><td>${miniBlock(c,s)}</td><td>${escH(e)}</td></tr>`).join('')}</tbody></table></div>`}
+
+/* --- 시작 --- */
+function boot(){
+ coordExplorer();renderDojo();renderDict();
+ const m=(location.hash||'').match(/^#lv(\d+)$/);const start=m?LEVELS.find(L=>L.no===+m[1]):LEVELS[0];
+ CUR=start||LEVELS[0];renderMap();renderLevel(CUR);updateXP();
+ if(m)setTimeout(()=>$('#level').scrollIntoView({block:'start'}),50);
+}
+boot();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{STAGE&&STAGE.render();window.__coordDraw&&window.__coordDraw()});
+
+</script>
+
+</body></html>
