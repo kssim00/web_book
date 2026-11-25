@@ -423,7 +423,7 @@ addEventListener('blur', () => { for (const k in keysDown) delete keysDown[k]; i
 /* 보드판: 칸에서 칸으로 통통 뛰기 */
 function hopY() { let i = 0; while (i < N - 2 && U[i + 1] < hu) i++; const f = (hu - U[i]) / (U[i + 1] - U[i]); return Math.sin(Math.PI * Math.max(0, Math.min(1, f))) * 2.6; }
 /* 보드판 카메라: 판은 늘 가만히 (2026-11-24 원장님: 말이 움직일 때 판이 같이 움직이면 안 됨). 보드판은 판 전체가 보이는 화면에서 시작하고, 가까이 당겨도 말을 따라가지 않음. '내 위치'를 누를 때만 말 쪽으로 옮김 */
-const camF = new T.Vector3(), camB = new T.Vector3(); let camGo = false, camF0 = true;
+const camF = new T.Vector3(), camB = new T.Vector3(); let camGo = false, camF0 = true; let camYaw = null;
 function camFocus(moving) {
   camB.set(hero.position.x, HEIGHT(hero.position.x, hero.position.z) + .95, hero.position.z);
   if (camF0 || zoom > .97) { camF.copy(camB); camF0 = false; camGo = false; }   /* 판 전체를 볼 때는 초점을 말에 맞춰 둠(화면은 안 변함) → 거기서 당기면 말 쪽으로 확대 */
@@ -485,6 +485,19 @@ function frame() {
   { const hp = hpos, cs = Math.cos(yaw), sn = Math.sin(yaw), rot = (v, c) => { const dx = v.x - c.x, dz = v.z - c.z; v.x = c.x + dx * cs - dz * sn; v.z = c.z + dx * sn + dz * cs; };
     fP.y = hp.y + (VIEW === 'C' ? 30 : 9) * pit; const k = 1 / Math.sqrt(pit); fP.x = hp.x + (fP.x - hp.x) * k; fP.z = hp.z + (fP.z - hp.z) * k; rot(fP, hp); rot(fL, hp); rot(oP, oL); }
   cpT.copy(fP).lerp(oP, z); clT.copy(fL).lerp(oL, z);
+  /* 바닷길 카메라(2026-11-26 원장님: 휠을 굴리면 위에서 내려다보는 시점이 너무 극단적 → 로블록스처럼): 탐험가를 중심으로 도는 카메라. 휠 = 보는 방향 그대로 거리만 멀어지고, 각도는 조금만 높아짐.
+     멀리 볼 때는 걸어도 화면이 돌지 않고(방향 고정), 끝까지 멀어지면 초점이 바다 가운데로 천천히 옮겨 가 전체가 보임. 보드판(C)은 그대로 */
+  if (VIEW !== 'C') {
+    const sm = (a, b, x) => { x = Math.max(0, Math.min(1, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
+    const hy = Math.atan2(cd.x, cd.z), far = sm(.25, .8, zoom);
+    if (snap || camYaw === null) camYaw = hy; else { const dl = ((hy - camYaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI; camYaw += dl * Math.min(1, dt * 2.5) * (1 - far); }
+    const ang = camYaw - yaw, fx = Math.sin(ang), fz = Math.cos(ang);
+    const el = Math.max(.14, Math.min(1.3, (.42 + .3 * sm(.2, 1, zoom)) * Math.pow(pit, .9)));
+    const d = 17.5 * Math.pow(span * 1.15 / 17.5, zoom), toC = sm(.6, 1, zoom) * .85, off = cardOn ? Math.max(7, d * .11) : 0;
+    const tg = hero.position.clone().add(new T.Vector3(0, 2, 0)).lerp(CENTER, toC).add(new T.Vector3(-fz * off, 0, fx * off));
+    cpT.set(tg.x - fx * Math.cos(el) * d, tg.y + Math.sin(el) * d, tg.z - fz * Math.cos(el) * d);
+    clT.set(tg.x + fx * 6 * (1 - far), tg.y, tg.z + fz * 6 * (1 - far));
+  }
   if (snap) { cp.copy(cpT); cl.copy(clT); snap = false; } else { cp.lerp(cpT, Math.min(1, dt * 5)); cl.lerp(clT, Math.min(1, dt * 5)); }
   cam.position.copy(cp); cam.lookAt(cl);
   const ni = nowIdx();
