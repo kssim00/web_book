@@ -431,6 +431,14 @@ ul.desc-list{font-size:1.02rem; color:var(--ink); line-height:1.9; margin:8px 0 
 @media (max-width:640px){
   .summary-grid.three, .star-grid, .compare-grid, .venn-grid{grid-template-columns:1fr;}
 }
+/* 교사용 답지: 선생님 모드(학습홈_admin)일 때만 빨간 답이 보인다 */
+.t-ans{margin:10px 0 4px;padding:10px 16px;border:1.5px dashed #e03131;border-radius:10px;background:#fff5f5;text-align:left}
+.t-ans-label{color:#e03131;font-size:12px!important;font-weight:800}
+.t-ans pre{margin:4px 0 0;padding:0;border:0;background:transparent;color:#e03131;font-family:Consolas,'Courier New',monospace;font-size:16px;line-height:1.6;white-space:pre-wrap;tab-size:8;overflow:visible}
+.t-ans-inline{margin-left:6px;color:#e03131!important;font-weight:800;white-space:nowrap}
+.t-ans-line{margin-top:8px;color:#e03131!important;font-weight:800;white-space:pre-wrap}
+body.teacher-mode .t-correct,body.teacher-mode .t-correct *{color:#e03131!important;font-weight:800}
+body.teacher-mode .t-correct::after{content:" ← 정답";font-size:13px;color:#e03131}
 </style>
 </head>
 <body>
@@ -989,5 +997,23 @@ function resetQuiz(key){
 if (typeof QUIZ !== 'undefined') Object.keys(QUIZ).forEach(buildQuiz);
 </script>
 
+<script type="application/json" id="t-answers">{"mark": [{"q": "input[name=\"c1q0\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c1q1\"]", "i": 3, "up": "label"}, {"q": "input[name=\"c1q2\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c1q3\"]", "i": 1, "up": "label"}, {"q": "input[name=\"c2q0\"]", "i": 1, "up": "label"}, {"q": "input[name=\"c2q1\"]", "i": 0, "up": "label"}, {"q": "input[name=\"c2q2\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c2q3\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c3q0\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c3q1\"]", "i": 3, "up": "label"}, {"q": "input[name=\"c3q2\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c3q3\"]", "i": 1, "up": "label"}, {"q": "input[name=\"c3q4\"]", "i": 1, "up": "label"}, {"q": "input[name=\"c3q5\"]", "i": 0, "up": "label"}, {"q": "input[name=\"c3q6\"]", "i": 1, "up": "label"}, {"q": "input[name=\"c3q7\"]", "i": 1, "up": "label"}, {"q": "input[name=\"c3q8\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c3q9\"]", "i": 1, "up": "label"}, {"q": "input[name=\"c3q10\"]", "i": 3, "up": "label"}, {"q": "input[name=\"c3q11\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c3q12\"]", "i": 0, "up": "label"}, {"q": "input[name=\"c3q13\"]", "i": 2, "up": "label"}, {"q": "input[name=\"c3q14\"]", "i": 1, "up": "label"}], "blanks": {"q1-a": "C", "q1-b": "25", "q1-c": "a"}, "text": [{"q": ".practice", "has": "ord() 값 직접 확인", "t": "65 / 90 / 48 / 32"}, {"q": ".practice", "has": "내 이름 이니셜", "t": "예) print(ord('J')) → 74"}, {"q": ".practice", "has": "결과 예측 후 실행", "t": "C / d / 5"}], "code": [{"q": ".practice", "has": "소문자 a~z 출력하기", "code": "for i in range(ord('a'), ord('z') + 1):\n    print(chr(i), end=\" \")"}, {"q": ".practice", "has": "문자열을 번호 목록으로", "code": "word = \"Python\"\nfor char in word:\n    print(char, \"→\", ord(char))"}, {"q": ".practice", "has": "대문자를 소문자로", "code": "word = 'PYTHON'\nfor char in word:\n    print(chr(ord(char) + 32), end=\"\")"}, {"q": ".challenge-box", "has": "준영이의 키보드", "code": "word = input(\"단어 입력: \")\nresult = \"\"\nfor char in word:\n    if 65 <= ord(char) <= 90:\n        result += chr(ord(char) + 32)\n    else:\n        result += char\nprint(result)"}, {"q": ".challenge-box", "has": "각 문자의 번호 목록", "code": "chars = ['A', 'B', 'C', 'a', '0']\nfor char in chars:\n    print(char, \"→\", ord(char))"}, {"q": ".challenge-box", "has": "카이사르 암호 만들기", "code": "word = input(\"단어 입력: \")\nn = int(input(\"밀 칸수 입력: \"))\nresult = \"\"\nfor char in word:\n    result += chr((ord(char) - 65 + n) % 26 + 65)\nprint(result)"}, {"q": ".challenge-box", "has": "대문자 개수 세기", "code": "text = \"Hello World\"\ncount = 0\nfor char in text:\n    if 65 <= ord(char) <= 90:\n        count += 1\nprint(\"대문자 개수:\", count)"}, {"q": ".challenge-box", "has": "Z부터 A까지 역순", "code": "for i in range(ord('Z'), ord('A') - 1, -1):\n    print(chr(i), end=\" \")"}, {"q": ".challenge-box", "has": "암호 해독기 만들기", "code": "text = input(\"문장 입력: \")\nn = int(input(\"밀 칸수: \"))\nresult = \"\"\nfor char in text:\n    code = ord(char)\n    if 65 <= code <= 90:\n        result += chr((code - 65 + n) % 26 + 65)\n    elif 97 <= code <= 122:\n        result += chr((code - 97 + n) % 26 + 97)\n    else:\n        result += char\nprint(result)"}, {"q": ".challenge-box", "has": "비밀번호 조건 검사기", "code": "pw = input(\"비밀번호 입력: \")\nlower = 0\ndigit = 0\nfor char in pw:\n    code = ord(char)\n    if 97 <= code <= 122:\n        lower += 1\n    elif 48 <= code <= 57:\n        digit += 1\nif 65 <= ord(pw[0]) <= 90 and lower >= 3 and digit >= 3 and 10 <= len(pw) <= 20:\n    print(\"조건에 부합합니다.\")\nelse:\n    print(\"조건에 부합하지 않습니다.\")"}]}</script>
+<script>
+/* 교사용 답지 */
+(function () {
+  var t = false; try { t = localStorage.getItem('학습홈_admin') === '1'; } catch (e) {}
+  if (!t) return;
+  document.body.classList.add('teacher-mode');
+  var D = {}; try { D = JSON.parse(document.getElementById('t-answers').textContent); } catch (e) {}
+  var q = function (m) { if (m.id) return document.getElementById(m.id); var l = document.querySelectorAll(m.q); if (m.has) l = Array.prototype.filter.call(l, function (e) { return e.textContent.indexOf(m.has) >= 0; }); return l[m.i || 0]; };
+  var el = function (tag, cls, txt) { var d = document.createElement(tag); d.className = cls; if (txt != null) d.textContent = txt; return d; };
+  document.querySelectorAll('input[type=radio][data-correct]').forEach(function (r) { var l = r.closest('label'); if (l) l.classList.add('t-correct'); });
+  document.querySelectorAll('details').forEach(function (d) { var s = d.querySelector('summary'); if (s && /정답/.test(s.textContent)) d.open = true; });
+  (D.mark || []).forEach(function (m) { var e = q(m); if (e && m.up) e = e.closest(m.up) || e.parentNode; if (e) e.classList.add('t-correct'); });
+  Object.keys(D.blanks || {}).forEach(function (id) { var e = document.getElementById(id); if (e) e.insertAdjacentElement('afterend', el('span', 't-ans-inline', '답: ' + D.blanks[id])); });
+  (D.text || []).forEach(function (m) { var e = q(m); if (e) e.appendChild(el('div', 't-ans-line', '정답: ' + m.t)); });
+  (D.code || []).forEach(function (m) { var e = q(m); if (!e) return; var d = el('div', 't-ans'); d.appendChild(el('div', 't-ans-label', m.label || '정답')); d.appendChild(el('pre', '', m.code)); if (m.after) e.insertAdjacentElement('afterend', d); else e.appendChild(d); });
+})();
+</script>
 </body>
 </html>

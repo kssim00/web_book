@@ -306,6 +306,14 @@
         .step-list li { counter-increment: lesson-step; margin: 8px 0; padding: 9px 12px 9px 42px; background: #f7f6ff; border-radius: 10px; position: relative; line-height: 1.65; }
         .step-list li::before { content: counter(lesson-step); position: absolute; left: 12px; top: 9px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: white; background: var(--accent); font-size: 13px; font-weight: 800; }
         @media (max-width: 640px) { .study-roadmap { padding: 18px; } }
+            /* 교사용 답지: 선생님 모드(학습홈_admin)일 때만 빨간 답이 보인다 */
+        .t-ans { margin: 10px 0 4px; padding: 10px 16px; border: 1.5px dashed #e03131; border-radius: 10px; background: #fff5f5; text-align: left; }
+        .t-ans-label { color: #e03131; font-size: 12px !important; font-weight: 800; }
+        .t-ans pre { margin: 4px 0 0; padding: 0; background: transparent; color: #e03131; font-family: Consolas, 'Courier New', monospace; font-size: 16px; line-height: 1.6; white-space: pre-wrap; tab-size: 8; }
+        .t-ans-inline { margin-left: 8px; color: #e03131; font-weight: 800; white-space: nowrap; }
+        .t-ans-line { margin-top: 8px; color: #e03131; font-weight: 800; }
+        body.teacher-mode .quiz-set-item .select-item.t-correct, body.teacher-mode .quiz-set-item .select-item.t-correct * { color: #e03131 !important; font-weight: 800; }
+        body.teacher-mode .quiz-set-item .select-item.t-correct::after { content: " ← 정답"; font-size: 13px; }
     </style>
 
 <style>
@@ -748,7 +756,29 @@ function highlightMissionAnswerCodes(){
   });
 }
 function selectOption(el){const box=el.closest('.box-green');if(!box||box.getAttribute('data-results-shown')==='true')return;const item=el.closest('.quiz-set-item');if(!item)return;item.querySelectorAll('.select-item').forEach(option=>option.classList.remove('selected'));el.classList.add('selected');}
-function checkQuiz(btn){const box=btn.closest('.box-green');if(!box)return;if(box.getAttribute('data-results-shown')==='true'){box.setAttribute('data-results-shown','false');btn.textContent='💯 채점하기';btn.style.backgroundColor='#212529';box.querySelectorAll('.select-item').forEach(option=>option.classList.remove('selected','correct','incorrect'));box.querySelectorAll('.feedback-msg,.score-display').forEach(el=>el.remove());return;}const items=box.querySelectorAll('.quiz-set-item');if([...items].some(item=>!item.querySelector('.select-item.selected'))){alert('모든 문제를 풀어주세요!');return;}let score=0;items.forEach(item=>{const options=[...item.querySelectorAll('.select-item')];const correct=Number(item.getAttribute('data-correct'));const selected=options.findIndex(option=>option.classList.contains('selected'));options.forEach((option,index)=>{if(index===correct)option.classList.add('correct');else if(index===selected)option.classList.add('incorrect');});if(selected===correct)score++;const feedback=document.createElement('div');feedback.className='feedback-msg';feedback.textContent=selected===correct?'정답입니다!':'다시 확인해 보세요. 정답은 '+(correct+1)+'번입니다.';feedback.style.cssText='margin-top:10px;font-weight:700;color:'+(selected===correct?'#087f5b':'#c92a2a');item.appendChild(feedback);});const result=document.createElement('div');result.className='score-display';result.textContent='점수: '+score+' / '+items.length;result.style.cssText='text-align:center;font-size:20px;font-weight:800;margin-top:20px';box.appendChild(result);if(score===items.length&&typeof confetti==='function'){confetti({particleCount:120,spread:75,origin:{y:0.65}});setTimeout(()=>confetti({particleCount:70,angle:60,spread:55,origin:{x:0,y:0.7}}),220);setTimeout(()=>confetti({particleCount:70,angle:120,spread:55,origin:{x:1,y:0.7}}),420);}box.setAttribute('data-results-shown','true');btn.textContent='다시 풀기';btn.style.backgroundColor='#666';}highlightMissionAnswerCodes();</script></body></html>
+function checkQuiz(btn){const box=btn.closest('.box-green');if(!box)return;if(box.getAttribute('data-results-shown')==='true'){box.setAttribute('data-results-shown','false');btn.textContent='💯 채점하기';btn.style.backgroundColor='#212529';box.querySelectorAll('.select-item').forEach(option=>option.classList.remove('selected','correct','incorrect'));box.querySelectorAll('.feedback-msg,.score-display').forEach(el=>el.remove());return;}const items=box.querySelectorAll('.quiz-set-item');if([...items].some(item=>!item.querySelector('.select-item.selected'))){alert('모든 문제를 풀어주세요!');return;}let score=0;items.forEach(item=>{const options=[...item.querySelectorAll('.select-item')];const correct=Number(item.getAttribute('data-correct'));const selected=options.findIndex(option=>option.classList.contains('selected'));options.forEach((option,index)=>{if(index===correct)option.classList.add('correct');else if(index===selected)option.classList.add('incorrect');});if(selected===correct)score++;const feedback=document.createElement('div');feedback.className='feedback-msg';feedback.textContent=selected===correct?'정답입니다!':'다시 확인해 보세요. 정답은 '+(correct+1)+'번입니다.';feedback.style.cssText='margin-top:10px;font-weight:700;color:'+(selected===correct?'#087f5b':'#c92a2a');item.appendChild(feedback);});const result=document.createElement('div');result.className='score-display';result.textContent='점수: '+score+' / '+items.length;result.style.cssText='text-align:center;font-size:20px;font-weight:800;margin-top:20px';box.appendChild(result);if(score===items.length&&typeof confetti==='function'){confetti({particleCount:120,spread:75,origin:{y:0.65}});setTimeout(()=>confetti({particleCount:70,angle:60,spread:55,origin:{x:0,y:0.7}}),220);setTimeout(()=>confetti({particleCount:70,angle:120,spread:55,origin:{x:1,y:0.7}}),420);}box.setAttribute('data-results-shown','true');btn.textContent='다시 풀기';btn.style.backgroundColor='#666';}highlightMissionAnswerCodes();</script>    <script type="application/json" id="t-answers">[null, null, null, null, null, null, null, null, null, null, null, null, null]</script>
+    <script>
+        /* 교사용 답지 */
+        (function () {
+            var t = false; try { t = localStorage.getItem('학습홈_admin') === '1'; } catch (e) {}
+            if (!t) return;
+            document.body.classList.add('teacher-mode');
+            var A = []; try { A = JSON.parse(document.getElementById('t-answers').textContent); } catch (e) {}
+            var el = function (tag, cls, txt) { var d = document.createElement(tag); d.className = cls; if (txt != null) d.textContent = txt; return d; };
+            document.querySelectorAll('.mission-coding-title').forEach(function (ti, i) {
+                var a = A[i]; if (!a) return;
+                var m = ti.closest('[data-module-id]') || ti.closest('.module-wrapper') || ti.parentNode.parentNode;
+                if (a.inputs) m.querySelectorAll('.subjective-input').forEach(function (inp, k) { if (a.inputs[k] != null) inp.insertAdjacentElement('afterend', el('span', 't-ans-inline', '답: ' + a.inputs[k])); });
+                if (a.code) { var d = el('div', 't-ans'); d.appendChild(el('div', 't-ans-label', '정답')); d.appendChild(el('pre', '', a.code)); m.appendChild(d); }
+            });
+            document.querySelectorAll('.quiz-set-item').forEach(function (q) {
+                var c = q.getAttribute('data-correct'), s = q.getAttribute('data-correct-answer'), o = q.querySelectorAll('.select-item');
+                if (o.length && c !== null && c !== '' && o[parseInt(c, 10)]) o[parseInt(c, 10)].classList.add('t-correct');
+                else if (s) q.appendChild(el('div', 't-ans-line', '정답: ' + s));
+            });
+        })();
+    </script>
+</body></html>
 
 
 

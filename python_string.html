@@ -450,6 +450,14 @@
             .slice-predictions label { grid-template-columns: auto minmax(0, 1fr); }
             .slice-feedback { grid-column: 2; }
         }
+            /* 교사용 답지: 선생님 모드(학습홈_admin)일 때만 빨간 답이 보인다 */
+        .t-ans { margin: 10px 0 4px; padding: 10px 16px; border: 1.5px dashed #e03131; border-radius: 10px; background: #fff5f5; text-align: left; }
+        .t-ans-label { color: #e03131; font-size: 12px !important; font-weight: 800; }
+        .t-ans pre { margin: 4px 0 0; padding: 0; background: transparent; color: #e03131; font-family: Consolas, 'Courier New', monospace; font-size: 16px; line-height: 1.6; white-space: pre-wrap; tab-size: 8; }
+        .t-ans-inline { margin-left: 8px; color: #e03131; font-weight: 800; white-space: nowrap; }
+        .t-ans-line { margin-top: 8px; color: #e03131; font-weight: 800; }
+        body.teacher-mode .quiz-set-item .select-item.t-correct, body.teacher-mode .quiz-set-item .select-item.t-correct * { color: #e03131 !important; font-weight: 800; }
+        body.teacher-mode .quiz-set-item .select-item.t-correct::after { content: " ← 정답"; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -1199,5 +1207,27 @@ document.querySelectorAll('.slice-predictions').forEach((exercise) => {
     });
 });
 </script>
+    <script type="application/json" id="t-answers">[{"code": "name = \"코딩카페\"\nrank = \"★\"\nprint(\"-\" * 7 + \" \" + name + \" \" + \"-\" * 8)\nprint(\"맛\\t: \" + rank * 5)\nprint(\"분위기\\t: \" + rank * 4)\nprint(\"가격\\t: \" + rank * 4)\nprint(\"-\" * 21)"}, {"code": "print(\"행운의 숫자 \" + str(777))"}, {"code": "name = \"Hong Gil Dong\"\nprint(name[0] + name[5] + name[9])"}, {"code": "s = input()\nprint(s[2] + s[3])"}, {"code": "s = input()\nprint(s[0] + \"python\" + s[1])"}, {"code": "pw = input()\nprint(pw[0:3] + \"*\" * 6)"}, {"code": "email = \"coding@naver.com\"\nuser_id = email[0:6]\ndomain = email[7:]\nprint(\"아이디:\", user_id)\nprint(\"도메인:\", domain)"}, {"code": "phone = input()\nprint(phone[0:4] + \"****\" + phone[8:])"}, {"code": "name = input()\nprint(\"확장자 :\", name[-3:])"}, {"code": "secret_text = \"#P@Y@T@H@O@N$\"\nprint(secret_text[1:-1])"}, {"code": "nums = \"123456789\"\nprint(nums[2::3])"}, {"code": "nums = \"123456789\"\nprint(nums[-2::-2])"}, {"code": "str = \"cide\"\nstr = str.replace(\"i\", \"o\")\nprint(str[::-1])"}, {"code": "a, b = input().split()\na = int(a)\nb = int(b)\nprint(a, \"+\", b, \"=\", a + b)"}, {"code": "a, b, c = input().split()\nprint(c, b, a)"}, {"code": "s = input()\nprint(s.replace(\"c\", \"Python\").upper())"}, {"code": "word = input()\nprint(\"-\".join(word))"}, {"code": "user_id = input()\nprint(user_id[0:2] + \"*\" * (len(user_id) - 2))"}, {"code": "name, count, price = input().split()\ncount = int(count)\nprice = int(price)\nprint(\"주문하신 {} {}개의 총 금액은 {}원입니다.\".format(name, count, count * price))"}, {"code": "a, b, c = map(float, input().split())\navg = (a + b + c) / 3\nprint(\"이번 경기 선수들의 평균 기록은 {:.2f}초입니다.\".format(avg))"}, {"code": "r = int(input())\narea = r * r * 3.14159\nprint(\"원의 넓이는 {:.1f}입니다.\".format(area))"}, {"code": "name = input()\nprint(name[::-1] + \"님 환영합니다!\")"}, {"code": "email = input()\nsite = email.split(\"@\")[1]\nprint(\"당신은 {} 메일을 사용 중이군요!\".format(site))"}, {"code": "text = input()\nprint(text.replace(\"어려워\", \"즐거워\"))"}, {"code": "word = input(\"단어: \")\ncount = int(input(\"횟수: \"))\nprint((word + \"! \") * count + \"달려가자!\")"}, {"code": "f = float(input())\nc = (f - 32) * 5 / 9\nprint(\"화씨: {:.1f}℉ → 섭씨: {:.1f}℃\".format(f, c))"}, {"code": "birth = input()\nprint(\"{}년 {}월 {}일생입니다.\".format(birth[0:2], birth[2:4], birth[4:6]))"}, {"code": "num = input()\nprint(\".\".join(num[0:6]))"}]</script>
+    <script>
+        /* 교사용 답지 */
+        (function () {
+            var t = false; try { t = localStorage.getItem('학습홈_admin') === '1'; } catch (e) {}
+            if (!t) return;
+            document.body.classList.add('teacher-mode');
+            var A = []; try { A = JSON.parse(document.getElementById('t-answers').textContent); } catch (e) {}
+            var el = function (tag, cls, txt) { var d = document.createElement(tag); d.className = cls; if (txt != null) d.textContent = txt; return d; };
+            document.querySelectorAll('.mission-coding-title').forEach(function (ti, i) {
+                var a = A[i]; if (!a) return;
+                var m = ti.closest('[data-module-id]') || ti.closest('.module-wrapper') || ti.parentNode.parentNode;
+                if (a.inputs) m.querySelectorAll('.subjective-input').forEach(function (inp, k) { if (a.inputs[k] != null) inp.insertAdjacentElement('afterend', el('span', 't-ans-inline', '답: ' + a.inputs[k])); });
+                if (a.code) { var d = el('div', 't-ans'); d.appendChild(el('div', 't-ans-label', '정답')); d.appendChild(el('pre', '', a.code)); m.appendChild(d); }
+            });
+            document.querySelectorAll('.quiz-set-item').forEach(function (q) {
+                var c = q.getAttribute('data-correct'), s = q.getAttribute('data-correct-answer'), o = q.querySelectorAll('.select-item');
+                if (o.length && c !== null && c !== '' && o[parseInt(c, 10)]) o[parseInt(c, 10)].classList.add('t-correct');
+                else if (s) q.appendChild(el('div', 't-ans-line', '정답: ' + s));
+            });
+        })();
+    </script>
 </body>
 </html>

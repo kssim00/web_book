@@ -275,7 +275,15 @@
             text-align: center; padding: 60px 0; color: var(--text-muted);
             border-top: 1px solid #dcdde1; margin-top: 80px; font-size: 1.2rem;
         }
-    </style>
+    /* 교사용 답지: 선생님 모드(학습홈_admin)일 때만 빨간 답이 보인다 */
+.t-ans{margin:10px 0 4px;padding:10px 16px;border:1.5px dashed #e03131;border-radius:10px;background:#fff5f5;text-align:left}
+.t-ans-label{color:#e03131;font-size:12px!important;font-weight:800}
+.t-ans pre{margin:4px 0 0;padding:0;border:0;background:transparent;color:#e03131;font-family:Consolas,'Courier New',monospace;font-size:16px;line-height:1.6;white-space:pre-wrap;tab-size:8;overflow:visible}
+.t-ans-inline{margin-left:6px;color:#e03131!important;font-weight:800;white-space:nowrap}
+.t-ans-line{margin-top:8px;color:#e03131!important;font-weight:800;white-space:pre-wrap}
+body.teacher-mode .t-correct,body.teacher-mode .t-correct *{color:#e03131!important;font-weight:800}
+body.teacher-mode .t-correct::after{content:" ← 정답";font-size:13px;color:#e03131}
+</style>
 </head>
 <body>
 
@@ -748,5 +756,24 @@ data = {
     renderQuiz();
 </script>
 
+<script type="application/json" id="t-answers">{"mark": [{"q": "input[name=\"q0\"][value=\"2\"]", "up": "label"}, {"q": "input[name=\"q1\"][value=\"1\"]", "up": "label"}, {"q": "input[name=\"q2\"][value=\"1\"]", "up": "label"}, {"q": "input[name=\"q3\"][value=\"2\"]", "up": "label"}, {"q": "input[name=\"q4\"][value=\"2\"]", "up": "label"}, {"q": "input[name=\"q5\"][value=\"1\"]", "up": "label"}, {"q": "input[name=\"q6\"][value=\"2\"]", "up": "label"}, {"q": "input[name=\"q7\"][value=\"2\"]", "up": "label"}, {"q": "input[name=\"q8\"][value=\"2\"]", "up": "label"}, {"q": "input[name=\"q9\"][value=\"2\"]", "up": "label"}, {"q": "input[name=\"q10\"][value=\"1\"]", "up": "label"}, {"q": "input[name=\"q11\"][value=\"3\"]", "up": "label"}, {"q": "input[name=\"q12\"][value=\"0\"]", "up": "label"}, {"q": "input[name=\"q13\"][value=\"1\"]", "up": "label"}, {"q": "input[name=\"q14\"][value=\"1\"]", "up": "label"}], "code": []}</script>
+<script>
+/* 교사용 답지 */
+(function () {
+  var t = false; try { t = localStorage.getItem('학습홈_admin') === '1'; } catch (e) {}
+  if (!t) return;
+  document.body.classList.add('teacher-mode');
+  var D = {}; try { D = JSON.parse(document.getElementById('t-answers').textContent); } catch (e) {}
+  var q = function (m) { if (m.id) return document.getElementById(m.id); var l = document.querySelectorAll(m.q); if (m.has) l = Array.prototype.filter.call(l, function (e) { return e.textContent.indexOf(m.has) >= 0; }); return l[m.i || 0]; };
+  var el = function (tag, cls, txt) { var d = document.createElement(tag); d.className = cls; if (txt != null) d.textContent = txt; return d; };
+  document.querySelectorAll('input[type=radio][data-correct]').forEach(function (r) { var l = r.closest('label'); if (l) l.classList.add('t-correct'); });
+  document.querySelectorAll('details').forEach(function (d) { var s = d.querySelector('summary'); if (s && /정답|예측/.test(s.textContent)) d.open = true; });
+  (D.mark || []).forEach(function (m) { var e = q(m); if (e && m.up) e = e.closest(m.up) || e.parentNode; if (e) e.classList.add('t-correct'); });
+  (D.markAll || []).forEach(function (sel) { document.querySelectorAll(sel).forEach(function (e) { e.classList.add('t-correct'); }); });
+  Object.keys(D.blanks || {}).forEach(function (id) { var e = document.getElementById(id); if (e) e.insertAdjacentElement('afterend', el('span', 't-ans-inline', '답: ' + D.blanks[id])); });
+  (D.text || []).forEach(function (m) { var e = q(m); if (e) e.appendChild(el('div', 't-ans-line', '정답: ' + m.t)); });
+  (D.code || []).forEach(function (m) { var e = q(m); if (!e) return; var d = el('div', 't-ans'); d.appendChild(el('div', 't-ans-label', m.label || '정답')); d.appendChild(el('pre', '', m.code)); if (m.after) e.insertAdjacentElement('afterend', d); else e.appendChild(d); });
+})();
+</script>
 </body>
 </html>

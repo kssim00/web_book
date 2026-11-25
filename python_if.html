@@ -304,6 +304,14 @@ footer{max-width:820px; margin:0 auto; padding:50px 24px 90px; text-align:center
   .summary-grid{grid-template-columns:1fr;}
   .flow-branch{gap:16px;}
 }
+/* 교사용 답지: 선생님 모드(학습홈_admin)일 때만 빨간 답이 보인다 */
+.t-ans{margin:10px 0 4px;padding:10px 16px;border:1.5px dashed #e03131;border-radius:10px;background:#fff5f5;text-align:left}
+.t-ans-label{color:#e03131;font-size:12px!important;font-weight:800}
+.t-ans pre{margin:4px 0 0;padding:0;border:0;background:transparent;color:#e03131;font-family:Consolas,'Courier New',monospace;font-size:16px;line-height:1.6;white-space:pre-wrap;tab-size:8;overflow:visible}
+.t-ans-inline{margin-left:6px;color:#e03131!important;font-weight:800;white-space:nowrap}
+.t-ans-line{margin-top:8px;color:#e03131!important;font-weight:800;white-space:pre-wrap}
+body.teacher-mode .t-correct,body.teacher-mode .t-correct *{color:#e03131!important;font-weight:800}
+body.teacher-mode .t-correct::after{content:" ← 정답";font-size:13px;color:#e03131}
 </style>
 </head>
 <body>
@@ -1297,6 +1305,24 @@ async function runCode(editorId, outputId) {
     outEl.textContent = '❌ 오류: ' + e.message;
   }
 }
+</script>
+<script type="application/json" id="t-answers">{"blanks": {"p2-a": "elif", "p2-b": "else", "p2-c": "pay - price"}, "code": [{"q": ".challenge-box", "i": 0, "code": "a = 7\nb = 12\n\nif a > b:\n    print(a)\nelif a < b:\n    print(b)\nelse:\n    print(\"같음\")"}, {"q": ".challenge-box", "i": 1, "code": "a = 5\nb = 9\nc = 3\n\nif a >= b and a >= c:\n    print(a)\nelif b >= c:\n    print(b)\nelse:\n    print(c)"}, {"q": ".challenge-box", "i": 2, "code": "score = 73\n\nif score >= 90:\n    print(\"A\")\nelif score >= 80:\n    print(\"B\")\nelif score >= 70:\n    print(\"C\")\nelif score >= 60:\n    print(\"D\")\nelse:\n    print(\"F\")"}, {"q": ".challenge-box", "i": 3, "code": "weight = 68\nheight = 1.7\n\nbmi = weight / (height * height)\n\nif bmi < 18.5:\n    print(\"저체중\")\nelif bmi < 23:\n    print(\"정상\")\nelif bmi < 25:\n    print(\"과체중\")\nelse:\n    print(\"비만\")"}]}</script>
+<script>
+/* 교사용 답지 */
+(function () {
+  var t = false; try { t = localStorage.getItem('학습홈_admin') === '1'; } catch (e) {}
+  if (!t) return;
+  document.body.classList.add('teacher-mode');
+  var D = {}; try { D = JSON.parse(document.getElementById('t-answers').textContent); } catch (e) {}
+  var q = function (m) { return m.id ? document.getElementById(m.id) : document.querySelectorAll(m.q)[m.i || 0]; };
+  var el = function (tag, cls, txt) { var d = document.createElement(tag); d.className = cls; if (txt != null) d.textContent = txt; return d; };
+  document.querySelectorAll('input[type=radio][data-correct]').forEach(function (r) { var l = r.closest('label'); if (l) l.classList.add('t-correct'); });
+  document.querySelectorAll('details').forEach(function (d) { var s = d.querySelector('summary'); if (s && /정답/.test(s.textContent)) d.open = true; });
+  (D.mark || []).forEach(function (m) { var e = q(m); if (e) e.classList.add('t-correct'); });
+  Object.keys(D.blanks || {}).forEach(function (id) { var e = document.getElementById(id); if (e) e.insertAdjacentElement('afterend', el('span', 't-ans-inline', '답: ' + D.blanks[id])); });
+  (D.text || []).forEach(function (m) { var e = q(m); if (e) e.appendChild(el('div', 't-ans-line', '정답: ' + m.t)); });
+  (D.code || []).forEach(function (m) { var e = q(m); if (!e) return; var d = el('div', 't-ans'); d.appendChild(el('div', 't-ans-label', m.label || '정답')); d.appendChild(el('pre', '', m.code)); if (m.after) e.insertAdjacentElement('afterend', d); else e.appendChild(d); });
+})();
 </script>
 </body>
 </html>
