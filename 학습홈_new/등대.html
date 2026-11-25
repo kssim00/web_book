@@ -177,10 +177,18 @@ paintLinks();
 
 /* 수업자료 */
 $('fileNote').textContent = LOCAL ? '' : '수업자료는 학원 컴퓨터에서 등대를 열었을 때만 열려요. (인터넷에는 올리지 않아요)';
+/* 파워포인트·워드·엑셀은 브라우저가 열지 못하므로(내려받기만 됨) 오피스 프로그램으로 원본을 바로 연다 */
+const OFFICE = {ppt: 'ms-powerpoint', pptx: 'ms-powerpoint', pps: 'ms-powerpoint', ppsx: 'ms-powerpoint', doc: 'ms-word', docx: 'ms-word', xls: 'ms-excel', xlsx: 'ms-excel'};
+function fileChip(s, f) {
+  const abs = /^file:/i.test(s.dir), app = OFFICE[(f[1].split('.').pop() || '').toLowerCase()];
+  if (!LOCAL && !(abs && app)) return '<span class="chip off">' + inner(f[0], f[1]) + '</span>';
+  let u = s.dir + f[1]; try { u = new URL(u, location.href).href; } catch (e) {}
+  return app ? '<a class="chip" href="' + esc(app + ':ofe|u|' + u) + '">' + inner(f[0], f[1]) + '</a>' : '<a class="chip" target="_blank" href="' + esc(u) + '">' + inner(f[0], f[1]) + '</a>';
+}
 $('fileTree').innerHTML = FILES.map((F, i) => {
   const n = F.sub.reduce((a, s) => a + s.files.length, 0);
   return '<details' + (i === 0 ? ' open' : '') + '><summary>' + esc(F.t) + '<em>' + (n ? n + '개' : '비어 있음') + '</em></summary>' +
-    F.sub.map(s => '<div class="grp" style="margin:0 0 4px 20px"><h3>' + esc(s.t) + '</h3></div><div class="files">' + s.files.map(f => LOCAL ? '<a class="chip" target="_blank" href="' + esc(s.dir + f[1]) + '">' + inner(f[0], f[1]) + '</a>' : '<span class="chip off">' + inner(f[0], f[1]) + '</span>').join('') + '</div>').join('') + '</details>';
+    F.sub.map(s => '<div class="grp" style="margin:0 0 4px 20px"><h3>' + esc(s.t) + '</h3></div><div class="files">' + s.files.map(f => fileChip(s, f)).join('') + '</div>').join('') + '</details>';
 }).join('');
 
 /* 도구: 미션 바로 열기 + 이 컴퓨터 진도 맞추기 */
