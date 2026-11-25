@@ -344,6 +344,7 @@
     <div class="sb-sub closed" data-sub="l4">
       <div class="sb-link" data-go="concept4"><span class="em">🎨</span>핵심 개념</div>
       <div class="sb-link" data-go="paint"><span class="em">🖍️</span>그림판 앱</div>
+      <div class="sb-link" data-go="sticker"><span class="em">📸</span>사진 스티커 앱</div>
       <div class="sb-link" data-go="mole"><span class="em">🐹</span>두더지 게임 앱</div>
     </div>
 
@@ -1491,6 +1492,15 @@
     </div>
   </div></section>
 
+  <!-- ===== 사진 스티커 앱 (슬라이드 앱인벤터_사진스티커앱.html 을 그대로 끼워 보여 줌) ===== -->
+  <section class="page" id="p-sticker"><div class="wrap">
+    <div class="page-head"><div class="page-eyebrow">4차시 · 앱</div><h1>📸 사진 스티커 앱</h1></div>
+    <div class="page-line"></div>
+    <p class="app-sub">사진을 찍고, 이모티콘과 말풍선으로 꾸민 다음 저장해요. <b>캔버스</b>에 <b>카메라</b>를 더한 앱이에요. 아래 슬라이드를 한 장씩 넘기며 만들어요.</p>
+    <iframe src="앱인벤터_사진스티커앱.html" title="사진 스티커 앱 만들기 슬라이드" loading="lazy" allow="camera; fullscreen" style="display:block;width:100%;height:min(80vh,700px);border:2px solid var(--line);border-radius:18px;background:#fff8ea"></iframe>
+    <p style="margin-top:10px;text-align:right"><a href="앱인벤터_사진스티커앱.html" target="_blank" rel="noopener" style="font-weight:700;color:var(--navy)">↗ 새 창으로 크게 보기</a></p>
+  </div></section>
+
   <!-- ===== 두더지 게임 앱 ===== -->
   <section class="page" id="p-mole"><div class="wrap">
     <div class="page-head"><div class="page-eyebrow">4차시 · 앱</div><h1>🐹 두더지 게임 앱</h1></div>
@@ -2312,11 +2322,11 @@
 
 <script>
 /* ===== 페이지 전환 ===== */
-const ORDER=['home','basic','cat','tts','stt','concept','mp3','dice','balloon','concept3','xylo','karaoke','concept4','paint','mole','concept5','mole2','ball','memo','concept6','diary','sos','quiz'];
+const ORDER=['home','basic','cat','tts','stt','concept','mp3','dice','balloon','concept3','xylo','karaoke','concept4','paint','sticker','mole','concept5','mole2','ball','memo','concept6','diary','sos','quiz'];
 const TITLE={home:'시작하기',basic:'앱인벤터 기본기',cat:'고양이 소리 앱',tts:'말하는 앱',stt:'음성 인식 앱',
   concept:'핵심 개념',mp3:'MP3 플레이어',dice:'주사위 앱',balloon:'풍선 돌리기 앱',
   concept3:'핵심 개념(3차시)',xylo:'실로폰 앱',karaoke:'노래방 앱',
-  concept4:'핵심 개념(4차시)',paint:'그림판 앱',mole:'두더지 게임 앱',
+  concept4:'핵심 개념(4차시)',paint:'그림판 앱',sticker:'사진 스티커 앱',mole:'두더지 게임 앱',
   concept5:'핵심 개념(5차시)',mole2:'두더지 게임 업그레이드',ball:'공 튀기기 게임 앱',memo:'메모장 앱',
   concept6:'핵심 개념(6차시)',diary:'미래일기장 앱',sos:'SOS 앱',quiz:'정리 퀴즈'};
 const sidebar=document.getElementById('sidebar'), backdrop=document.getElementById('backdrop');
@@ -2324,7 +2334,7 @@ function closeDrawer(){ sidebar.classList.remove('open'); backdrop.classList.rem
 
 /* 차시 아코디언: 헤더 클릭 시 그 차시 목록 펼치기/접기 */
 const GROUP_OF={cat:'l1',tts:'l1',stt:'l1',concept:'l2',mp3:'l2',dice:'l2',balloon:'l2',
-  concept3:'l3',xylo:'l3',karaoke:'l3',concept4:'l4',paint:'l4',mole:'l4',
+  concept3:'l3',xylo:'l3',karaoke:'l3',concept4:'l4',paint:'l4',sticker:'l4',mole:'l4',
   concept5:'l5',mole2:'l5',ball:'l5',memo:'l5',concept6:'l6',diary:'l6',sos:'l6'};
 function setGroup(g,open){
   const h=document.querySelector('.sb-grp[data-group="'+g+'"]');
