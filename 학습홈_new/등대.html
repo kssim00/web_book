@@ -108,7 +108,7 @@ summary em{font-style:normal;font-size:13px;font-weight:600;color:#7f90a8;margin
 
   <section class="pane" id="tools">
     <div>
-      <span class="seg" id="seg"><button data-c="entry" class="on">엔트리</button><button data-c="scratch">스크래치</button></span>
+      <span class="seg" id="seg"><button data-c="entry" class="on">엔트리</button><button data-c="scratch">스크래치</button><button data-c="py">파이썬</button></span>
       <input class="find" id="find" placeholder="미션 찾기" size="16">
     </div>
     <div class="me" id="me"></div>
@@ -125,6 +125,7 @@ summary em{font-style:normal;font-size:13px;font-weight:600;color:#7f90a8;margin
 <script src="lib/entry_previews.js"></script>
 <script src="lib/scratch_course.js"></script>
 <script src="lib/scratch_previews.js"></script>
+<script src="lib/py_data.js"></script>
 <script>
 const LINKS = window.TEACHER_LINKS || [], FILES = window.TEACHER_FILES || [];
 
@@ -190,7 +191,20 @@ const courseOf = c => (c === 'entry' ? window.ENTRY_COURSE : window.SCRATCH_COUR
 const hasPv = (c, id) => c === 'entry' ? (window.ENTRY_PREVIEWS || []).indexOf(id) >= 0 : !!(window.SCRATCH_PV || {})[id];
 const sheet = (c, m) => c === 'entry' ? '미션.html?id=' + m[0] + '&f=2&n=' + encodeURIComponent(m[1]) : '스크래치미션.html?id=' + m[0] + (m[1] && m[1] !== '쉼터' && m[1] !== '선택' ? '&n=' + encodeURIComponent(m[1]) : '');
 const pv = (c, m) => c === 'entry' ? '엔트리미리보기.html?f=' + encodeURIComponent('2_미리해보기/엔트리/' + m[0] + '.ent') + '&t=' + encodeURIComponent(m[1] + ' ' + m[2]) : '스크래치미리보기.html?id=' + m[0] + '&t=' + encodeURIComponent(m[1] + ' ' + m[2]);
+/* 파이썬: 문법·터틀·오락실·우르시나 교재 바로 열기 (진도 맞추기는 없음 — 파이썬은 모든 교재가 열려 있음) */
+function paintPy() {
+  const D = window.PYDATA || {}, q = $('find').value.trim(), B = D.BASE || '', out = [];
+  const A = (h, t) => '<a target="_blank" href="' + esc(h) + '">' + t + '</a>';
+  const sec = (t, rows) => { rows = rows.filter(r => !q || (r[0] + ' ' + r[1]).indexOf(q) >= 0); if (rows.length) out.push('<div class="sec">' + esc(t) + '</div>' + rows.map(r => '<div class="m"><span class="no">' + esc(r[0]) + '</span><span class="t">' + esc(r[1]) + '</span>' + r[2] + '</div>').join('')); };
+  let k = 0; (D.GRAMMAR || []).forEach(c => sec('문법 · ' + c.ch.replace(/\s+/g, ' '), c.items.map(it => [it[0], it[1], A('교재.html?i=' + (k++), '교재')])));
+  k = 0; (D.TURTLE || []).forEach(c => sec('터틀 · ' + c.ch.replace(/\s+/g, ' '), c.items.map(it => [it[0], it[1], A('교재.html?t=' + (k++), '교재')])));
+  sec('터틀 오락실', (D.BONUS || []).map((b, i) => [String(i + 1), b[1], A(B + b[2], '교재') + A('터틀게임.html?g=' + b[0], '완성작')]));
+  sec('우르시나', (D.URSINA || []).map((t, i) => [String(i + 1), t, A(B + 'python_ursina.html#lesson-' + ('0' + (i + 1)).slice(-2), '교재')]));
+  $('me').innerHTML = ''; $('list').innerHTML = out.join('') || '<p class="note">찾는 교재가 없어요.</p>';
+}
 function paintTools() {
+  $('find').placeholder = cur === 'py' ? '교재 찾기' : '미션 찾기';
+  if (cur === 'py') return paintPy();
   const S = load(), done = (S[cur] && S[cur].done) || {}, q = $('find').value.trim();
   const nodes = courseOf(cur); let now = null;
   nodes.forEach(n => { if (!n.opt) (n.ms || []).forEach(m => { if (!now && !done[m[0]]) now = m[0]; }); });
