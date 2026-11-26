@@ -177,11 +177,11 @@ function syncBase() {
   let old = null;
   if (!L) { L = {v: 2, groups: [], seen: []}; try { old = JSON.parse(localStorage.getItem(MK)) || []; } catch (e) { old = []; } }
   if (!Array.isArray(L.seen)) L.seen = [];
-  L.groups.forEach(G => { G.items = G.items.filter(x => !x.b || BASE[x.u]); G.items.forEach(x => { if (x.b) { x.n = BASE[x.u][0]; if (BASE[x.u][2] === 'local') x.l = 1; else delete x.l; } }); });
+  L.groups.forEach(G => { G.items = G.items.filter(x => !x.b || BASE[x.u]); G.items.forEach(x => { if (x.b) { x.n = BASE[x.u][0]; if (BASE[x.u][2] === 'local') x.l = 1; else delete x.l; if (BASE[x.u][2] === 'open') x.o = 1; else delete x.o; } }); });
   LINKS.forEach(B => B.items.forEach(it => {
     if (L.seen.indexOf(it[1]) >= 0) return;
     let G = L.groups.find(g => g.id === B.g); if (!G) { G = {id: B.g, g: B.g, items: []}; L.groups.push(G); }
-    const o = {n: it[0], u: it[1], b: 1}; if (it[2] === 'local') o.l = 1; G.items.push(o); L.seen.push(it[1]);
+    const o = {n: it[0], u: it[1], b: 1}; if (it[2] === 'local') o.l = 1; if (it[2] === 'open') o.o = 1; G.items.push(o); L.seen.push(it[1]);
   }));
   if (old) old.forEach(m => { if (!m || !m.u) return; const G = L.groups.find(g => g.id === m.g) || L.groups[0]; if (G) G.items.push({n: m.n, u: m.u}); });
   saveL();
@@ -196,6 +196,7 @@ function paintLinks() {
       G.items.map((x, i) => {
         const at = ' data-i="' + i + '"' + (ed ? ' draggable="true"' : '');
         if (x.l && !LOCAL) return '<span class="chip off"' + at + ' title="학원 컴퓨터에서만 열려요">' + inner(x.n) + '<span class="x">×</span></span>';
+        if (x.o) { let u = x.u; try { u = new URL(u).href; } catch (e) {} return '<a class="chip"' + at + ' title="이 컴퓨터의 파일 (열기 도우미로 열림)" href="' + esc('codenopen:' + u) + '">' + inner(x.n) + '<span class="x">×</span></a>'; }
         return '<a class="chip' + (x.b ? '' : ' mine') + '"' + at + ' target="_blank" rel="noopener" href="' + esc(x.u) + '">' + inner(x.n) + '<span class="x">×</span></a>';
       }).join('') + '</div></div>';
   }).join('');
@@ -279,7 +280,7 @@ $('impFile').onchange = () => {
       const gs = []; let n = 0;
       j.groups.forEach((G, k) => {
         if (!G || typeof G.g !== 'string' || !Array.isArray(G.items)) return;
-        const items = []; G.items.forEach(x => { if (!x || typeof x.n !== 'string' || !okU(x.u)) return; const o = {n: x.n.slice(0, 40), u: x.u}; if (x.b && BASE[x.u]) o.b = 1; items.push(o); n++; });
+        const items = []; G.items.forEach(x => { if (!x || typeof x.n !== 'string' || !okU(x.u)) return; const o = {n: x.n.slice(0, 40), u: x.u}; if (x.b && BASE[x.u]) { o.b = 1; if (BASE[x.u][2] === 'open') o.o = 1; } items.push(o); n++; });
         gs.push({id: typeof G.id === 'string' ? G.id : 'u' + Date.now() + k, g: G.g.slice(0, 20), items});
       });
       if (!gs.length) return toast('불러올 링크가 없어요');
