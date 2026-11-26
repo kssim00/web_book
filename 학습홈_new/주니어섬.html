@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>주니어 놀이섬 · 스크래치 주니어</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#fff6e8;color:#3a2c4a;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:14px 28px;background:rgba(255,246,232,.93);backdrop-filter:blur(8px)}
+.back{font-size:14px;font-weight:700;color:#8a6f9e}
+.back:hover{color:#3a2c4a}
+.seg{display:inline-flex;background:#fff;border-radius:999px;padding:4px;box-shadow:0 2px 8px rgba(58,44,74,.08)}
+.seg button{padding:8px 18px;border-radius:999px;font-size:15px;font-weight:800;color:#a08bb2}
+.seg button.on{background:#ff8a5b;color:#fff}
+.cnt{margin-left:auto;font-size:14px;font-weight:800;color:#8a6f9e}
+main{max-width:1180px;margin:0 auto;padding:10px 28px 60px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px}
+.c{position:relative;display:block;text-align:left;border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 3px 12px rgba(58,44,74,.10);transition:transform .15s,box-shadow .15s}
+.c:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(58,44,74,.18)}
+.c .th{position:relative;aspect-ratio:4/3;background:#ffe3c8 center/cover no-repeat}
+.c .th::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;background:rgba(58,44,74,.32);opacity:0;transition:opacity .15s}
+.c:hover .th::after{opacity:1}
+.c .b{padding:10px 14px 12px}
+.c .t{font-size:15.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c .no{color:#ff7a45;margin-right:6px}
+.c .st{margin-top:3px;font-size:12px;letter-spacing:1px;color:#ffc24a}
+.c .st i{font-style:normal;color:#eadfd2}
+.c.done .th::before{content:"⭐";position:absolute;right:8px;top:8px;z-index:1;font-size:20px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.c.soon{cursor:default;opacity:.5}
+.c.soon:hover{transform:none;box-shadow:0 3px 12px rgba(58,44,74,.10)}
+.c.soon .th{display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#a08bb2;background:#f3ebe1}
+.c.soon .th::after{display:none}
+.pv{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(40,25,50,.6);padding:20px}
+.pv.show{display:flex}
+.box{width:min(1100px,100%);height:min(760px,100%);display:flex;flex-direction:column;background:#fff;border-radius:20px;overflow:hidden}
+.bar{display:flex;align-items:center;gap:10px;padding:12px 16px 12px 20px}
+.bar b{font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn{padding:8px 16px;border-radius:999px;font-size:14px;font-weight:800;background:#f6eee6;color:#3a2c4a}
+.btn:hover{background:#eee0d2}
+.btn.go{background:#ff8a5b;color:#fff}
+.btn.go:hover{background:#f2763f}
+.btn.x{padding:8px 12px}
+.box iframe{flex:1;border:0;width:100%;background:#fdf8f2}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="back" href="시작.html?map=1">← 세계 지도</a>
+  <div class="seg" id="seg"><button data-z="base">기초 학습</button><button data-z="game">게임 만들기</button></div>
+  <span class="cnt" id="cnt"></span>
+</div>
+<main><div class="grid" id="grid"></div></main>
+<div class="pv" id="pv"><div class="box">
+  <div class="bar"><b id="pvT"></b><button class="btn" id="pvNew">새 창</button><button class="btn go" id="pvFin">완료</button><button class="btn x" id="pvX">✕</button></div>
+  <iframe id="pvF" title="수업 슬라이드"></iframe>
+</div></div>
+<script>document.write('<script src="lib/jr_course.js?t=' + Date.now() + '"><\/script>');</script>
+<script>
+(() => {
+const $ = id => document.getElementById(id), KEY = 'studyhome_new_3d_demo', DIR = '../스크래치주니어/';
+let S = {}; try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && typeof v === 'object') S = v; } catch (e) {}
+if (!S.jr || typeof S.jr !== 'object') S.jr = {}; if (!S.jr.done) S.jr.done = {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const ALL = window.JR_COURSE || [];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let zone = new URLSearchParams(location.search).get('z') === 'game' ? 'game' : 'base', list = [], open = null;
+function paint() {
+  list = ALL.filter(m => m.z === zone);
+  [...$('seg').children].forEach(b => b.classList.toggle('on', b.dataset.z === zone));
+  const real = list.filter(m => !m.soon);
+  $('cnt').textContent = '⭐ ' + real.filter(m => S.jr.done[m.id]).length + ' / ' + real.length;
+  $('grid').innerHTML = list.map((m, i) => {
+    const no = m.no === '게임' ? '' : '<span class="no">' + esc(m.no) + '</span>';
+    const st = '<div class="st">' + '★'.repeat(m.s) + '<i>' + '★'.repeat(3 - m.s) + '</i></div>';
+    const th = m.soon ? '<div class="th">준비 중</div>' : '<div class="th" style="background-image:url(thumb/주니어/' + m.id + '.jpg)"></div>';
+    return '<button class="c' + (m.soon ? ' soon' : '') + (S.jr.done[m.id] ? ' done' : '') + '" data-i="' + i + '"' + (m.soon ? ' disabled' : '') + '>' + th + '<div class="b"><div class="t">' + no + esc(m.t) + '</div>' + st + '</div></button>';
+  }).join('');
+}
+function show(i) {
+  const m = list[i]; if (!m || m.soon) return; open = m;
+  $('pvT').textContent = (m.no === '게임' ? '' : m.no + ' · ') + m.t;
+  $('pvF').src = DIR + m.id + '.html';
+  $('pvFin').textContent = S.jr.done[m.id] ? '⭐ 완료함' : '완료';
+  $('pv').classList.add('show'); setTimeout(() => { try { $('pvF').focus(); } catch (e) {} }, 300);
+}
+function hide() { $('pv').classList.remove('show'); $('pvF').src = 'about:blank'; open = null; }
+$('seg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { zone = b.dataset.z; paint(); scrollTo(0, 0); history.replaceState(null, '', '?z=' + zone); } });
+$('grid').addEventListener('click', e => { const c = e.target.closest('.c'); if (c) show(+c.dataset.i); });
+$('pvX').addEventListener('click', hide);
+$('pv').addEventListener('click', e => { if (e.target.id === 'pv') hide(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+$('pvNew').addEventListener('click', () => { if (open) window.open(DIR + open.id + '.html', '_blank'); });
+$('pvFin').addEventListener('click', () => { if (!open) return; if (S.jr.done[open.id]) delete S.jr.done[open.id]; else S.jr.done[open.id] = 1; save(); $('pvFin').textContent = S.jr.done[open.id] ? '⭐ 완료함' : '완료'; paint(); });
+paint();
+})();
+</script>
+<script src="lib/sync.js"></script>
+</body>
+</html>
