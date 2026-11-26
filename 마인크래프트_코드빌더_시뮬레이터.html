@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코드빌더 장면 시뮬레이터 · 수업 시연용</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+@font-face{
+  font-family:'DungGeunMo';
+  src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/DungGeunMo.woff') format('woff');
+  font-display:swap;
+}
+:root{
+  --bg:#191B20;--panel:#23262E;--line:#3A3F4C;--ink:#EEF1F6;--sub:#A8B0BF;
+  --grass:#6CC13F;--diamond:#4AEDD9;--gold:#FFD84D;
+  --c-player:#1E6FD0;--c-agent:#D83B01;--c-blocks:#00838C;--c-mobs:#2E9E44;
+  --c-loops:#0B7D0B;--c-logic:#00646E;--c-var:#A80000;--c-func:#2456A8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Pretendard Variable',Pretendard,sans-serif;min-height:100vh;padding:26px 20px 50px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-family:'DungGeunMo',monospace;font-size:30px;text-shadow:3px 3px 0 rgba(0,0,0,.5)}
+h1 .cube{display:inline-block;width:14px;height:14px;background:var(--grass);box-shadow:3px 3px 0 #2f5a1c;margin-right:10px}
+.sub{color:var(--sub);font-size:15.5px;margin-top:8px;line-height:1.6}
+.sub b{color:var(--gold)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 16px}
+.tab{
+  font-family:'DungGeunMo',monospace;font-size:14.5px;cursor:pointer;
+  background:var(--panel);color:var(--ink);border:2px solid var(--line);border-bottom-width:4px;
+  border-radius:9px;padding:9px 14px;
+}
+.tab:hover{border-color:var(--grass)}
+.tab.sel{background:var(--grass);color:#10240a;border-color:#2f5a1c}
+.tab:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.stage{display:grid;grid-template-columns:390px 1fr;gap:20px;align-items:start}
+@media (max-width:960px){.stage{grid-template-columns:1fr}}
+.codebox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px}
+.codebox h3{font-family:'DungGeunMo',monospace;font-size:15px;color:var(--gold);margin-bottom:4px}
+.codebox .d{font-size:14.5px;color:var(--sub);line-height:1.6;margin-bottom:12px}
+.viewbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+canvas{width:100%;height:auto;display:block;border-radius:10px;background:#000}
+.ctrl{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.btn{
+  font-family:'DungGeunMo',monospace;font-size:16px;cursor:pointer;
+  background:var(--grass);color:#10240a;border:0;border-radius:9px;padding:11px 22px;
+  box-shadow:0 4px 0 #2f5a1c;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #2f5a1c}
+.btn.gh{background:var(--panel);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 #14161a;padding:9px 18px}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+select{font-family:'DungGeunMo',monospace;background:#101216;color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:9px 10px;font-size:14px}
+.hintline{font-size:13.5px;color:var(--sub);margin-left:auto}
+.stack{margin:8px 0 2px;filter:drop-shadow(0 5px 12px rgba(0,0,0,.4))}
+.blk{
+  position:relative;width:max-content;max-width:100%;background:var(--c,#555);color:#fff;
+  font-size:14.5px;font-weight:700;line-height:1.3;padding:9px 14px;border-radius:8px;margin-top:3px;
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.28), inset 0 2px 0 rgba(255,255,255,.14);
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+}
+.blk::before{content:"";position:absolute;top:-5px;left:15px;width:20px;height:7px;background:var(--c,#555);border-radius:4px 4px 0 0}
+.blk.hat{border-radius:20px 20px 8px 8px}
+.blk.hat::before{display:none}
+.slot{background:#fff;color:#222;font-weight:800;border-radius:999px;padding:1px 10px;font-size:13.5px;box-shadow:inset 0 2px 3px rgba(0,0,0,.2)}
+.slot.dd::after{content:" ▾";font-size:11px;color:#666}
+.cblk{position:relative;width:max-content;max-width:100%;margin-top:3px}
+.cblk>.chead{position:relative;background:var(--c,#555);color:#fff;font-size:14.5px;font-weight:700;padding:9px 14px;border-radius:8px 8px 0 0;box-shadow:inset 0 2px 0 rgba(255,255,255,.14);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.cblk>.chead::before{content:"";position:absolute;top:-5px;left:15px;width:20px;height:7px;background:var(--c,#555);border-radius:4px 4px 0 0}
+.cblk>.cbody{border-left:14px solid var(--c,#555);padding:5px 0 7px 10px;background:rgba(255,255,255,.03)}
+.cblk>.cfoot{height:14px;background:var(--c,#555);border-radius:0 0 8px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.28)}
+.run, .cblk.runwrap>.chead{
+  outline:3px solid var(--gold);outline-offset:2px;
+  animation:pulse .5s ease infinite alternate;
+}
+@keyframes pulse{from{filter:brightness(1)}to{filter:brightness(1.35)}}
+.note{margin-top:14px;font-size:13.5px;color:var(--sub);line-height:1.6;border-top:1px dashed var(--line);padding-top:12px}
+.note b{color:var(--diamond)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="cube"></span>코드빌더 장면 시뮬레이터</h1>
+  <p class="sub">실제 마인크래프트 화면은 아니지만, 수업에서 가장 <b>환호가 터지는 장면들</b>을 재현한 시연용 미리보기예요.<br>
+  <b>▶ 실행</b>을 누르면 왼쪽 코드가 <b>한 줄씩 빛나며</b>, 딱 그 순서대로 오른쪽 세상이 폭발하고, 불타고, 번쩍입니다.</p>
+
+  <div class="tabs" id="tabs" role="tablist"></div>
+
+  <div class="stage">
+    <div class="codebox">
+      <h3 id="sc-title">장면</h3>
+      <p class="d" id="sc-desc"></p>
+      <div id="code"></div>
+      <p class="note" id="sc-note"></p>
+    </div>
+    <div class="viewbox">
+      <canvas id="cv" width="1360" height="880"></canvas>
+      <div class="ctrl">
+        <button class="btn" id="play">▶ 실행</button>
+        <button class="btn gh" id="reset">↺ 처음부터</button>
+        <label style="font-size:14px;color:var(--sub)">속도
+          <select id="speed">
+            <option value="1">1배 (수업용)</option>
+            <option value="2">2배</option>
+            <option value="4">4배</option>
+          </select>
+        </label>
+        <span class="hintline">장면을 바꾸면 자동으로 초기화됩니다</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ───────── 기본 엔진 ───────── */
+const cv=document.getElementById('cv'),cx=cv.getContext('2d');
+const W=cv.width,H=cv.height;
+const TW=64,TH=32,BH=36;
+let OX=W/2,OY=170;
+let world=new Map(), ents=[], bubbles=[], hud=null, bgFn=null;
+let particles=[], strikes=[], emberTiles=[], rainP=[], snowP=[];
+let shake=0, flashA=0;
+let runToken=0, speed=1, running=false;
+document.getElementById('speed').onchange=e=>speed=+e.target.value;
+
+const K=(x,y,z)=>x+','+y+','+z;
+function setB(x,y,z,t,c){world.set(K(x,y,z),{x,y,z,t,c,born:performance.now()})}
+function delB(x,y,z){world.delete(K(x,y,z))}
+function getB(x,y,z){return world.get(K(x,y,z))}
+function proj(x,y,z){return [OX+(x-z)*TW/2, OY+(x+z)*TH/2 - y*BH]}
+
+const COLORS={
+  grass:{top:'#6CC13F',l:'#4E8F2C',r:'#3E721F'},
+  sand:{top:'#EBD592',l:'#C9AE6B',r:'#AD9354'},
+  stone:{top:'#9AA0A8',l:'#767C85',r:'#5F656E'},
+  dstone:{top:'#5A5F66',l:'#44484F',r:'#35383E'},
+  dirt:{top:'#8A5A33',l:'#6E4526',r:'#59371E'},
+  snow:{top:'#F2F7FC',l:'#C9D6E4',r:'#AEBFD2'},
+  gold:{top:'#FFD84D',l:'#D9A92C',r:'#B98C1D'},
+  diamond:{top:'#4AEDD9',l:'#2BB9A8',r:'#1E9488'},
+  tnt:{top:'#E5533B',l:'#C23A26',r:'#A32C1B'},
+  lava:{top:'#FF7A1E',l:'#E05A10',r:'#C2480A',flat:1},
+  earthb:{top:'#2E77E0',l:'#2258B0',r:'#1B4690'},
+  earthg:{top:'#4FB244',l:'#3B8A33',r:'#2E6E27'},
+};
+function shade(hex,f){
+  const n=parseInt(hex.slice(1),16);
+  const r=Math.round(((n>>16)&255)*f),g=Math.round(((n>>8)&255)*f),b=Math.round((n&255)*f);
+  return `rgb(${r},${g},${b})`;
+}
+function drawCubeCols(x,y,z,c,scale=1,bright=0){
+  const [px,py]=proj(x,y,z), hw=TW/2*scale, hh=TH/2*scale, bh=(c.flat?7:BH)*scale;
+  const B=v=>bright?lighten(v,bright):v;
+  cx.fillStyle=B(c.l);
+  cx.beginPath();cx.moveTo(px-hw,py);cx.lineTo(px,py+hh);cx.lineTo(px,py+hh+bh);cx.lineTo(px-hw,py+bh);cx.closePath();cx.fill();
+  cx.fillStyle=B(c.r);
+  cx.beginPath();cx.moveTo(px+hw,py);cx.lineTo(px,py+hh);cx.lineTo(px,py+hh+bh);cx.lineTo(px+hw,py+bh);cx.closePath();cx.fill();
+  cx.fillStyle=B(c.top);
+  cx.beginPath();cx.moveTo(px,py-hh);cx.lineTo(px+hw,py);cx.lineTo(px,py+hh);cx.lineTo(px-hw,py);cx.closePath();cx.fill();
+  cx.strokeStyle='rgba(0,0,0,0.18)';cx.lineWidth=1.5;cx.stroke();
+}
+function drawCube(x,y,z,t,scale=1,bright=0){const c=COLORS[t];if(c)drawCubeCols(x,y,z,c,scale,bright)}
+function lighten(col,amt){
+  if(col.startsWith('rgb'))return col;
+  const n=parseInt(col.slice(1),16),r=Math.min(255,(n>>16)+amt),g=Math.min(255,((n>>8)&255)+amt),b=Math.min(255,(n&255)+amt);
+  return `rgb(${r},${g},${b})`;
+}
+function drawTNTDeco(x,y,z){
+  const [px,py]=proj(x,y,z),hw=TW/2,bh=BH;
+  cx.fillStyle='#F4EFE4';
+  cx.beginPath();cx.moveTo(px-hw,py+bh*0.32);cx.lineTo(px,py+TH/2+bh*0.32);cx.lineTo(px+hw,py+bh*0.32);
+  cx.lineTo(px+hw,py+bh*0.55);cx.lineTo(px,py+TH/2+bh*0.55);cx.lineTo(px-hw,py+bh*0.55);cx.closePath();cx.fill();
+  cx.fillStyle='#8E1C10';cx.font="700 13px Pretendard";cx.fillText('TNT',px+6,py+bh*0.52);
+}
+function drawFire(x,y,z){
+  const [px,py]=proj(x,y,z),t=performance.now()/120;
+  for(let i=-1;i<=1;i++){
+    const h=16+8*Math.sin(t+i*2+x),bx=px+i*13;
+    cx.fillStyle=i===0?'#FFD84D':'#FF7A1E';
+    cx.beginPath();cx.moveTo(bx-8,py+6);cx.lineTo(bx,py+6-h);cx.lineTo(bx+8,py+6);cx.closePath();cx.fill();
+  }
+}
+function drawSparkle(x,y,z){
+  const [px,py]=proj(x,y,z),t=performance.now()/300;
+  cx.fillStyle='rgba(255,255,255,'+(0.5+0.5*Math.sin(t+x*3))+')';
+  cx.beginPath();cx.arc(px-10,py-18,3,0,7);cx.fill();
+  cx.beginPath();cx.arc(px+12,py-6,2.5,0,7);cx.fill();
+}
+function drawAgent(e){
+  const [px,py]=proj(e.x,e.y,e.z),s=0.72,hw=TW/2*s,hh=TH/2*s,bh=BH*s;
+  cx.fillStyle='#4B5BC4';cx.beginPath();cx.moveTo(px-hw,py);cx.lineTo(px,py+hh);cx.lineTo(px,py+hh+bh);cx.lineTo(px-hw,py+bh);cx.closePath();cx.fill();
+  cx.fillStyle='#3A49A8';cx.beginPath();cx.moveTo(px+hw,py);cx.lineTo(px,py+hh);cx.lineTo(px,py+hh+bh);cx.lineTo(px+hw,py+bh);cx.closePath();cx.fill();
+  cx.fillStyle='#6B7BE0';cx.beginPath();cx.moveTo(px,py-hh);cx.lineTo(px+hw,py);cx.lineTo(px,py+hh);cx.lineTo(px-hw,py);cx.closePath();cx.fill();
+  cx.strokeStyle='rgba(0,0,0,.2)';cx.stroke();
+  cx.fillStyle='#fff';cx.fillRect(px+8,py+12,9,9);cx.fillRect(px+22,py+6,9,9);
+  cx.fillStyle='#1b2a6b';cx.fillRect(px+11,py+15,4,4);cx.fillRect(px+25,py+9,4,4);
+  cx.strokeStyle='#D83B01';cx.lineWidth=3;cx.beginPath();cx.moveTo(px,py-hh);cx.lineTo(px,py-hh-14);cx.stroke();
+  cx.fillStyle='#FF5D3B';cx.beginPath();cx.arc(px,py-hh-16,5,0,7);cx.fill();
+}
+function drawPlayer(e){
+  const [px,py]=proj(e.x,e.y,e.z),s=0.66,hw=TW/2*s,hh=TH/2*s,bh=BH*s;
+  cx.fillStyle='#2E86AC';cx.beginPath();cx.moveTo(px-hw,py+6);cx.lineTo(px,py+hh+6);cx.lineTo(px,py+hh+bh);cx.lineTo(px-hw,py+bh);cx.closePath();cx.fill();
+  cx.fillStyle='#256E8E';cx.beginPath();cx.moveTo(px+hw,py+6);cx.lineTo(px,py+hh+6);cx.lineTo(px,py+hh+bh);cx.lineTo(px+hw,py+bh);cx.closePath();cx.fill();
+  cx.fillStyle='#D8A377';cx.fillRect(px-13,py-22,26,26);
+  cx.fillStyle='#6B4A2E';cx.fillRect(px-13,py-22,26,8);
+  cx.fillStyle='#fff';cx.fillRect(px-8,py-9,6,5);cx.fillRect(px+3,py-9,6,5);
+  cx.fillStyle='#2b2b2b';cx.fillRect(px-6,py-8,3,3);cx.fillRect(px+5,py-8,3,3);
+}
+function drawChicken(e){
+  const [px,py]=proj(e.x,e.y,e.z);
+  if(e.y>1.05){cx.fillStyle='rgba(0,0,0,.25)';const [sx,sy]=proj(e.x,1,e.z);cx.beginPath();cx.ellipse(sx,sy+4,14,6,0,0,7);cx.fill();}
+  cx.fillStyle='#FFFFFF';cx.fillRect(px-12,py-14,24,20);
+  cx.fillStyle='#E8E8E8';cx.fillRect(px-12,py-2,24,8);
+  cx.fillStyle='#FFC93C';cx.fillRect(px+10,py-8,8,5);
+  cx.fillStyle='#E23B3B';cx.fillRect(px-2,py-18,6,5);
+  cx.fillStyle='#222';cx.fillRect(px+3,py-11,4,4);
+}
+function bubble(e,text,ms){bubbles.push({e,text,until:performance.now()+ms})}
+function drawBubbles(){
+  const now=performance.now();
+  bubbles=bubbles.filter(b=>b.until>now);
+  for(const b of bubbles){
+    const [px,py]=proj(b.e.x,b.e.y,b.e.z);
+    cx.font='700 21px Pretendard, sans-serif';
+    const w=cx.measureText(b.text).width+26;
+    const bx=px-w/2,by=py-78;
+    cx.fillStyle='rgba(255,255,255,0.96)';
+    cx.beginPath();cx.roundRect(bx,by,w,38,10);cx.fill();
+    cx.beginPath();cx.moveTo(px-7,by+38);cx.lineTo(px+7,by+38);cx.lineTo(px,by+50);cx.closePath();cx.fill();
+    cx.fillStyle='#1b1e24';cx.fillText(b.text,bx+13,by+26);
+  }
+}
+/* 이펙트 */
+function spawnBurst(x,y,z,cols,n,pw){
+  const [px,py]=proj(x,y,z);
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2,s=(Math.random()*0.6+0.4)*pw;
+    particles.push({sx:px,sy:py-10,vx:Math.cos(a)*s,vy:Math.sin(a)*s*0.6-pw*0.7,
+      life:0,max:38+Math.random()*28,color:cols[Math.floor(Math.random()*cols.length)],
+      size:3+Math.random()*6,grav:0.28});
+  }
+}
+function explode(x,z){
+  delB(x,1,z);setB(x,0,z,'dstone');
+  spawnBurst(x,1,z,['#FF8A3D','#FFD84D','#FFF2C9','#7A7F87','#3A3F4C'],40,9);
+  shake=16;flashA=Math.max(flashA,0.28);
+}
+function lightning(x,z){
+  const pts=[];let cxp=0;
+  for(let yy=-20; ; yy+=55+Math.random()*35){
+    pts.push([cxp,yy]);
+    if(yy>=0){break}
+    cxp+=(Math.random()-0.5)*56;
+  }
+  strikes.push({x,z,pts,until:performance.now()+190});
+  flashA=0.55;shake=17;
+  setB(x,0,z,'dstone');
+  spawnBurst(x,1,z,['#FFFFFF','#BFE3FF','#FFD84D'],26,8);
+}
+function drawStrikes(){
+  const now=performance.now();
+  strikes=strikes.filter(s=>s.until>now);
+  for(const s of strikes){
+    const [px,py]=proj(s.x,1,s.z);
+    cx.lineJoin='round';
+    for(const [wdt,col] of [[16,'rgba(160,210,255,0.45)'],[6,'#FFFFFF']]){
+      cx.strokeStyle=col;cx.lineWidth=wdt;
+      cx.beginPath();cx.moveTo(px+s.pts[0][0],0);
+      let yy=0;
+      for(const [dx,] of s.pts){yy+=py/s.pts.length;cx.lineTo(px+dx,Math.min(yy,py));}
+      cx.lineTo(px,py);cx.stroke();
+    }
+  }
+}
+/* 렌더 루프 */
+function render(){
+  cx.save();
+  if(shake>0.4){cx.translate((Math.random()-0.5)*shake,(Math.random()-0.5)*shake);shake*=0.88}else shake=0;
+  cx.clearRect(-30,-30,W+60,H+60);
+  if(bgFn)bgFn();
+  // 용암 불씨
+  if(emberTiles.length&&Math.random()<0.35){
+    const [ex,ez]=emberTiles[Math.floor(Math.random()*emberTiles.length)];
+    const [px,py]=proj(ex,0,ez);
+    particles.push({sx:px+(Math.random()-0.5)*30,sy:py,vx:0,vy:-(1+Math.random()*1.5),life:0,max:40,color:'#FFB03A',size:3,grav:0});
+  }
+  const items=[...world.values()];
+  for(const e of ents)items.push({x:e.x,y:e.y,z:e.z,ent:e});
+  items.sort((a,b)=>(a.x+a.z)-(b.x+b.z)||a.y-b.y);
+  const now=performance.now();
+  for(const it of items){
+    if(it.ent){
+      const e=it.ent;
+      if(e.type==='agent')drawAgent(e);
+      else if(e.type==='player')drawPlayer(e);
+      else if(e.type==='chicken')drawChicken(e);
+      continue;
+    }
+    if(it.t==='fire'){drawFire(it.x,it.y,it.z);continue;}
+    let sc=1;
+    if(it.born&&now-it.born<220)sc=0.4+0.6*(now-it.born)/220;
+    const br=(it.flash&&now-it.flash<420)?((Math.floor((now-it.flash)/90)%2)?95:0):0;
+    if(it.t==='rwool'&&it.c){
+      drawCubeCols(it.x,it.y,it.z,{top:it.c,l:shade(it.c,0.76),r:shade(it.c,0.58)},sc,br);
+    }else{
+      drawCube(it.x,it.y,it.z,it.t,sc,br);
+    }
+    if(it.t==='tnt')drawTNTDeco(it.x,it.y,it.z);
+    if(it.t==='diamond')drawSparkle(it.x,it.y,it.z);
+  }
+  // 파티클
+  particles=particles.filter(p=>p.life<p.max);
+  for(const p of particles){
+    p.life++;p.sx+=p.vx;p.sy+=p.vy;p.vy+=p.grav;
+    cx.globalAlpha=1-p.life/p.max;
+    cx.fillStyle=p.color;cx.fillRect(p.sx,p.sy,p.size,p.size);
+    cx.globalAlpha=1;
+  }
+  drawStrikes();
+  drawBubbles();
+  if(hud){
+    cx.font="24px 'DungGeunMo', monospace";
+    cx.fillStyle='rgba(0,0,0,0.55)';cx.beginPath();cx.roundRect(20,20,hud.w||210,52,10);cx.fill();
+    cx.fillStyle='#FFD84D';cx.fillText(hud.text,38,55);
+  }
+  cx.restore();
+  if(flashA>0.01){cx.fillStyle='rgba(255,255,255,'+flashA+')';cx.fillRect(0,0,W,H);flashA*=0.86}
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+const wait=ms=>new Promise((res,rej)=>{const t=runToken;setTimeout(()=>t===runToken?res():rej('stop'),ms/speed)});
+const frame=()=>new Promise((res,rej)=>{const t=runToken;requestAnimationFrame(()=>t===runToken?res():rej('stop'))});
+async function tween(e,to,ms){
+  const f={x:e.x,y:e.y,z:e.z},n=Math.max(2,Math.round(ms/speed/16));
+  for(let i=1;i<=n;i++){const k=i/n;
+    e.x=f.x+((to.x??f.x)-f.x)*k;e.y=f.y+((to.y??f.y)-f.y)*k;e.z=f.z+((to.z??f.z)-f.z)*k;
+    await frame();}
+}
+async function hop(e,to){ // 폴짝 뛰기
+  const mid={x:(e.x+to.x)/2,z:(e.z+to.z)/2,y:e.y+1.6};
+  await tween(e,mid,220);await tween(e,{...to,y:1},220);
+}
+function hl(id){
+  document.querySelectorAll('#code .run').forEach(el=>el.classList.remove('run'));
+  document.querySelectorAll('#code .runwrap').forEach(el=>el.classList.remove('runwrap'));
+  if(!id)return;
+  const el=document.getElementById(id);
+  if(el)el.classList.add(el.classList.contains('cblk')?'runwrap':'run');
+}
+const setTxt=(id,t)=>{const el=document.getElementById(id);if(el)el.textContent=t};
+
+/* 배경들 */
+function bgSky(top,bot,clouds){
+  const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,top);g.addColorStop(1,bot);
+  cx.fillStyle=g;cx.fillRect(-30,-30,W+60,H+60);
+  if(clouds){cx.fillStyle='rgba(255,255,255,0.85)';
+    for(const [x,y,s] of [[180,120,1],[1050,90,1.3],[620,60,0.8],[300,660,1.1],[1120,700,0.9]]){
+      cx.beginPath();cx.ellipse(x,y,70*s,24*s,0,0,7);cx.ellipse(x+50*s,y+8,50*s,20*s,0,0,7);cx.ellipse(x-55*s,y+10,45*s,18*s,0,0,7);cx.fill();
+    }}
+}
+function bgStorm(){
+  const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#171B2B');g.addColorStop(1,'#2A3145');
+  cx.fillStyle=g;cx.fillRect(-30,-30,W+60,H+60);
+  cx.strokeStyle='rgba(170,190,230,0.35)';cx.lineWidth=2;
+  for(const p of rainP){
+    p.y+=p.v;p.x-=p.v*0.35;if(p.y>H){p.y=-20;p.x=Math.random()*(W+200)}
+    cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(p.x-6,p.y+18);cx.stroke();
+  }
+}
+function bgSnowSky(){
+  bgSky('#AFC8E0','#E6EEF6');
+  cx.fillStyle='rgba(255,255,255,0.95)';
+  for(const p of snowP){p.y+=p.v;p.x+=Math.sin(p.y/40)*0.6;if(p.y>H)p.y=-8;cx.beginPath();cx.arc(p.x,p.y,p.r,0,7);cx.fill();}
+}
+function bgCaveRed(){
+  const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#241214');g.addColorStop(1,'#120806');
+  cx.fillStyle=g;cx.fillRect(-30,-30,W+60,H+60);
+}
+
+/* ───────── 장면 정의 ───────── */
+let agent,player;
+function ground(x0,x1,z0,z1,t){for(let x=x0;x<=x1;x++)for(let z=z0;z<=z1;z++)setB(x,0,z,t)}
+function clearAll(){runToken++;world=new Map();ents=[];bubbles=[];hud=null;particles=[];strikes=[];emberTiles=[];shake=0;flashA=0;running=false}
+const rainbow=['#FF4D4D','#FF9C2E','#FFE13B','#5ED74E','#3BAAFF','#7A5CFF','#C55CFF'];
+
+const SCENES=[
+
+/* 1. TNT 연쇄 폭발쇼 (반복) */
+{
+  id:'tnt',emoji:'🧨',name:'반복문 · TNT 연쇄 폭발쇼',
+  desc:'3단원 장면. 반복 블록으로 에이전트가 TNT를 일렬로 설치 → 불을 붙이면 도미노처럼 연쇄 폭발!',
+  note:'수업 포인트 — 반복으로 <b>설치</b>하는 것이 코딩이고, 점화는 게임에서 부싯돌로 직접(그래서 더 짜릿). 에티켓 약속도 함께: <b>친구 작품 근처에서 TNT 금지!</b>',
+  code:`
+  <div class="stack">
+    <div class="blk hat" id="t-hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"티엔티"</span> 입력하면</div>
+    <div class="cblk" id="t-rep" style="--c:var(--c-loops)">
+      <div class="chead">반복: <span class="slot"><span id="t-cnt">5</span> 회</span> 실행</div>
+      <div class="cbody">
+        <div class="blk" id="t-mv" style="--c:var(--c-agent)">에이전트를 앞으로 <span class="slot">2</span> 칸 이동</div>
+        <div class="blk" id="t-pl" style="--c:var(--c-agent)">에이전트 놓기 <span class="slot dd">앞쪽</span> <span style="opacity:.8">(가방에 🧨TNT!)</span></div>
+      </div><div class="cfoot"></div>
+    </div>
+  </div>`,
+  setup(){
+    OX=W/2-80;OY=330;bgFn=()=>bgSky('#F0B860','#F7E3B8',true);
+    ground(0,15,1,7,'sand');
+    player={type:'player',x:0,y:1,z:5};agent={type:'agent',x:1,y:1,z:3};
+    ents.push(player,agent);
+  },
+  async run(){
+    hl('t-hat');bubble(player,'티엔티',1400);await wait(1000);
+    const spots=[];
+    for(let i=1;i<=5;i++){
+      setTxt('t-cnt',i+'/5');
+      hl('t-mv');await tween(agent,{x:agent.x+2},420);
+      hl('t-pl');
+      const bx=Math.round(agent.x)+1,bz=Math.round(agent.z);
+      setB(bx,1,bz,'tnt');spots.push([bx,bz]);await wait(280);
+    }
+    setTxt('t-cnt','5');hl(null);
+    await tween(agent,{z:1},400); // 안전거리 확보!
+    bubble(player,'부싯돌로 점화한다~ 🔥',1600);await wait(1300);
+    setB(spots[0][0],2,spots[0][1],'fire');await wait(900);
+    delB(spots[0][0],2,spots[0][1]);
+    for(const [bx,bz] of spots){
+      const b=getB(bx,1,bz);if(b)b.flash=performance.now();
+      await wait(420);
+      explode(bx,bz);
+      await wait(260);
+    }
+    bubble(player,'연쇄폭발!! 💥💥💥',2400);
+    bubble(agent,'귀가 웅웅…',2400);
+  }
+},
+
+/* 2. 바닥은 용암! (반복 응용) */
+{
+  id:'lava',emoji:'🌋',name:'반복 응용 · 바닥은 용암!',
+  desc:'4단원 장면. 반복 안의 반복 — 에이전트가 페인트칠하듯 바닥을 용암으로 바꿉니다. 그리고 시작되는 징검다리 탈출 게임!',
+  note:'수업 포인트 — <b>줄 끝에서 도는 방향</b>이 매번 같으면 왜 안 될까요? 실제로 만들 땐 아이들이 직접 부딪혀 보게 하세요(왔다갔다 지그재그가 정답 — 최고의 디버깅 경험!)',
+  code:`
+  <div class="stack">
+    <div class="blk hat" id="v-hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"용암"</span> 입력하면</div>
+    <div class="cblk" id="v-r1" style="--c:var(--c-loops)">
+      <div class="chead">반복: <span class="slot"><span id="v-c1">4</span> 줄</span> 실행</div>
+      <div class="cbody">
+        <div class="cblk" id="v-r2" style="--c:var(--c-loops)">
+          <div class="chead">반복: <span class="slot"><span id="v-c2">10</span> 회</span> 실행</div>
+          <div class="cbody">
+            <div class="blk" id="v-mv" style="--c:var(--c-agent)">에이전트를 앞으로 1 칸 이동</div>
+            <div class="blk" id="v-pl" style="--c:var(--c-agent)">에이전트 놓기 <span class="slot dd">아래</span> <span style="opacity:.8">(가방에 🌋용암!)</span></div>
+          </div><div class="cfoot"></div>
+        </div>
+        <div class="blk" id="v-turn" style="--c:var(--c-agent)">줄 바꾸기 (회전 → 1칸 → 회전)</div>
+      </div><div class="cfoot"></div>
+    </div>
+  </div>`,
+  setup(){
+    OX=W/2;OY=330;bgFn=bgCaveRed;
+    ground(1,14,1,7,'dstone');
+    // 징검다리와 골인 지점
+    this.steps=[[3,4],[5,3],[7,5],[9,3],[11,4]];
+    for(const [x,z] of this.steps)setB(x,1,z,'stone');
+    setB(13,1,4,'gold');
+    player={type:'player',x:1,y:1,z:4};agent={type:'agent',x:1,y:1,z:2};
+    ents.push(player,agent);
+  },
+  async run(){
+    hl('v-hat');bubble(player,'용암',1300);await wait(900);
+    let dir=1,ax=2,az=2;
+    agent.x=ax-1;agent.z=az;
+    for(let row=1;row<=4;row++){
+      setTxt('v-c1',row+'/4');
+      for(let i=1;i<=10;i++){
+        setTxt('v-c2',i+'/10');
+        hl('v-mv');await tween(agent,{x:ax},110);
+        hl('v-pl');
+        if(!getB(ax,1,az))
+          {setB(ax,0,az,'lava');emberTiles.push([ax,az]);}
+        ax+=dir;
+        await wait(40);
+      }
+      if(row<4){hl('v-turn');dir*=-1;az+=1;ax+=dir;await tween(agent,{z:az},260);}
+    }
+    setTxt('v-c1','4');setTxt('v-c2','10');hl(null);
+    await tween(agent,{x:14,z:1},500);
+    bubble(agent,'바닥은 용암! 건너와 봐~ 😈',2200);await wait(1800);
+    bubble(player,'징검다리 작전 개시!',1500);await wait(1200);
+    for(const [x,z] of this.steps){await hop(player,{x,z});await wait(140);}
+    await hop(player,{x:13,z:4});
+    spawnBurst(13,2,4,rainbow,30,6);
+    bubble(player,'용암 탈출 성공! 🏆',2600);
+  }
+},
+
+/* 3. 닭 비 (이벤트+반복) */
+{
+  id:'chick',emoji:'🐔',name:'이벤트 · 닭 비 내리기',
+  desc:'5단원 장면. 반복 20회로 하늘 10칸 위에서 닭을 소환합니다. 교실이 가장 시끄러워지는 순간!',
+  note:'수업 포인트 — 소환 위치의 <b>가운데 숫자(~10)가 높이</b>! "30으로 바꾸면? 100마리면?" 예상하게 한 뒤 실험시키세요.',
+  code:`
+  <div class="stack">
+    <div class="blk hat" id="c-hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"닭비"</span> 입력하면</div>
+    <div class="cblk" id="c-rep" style="--c:var(--c-loops)">
+      <div class="chead">반복: <span class="slot"><span id="c-cnt">20</span> 회</span> 실행</div>
+      <div class="cbody">
+        <div class="blk" id="c-sp" style="--c:var(--c-mobs)">동물 소환 <span class="slot dd">닭</span> 위치 <span class="slot">~0</span> <span class="slot">~10</span> <span class="slot">~0</span></div>
+      </div><div class="cfoot"></div>
+    </div>
+  </div>`,
+  setup(){
+    OX=W/2;OY=430;bgFn=()=>bgSky('#8AD08A','#DFF3DA',true);
+    ground(1,13,1,9,'grass');
+    player={type:'player',x:7,y:1,z:5};ents.push(player);
+  },
+  async run(){
+    hl('c-hat');bubble(player,'닭비',1400);await wait(1000);
+    for(let i=1;i<=20;i++){
+      setTxt('c-cnt',i+'/20');hl('c-sp');
+      const rx=2+Math.floor(Math.random()*11),rz=1+Math.floor(Math.random()*9);
+      const ch={type:'chicken',x:rx,y:9,z:rz};ents.push(ch);
+      (async()=>{try{await tween(ch,{y:1},700);ch.y=1.25;await wait(90);ch.y=1;}catch(e){}})();
+      await wait(190);
+    }
+    setTxt('c-cnt','20');hl(null);
+    bubble(player,'🐔 닭이 20마리!',2400);
+  }
+},
+
+/* 4. 무지개 달리기 (이벤트) */
+{
+  id:'rainbow',emoji:'🌈',name:'이벤트 · 무지개 달리기',
+  desc:'5단원 장면. "걸을 때" 이벤트 — 달리는 자리마다 무지개가 깔립니다. 반 전체가 뛰면 운동장이 무지개로!',
+  note:'수업 포인트 — 시뮬레이터처럼 색이 <b>자동으로 바뀌게</b> 하려면? 그 비밀(변수!)은 7단원에서 배웁니다 — 최고의 다음 시간 예고편. 우선은 좋아하는 색 양털 하나로 시작!',
+  code:`
+  <div class="stack">
+    <div class="blk hat" id="f-hat" style="--c:var(--c-player)">플레이어가 <span class="slot dd">걸을 때</span></div>
+    <div class="blk" id="f-pl" style="--c:var(--c-blocks)">블록 놓기 <span class="slot dd">🌈 양털</span> 위치 <span class="slot">~0</span> <span class="slot">~0</span> <span class="slot">~0</span></div>
+  </div>`,
+  setup(){
+    OX=W/2;OY=400;bgFn=()=>bgSky('#8AD08A','#DFF3DA',true);
+    ground(1,13,1,9,'grass');
+    player={type:'player',x:2,y:1,z:2};ents.push(player);
+  },
+  async run(){
+    const path=[[3,2],[4,2],[5,2],[5,3],[5,4],[6,4],[7,4],[7,5],[7,6],[8,6],[9,6],[10,6],[10,7],[11,7],[12,7],[12,8],[13,8]];
+    bubble(player,'달린다~!',1400);await wait(1100);
+    let ci=0;
+    for(const [nx,nz] of path){
+      const fx=Math.round(player.x),fz=Math.round(player.z);
+      hl('f-hat');await tween(player,{x:nx,z:nz},170);
+      hl('f-pl');
+      setB(fx,1,fz,'rwool',rainbow[ci%rainbow.length]);
+      spawnBurst(fx,1.6,fz,['#FFFFFF',rainbow[ci%rainbow.length]],5,3);
+      ci++;await wait(70);
+    }
+    hl(null);bubble(player,'뒤를 봐! 무지개다 🌈',2600);
+  }
+},
+
+/* 5. 폭탄 해체 로봇 (조건문) */
+{
+  id:'defuse',emoji:'💣',name:'조건문 · 폭탄 해체 로봇',
+  desc:'6단원 장면. 길에 숨겨진 TNT! 에이전트가 "만약 앞에 블록이 있다면 → (그건 폭탄!) 조심히 부수기(해체)"를 판단하며 전진합니다.',
+  note:'수업 포인트 — 폭탄이 <b>없는 칸</b>에서는 조건이 거짓 → 부수기를 건너뛰고 그냥 걷는 것을 관찰! (참고: 에이전트가 TNT를 부수면 터지지 않고 사라져요 — 그래서 "해체"!)',
+  code:`
+  <div class="stack">
+    <div class="blk hat" id="d-hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"해체"</span> 입력하면</div>
+    <div class="cblk" id="d-rep" style="--c:var(--c-loops)">
+      <div class="chead">반복: <span class="slot"><span id="d-cnt">10</span> 회</span> 실행</div>
+      <div class="cbody">
+        <div class="cblk" id="d-if" style="--c:var(--c-logic)">
+          <div class="chead">만약 <span class="slot">에이전트 감지: 블록 앞쪽</span> 이면</div>
+          <div class="cbody">
+            <div class="blk" id="d-att" style="--c:var(--c-agent)">에이전트가 <span class="slot dd">앞으로</span> 블록 부수기 <span style="opacity:.8">= 해체!</span></div>
+          </div><div class="cfoot"></div>
+        </div>
+        <div class="blk" id="d-mv" style="--c:var(--c-agent)">에이전트를 앞으로 1 칸 이동</div>
+      </div><div class="cfoot"></div>
+    </div>
+  </div>`,
+  setup(){
+    OX=W/2-60;OY=350;bgFn=()=>bgSky('#5E6B85','#9AA6BC');
+    ground(1,14,2,6,'dstone');
+    this.bombs=[4,6,9,11];
+    for(const x of this.bombs)setB(x,1,4,'tnt');
+    setB(13,1,4,'gold');
+    player={type:'player',x:1,y:1,z:6};agent={type:'agent',x:2,y:1,z:4};
+    ents.push(player,agent);
+  },
+  async run(){
+    hl('d-hat');bubble(player,'해체',1300);await wait(900);
+    let defused=0;
+    for(let i=1;i<=10;i++){
+      setTxt('d-cnt',i+'/10');
+      hl('d-if');await wait(380);
+      const fx=Math.round(agent.x)+1;
+      const front=getB(fx,1,4);
+      if(front&&front.t==='tnt'){
+        front.flash=performance.now();await wait(420);
+        hl('d-att');delB(fx,1,4);defused++;
+        spawnBurst(fx,1,4,['#A8B0BF','#E6E9EF','#5ED74E'],16,4);
+        bubble(agent,'해체 완료! ('+defused+'/4)',1000);
+        await wait(320);
+      }
+      hl('d-mv');await tween(agent,{x:agent.x+1},340);
+      if(Math.round(agent.x)>=13)break;
+    }
+    hl(null);
+    spawnBurst(13,2,4,rainbow,34,6);
+    bubble(agent,'폭탄 4개 전부 해체! 🎖️',2600);
+    bubble(player,'우리 로봇 영웅이다!',2600);
+  }
+},
+
+/* 6. 설원 다이아 점수 게임 (변수) */
+{
+  id:'score',emoji:'💎',name:'변수 · 다이아 점수 게임',
+  desc:'7단원 장면. 코드 덩어리가 2개! "게임시작"이 점수를 0으로 만들고, 다이아가 부서질 때마다 아래 덩어리가 실행돼 점수가 올라갑니다. 5점이면 우승 → 축하 닭비!',
+  note:'수업 포인트 — 위 덩어리는 <b>딱 한 번</b>, 아래 덩어리는 <b>부술 때마다</b> 실행. 왼쪽 위 점수판이 변수의 "지금 값"입니다.',
+  code:`
+  <div class="stack">
+    <div class="blk hat" id="s-hat1" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"게임시작"</span> 입력하면</div>
+    <div class="blk" id="s-set" style="--c:var(--c-var)">점수 를 <span class="slot">0</span> 으로 정하기</div>
+  </div>
+  <div class="stack" style="margin-top:16px">
+    <div class="blk hat" id="s-hat2" style="--c:var(--c-blocks)"><span class="slot dd">💎 다이아몬드 광석</span> 이 부서지면</div>
+    <div class="blk" id="s-add" style="--c:var(--c-var)">점수 를 <span class="slot">1</span> 만큼 바꾸기</div>
+    <div class="blk" id="s-say" style="--c:var(--c-player)">말하기 <span class="slot" style="background:var(--c-var);color:#fff">점수</span></div>
+  </div>`,
+  setup(){
+    OX=W/2;OY=400;bgFn=bgSnowSky;
+    snowP=[];for(let i=0;i<70;i++)snowP.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*3+1.5,v:Math.random()*1.2+0.6});
+    ground(1,13,1,9,'snow');
+    this.ores=[[3,2],[11,3],[5,7],[9,8],[12,6]];
+    for(const [x,z] of this.ores)setB(x,1,z,'diamond');
+    player={type:'player',x:7,y:1,z:5};ents.push(player);
+  },
+  async run(){
+    let score=0;
+    hl('s-hat1');bubble(player,'게임시작',1300);await wait(900);
+    hl('s-set');hud={text:'점수: 0',w:200};await wait(800);
+    for(const [x,z] of this.ores){
+      hl(null);
+      await tween(player,{x:x+(x>player.x?-1:1),z},600);
+      const ore=getB(x,1,z);if(!ore)continue;
+      ore.flash=performance.now();await wait(400);
+      hl('s-hat2');delB(x,1,z);
+      spawnBurst(x,1,z,['#4AEDD9','#FFFFFF'],14,4);
+      await wait(320);
+      hl('s-add');score++;hud={text:'점수: '+score,w:200};await wait(380);
+      hl('s-say');bubble(player,'점수: '+score,900);await wait(450);
+    }
+    hl(null);hud={text:'점수: 5  🏆 우승!',w:320};
+    bubble(player,'우승! 🎉',2000);
+    for(let i=0;i<3;i++){
+      const ch={type:'chicken',x:5+i*2,y:8,z:4};ents.push(ch);
+      (async()=>{try{await tween(ch,{y:1},650);}catch(e){}})();
+      await wait(160);
+    }
+  }
+},
+
+/* 7. 번개 마법사 (함수) */
+{
+  id:'storm',emoji:'⚡',name:'함수 · 번개 마법사',
+  desc:'8단원 장면. "번개마법"이라는 함수(마법 주문서)를 만들고, 호출할 때마다 번개 3발이 내리꽂힙니다. 함수 = 내가 만든 마법!',
+  note:'수업 포인트 — 보라색 「실행」 블록은 플레이어 카테고리 맨 아래에 있는 상급 기술(게임 명령어를 코드로 쏘기). 함수가 호출될 때마다 <b>주문서 전체가 빛나는 것</b>을 보여주세요.',
+  code:`
+  <div class="stack">
+    <div class="blk hat" id="l-fn" style="--c:var(--c-func)">함수 <span class="slot">번개마법</span> <span style="opacity:.8;font-weight:400">(나만의 마법 주문서)</span></div>
+    <div class="cblk" id="l-r2" style="--c:var(--c-loops)">
+      <div class="chead">반복: <span class="slot">3</span> 회 실행</div>
+      <div class="cbody">
+        <div class="blk" id="l-exec" style="--c:var(--c-player)">실행 <span class="slot">"/summon lightning_bolt (랜덤 위치)"</span></div>
+      </div><div class="cfoot"></div>
+    </div>
+  </div>
+  <div class="stack" style="margin-top:16px">
+    <div class="blk hat" id="l-hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"마법"</span> 입력하면</div>
+    <div class="cblk" id="l-rep" style="--c:var(--c-loops)">
+      <div class="chead">반복: <span class="slot"><span id="l-cnt">2</span> 회</span> 실행</div>
+      <div class="cbody">
+        <div class="blk" id="l-call" style="--c:var(--c-func)">호출 <span class="slot">번개마법</span></div>
+      </div><div class="cfoot"></div>
+    </div>
+  </div>`,
+  setup(){
+    OX=W/2;OY=380;bgFn=bgStorm;
+    rainP=[];for(let i=0;i<110;i++)rainP.push({x:Math.random()*(W+200),y:Math.random()*H,v:9+Math.random()*7});
+    ground(1,13,1,9,'grass');
+    player={type:'player',x:7,y:1,z:8};agent={type:'agent',x:5,y:1,z:8};
+    ents.push(player,agent);
+  },
+  async run(){
+    hl('l-hat');bubble(player,'마법',1300);await wait(1000);
+    for(let r=1;r<=2;r++){
+      setTxt('l-cnt',r+'/2');
+      hl('l-call');await wait(350);
+      hl('l-fn');await wait(300);
+      for(let i=0;i<3;i++){
+        hl('l-exec');
+        const rx=2+Math.floor(Math.random()*11),rz=1+Math.floor(Math.random()*6);
+        lightning(rx,rz);
+        await wait(560);
+      }
+    }
+    setTxt('l-cnt','2');
+    lightning(Math.round(agent.x)+1,Math.round(agent.z)-1);
+    bubble(agent,'히익!! ⚡',1600);
+    await wait(900);hl(null);
+    bubble(player,'나는 번개 마법사다! ⚡',2800);
+  }
+},
+
+/* 8. 공중에 지구 만들기 (도형) */
+{
+  id:'earth',emoji:'🌍',name:'도형 · 공중에 지구 만들기',
+  desc:'특별 단원 장면. 고급 → 도형 서랍의 구(sphere) 블록 하나가 수백 개의 블록을 하늘에 쌓아 지구를 만듭니다. 아래에서 위로, 한 층씩 완성되는 걸 지켜보세요!',
+  note:'수업 포인트 — 반복문으로는 어렵던 <b>둥근 모양</b>을 블록 하나가 해결! "좋은 블록 하나가 코드 백 줄을 대신한다." 실제 게임에선 반지름 5~8 + <b>겉면만</b> 옵션 추천(크면 몇 분씩 걸려요). 완성 후엔 날아올라 초록 대륙을 손으로 칠합니다.',
+  code:`
+  <div class="stack">
+    <div class="blk hat" id="e-hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"지구"</span> 입력하면</div>
+    <div class="blk" id="e-sph" style="--c:#0E8A6D">구 만들기 <span class="slot dd">🟦 파란 양털</span> 중심 <span class="slot">~0</span> <span class="slot">~15</span> <span class="slot">~0</span> 반지름 <span class="slot">4</span> <span class="slot dd">겉면만</span></div>
+  </div>
+  <div class="stack" style="margin-top:16px">
+    <div class="blk hat" id="e-hat2" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"달"</span> 입력하면</div>
+    <div class="blk" id="e-moon" style="--c:#0E8A6D">구 만들기 <span class="slot dd">⬜ 흰 양털</span> 중심 <span class="slot">~6</span> <span class="slot">~17</span> <span class="slot">~-2</span> 반지름 <span class="slot">1</span> <span class="slot dd">겉면만</span></div>
+  </div>`,
+  setup(){
+    OX=W/2;OY=520;
+    this.stars=[];for(let i=0;i<60;i++)this.stars.push([Math.random()*W,Math.random()*H*0.4,Math.random()*1.8+0.8]);
+    const st=this.stars;
+    bgFn=()=>{
+      const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0B1030');g.addColorStop(0.55,'#33568F');g.addColorStop(1,'#8FC0EA');
+      cx.fillStyle=g;cx.fillRect(-30,-30,W+60,H+60);
+      const t=performance.now()/800;
+      for(const [x,y,r] of st){cx.fillStyle='rgba(255,255,255,'+(0.35+0.35*Math.sin(t+x))+')';cx.beginPath();cx.arc(x,y,r,0,7);cx.fill();}
+    };
+    ground(3,11,3,6,'grass');
+    player={type:'player',x:7,y:1,z:5};ents.push(player);
+    this.C={x:7,y:9,z:4};this.R=4;
+  },
+  async run(){
+    hl('e-hat');bubble(player,'지구',1300);await wait(1000);
+    hl('e-sph');
+    const {x:cx0,y:cy0,z:cz0}=this.C,R=this.R;
+    for(let dy=-R;dy<=R;dy++){ // 아래층부터 한 층씩!
+      for(let dx=-R;dx<=R;dx++)for(let dz=-R;dz<=R;dz++){
+        const d=Math.sqrt(dx*dx+dy*dy+dz*dz);
+        if(d<=R+0.45&&d>=R-0.55){
+          let t='earthb';
+          if(Math.abs(dy)>=R-0.4)t='snow'; // 극지방 얼음
+          else if(Math.sin(dx*2.1+dz*1.4+dy*0.8)+Math.cos(dx*0.9-dz*1.1)>0.7)t='earthg'; // 대륙
+          setB(cx0+dx,cy0+dy,cz0+dz,t);
+        }
+      }
+      bubble(player,'층 쌓는 중… ('+(dy+R+1)+'/'+(2*R+1)+')',260);
+      await wait(300);
+    }
+    spawnBurst(cx0,cy0+R+1,cz0,['#4AEDD9','#FFFFFF','#5ED74E'],26,6);
+    await wait(500);
+    hl('e-hat2');bubble(player,'달',1100);await wait(900);
+    hl('e-moon');
+    const mx=cx0+6,my=cy0+2,mz=cz0-2;
+    for(const [dx,dy,dz] of [[0,0,0],[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])
+      {setB(mx+dx,my+dy,mz+dz,'wool');await wait(70);}
+    spawnBurst(mx,my+2,mz,['#FFFFFF','#FFD84D'],12,4);
+    hl(null);
+    bubble(player,'우리가 만든 지구다! 🌍',2800);
+  }
+},
+];
+
+/* ───────── UI 연결 ───────── */
+const tabsEl=document.getElementById('tabs');
+let cur=0;
+SCENES.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.className='tab';b.role='tab';b.textContent=s.emoji+' '+s.name;
+  b.onclick=()=>select(i);
+  tabsEl.appendChild(b);
+});
+function select(i){
+  cur=i;clearAll();
+  [...tabsEl.children].forEach((b,k)=>b.classList.toggle('sel',k===i));
+  const s=SCENES[i];
+  document.getElementById('sc-title').textContent=s.emoji+' '+s.name;
+  document.getElementById('sc-desc').textContent=s.desc;
+  document.getElementById('sc-note').innerHTML=s.note;
+  document.getElementById('code').innerHTML=s.code;
+  s.setup();
+}
+document.getElementById('play').onclick=async()=>{
+  if(running)return;
+  clearAll();SCENES[cur].setup();
+  running=true;const t=runToken;
+  try{await SCENES[cur].run();}catch(e){/* 중단됨 */}
+  if(t===runToken)running=false;
+};
+document.getElementById('reset').onclick=()=>{clearAll();SCENES[cur].setup();hl(null);};
+select(0);
+</script>
+</body>
+</html>

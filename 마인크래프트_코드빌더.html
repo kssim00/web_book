@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마인크래프트 코드빌더 수업 슬라이드 · 초등 4~6학년</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+@font-face{
+  font-family:'DungGeunMo';
+  src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/DungGeunMo.woff') format('woff');
+  font-weight:normal;font-style:normal;font-display:swap;
+}
+:root{
+  --bg:#191B20;          /* 깊은 동굴 */
+  --panel:#23262E;       /* 슬레이트 패널 */
+  --panel2:#2B2F39;
+  --line:#3A3F4C;
+  --ink:#EEF1F6;
+  --sub:#A8B0BF;
+  --grass:#6CC13F;       /* 잔디 초록 */
+  --diamond:#4AEDD9;     /* 다이아 청록 */
+  --gold:#FFD84D;        /* 금 */
+  --red:#FF6B57;
+  /* 메이크코드 카테고리 색 (버전에 따라 살짝 다를 수 있음) */
+  --c-player:#1E6FD0;
+  --c-agent:#D83B01;
+  --c-blocks:#00838C;
+  --c-mobs:#2E9E44;
+  --c-loops:#0B7D0B;
+  --c-logic:#00646E;
+  --c-var:#A80000;
+  --c-math:#7B3FA0;
+  --c-func:#2456A8;
+  --c-pos:#5B6672;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;
+  overflow:hidden;
+}
+/* 픽셀 테두리 유틸 */
+.pixel{
+  border:3px solid #000;
+  box-shadow:0 0 0 3px var(--line), inset 0 0 0 2px rgba(255,255,255,.04);
+}
+
+/* ── 슬라이드 프레임 ───────────────────── */
+.deck{height:100vh;position:relative}
+.slide{
+  position:absolute;inset:0;display:none;
+  padding:56px 64px 96px;
+  overflow-y:auto;
+}
+.slide.on{display:block;animation:fadein .25s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide.on{animation:none}}
+
+.wrap{max-width:1140px;margin:0 auto}
+
+/* 타이포 */
+.eyebrow{
+  font-family:'DungGeunMo',monospace;font-size:15px;letter-spacing:.08em;
+  color:var(--grass);margin-bottom:14px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow .cube{width:12px;height:12px;background:var(--grass);box-shadow:3px 3px 0 #2f5a1c;display:inline-block}
+h1{font-family:'DungGeunMo',monospace;font-size:52px;line-height:1.25;margin-bottom:10px;text-shadow:3px 3px 0 rgba(0,0,0,.55)}
+h2{font-family:'DungGeunMo',monospace;font-size:34px;line-height:1.35;margin-bottom:20px;text-shadow:3px 3px 0 rgba(0,0,0,.5)}
+h3{font-size:19px;font-weight:800;margin-bottom:10px}
+.lead{font-size:19px;color:var(--sub);line-height:1.7;max-width:820px}
+.hl-g{color:var(--grass)} .hl-d{color:var(--diamond)} .hl-y{color:var(--gold)} .hl-r{color:var(--red)}
+
+/* 레이아웃 */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:26px;align-items:start}
+.cols.w64{grid-template-columns:1.15fr .85fr}
+.cols.w46{grid-template-columns:.85fr 1.15fr}
+@media (max-width:900px){.cols,.cols.w64,.cols.w46{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+.card.hot{border-color:var(--grass);box-shadow:0 0 0 1px var(--grass) inset}
+.card h3 .tag{font-family:'DungGeunMo',monospace;font-size:13px;color:var(--gold);margin-left:8px}
+
+/* 단계 목록 */
+ol.steps{list-style:none;counter-reset:s;margin-top:6px}
+ol.steps li{
+  counter-increment:s;position:relative;padding:10px 0 10px 46px;
+  font-size:16.5px;line-height:1.65;border-bottom:1px dashed var(--line);
+}
+ol.steps li:last-child{border-bottom:none}
+ol.steps li::before{
+  content:counter(s);position:absolute;left:0;top:10px;
+  width:30px;height:30px;background:var(--grass);color:#10240a;
+  font-family:'DungGeunMo',monospace;font-size:15px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:3px 3px 0 #2f5a1c;
+}
+ul.dots{list-style:none;margin-top:6px}
+ul.dots li{padding:7px 0 7px 24px;position:relative;font-size:16.5px;line-height:1.6}
+ul.dots li::before{content:"";position:absolute;left:2px;top:15px;width:9px;height:9px;background:var(--diamond);box-shadow:2px 2px 0 #1a6e63}
+
+/* 카테고리 칩 */
+.chip{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--c,#555);color:#fff;font-weight:700;font-size:14.5px;
+  padding:3px 12px 4px;border-radius:999px;vertical-align:middle;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.3);white-space:nowrap;
+}
+.chip::before{content:"";width:9px;height:9px;background:rgba(255,255,255,.85);border-radius:2px}
+
+/* 키보드 키 */
+kbd{
+  font-family:'DungGeunMo',monospace;background:#0d0e11;border:1px solid var(--line);
+  border-bottom-width:3px;border-radius:6px;padding:2px 9px;font-size:15px;color:var(--gold);
+}
+
+/* ── 메이크코드 블록 목업 ───────────────── */
+.stack{margin:10px 0 4px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}
+.blk{
+  position:relative;width:max-content;max-width:100%;
+  background:var(--c,#555);color:#fff;
+  font-size:16px;font-weight:700;line-height:1.35;
+  padding:11px 18px;border-radius:9px;margin-top:3px;
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.28), inset 0 2px 0 rgba(255,255,255,.14);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.blk::before{ /* 퍼즐 연결 탭 */
+  content:"";position:absolute;top:-5px;left:18px;width:24px;height:7px;
+  background:var(--c,#555);border-radius:4px 4px 0 0;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.14);
+}
+.blk.hat{border-radius:22px 22px 9px 9px;padding-top:13px}
+.blk.hat::before{display:none}
+.slot{
+  background:#fff;color:#222;font-weight:800;border-radius:999px;
+  padding:1px 12px;font-size:15px;box-shadow:inset 0 2px 3px rgba(0,0,0,.2);
+}
+.slot.dd::after{content:" ▾";font-size:12px;color:#666}
+/* C자 블록 (반복/조건) */
+.cblk{position:relative;width:max-content;max-width:100%;margin-top:3px}
+.cblk>.chead{
+  position:relative;background:var(--c,#555);color:#fff;font-size:16px;font-weight:700;
+  padding:11px 18px;border-radius:9px 9px 0 0;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.14);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.cblk>.chead::before{
+  content:"";position:absolute;top:-5px;left:18px;width:24px;height:7px;
+  background:var(--c,#555);border-radius:4px 4px 0 0;
+}
+.cblk>.cbody{
+  border-left:16px solid var(--c,#555);
+  padding:6px 0 8px 12px;background:rgba(255,255,255,.03);
+}
+.cblk>.cfoot{
+  height:16px;background:var(--c,#555);border-radius:0 0 9px 9px;
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.28);
+}
+.stack .note{font-size:13.5px;color:var(--sub);margin-top:10px;line-height:1.55}
+
+/* 결과 미리보기 배너 */
+.result{
+  margin-top:16px;background:#101216;border:1px solid var(--line);border-radius:12px;
+  padding:14px 18px;font-size:16px;line-height:1.6;
+}
+.result b{color:var(--diamond)}
+.result::before{content:"▶ 실행하면 ";font-family:'DungGeunMo',monospace;color:var(--grass);font-size:14px;display:block;margin-bottom:4px}
+
+/* 채팅창 목업 */
+.chatmock{
+  font-family:'DungGeunMo',monospace;background:#0b0c0f;border:1px solid var(--line);
+  border-radius:8px;padding:10px 14px;font-size:16px;color:#cfe8ff;margin:8px 0;
+  width:max-content;max-width:100%;
+}
+.chatmock::before{content:"채팅창  ";color:#5b6672;font-size:12px;display:block;margin-bottom:2px}
+
+/* 표 */
+table{width:100%;border-collapse:collapse;margin-top:16px;font-size:16px}
+th,td{padding:11px 14px;border:1px solid var(--line);text-align:left;line-height:1.55}
+th{background:var(--panel2);font-family:'DungGeunMo',monospace;font-size:14px;color:var(--gold);font-weight:400}
+td b{color:var(--grass)}
+
+/* 에디터 화면 목업 */
+.editor{display:grid;grid-template-columns:150px 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:14px;min-height:280px;background:#F2F4F7}
+.editor .tools{background:#fff;border-right:1px solid #ddd;padding:10px 0}
+.editor .tools div{padding:7px 14px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;color:#333}
+.editor .tools i{width:12px;height:12px;border-radius:50%;background:var(--c)}
+.editor .ws{padding:20px;position:relative;background:
+  linear-gradient(#e8ebf0 1px,transparent 1px) 0 0/24px 24px,
+  linear-gradient(90deg,#e8ebf0 1px,transparent 1px) 0 0/24px 24px,#F2F4F7}
+.editor .ws .lbl{position:absolute;right:14px;bottom:10px;font-size:12.5px;color:#8a93a3;font-weight:700}
+
+/* 지도(코스) 그리드 */
+.grid{display:grid;grid-template-columns:repeat(6,46px);gap:4px;margin-top:12px}
+.cell{width:46px;height:46px;background:#31353F;border:1px solid #000;display:flex;align-items:center;justify-content:center;font-size:22px}
+.cell.path{background:#4a6b33}
+.cell.start{background:var(--c-agent)}
+.cell.goal{background:var(--gold)}
+.cell small{font-size:11px;font-weight:800;color:#111}
+
+/* 미션 배지 */
+.mission{
+  margin-top:18px;border:2px dashed var(--gold);border-radius:12px;padding:16px 20px;
+  background:rgba(255,216,77,.06);font-size:16.5px;line-height:1.65;
+}
+.mission::before{content:"⭐ 도전 미션";font-family:'DungGeunMo',monospace;color:var(--gold);display:block;font-size:14px;margin-bottom:6px}
+.tip{
+  margin-top:14px;border-left:4px solid var(--diamond);background:rgba(74,237,217,.06);
+  padding:12px 16px;border-radius:0 10px 10px 0;font-size:15.5px;line-height:1.6;color:#d7e6e3;
+}
+.tip::before{content:"💡 선생님 팁  ";font-weight:800;color:var(--diamond)}
+
+/* ── 내비게이션 ─────────────────────── */
+.bar{position:fixed;top:0;left:0;height:5px;background:var(--grass);z-index:50;transition:width .2s}
+.nav{
+  position:fixed;bottom:20px;right:26px;z-index:50;display:flex;gap:8px;align-items:center;
+  font-family:'DungGeunMo',monospace;
+}
+.nav .cnt{font-size:14px;color:var(--sub);margin-right:6px}
+.nav button{
+  font-family:inherit;font-size:16px;cursor:pointer;
+  background:var(--panel);color:var(--ink);border:2px solid var(--line);
+  border-bottom-width:4px;border-radius:8px;padding:8px 16px;
+}
+.nav button:hover{border-color:var(--grass);color:var(--grass)}
+.nav button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.hint{position:fixed;bottom:24px;left:28px;font-size:13px;color:#59606d;font-family:'DungGeunMo',monospace;z-index:50}
+
+/* 타이틀 슬라이드 */
+.titleslide{display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 150px)}
+.titleslide .bigcubes{display:flex;gap:10px;margin-bottom:26px}
+.titleslide .bigcubes span{width:26px;height:26px;box-shadow:6px 6px 0 rgba(0,0,0,.5)}
+.badge{
+  display:inline-block;font-family:'DungGeunMo',monospace;font-size:14px;color:#10240a;
+  background:var(--grass);padding:5px 14px;box-shadow:3px 3px 0 #2f5a1c;margin-bottom:22px;width:max-content;
+}
+
+/* 세계 여행 콘셉트 */
+.loc{display:inline-block;font-family:'DungGeunMo',monospace;font-size:13px;color:#0e2430;background:var(--diamond);padding:3px 10px;box-shadow:3px 3px 0 #1a6e63;margin-left:10px}
+.setup{margin-top:14px;margin-bottom:6px;border:1px solid var(--line);background:#101216;border-radius:10px;padding:12px 16px;font-size:15.5px;line-height:1.75}
+.setup::before{content:"🗺️ 공간 준비 — 선생님, 수업 전 3분";display:block;font-family:'DungGeunMo',monospace;font-size:13px;color:var(--diamond);margin-bottom:6px}
+.setup code{font-family:'DungGeunMo',monospace;background:#000;color:#8fe37f;padding:2px 8px;border-radius:5px;font-size:14px}
+.route{display:flex;flex-wrap:wrap;margin-top:26px}
+.stop{flex:1 1 116px;min-width:112px;background:var(--panel);border:1px solid var(--line);padding:16px 8px 14px;text-align:center;position:relative}
+.stop .em{font-size:32px;display:block;margin-bottom:8px}
+.stop b{font-family:'DungGeunMo',monospace;font-size:13.5px;color:var(--gold);display:block;margin-bottom:6px;font-weight:400}
+.stop small{font-size:12.5px;color:var(--sub);line-height:1.5;display:block}
+.stop::after{content:"▶";position:absolute;right:-9px;top:50%;transform:translateY(-50%);color:var(--grass);z-index:2;font-size:13px}
+.stop:last-child::after{display:none}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="deck" id="deck">
+
+<!-- 0. 타이틀 -->
+<section class="slide">
+  <div class="wrap titleslide">
+    <div class="bigcubes">
+      <span style="background:var(--grass)"></span>
+      <span style="background:#8a5a33"></span>
+      <span style="background:var(--diamond)"></span>
+      <span style="background:var(--gold)"></span>
+    </div>
+    <div class="badge">초등 4~6학년 · 블록 코딩</div>
+    <h1>마인크래프트 코드빌더<br>따라 하는 수업 슬라이드</h1>
+    <p class="lead" style="margin-top:14px">엔트리·스크래치처럼 블록을 끼우면, <span class="hl-d">에이전트 로봇</span>이 마인크래프트 세상에서 움직입니다.<br>
+    이 슬라이드는 <b class="hl-g">블록을 어디서 꺼내 어떻게 끼우는지</b>까지 그대로 따라 할 수 있게 만들었어요.</p>
+    <p style="margin-top:30px;color:var(--sub);font-family:'DungGeunMo',monospace;font-size:15px">→ 방향키 또는 오른쪽 아래 버튼으로 넘기세요</p>
+  </div>
+</section>
+
+<!-- 1. 사용법 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>선생님께 — 이 슬라이드 사용법</div>
+  <h2>수업 전에 1분만 읽어주세요</h2>
+  <div class="cols">
+    <div class="card">
+      <h3>구성</h3>
+      <ul class="dots">
+        <li>총 <b class="hl-g">9개 단원</b> — 단원 하나가 <b>1~2차시(40~45분)</b> 분량입니다.</li>
+        <li>콘셉트는 <b class="hl-d">코딩 세계 여행</b> — 초원 → 사막 → 화산섬 → 동굴 → 무지개 숲 → 폐광 → 설원 → 폭풍의 언덕, 그리고 보너스로 <b>지구 궤도</b>까지! 단원마다 새로운 세계에서 새 개념을 배웁니다 (다음 장 여행 지도 참고)</li>
+        <li>모든 예제에 <b>블록 조립 그림 + 꺼내는 순서</b>가 있습니다. 화면에 띄워 놓고 아이들이 보고 따라 만들면 됩니다.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>블록 색깔에 대해</h3>
+      <p style="font-size:16px;line-height:1.7">슬라이드의 블록 색은 실제 메이크코드 카테고리 색과 맞춰 두었지만, <b>버전에 따라 살짝 다를 수 있어요.</b> 아이들에게는 색보다 <span class="hl-d">카테고리 이름</span>(플레이어, 에이전트, 반복…)으로 찾게 지도해 주세요.</p>
+      <div class="tip">각 단원의 마지막 「도전 미션」은 빨리 끝낸 아이들용 심화 과제로 쓰시면 수준 차이를 자연스럽게 흡수할 수 있습니다.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 여행 지도 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>이번 학기 콘셉트</div>
+  <h2>우리는 코딩으로 세계 여행을 떠납니다 🧳</h2>
+  <p class="lead">같은 평지에서만 배우면 지루하니까 — <b>단원마다 새로운 세계에 도착</b>해서, 그 세계에 어울리는 코딩 미션을 해결합니다. 월드를 새로 만들 필요는 없어요. 선생님이 <b class="hl-g">명령어 한 줄</b>로 공간을 변신시킵니다. (각 단원 슬라이드에 「공간 준비」 명령어가 적혀 있어요)</p>
+  <div class="route">
+    <div class="stop"><span class="em">🌱</span><b>1. 초원 캠프</b><small>첫 코드<br>말하는 명령어</small></div>
+    <div class="stop"><span class="em">🏜️</span><b>2. 사막 유적</b><small>순차 실행<br>보물찾기</small></div>
+    <div class="stop"><span class="em">🌋</span><b>3. 화산섬</b><small>반복문<br>TNT 연쇄 폭발쇼</small></div>
+    <div class="stop"><span class="em">🕳️</span><b>4. 어둠의 동굴</b><small>반복 응용<br>바닥은 마그마!</small></div>
+    <div class="stop"><span class="em">🌈</span><b>5. 무지개 숲</b><small>이벤트<br>닭 비 · 무지개</small></div>
+    <div class="stop"><span class="em">⚙️</span><b>6. 버려진 폐광</b><small>조건문<br>폭탄 해체 로봇</small></div>
+    <div class="stop"><span class="em">❄️</span><b>7. 얼음 설원</b><small>변수<br>다이아 점수게임</small></div>
+    <div class="stop"><span class="em">⛈️</span><b>8. 폭풍의 언덕</b><small>함수<br>번개 마법사</small></div>
+    <div class="stop"><span class="em">🌍</span><b>특별. 지구 궤도</b><small>도형 블록<br>공중 지구 만들기</small></div>
+    <div class="stop"><span class="em">🚀</span><b>9. 자유 여행</b><small>최종<br>프로젝트</small></div>
+  </div>
+  <div class="cols" style="margin-top:24px">
+    <div class="card">
+      <h3>공간 변신의 비밀 = /fill 명령어</h3>
+      <p style="font-size:16px;line-height:1.75">채팅창에 <code style="font-family:'DungGeunMo',monospace;background:#000;color:#8fe37f;padding:2px 8px;border-radius:5px">/fill ~-10 ~-1 ~-10 ~10 ~-1 ~10 sand</code> 를 입력하면 <b>내 발밑 주변 땅이 순식간에 모래로!</b> 물결표(~)는 "내 위치 기준"이라는 뜻이에요. 마지막 단어만 water, snow, stone 등으로 바꾸면 어떤 세계든 만들 수 있어요. 아이들 앞에서 선생님이 직접 시연해 보세요 — "코드 한 줄이 세상을 바꾼다"는 이 수업의 주제를 보여주는 최고의 오프닝입니다.</p>
+    </div>
+    <div class="card">
+      <h3>여권 도장 찍기 🛂</h3>
+      <p style="font-size:16px;line-height:1.75">단원이 끝날 때마다 아이들이 <b>완성 장면을 스크린샷</b>으로 찍어 모으게 하세요. "사막 도장", "화산 도장", "지구 도장"… 10개가 모이면 <b>코딩 여권 완성 = 학기말 포트폴리오</b>가 됩니다. 발표 자료로도, 학부모 공유용으로도 좋아요.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 2. 코드빌더란 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>들어가기</div>
+  <h2>코드빌더 = 마인크래프트 속의 엔트리</h2>
+  <p class="lead">아이들이 이미 엔트리를 안다면 이 표 하나로 5분 만에 이해합니다.</p>
+  <table>
+    <tr><th>엔트리 / 스크래치</th><th>마인크래프트 코드빌더 (메이크코드)</th></tr>
+    <tr><td>오브젝트(스프라이트)를 움직인다</td><td><b>에이전트</b>(로봇 친구)를 움직인다</td></tr>
+    <tr><td>무대(2D 화면)</td><td><b>마인크래프트 월드(3D)</b> — 진짜로 블록이 놓이고 부서짐</td></tr>
+    <tr><td>「시작하기 버튼을 클릭했을 때」</td><td>「<b>채팅 명령어를 입력하면</b>」 — 채팅에 명령어를 치면 실행</td></tr>
+    <tr><td>「10번 반복하기」「만약 ~라면」</td><td>이름도 모양도 <b>거의 똑같은 블록</b>이 그대로 있음</td></tr>
+    <tr><td>결과를 화면으로 본다</td><td>결과가 <b>내 눈앞 세상에 실제로 지어진다</b> ← 아이들이 열광하는 포인트</td></tr>
+  </table>
+  <div class="tip">첫 시간 도입 멘트 추천 — "엔트리에서는 그림이 움직였지? 오늘부터는 너희 코드가 <b>세상을 진짜로 바꿔.</b> TNT도 터뜨리고, 번개도 부르고, 하늘에서 닭도 떨어뜨릴 거야."</div>
+</div></section>
+
+<!-- 3. 월드 준비 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>준비 ① 연습용 월드 만들기</div>
+  <h2>수업용 월드는 이렇게 설정하세요</h2>
+  <div class="cols">
+    <div class="card hot">
+      <h3>새 월드 설정 (아이들과 똑같이)</h3>
+      <ol class="steps">
+        <li>마인크래프트 에듀케이션 실행 → <b>플레이 → 새로 만들기 → 새 월드</b></li>
+        <li>게임 모드: <b class="hl-g">크리에이티브</b> (재료 무한, 죽지 않음)</li>
+        <li>난이도: <b class="hl-g">평화로움</b> (몬스터가 안 나와서 코딩에만 집중)</li>
+        <li>세계 유형: <b>평지(Flat)</b>를 추천 — 폭발쇼·경기장 예제가 평평한 땅에서 잘 보임</li>
+        <li><b class="hl-y">치트 활성화: 켜기</b> ← 이걸 꺼두면 코드빌더 명령이 안 먹는 경우가 있어요. 꼭 확인!</li>
+      </ol>
+    </div>
+    <div>
+      <div class="card">
+        <h3>기본 조작 5개만 미리 연습 <span class="tag">10분</span></h3>
+        <ul class="dots">
+          <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 이동, 마우스로 시선</li>
+          <li><kbd>Space</kbd> 점프 (크리에이티브에선 두 번 누르면 비행)</li>
+          <li><kbd>E</kbd> 아이템 창 / <kbd>T</kbd> 또는 <kbd>Enter</kbd> 채팅창</li>
+          <li>왼쪽 클릭: 부수기 / 오른쪽 클릭: 놓기</li>
+        </ul>
+      </div>
+      <div class="tip">마인크래프트가 처음인 아이는 거의 없지만, "게임 실력"과 무관하게 모두 같은 출발선이 되도록 첫 10분은 조작 연습으로 통일해 주세요.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 4. 코드빌더 열기 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>준비 ② 코드빌더 열기</div>
+  <h2>키보드 <span class="hl-y">C</span> 키 하나면 열립니다</h2>
+  <div class="cols w64">
+    <div>
+      <ol class="steps">
+        <li>월드에 들어간 상태에서 <kbd>C</kbd> 키를 누르세요 (또는 상단 코드빌더 아이콘)</li>
+        <li>편집기 선택 화면이 나오면 <b class="hl-g">MakeCode(메이크코드)</b> 선택</li>
+        <li><b>새 프로젝트</b> 클릭 → 이름 짓기 (예: "1반 김코딩")</li>
+        <li>왼쪽 = <b>블록 서랍(카테고리)</b>, 오른쪽 = <b>작업 공간</b>. 엔트리와 똑같은 구조!</li>
+        <li>다 만들면 오른쪽 아래 <b class="hl-g">▶ 실행</b>… 이 아니라, 대부분의 코드는 <b>채팅 명령어</b>로 실행해요. (다음 장에서!)</li>
+      </ol>
+      <div class="tip"><kbd>C</kbd>를 눌러도 안 열리면: ① 채팅창이 열려 있지 않은지 확인 ② 월드 설정에서 치트가 켜져 있는지 확인.</div>
+    </div>
+    <div>
+      <div class="editor pixel">
+        <div class="tools">
+          <div><i style="--c:var(--c-player)"></i>플레이어</div>
+          <div><i style="--c:var(--c-agent)"></i>에이전트</div>
+          <div><i style="--c:var(--c-blocks)"></i>블록</div>
+          <div><i style="--c:var(--c-mobs)"></i>몹</div>
+          <div><i style="--c:var(--c-loops)"></i>반복</div>
+          <div><i style="--c:var(--c-logic)"></i>논리</div>
+          <div><i style="--c:var(--c-var)"></i>변수</div>
+          <div><i style="--c:var(--c-math)"></i>계산</div>
+        </div>
+        <div class="ws">
+          <div class="stack">
+            <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"jump"</span> 입력하면</div>
+          </div>
+          <div class="lbl">← 왼쪽 서랍에서 꺼내 여기에 놓아요</div>
+        </div>
+      </div>
+      <p class="note" style="font-size:14px;color:var(--sub);margin-top:8px">▲ 메이크코드 화면 구조. 왼쪽 서랍에서 블록을 끌어다 오른쪽에 끼웁니다.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 5. 카테고리 색 지도 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>준비 ③ 블록 지도</div>
+  <h2>이 수업에서 쓰는 카테고리 8개</h2>
+  <p class="lead">"몇 번째 서랍"이 아니라 <b>이름과 색</b>으로 기억하게 하세요. 이 슬라이드를 교실에 인쇄해 붙여 두셔도 좋아요.</p>
+  <table>
+    <tr><th style="width:220px">카테고리</th><th>무엇이 들어있나</th><th>엔트리로 치면</th></tr>
+    <tr><td><span class="chip" style="--c:var(--c-player)">플레이어</span></td><td>「채팅 명령어 입력하면」, 「말하기(say)」, 「걸을 때」</td><td>시작 블록 + 말하기</td></tr>
+    <tr><td><span class="chip" style="--c:var(--c-agent)">에이전트</span></td><td>에이전트 이동·회전·블록 부수기·블록 놓기·순간이동</td><td>움직임 블록</td></tr>
+    <tr><td><span class="chip" style="--c:var(--c-blocks)">블록</span></td><td>월드에 블록 놓기, 「블록이 부서지면」 이벤트</td><td>—(마크만의 기능)</td></tr>
+    <tr><td><span class="chip" style="--c:var(--c-mobs)">몹</span></td><td>동물·몬스터 소환하기</td><td>—(마크만의 기능)</td></tr>
+    <tr><td><span class="chip" style="--c:var(--c-loops)">반복</span></td><td>「~번 반복」, 「무한 반복」</td><td>~번 반복하기</td></tr>
+    <tr><td><span class="chip" style="--c:var(--c-logic)">논리</span></td><td>「만약 ~라면 / 아니면」, 비교(=, &lt;, &gt;)</td><td>만약 ~라면</td></tr>
+    <tr><td><span class="chip" style="--c:var(--c-var)">변수</span></td><td>변수 만들기, 값 정하기, 값 바꾸기</td><td>변수</td></tr>
+    <tr><td><span class="chip" style="--c:var(--c-func)">고급 → 함수</span></td><td>나만의 블록(함수) 만들기</td><td>나만의 블록</td></tr>
+  </table>
+</div></section>
+
+<!-- 6. 블록 끼우기 기본기 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>준비 ④ 블록 다루는 손기술</div>
+  <h2>블록 끼우기 4가지 기본기</h2>
+  <div class="cols">
+    <div class="card">
+      <ol class="steps">
+        <li><b>꺼내기</b> — 서랍에서 블록을 <b>꾹 잡고 끌어서</b> 작업 공간에 놓기</li>
+        <li><b>끼우기</b> — 블록 아래로 가져가면 <b class="hl-g">노란 그림자</b>가 생김 → 그때 놓으면 딸깍 붙음</li>
+        <li><b>버리기</b> — 필요 없는 블록은 다시 <b>왼쪽 서랍 쪽으로</b> 끌면 휴지통에 들어감</li>
+        <li><b>복제하기</b> — 블록 위에서 <b>마우스 오른쪽 클릭 → 복제</b>. 같은 블록을 여러 개 쓸 때 최고!</li>
+      </ol>
+    </div>
+    <div>
+      <div class="card">
+        <h3>흰색 동그라미 = 바꿀 수 있는 값</h3>
+        <div class="stack">
+          <div class="blk" style="--c:var(--c-agent)">에이전트를 <span class="slot dd">앞으로</span> <span class="slot">1</span> 칸 이동</div>
+        </div>
+        <p style="font-size:15.5px;line-height:1.65;margin-top:8px">블록 속 <span class="slot">1</span> 처럼 <b>하얀 부분은 클릭해서 값을 바꿀 수 있어요.</b> 숫자를 직접 치거나, <span class="slot dd">앞으로</span> 처럼 ▾가 있으면 목록에서 고릅니다.</p>
+      </div>
+      <div class="tip">첫 시간에 "블록 10개 꺼냈다가 전부 휴지통에 버리기" 놀이를 1분 시키면, 이후 수업 내내 손이 빨라집니다.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 실전 훈련소 ① 공식 튜토리얼 월드 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>실전 훈련소 ① 공식 튜토리얼 월드</div>
+  <h2>연습장은 이미 게임 안에 있어요 — 코드빌더 튜토리얼 월드</h2>
+  <p class="lead">마인크래프트 에듀케이션에 내장된 무료 공식 월드입니다. 마을을 걸어다니며 표지판이 하나씩 알려주고, <b>챌린지 코스 7개</b>가 기다리고 있어요. 우리 수업의 <b class="hl-g">"단원 끝 실전 시험장"</b>으로 쓰기 딱 좋습니다.</p>
+  <div class="cols">
+    <div class="card hot">
+      <h3>입장 방법 & 진행 방식</h3>
+      <ol class="steps">
+        <li><b>플레이 → 라이브러리 보기(View Library)</b> → 시작하기/튜토리얼 코너에서 <b>"Code Builder Tutorial"</b> 월드 열기 (검색해도 됩니다)</li>
+        <li>마을 길을 따라 걸으면 <b>표지판</b>이 조작법·에이전트를 차례로 설명해 줍니다</li>
+        <li>각 챌린지장 입구에 <b>시작 발판(Start Plate)</b>이 있고, 에이전트를 코드로 움직여 <b class="hl-y">금 발판(Gold Plate)</b>을 밟게 하면 성공!</li>
+        <li>챌린지장 옆 <b>전망대(Observation Deck)</b>에 올라가면 에이전트가 코스를 도는 모습을 위에서 한눈에 관찰할 수 있어요 — 발표·시연할 때 최고</li>
+      </ol>
+    </div>
+    <div>
+      <div class="card">
+        <h3>표지판이 알려주는 에이전트 3대 비밀</h3>
+        <ul class="dots">
+          <li><b>불사신이다</b> — 물에 빠져도, 용암에 들어가도, 절대 죽지 않아요. 그래서 어떤 위험한 코스도 코드만 맞으면 통과!</li>
+          <li><b>자기 가방(인벤토리)이 있다</b> — 에이전트를 <b>우클릭</b>하면 가방이 열립니다. 재료를 넣어줘야 블록을 놓을 수 있어요.</li>
+          <li><b>길을 잃으면 소환하면 된다</b> — 텔레포트 명령(우리의 "이리와" 코드!)으로 언제든 내 옆에 부를 수 있어요.</li>
+        </ul>
+      </div>
+      <div class="tip">보너스 — 코드빌더 홈 화면에도 내장 미니 튜토리얼이 있어요. 우리가 배울 <b>닭 비(Chicken Rain)</b>가 공식 튜토리얼로 들어있고, 언어는 <b>블록/파이썬/자바스크립트</b> 중 선택(우리는 블록! 6학년 심화반은 같은 코드를 파이썬으로 구경시켜 주면 눈이 커집니다).</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 실전 훈련소 ② 챌린지 지도 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>실전 훈련소 ② 챌린지 1~7 공략 지도</div>
+  <h2>어떤 챌린지를 언제 풀게 할까?</h2>
+  <p class="lead">챌린지는 난이도 순서대로, 우리 커리큘럼과 정확히 맞물립니다. <b>해당 단원을 배운 날 마지막 10분</b>에 도전시키고, 성공 장면 스크린샷은 여권 도장으로!</p>
+  <table>
+    <tr><th style="width:150px">챌린지</th><th>미션</th><th>새로 만나는 블록</th><th style="width:150px">풀기 좋은 때</th></tr>
+    <tr><td><b>1. 직진 코스</b></td><td>곧게 뻗은 길 끝의 금 발판까지 — 「앞으로 이동」만으로 통과</td><td>—</td><td><b>2단원</b> 직후</td></tr>
+    <tr><td><b>2. 꺾인 길</b></td><td>ㄱ자·ㄷ자로 꺾이는 길 — 회전을 섞어 통과</td><td>「회전」</td><td><b>2단원</b> 직후</td></tr>
+    <tr><td><b>3. 오르막 코스</b></td><td>계단처럼 오르내리는 벽 코스 통과</td><td>「<b>위로/아래로</b> 이동」 ← 슬라이드엔 없던 새 블록!</td><td><b>2단원</b> 심화</td></tr>
+    <tr><td><b>4. 종합 장애물</b></td><td>물·용암 코스 속 <b>흰 발판 4개</b>를 밟아 탑을 모두 켠 뒤 금 발판으로 (에이전트는 불사신이라 용암도 OK!)</td><td>지금까지 전부 종합</td><td><b>3단원</b> 들어가기 전 / 숙제</td></tr>
+    <tr><td><b>5. 광물 수집</b></td><td>일렬로 늘어선 광물을 캐며 전진, 보너스: 모은 것을 호퍼에 납품</td><td>「부수기」「모두 줍기」「전부 버리기」 + <b>반복</b></td><td><b>3단원(반복)</b> 직후</td></tr>
+    <tr><td><b>6. 자동 농장</b></td><td>상자에서 에이전트 가방을 채우고, 밭을 갈고 심고 수확까지 자동화</td><td>「<b>밭 갈기(till)</b>」「활성 슬롯 정하기」「놓기」</td><td><b>4단원(반복 응용)</b> 직후</td></tr>
+    <tr><td><b>7. 산악 채광</b></td><td>산을 감지하며 뚫고 올라가 은신처 지을 재료 수집 — 조건 판단의 종합판</td><td>「만약」「<b>~하는 동안(while)</b>」+「감지」</td><td><b>6단원(조건문)</b> 직후</td></tr>
+  </table>
+  <div class="tip">운영 팁 — 챌린지 4·7은 어려워서 정답이 여러 가지입니다. "가장 짧은 코드로 통과하기" 대회를 열면 잘하는 아이들이 반복문·조건문을 스스로 끌어다 쓰기 시작해요. 막힌 아이에겐 전망대에서 친구 에이전트 관찰을 시키면 힌트가 됩니다.</div>
+</div></section>
+
+<!-- 7. 1단원 첫 코드 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>1단원 · 나의 첫 코드<span class="loc">🌱 초원 캠프</span></div>
+  <h2>채팅에 "안녕" 치면 인사하는 코드</h2>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li><span class="chip" style="--c:var(--c-player)">플레이어</span> 서랍에서 <b>「채팅 명령어 "jump" 입력하면」</b> 블록을 꺼내 작업 공간에 놓기</li>
+        <li>블록 속 흰 칸 <span class="slot">"jump"</span>를 클릭해서 <b>"안녕"</b>으로 바꾸기</li>
+        <li>다시 <span class="chip" style="--c:var(--c-player)">플레이어</span> 서랍에서 <b>「말하기(say) " "」</b> 블록을 꺼내 <b>1번 블록 안쪽에 끼우기</b> (노란 그림자 확인!)</li>
+        <li>말하기 내용에 <b>"나는 코딩왕이다!"</b> 입력</li>
+        <li>게임 화면으로 돌아가 <kbd>T</kbd>로 채팅창 열고 <b>안녕</b> 입력 → <kbd>Enter</kbd></li>
+      </ol>
+    </div>
+    <div>
+      <h3>완성된 코드</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"안녕"</span> 입력하면</div>
+        <div class="blk" style="--c:var(--c-player)">말하기 <span class="slot">"나는 코딩왕이다!"</span></div>
+      </div>
+      <div class="chatmock">&gt; 안녕</div>
+      <div class="result">채팅창에 <b>"나는 코딩왕이다!"</b>가 나타납니다. 내가 만든 명령어에 게임이 대답한 것!</div>
+      <div class="mission">인사말을 바꿔 보자. 그리고 명령어를 <b>내 이름</b>으로 바꿔서, 짝꿍 채팅창에서도 내 명령어가 되는지 실험해 보기. (같은 월드에 있으면 됩니다)</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 8. 2단원 에이전트 소환 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>2단원 · 에이전트와 순차 실행 ①<span class="loc">🏜️ 사막 유적</span></div>
+  <h2>로봇 친구 에이전트 불러오기</h2>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li><span class="chip" style="--c:var(--c-player)">플레이어</span>에서 「채팅 명령어」 블록 꺼내기 → 명령어를 <b>"이리와"</b>로 바꾸기</li>
+        <li><span class="chip" style="--c:var(--c-agent)">에이전트</span> 서랍에서 <b>「에이전트를 나에게 순간이동」</b> 블록을 찾아 안에 끼우기</li>
+        <li>채팅에 <b>이리와</b> 입력 → 에이전트가 내 옆에 뿅!</li>
+      </ol>
+      <div class="tip">에이전트가 어디 있는지 안 보일 때 아이들이 당황합니다. "이리와 명령어부터 만들면 언제든 부를 수 있다"고 알려 주세요. 이 코드는 앞으로 모든 수업에서 계속 씁니다.</div>
+    </div>
+    <div>
+      <h3>완성된 코드</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"이리와"</span> 입력하면</div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트를 나에게 순간이동</div>
+      </div>
+      <div class="chatmock">&gt; 이리와</div>
+      <div class="result">파란 로봇 <b>에이전트</b>가 내 앞에 나타납니다. 이 친구는 마우스로 조종할 수 없고, <b>오직 코드로만</b> 움직여요 — 그래서 코딩을 배워야 합니다!</div>
+      <div class="mission">에이전트를 소환한 다음, 에이전트 서랍을 구경하며 「앞으로 이동」 블록을 하나 붙여서 한 칸 걷게 해 보기.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 9. 순차 보물찾기 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>2단원 · 에이전트와 순차 실행 ②<span class="loc">🏜️ 사막 유적</span></div>
+  <h2>미션: 보물 상자까지 길 안내하기</h2>
+  <p class="lead">블록은 <b>위에서 아래로, 순서대로</b> 실행됩니다(순차). 순서가 틀리면 로봇이 엉뚱한 데로 가요!</p>
+  <div class="cols w46">
+    <div>
+      <div class="card">
+        <h3>수업 준비 (선생님 2분)</h3>
+        <ul class="dots">
+          <li>아래 「공간 준비」로 사막을 만든 뒤, 모래밭 위에 그림처럼 <b>ㄱ자 길</b>을 표시하고 끝에 <b>금 블록(유적의 보물)</b> 놓기</li>
+          <li>에이전트를 출발점에 두기 (아이들이 "이리와"로 소환 후 시작 위치에 서기)</li>
+        </ul>
+        <div class="grid" aria-label="보물찾기 코스 지도">
+          <div class="cell start"><small>출발</small></div><div class="cell path"></div><div class="cell path"></div><div class="cell path"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell path"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell path"></div><div class="cell goal"><small>보물</small></div><div class="cell"></div>
+        </div>
+        <p style="font-size:14px;color:var(--sub);margin-top:8px">▲ 앞으로 3칸 → 오른쪽으로 돌기 → 앞으로 2칸 → 보물!</p>
+        <div class="setup">채팅에 <code>/fill ~-10 ~-1 ~-10 ~10 ~-1 ~10 sand</code> → 발밑 주변이 순식간에 <b>사막</b>으로 변신! "사막 유적에 잠든 보물을 로봇이 대신 찾아온다"는 스토리로 시작하세요.</div>
+      </div>
+    </div>
+    <div>
+      <h3>정답 코드 (아이들이 스스로 찾게!)</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"출발"</span> 입력하면</div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트를 <span class="slot dd">앞으로</span> <span class="slot">3</span> 칸 이동</div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트 <span class="slot dd">오른쪽</span>으로 회전</div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트를 <span class="slot dd">앞으로</span> <span class="slot">2</span> 칸 이동</div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트가 <span class="slot dd">앞으로</span> 블록 부수기</div>
+      </div>
+      <div class="result">에이전트가 길을 따라 걸어가 <b>보물 블록을 부수며 도착</b>! 순서 하나만 바꿔도 실패하는 걸 직접 보여주세요.</div>
+      <div class="mission">짝꿍이 새 길을 만들면, 코드를 고쳐서 그 길도 통과하기. (길을 점점 꼬아가며 난이도 UP)</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 10. 반복 도입 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>3단원 · 반복문 ①<span class="loc">🌋 화산섬</span></div>
+  <h2>"TNT 5개를 일렬로 설치하려면 블록이 몇 개 필요할까?"</h2>
+  <div class="cols">
+    <div class="card">
+      <h3>😩 지겨운 방법 (일부러 보여주기)</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"티엔티"</span> 입력하면</div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트를 앞으로 2 칸 이동</div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트 놓기 <span class="slot dd">앞쪽</span></div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트를 앞으로 2 칸 이동</div>
+        <div class="blk" style="--c:var(--c-agent)">에이전트 놓기 <span class="slot dd">앞쪽</span></div>
+        <div class="blk" style="--c:var(--c-agent)">…이걸 5번 반복해서 붙이기 😱 (블록 10개!)</div>
+      </div>
+      <p style="margin-top:12px;font-size:16px;line-height:1.6">아이들에게 실제로 붙여 보게 한 뒤 물어보세요 — <b>"TNT 50개짜리 초대형 쇼라면?"</b> → "더 쉬운 방법 없을까?"</p>
+    </div>
+    <div class="card hot">
+      <h3>😎 똑똑한 방법 = 반복 블록</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"티엔티"</span> 입력하면</div>
+        <div class="cblk" style="--c:var(--c-loops)">
+          <div class="chead">반복: <span class="slot">5</span> 회 실행</div>
+          <div class="cbody">
+            <div class="blk" style="--c:var(--c-agent)">에이전트를 앞으로 2 칸 이동</div>
+            <div class="blk" style="--c:var(--c-agent)">에이전트 놓기 <span class="slot dd">앞쪽</span></div>
+          </div>
+          <div class="cfoot"></div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:16px;line-height:1.6">블록 <b>딱 3종류</b>로 끝! 반복 블록은 <span class="chip" style="--c:var(--c-loops)">반복</span> 서랍에 있고, <b>C자 모양 입 안에</b> 다른 블록을 넣습니다. 숫자만 50으로 바꾸면 초대형 쇼도 준비 완료.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 11. TNT 연쇄 폭발쇼 상세 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>3단원 · 반복문 ②<span class="loc">🌋 화산섬</span></div>
+  <h2>🧨 TNT 연쇄 폭발쇼 — 블록 조립 완전 정복</h2>
+  <div class="setup">화산섬 만들기: <code>/fill ~-10 ~-1 ~-10 ~10 ~-1 ~10 stone</code> 검회색 화산 바닥 + 군데군데 <code>/fill ~3 ~-1 ~3 ~5 ~-1 ~5 lava</code> 용암 웅덩이 몇 개 → 폭발쇼에 어울리는 무대 완성! 그리고 수업 전에 <b>반 전체 약속</b> 하나: <b class="hl-r">"TNT는 친구 작품 근처에서 절대 금지"</b> — 이 약속 없이 TNT를 풀면 수업이 무너집니다 😅</div>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li><span class="chip" style="--c:var(--c-player)">플레이어</span>에서 「채팅 명령어」 꺼내기 → <b>"티엔티"</b>로 바꾸기</li>
+        <li><b>에이전트에게 재료 주기!</b> 에이전트를 오른쪽 클릭 → 가방 첫 칸에 <b>TNT</b> 넣어주기 (재료가 없으면 못 놓아요)</li>
+        <li><span class="chip" style="--c:var(--c-loops)">반복</span>에서 반복 블록을 꺼내 채팅 블록 안에 끼우고 <b>5회</b>로 설정</li>
+        <li><span class="chip" style="--c:var(--c-agent)">에이전트</span>에서 「앞으로 이동」을 반복의 입 안에 끼우고 숫자를 <b>2</b>로 (TNT 사이 간격!)</li>
+        <li>「에이전트 놓기」를 그 아래에 끼우고 방향을 <b>앞쪽</b>으로</li>
+        <li>채팅에 <b>티엔티</b> 입력 → TNT 5개가 일렬로 설치되면, <b>안전거리 확보 후</b> 첫 번째 TNT에 <b>부싯돌</b>로 직접 점화! 🔥</li>
+      </ol>
+    </div>
+    <div>
+      <h3>완성된 코드</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"티엔티"</span> 입력하면</div>
+        <div class="cblk" style="--c:var(--c-loops)">
+          <div class="chead">반복: <span class="slot">5</span> 회 실행</div>
+          <div class="cbody">
+            <div class="blk" style="--c:var(--c-agent)">에이전트를 <span class="slot dd">앞으로</span> <span class="slot">2</span> 칸 이동</div>
+            <div class="blk" style="--c:var(--c-agent)">에이전트 놓기 <span class="slot dd">앞쪽</span></div>
+          </div>
+          <div class="cfoot"></div>
+        </div>
+      </div>
+      <div class="result">설치는 코드가, 점화는 내 손이! 첫 TNT에 불을 붙이면 <b>도미노처럼 연쇄 폭발</b>이 이어집니다. "설치를 자동화한 것이 코딩"이라는 걸 몸으로 이해하는 순간.</div>
+      <div class="mission">
+        ① 반복을 <b>10회</b>로 늘려 더 긴 도미노 만들기<br>
+        ② <b>간격 실험</b> — 이동을 2칸이 아니라 <b>4칸</b>으로 벌리면 연쇄가 이어질까 끊길까? 예상하고 실험! (TNT 폭발 반경을 스스로 발견)<br>
+        ③ 심화: TNT를 <b>물속</b>에 설치하고 터뜨리면? → 물이 폭발을 막는 현상 발견 (과학 시간과 연결!)
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 12. 정사각형 집 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>4단원 · 반복 응용<span class="loc">🕳️ 어둠의 동굴</span></div>
+  <h2>🌋 바닥은 마그마! — 반복 두 개로 함정 경기장 만들기</h2>
+  <p class="lead">동굴에 도착! 에이전트가 <b>페인트칠하듯 바닥을 마그마로</b> 바꿉니다. 비밀은 <b>"한 줄 칠하기"를 여러 번 반복</b>하는 것 — 반복 안에 반복이 들어가는 첫 경험. 그리고 시작되는 징검다리 탈출 게임!</p>
+  <div class="setup">동굴 경기장 만들기: <code>/fill ~-6 ~-1 ~-6 ~6 ~-1 ~6 stone</code> 돌 바닥 → 그 위에 선생님이 <b>징검다리 돌 5개</b>(1칸 높이)를 지그재그로, 건너편 끝에 <b>골인 금 블록</b>을 놓아 두세요. 에이전트 가방에는 <b>마그마 블록</b>을 가득! (크리에이티브 모드에선 밟아도 안 아프니 <b>"밟으면 탈락" 규칙</b>으로 놀아요 — 서바이벌로 바꾸면 진짜 뜨겁습니다 🔥)</div>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li>「채팅 명령어」 꺼내기 → <b>"마그마"</b>로 바꾸기</li>
+        <li>에이전트 가방에 <b>마그마 블록</b> 넣어주기</li>
+        <li><span class="chip" style="--c:var(--c-loops)">반복</span> 블록 꺼내서 <b>4회</b>로 설정 → 채팅 블록 안에 끼우기 <span style="color:var(--sub)">(칠할 줄 수!)</span></li>
+        <li>그 <b>안에</b> 반복 블록을 <b>하나 더</b> 넣고 <b>10회</b>로 설정 <span style="color:var(--sub)">(한 줄의 길이)</span></li>
+        <li>안쪽 반복에: 「앞으로 1칸 이동」 + 「에이전트 놓기: 아래」</li>
+        <li>안쪽 반복이 <b>끝난 다음 줄</b>(바깥 반복 안)에 줄 바꾸기 3종 세트: 「회전」→「앞으로 1칸」→「회전」 ← 위치가 제일 헷갈리는 부분! 그림과 똑같이.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>완성된 코드</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"마그마"</span> 입력하면</div>
+        <div class="cblk" style="--c:var(--c-loops)">
+          <div class="chead">반복: <span class="slot">4</span> 회 실행 <span style="opacity:.75;font-weight:400">← 칠할 줄 수</span></div>
+          <div class="cbody">
+            <div class="cblk" style="--c:var(--c-loops)">
+              <div class="chead">반복: <span class="slot">10</span> 회 실행 <span style="opacity:.75;font-weight:400">← 한 줄 길이</span></div>
+              <div class="cbody">
+                <div class="blk" style="--c:var(--c-agent)">에이전트를 앞으로 1 칸 이동</div>
+                <div class="blk" style="--c:var(--c-agent)">에이전트 놓기 <span class="slot dd">아래</span></div>
+              </div>
+              <div class="cfoot"></div>
+            </div>
+            <div class="blk" style="--c:var(--c-agent)">에이전트 <span class="slot dd">오른쪽</span>으로 회전</div>
+            <div class="blk" style="--c:var(--c-agent)">에이전트를 앞으로 1 칸 이동</div>
+            <div class="blk" style="--c:var(--c-agent)">에이전트 <span class="slot dd">오른쪽</span>으로 회전</div>
+          </div>
+          <div class="cfoot"></div>
+        </div>
+      </div>
+      <div class="result">에이전트가 <b>10칸 칠하고 → 줄 바꾸고</b>를 4번 반복하며 바닥을 마그마 경기장으로! 완성되면 징검다리만 밟고 금 블록까지 건너는 <b>탈출 게임 시작</b>.</div>
+      <div class="mission">① 그런데 잠깐 — 그림처럼 <b>매번 오른쪽으로만</b> 돌면 왜 두 번째 줄부터 이상해질까? 직접 실행해서 발견하고, <b>왔다갔다 지그재그</b>로 고쳐 보기 (최고의 디버깅 경험!) ② 반복 숫자를 키워 초대형 경기장 ③ 짝꿍이 징검다리 위치를 바꾸면 재도전.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 13. 닭 비 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>5단원 · 인기 폭발 예제 ①<span class="loc">🌈 무지개 숲</span></div>
+  <h2>🐔 하늘에서 닭이 내려온다 — 닭 비!</h2>
+  <p class="lead">새 여행지 <b>무지개 숲</b>에 도착 — 그런데 아직 텅 빈 잿빛 풀밭이네요? 오늘 두 가지 코드로 이 숲에 <b>동물과 무지개</b>를 채워 넣습니다. 첫 번째는 전 세계 코딩 수업 검증 1위 예제, 닭 비! (블록 3개면 끝나는데 효과는 확실합니다)</p>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li>「채팅 명령어」 꺼내기 → <b>"닭비"</b>로 바꾸기</li>
+        <li><span class="chip" style="--c:var(--c-loops)">반복</span>에서 반복 블록 꺼내 안에 끼우고 <b>20회</b>로 설정</li>
+        <li><span class="chip" style="--c:var(--c-mobs)">몹</span> 서랍에서 <b>「동물 소환: 닭, 위치 ~0 ~0 ~0」</b> 블록을 반복 안에 끼우기</li>
+        <li>위치 숫자 세 개 중 <b>가운데(높이) 값을 10</b>으로 바꾸기 → <b>내 머리 위 10칸 하늘</b>이라는 뜻!</li>
+        <li>채팅에 <b>닭비</b> 입력하고 하늘을 올려다보기 🐔🐔🐔</li>
+      </ol>
+      <div class="tip">위치의 ~0 ~0 ~0은 "지금 내 위치에서 얼마나 떨어진 곳"이라는 뜻이에요(상대 좌표). 가운데가 높이라는 것만 알려주면 4학년도 바로 이해합니다.</div>
+    </div>
+    <div>
+      <h3>완성된 코드</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"닭비"</span> 입력하면</div>
+        <div class="cblk" style="--c:var(--c-loops)">
+          <div class="chead">반복: <span class="slot">20</span> 회 실행</div>
+          <div class="cbody">
+            <div class="blk" style="--c:var(--c-mobs)">동물 소환 <span class="slot dd">닭</span> 위치 <span class="slot">~0</span> <span class="slot">~10</span> <span class="slot">~0</span></div>
+          </div>
+          <div class="cfoot"></div>
+        </div>
+      </div>
+      <div class="chatmock">&gt; 닭비</div>
+      <div class="result">하늘에서 <b>닭 20마리가 후두둑</b> 떨어져 내 주변을 뛰어다닙니다. 교실이 뒤집어지는 순간!</div>
+      <div class="mission">
+        ① 닭을 <b>돼지·소·양</b>으로 바꿔 "동물 비" 만들기<br>
+        ② 높이를 30으로 바꾸면 어떻게 될까? 예상하고 실험!<br>
+        ③ 반복 100회 소나기 도전 <span style="color:var(--sub)">(너무 많으면 느려질 수 있다는 것도 배움 포인트)</span>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 14. 무지개 달리기 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>5단원 · 인기 폭발 예제 ②<span class="loc">🌈 무지개 숲</span></div>
+  <h2>🌈 달리는 자리마다 무지개! — 무지개 달리기</h2>
+  <p class="lead">이제 숲에 무지개를 채울 차례! 이번엔 채팅이 아니라 <b>"내가 걸으면"</b> 자동으로 실행되는 새로운 이벤트를 배웁니다. 반 전체가 각자 색을 맡아 뛰어다니면 잿빛 풀밭이 진짜 <b>무지개 숲</b>이 됩니다.</p>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li><span class="chip" style="--c:var(--c-player)">플레이어</span> 서랍에서 이번엔 <b>「플레이어가 걸을 때」</b> 블록을 찾아 꺼내기 (채팅 블록 말고!)</li>
+        <li><span class="chip" style="--c:var(--c-blocks)">블록</span> 서랍에서 <b>「블록 놓기: (블록) 위치 ~0 ~0 ~0」</b> 블록을 안에 끼우기</li>
+        <li>블록 종류 칸을 클릭 → 그림 목록에서 <b>좋아하는 색 양털</b> 고르기 (빨강·주황·노랑·초록·파랑·보라… 모둠별로 색을 나눠 맡기!)</li>
+        <li>완성! 이제 게임으로 돌아가 <b>그냥 달려 보세요.</b> 실행 명령이 필요 없어요.</li>
+      </ol>
+      <div class="tip">"채팅 명령어 블록과 뭐가 달라?"라고 꼭 물어보세요. → "시작 조건(이벤트)이 다르다!" 엔트리의 「~키를 눌렀을 때」와 「신호를 받았을 때」가 다른 것과 같습니다.</div>
+    </div>
+    <div>
+      <h3>완성된 코드</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">플레이어가 <span class="slot dd">걸을 때</span></div>
+        <div class="blk" style="--c:var(--c-blocks)">블록 놓기 <span class="slot dd">🟥 양털(내 색깔)</span> 위치 <span class="slot">~0</span> <span class="slot">~0</span> <span class="slot">~0</span></div>
+      </div>
+      <div class="result">달려간 자리마다 <b>내 색깔 길</b>이 깔립니다. 7명이 색을 나눠 나란히 달리면? 운동장에 진짜 무지개가! 뒤돌아보는 순간의 표정이 이 수업의 하이라이트.</div>
+      <div class="mission">
+        ① 모둠 7명이 무지개 순서(빨주노초파남보)로 <b>나란히 달려 무지개 완성</b> — 스크린샷은 여권 도장!<br>
+        ② 「걸을 때」를 <b>「점프할 때」</b>로 바꿔서 점프 도장 찍기<br>
+        ③ 예고편: 혼자 달려도 색이 <b>자동으로 바뀌게</b> 하는 마법이 있는데… 그 비밀(변수)은 7단원에서!
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 15. 조건문 폭탄 해체 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>6단원 · 조건문<span class="loc">⚙️ 버려진 폐광</span></div>
+  <h2>💣 폭탄 해체 로봇 — "만약 앞에 폭탄이 있다면 해체!"</h2>
+  <p class="lead">조건문 = <b>상황을 보고 스스로 판단</b>하는 코드. "비가 오면 우산을 쓴다"처럼요. 버려진 폐광 통로에 누가 TNT를 두고 갔습니다 — 우리 로봇이 확인하고, 있으면 해체하며 전진합니다!</p>
+  <div class="setup">폐광 통로 만들기: 돌담 두 줄로 좁은 통로를 만들고(<code>/fill</code> 두 번이면 끝), 통로 바닥 위에 <b>TNT 블록 4개</b>를 띄엄띄엄, 끝에는 <b>골인 금 블록</b>을 놓으세요. 안심 포인트: <b>에이전트가 TNT를 부수면 터지지 않고 그냥 사라집니다</b> — 그래서 "해체"라고 부를 수 있어요! (진짜 사실입니다)</div>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li>「채팅 명령어」 꺼내기 → <b>"해체"</b>로 바꾸기</li>
+        <li><span class="chip" style="--c:var(--c-loops)">반복</span> 블록 <b>10회</b>를 안에 끼우기</li>
+        <li><span class="chip" style="--c:var(--c-logic)">논리</span> 서랍에서 <b>「만약 &lt;참&gt; 이면 실행」</b> 블록을 반복 안에 끼우기</li>
+        <li><span class="chip" style="--c:var(--c-agent)">에이전트</span> 서랍에서 <b>「에이전트 감지: 블록, 앞쪽」</b>이라는 <b>육각형 블록</b>을 찾아 「만약」의 <b>&lt;참&gt; 자리에</b> 끼우기 ← 육각형은 육각형 자리에!</li>
+        <li>「만약」의 입 안에 「에이전트가 앞으로 블록 부수기」 끼우기 — 이게 바로 <b>해체</b>!</li>
+        <li>「만약」 블록 <b>바로 아래</b>(반복 안)에 「앞으로 1칸 이동」 끼우기</li>
+        <li>통로 입구에 에이전트를 세우고 <b>해체</b> 입력!</li>
+      </ol>
+    </div>
+    <div>
+      <h3>완성된 코드</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"해체"</span> 입력하면</div>
+        <div class="cblk" style="--c:var(--c-loops)">
+          <div class="chead">반복: <span class="slot">10</span> 회 실행</div>
+          <div class="cbody">
+            <div class="cblk" style="--c:var(--c-logic)">
+              <div class="chead">만약 <span class="slot">에이전트 감지: 블록 앞쪽</span> 이면</div>
+              <div class="cbody">
+                <div class="blk" style="--c:var(--c-agent)">에이전트가 <span class="slot dd">앞으로</span> 블록 부수기</div>
+              </div>
+              <div class="cfoot"></div>
+            </div>
+            <div class="blk" style="--c:var(--c-agent)">에이전트를 앞으로 1 칸 이동</div>
+          </div>
+          <div class="cfoot"></div>
+        </div>
+      </div>
+      <div class="result">에이전트가 앞을 <b>확인하고 → 폭탄이 있으면 해체하고 → 전진</b>을 반복하며 통로를 통과합니다. 폭탄이 <b>없는 칸</b>에서는 조건이 거짓이라 부수기를 건너뛰고 그냥 걷는 것이 핵심 포인트!</div>
+      <div class="mission">① 짝꿍이 폭탄 개수와 위치를 바꿔 놓으면 재도전 — 같은 코드가 <b>어떤 배치든 통과</b>하는 게 조건문의 힘! ② 해체할 때마다 "해체 완료!"라고 <b>말하기</b> 블록을 「만약」 안에 추가 ③ 예고편: 해체한 폭탄이 <b>몇 개인지 세려면</b>? → 다음 단원의 변수!</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 16. 변수 점수게임 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>7단원 · 변수<span class="loc">❄️ 얼음 설원</span></div>
+  <h2>💎 설원에 얼어붙은 다이아몬드 캐기 대회</h2>
+  <p class="lead">변수 = <b>숫자를 넣어두는 상자</b>. "점수"라는 상자를 만들어, 눈 속에 묻힌 다이아몬드를 캐는 진짜 게임을 만듭니다.</p>
+  <div class="setup">설원 만들기: <code>/fill ~-15 ~-1 ~-15 ~15 ~-1 ~15 snow</code> → 발밑 주변이 눈밭으로! 그다음 선생님이 <b>다이아몬드 광석 15개쯤</b>을 눈밭 여기저기에 반쯤 파묻어 숨겨 두세요. "얼음 나라에 얼어붙은 다이아몬드 구출 작전"이 됩니다.</div>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li><span class="chip" style="--c:var(--c-var)">변수</span> 서랍 → <b>「변수 만들기」</b> 버튼 클릭 → 이름을 <b>점수</b>로 짓기</li>
+        <li>「채팅 명령어 "게임시작"」 블록 안에 <span class="chip" style="--c:var(--c-var)">변수</span>의 <b>「점수를 0으로 정하기」</b> 끼우기</li>
+        <li><span class="chip" style="--c:var(--c-blocks)">블록</span> 서랍에서 <b>「(블록)이 부서지면」</b> 이벤트 블록을 꺼내 <b>새로운 자리에 따로</b> 놓기 → 블록 종류를 <b>다이아몬드 광석</b>으로 선택</li>
+        <li>그 안에 「점수를 1만큼 바꾸기」 + 「말하기: 점수」 끼우기 (말하기의 흰 칸에 변수 서랍의 <b>점수</b> 동그라미 블록을 끌어다 끼움!)</li>
+        <li>선생님이 미리 다이아몬드 광석을 여기저기 숨겨두면 → <b>1분 보물찾기 대회</b> 시작!</li>
+      </ol>
+    </div>
+    <div>
+      <h3>완성된 코드 (덩어리 2개!)</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"게임시작"</span> 입력하면</div>
+        <div class="blk" style="--c:var(--c-var)">점수 를 <span class="slot">0</span> 으로 정하기</div>
+      </div>
+      <div class="stack" style="margin-top:18px">
+        <div class="blk hat" style="--c:var(--c-blocks)"><span class="slot dd">💎 다이아몬드 광석</span> 이 부서지면</div>
+        <div class="blk" style="--c:var(--c-var)">점수 를 <span class="slot">1</span> 만큼 바꾸기</div>
+        <div class="blk" style="--c:var(--c-player)">말하기 <span class="slot" style="background:var(--c-var);color:#fff">점수</span></div>
+      </div>
+      <div class="result">다이아몬드를 캘 때마다 채팅창에 <b>1, 2, 3…</b> 점수가 올라갑니다. 코드 덩어리가 <b>2개로 나뉘어 각자 다른 순간에 실행</b>된다는 것도 중요한 배움!</div>
+      <div class="mission"><span class="chip" style="--c:var(--c-logic)">논리</span>의 「만약」+「= 비교」 블록으로 <b>점수가 5가 되면 "우승!" 말하고 닭비 내리기</b> 축하 이벤트 만들기.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 17. 함수 마을 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>8단원 · 함수<span class="loc">⛈️ 폭풍의 언덕</span></div>
+  <h2>⚡ 번개 마법사 — 나만의 마법(함수) 만들기</h2>
+  <p class="lead">여행의 종착지, 폭풍의 언덕! 함수 = <b>코드 묶음에 이름을 붙여 두고두고 쓰는 것</b>(엔트리의 "나만의 블록") — 즉, <b>나만의 마법 주문서</b>입니다. "번개마법"이라는 주문서를 만들어 보죠.</p>
+  <div class="setup">폭풍 무대 3종 명령어 — ① <code>/weather thunder</code> 천둥 번개 치는 날씨 ② <code>/time set midnight</code> 깜깜한 폭풍의 밤 ③ <code>/effect @a slow_falling 9999 1 true</code> ← <b>공중부양 마법</b>! 점프하면 둥실둥실 떠다니는 진짜 마법사가 됩니다 (해제는 <code>/effect @a clear</code>). 안전 약속: 크리에이티브라 번개에 맞아도 안 다치지만, <b>친구 바로 옆에 번개 조준 금지</b>!</div>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li>서랍 맨 아래 <b>고급 → <span class="chip" style="--c:var(--c-func)">함수</span></b> → 「함수 만들기」 → 이름을 <b>번개마법</b>으로</li>
+        <li>보라색 「함수 번개마법」 틀 안에 <span class="chip" style="--c:var(--c-loops)">반복</span> <b>3회</b> 넣기</li>
+        <li><span class="chip" style="--c:var(--c-player)">플레이어</span> 서랍 <b>맨 아래</b>의 「실행」 블록(상급 기술 — 게임 명령어를 코드로 쏘는 블록!)을 반복 안에 끼우고, 흰 칸에 <b>/summon lightning_bolt ~5 ~ ~3</b> 입력 <span style="color:var(--sub)">(~숫자 = 내 위치에서 떨어진 곳 — 사막에서 배운 물결표!)</span></li>
+        <li>새로 「채팅 명령어 <b>"마법"</b>」 블록을 만들기</li>
+        <li>그 안에 <span class="chip" style="--c:var(--c-loops)">반복</span> <b>2회</b> → 반복 안에 <span class="chip" style="--c:var(--c-func)">함수</span> 서랍의 <b>「호출: 번개마법」</b> 끼우기</li>
+        <li>언덕 위에서 <b>마법</b> 입력! ⚡⚡⚡</li>
+      </ol>
+    </div>
+    <div>
+      <h3>완성된 코드 (덩어리 2개!)</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-func)">함수 <span class="slot">번개마법</span> <span style="opacity:.8;font-weight:400">← 나만의 주문서</span></div>
+        <div class="cblk" style="--c:var(--c-loops)">
+          <div class="chead">반복: <span class="slot">3</span> 회 실행</div>
+          <div class="cbody">
+            <div class="blk" style="--c:var(--c-player)">실행 <span class="slot">"/summon lightning_bolt ~5 ~ ~3"</span></div>
+          </div>
+          <div class="cfoot"></div>
+        </div>
+      </div>
+      <div class="stack" style="margin-top:18px">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"마법"</span> 입력하면</div>
+        <div class="cblk" style="--c:var(--c-loops)">
+          <div class="chead">반복: <span class="slot">2</span> 회 실행</div>
+          <div class="cbody">
+            <div class="blk" style="--c:var(--c-func)">호출 <span class="slot">번개마법</span></div>
+          </div>
+          <div class="cfoot"></div>
+        </div>
+      </div>
+      <div class="result">"마법"을 외칠 때마다 주문서가 통째로 실행되어 <b>번개 6발이 내리꽂힙니다</b>. 주문서(함수)는 한 번 만들면 언제든, 몇 번이든 부를 수 있다 — 이게 함수의 힘!</div>
+      <div class="mission">① 좌표 숫자(~5, ~3)를 바꿔 번개 <b>조준 연습</b> ② 「눈보라마법」(실행: /weather rain), 「닭소환마법」(5단원 닭비 코드!) 함수를 추가해 <b>마법 주문서 3종 세트</b> 완성 ③ 나만의 주문어로 바꿔 짝꿍 앞에서 마법쇼 시연.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 특별 단원: 공중에 지구 만들기 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>특별 단원 · 도형 블록<span class="loc">🌍 지구 궤도</span></div>
+  <h2>🌍 하늘에 지구를 띄워라!</h2>
+  <p class="lead">반복문으로 네모는 잘 만들었는데, <b>둥근 지구</b>는 어떻게 만들까요? 서랍 맨 아래 <b>고급 → 도형(Shapes)</b>에 숨어 있는 <b class="hl-d">구(sphere) 블록 하나</b>가 수백 개의 블록을 저절로 쌓아 줍니다. 좌표와 반지름을 다루니 수학 시간과도 연결!</p>
+  <div class="setup">넓고 트인 하늘만 있으면 준비 끝. 딱 하나만 주의 — <b>반지름이 크면 완성까지 몇 분씩 걸립니다</b> (반지름 15짜리 속 빈 구가 7분 이상!). 수업에선 <b>반지름 5~8 + "겉면만(속 빈)" 옵션</b>을 추천하세요. 지우고 싶을 땐? 똑같은 구 블록의 재료를 <b>공기(air)</b>로 바꿔 한 번 더 실행하면 싹 사라집니다 — 코딩식 지우개!</div>
+  <div class="cols w46">
+    <div class="card hot">
+      <h3>블록 조립 순서</h3>
+      <ol class="steps">
+        <li>「채팅 명령어」 꺼내기 → <b>"지구"</b>로 바꾸기</li>
+        <li>서랍 맨 아래 <b>고급</b>을 눌러 <b>도형(Shapes)</b> 서랍 열기 — 처음 만나는 서랍!</li>
+        <li><b>「구(sphere) 만들기」</b> 블록을 꺼내 채팅 블록 안에 끼우기</li>
+        <li>재료: <b>파란 양털(바다!)</b> / 중심: <b>~0 ~15 ~0</b> <span style="color:var(--sub)">(가운데 15 = 내 머리 위 15칸 — 닭비에서 배운 높이!)</span> / 반지름: <b>6</b> / 옵션: <b>겉면만</b></li>
+        <li>채팅에 <b>지구</b> 입력 → 하늘에 거대한 파란 구가 떠오릅니다!</li>
+        <li><kbd>Space</kbd> 두 번으로 날아올라, <b>초록 양털로 대륙을 직접 페인팅</b> — 코딩과 미술이 만나는 시간 🎨 (극지방엔 흰 양털 얼음도!)</li>
+      </ol>
+    </div>
+    <div>
+      <h3>완성된 코드</h3>
+      <div class="stack">
+        <div class="blk hat" style="--c:var(--c-player)">채팅 명령어 <span class="slot">"지구"</span> 입력하면</div>
+        <div class="blk" style="--c:#0E8A6D">구 만들기 <span class="slot dd">🟦 파란 양털</span> 중심 <span class="slot">~0</span> <span class="slot">~15</span> <span class="slot">~0</span> 반지름 <span class="slot">6</span> <span class="slot dd">겉면만</span></div>
+      </div>
+      <div class="result">블록 <b>단 2개</b>로 하늘에 행성이 뜹니다. "반복문으로 하려면 얼마나 걸렸을까?"를 물어보세요 — <b>좋은 블록 하나가 코드 백 줄을 대신한다</b>는 걸 배우는 순간. 반 전체가 대륙을 나눠 칠하면 우리 반만의 지구 완성!</div>
+      <div class="mission">
+        ① 흰 양털 + 반지름 2로 옆에 <b>달</b> 만들기 (중심 ~12 ~18 ~0)<br>
+        ② 같은 중심에 <b>유리 구, 반지름 7, 겉면만</b>을 한 번 더 → 지구를 감싸는 투명 <b>대기권</b>!<br>
+        ③ 도형 서랍의 <b>원(circle)</b> 블록으로 구 둘레에 고리를 두르면? → <b>토성</b> 완성 🪐<br>
+        ④ 반 전체 프로젝트: 각자 행성 하나씩 만들어 <b>우리 반 태양계</b> 완성 — 실제 해외 교실에서 하는 수업입니다!
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 18. 최종 프로젝트 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>9단원 · 최종 프로젝트 (2차시)<span class="loc">🚀 자유 여행</span></div>
+  <h2>배운 걸 몽땅 넣어 나만의 작품 만들기</h2>
+  <p class="lead">여행의 마지막! 지금까지 다녀온 <b>8개 세계 중 마음에 드는 곳을 무대로 골라</b>, 팀(2~3명)별로 작품을 만듭니다. <b>기획(반 차시) → 제작(1차시) → 서로 플레이 & 발표(반 차시)</b>. (예: 마그마 미로, 설원 보물찾기, 화산섬 폭발쇼장, 마법 배틀장…)</p>
+  <div class="cols" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="card">
+      <h3>🌀 마그마 미로 탈출</h3>
+      <ul class="dots">
+        <li>반복문으로 미로 벽 세우기</li>
+        <li>무지개 달리기 코드를 <b>마그마길</b>로 바꿔 함정 만들기</li>
+        <li>도착점 금 블록이 부서지면 "탈출 성공!" 말하기 (변수·이벤트)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>💎 보물찾기 대회장</h3>
+      <ul class="dots">
+        <li>변수 점수게임을 크게 확장</li>
+        <li>다이아·금·에메랄드 <b>점수 다르게</b> (변수 여러 개 or +1/+3/+5)</li>
+        <li>점수 10점 도달 시 닭비 축하 이벤트 (조건문)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>⚡ 마법사 아카데미</h3>
+      <ul class="dots">
+        <li>마법 함수 3종 세트: 번개마법·닭소환마법·눈보라마법</li>
+        <li>각 마법마다 <b>나만의 주문어</b>(채팅 명령어)로 시전</li>
+        <li>손님(다른 팀)을 초대해 마법쇼 시연 — "어떤 함수를 썼나요?" 인터뷰까지</li>
+      </ul>
+    </div>
+  </div>
+  <div class="mission">발표 때 꼭 묻기 — "이 작품에서 <b>반복 / 조건 / 변수 / 함수</b>를 어디에 썼나요?" 아이가 자기 입으로 개념을 말하는 순간이 진짜 평가입니다.</div>
+</div></section>
+
+<!-- 19. 문제해결 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>부록 · 이럴 땐 이렇게</div>
+  <h2>수업 중 단골 문제 해결 카드</h2>
+  <table>
+    <tr><th style="width:38%">증상</th><th>해결</th></tr>
+    <tr><td>"에이전트가 안 움직여요!"</td><td>① 채팅 명령어 <b>철자가 정확한지</b>(띄어쓰기 포함) ② 에이전트가 너무 멀리 있으면 <b>"이리와"</b>로 소환 후 다시 실행</td></tr>
+    <tr><td>"블록을 놓지 않아요!"</td><td>에이전트를 <b>오른쪽 클릭</b> → 가방 <b>첫 칸에 재료</b>가 있는지 확인. 재료가 없으면 절대 못 놓습니다 (제일 흔한 원인!)</td></tr>
+    <tr><td>"C 키가 안 먹어요!"</td><td>채팅창이 열려 있으면 <kbd>Esc</kbd>로 닫고 다시. 월드 설정에서 <b>치트 켜기</b> 확인</td></tr>
+    <tr><td>"블록이 안 끼워져요!"</td><td><b>노란 그림자</b>가 보일 때 놓아야 함. 육각형 블록은 <b>육각형 자리에만</b> 들어감 (조건문 감지 블록)</td></tr>
+    <tr><td>"코드는 됐는데 아무 일도 안 일어나요!"</td><td>「채팅 명령어」 같은 <b>모자 모양 시작 블록</b> 안에 코드가 들어있는지 확인. 떠다니는 블록은 실행 안 됨</td></tr>
+    <tr><td>닭을 너무 많이 소환해서 게임이 느려짐 😅</td><td>채팅에 <b>/kill @e[type=chicken]</b> 입력(선생님 시연) — 닭 전원 정리. 아이들이 제일 재밌어하는 뒷정리!</td></tr>
+  </table>
+</div></section>
+
+<!-- 20. 마무리 -->
+<section class="slide"><div class="wrap">
+  <div class="eyebrow"><span class="cube"></span>마무리</div>
+  <h2>다음 단계 & 무료 공식 자료</h2>
+  <div class="cols">
+    <div class="card">
+      <h3>이 슬라이드 다음에는</h3>
+      <ul class="dots">
+        <li>마인크래프트 에듀케이션 <b>도서관(Library)</b> → <b>Coding FUNdamentals</b>: 동물연구센터·우주 테마의 공식 18차시. 이 슬라이드와 개념 순서가 같아 이어서 쓰기 좋아요.</li>
+        <li><b>Hour of Code</b> 월드: 40~60분짜리 완성형 체험 수업. 학기 첫 시간·공개수업용으로 최적.</li>
+        <li><b>minecraft.makecode.com</b>: 게임 없이 웹 브라우저에서 블록 코딩 연습 가능 (컴퓨터실 사전 연습용)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>기억할 것 한 가지</h3>
+      <p style="font-size:17px;line-height:1.75">이 수업의 목표는 마인크래프트를 잘하는 게 아니라, <b class="hl-g">"반복·조건·변수·함수로 생각하는 힘"</b>입니다. 매 차시 마지막 3분, 아이들에게 이렇게 물어봐 주세요 —</p>
+      <p style="font-family:'DungGeunMo',monospace;font-size:20px;color:var(--gold);margin-top:16px;line-height:1.6">"오늘 코드에서<br>제일 똑똑했던 블록은 뭐야?"</p>
+    </div>
+  </div>
+  <p style="margin-top:34px;text-align:center;font-family:'DungGeunMo',monospace;color:var(--sub);font-size:15px">즐거운 수업 되세요! 🟩⛏️</p>
+</div></section>
+
+</div>
+
+<div class="nav" role="navigation" aria-label="슬라이드 이동">
+  <span class="cnt" id="cnt">1 / 1</span>
+  <button id="prev" aria-label="이전 슬라이드">◀ 이전</button>
+  <button id="next" aria-label="다음 슬라이드">다음 ▶</button>
+</div>
+<div class="hint">← → 방향키로도 넘길 수 있어요</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0,bar=document.getElementById('bar'),cnt=document.getElementById('cnt');
+  function go(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('on',k===i);});
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    cnt.textContent=(i+1)+' / '+slides.length;
+    slides[i].scrollTop=0;
+  }
+  document.getElementById('prev').onclick=function(){go(i-1)};
+  document.getElementById('next').onclick=function(){go(i+1)};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(i+1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(i-1);}
+    if(e.key==='Home'){go(0);} if(e.key==='End'){go(slides.length-1);}
+  });
+  go(0);
+})();
+</script>
+</body>
+</html>

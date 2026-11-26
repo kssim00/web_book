@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스크래치 주니어 수업 자료 - 전체 목차</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#FFF8EA;--ink:#2E2A45;--orange:#FF8C42;--blue:#2F9BE8;
+        --green:#3FB57A;--yellow:#FFD23F;--pink:#FF6B8B;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--cream);font-family:'Jua',sans-serif;color:var(--ink);
+    background-image:radial-gradient(circle at 8% 10%,rgba(255,140,66,.15) 0,transparent 40%),
+                     radial-gradient(circle at 92% 90%,rgba(47,155,232,.15) 0,transparent 40%);
+    padding:40px 20px 80px;}
+  header{text-align:center;margin-bottom:40px;}
+  h1{font-size:44px;margin:0 0 12px;text-shadow:3px 3px 0 rgba(0,0,0,.06);}
+  .sub{font-size:20px;color:#5a5470;}
+  .legend{display:inline-flex;gap:18px;background:#fff;border-radius:999px;
+    padding:12px 26px;margin-top:20px;box-shadow:0 5px 0 rgba(0,0,0,.08);font-size:17px;
+    flex-wrap:wrap;justify-content:center;}
+  h2{font-size:30px;margin:44px auto 20px;max-width:1180px;display:flex;align-items:center;gap:12px;}
+  h2 .line{flex:1;height:5px;background:#e8e2d2;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+    gap:20px;max-width:1180px;margin:0 auto;}
+  .card{display:flex;gap:16px;align-items:center;background:#fff;border-radius:22px;
+    padding:18px 20px;text-decoration:none;color:inherit;
+    box-shadow:0 6px 0 rgba(0,0,0,.08);border:5px solid var(--blue);
+    transition:transform .15s;}
+  .card:hover{transform:translateY(-4px);}
+  .card:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.08);}
+  .card.d1{border-color:var(--green);}
+  .card.d2{border-color:var(--blue);}
+  .card.d3{border-color:var(--pink);}
+  .emoji{font-size:46px;flex:0 0 auto;}
+  .info{min-width:0;}
+  .badge{display:inline-block;background:var(--orange);color:#fff;font-size:14px;
+    padding:3px 12px;border-radius:999px;margin-bottom:6px;}
+  .ttl{font-size:22px;line-height:1.25;}
+  .desc{font-size:15px;color:#6a6480;margin-top:4px;line-height:1.35;}
+  .stars{margin-top:6px;}
+  .s{font-size:20px;}
+  .s.on{color:#FFC42E;}
+  .s.off{color:#e2ddcd;}
+  footer{text-align:center;margin-top:56px;font-size:16px;color:#8a849c;line-height:1.7;}
+  /* 자료가 아직 없는 차시(9·10·11강, 벌레잡기 게임): 누를 수 없게 흐리게 */
+  .card.soon{opacity:.45;filter:grayscale(.6);cursor:default;}
+  .card.soon:hover{transform:none;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧩 스크래치 주니어 수업 자료</h1>
+  <div class="sub">초등 1~2학년용 · 전체 27차시</div>
+  <div class="legend">
+    <span><span class="s on">★</span><span class="s off">★</span><span class="s off">★</span> 쉬워요</span>
+    <span><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span> 보통이에요</span>
+    <span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span> 도전이에요</span>
+  </div>
+</header>
+
+<h2>📘 기초 학습 <span class="line"></span></h2>
+<div class="grid">
+      <a class="card d1" href="lesson1_slides.html">
+        <div class="emoji">🐸</div>
+        <div class="info">
+          <div class="badge">1강</div>
+          <div class="ttl">캐릭터를 움직여요</div>
+          <div class="desc">교실 속 개구리를 움직여요</div>
+          <div class="stars"><span class="s on">★</span><span class="s off">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d1" href="lesson2_slides.html">
+        <div class="emoji">🎭</div>
+        <div class="info">
+          <div class="badge">2강</div>
+          <div class="ttl">두 캐릭터를 움직여요</div>
+          <div class="desc">무대 위 두 친구가 함께 움직여요</div>
+          <div class="stars"><span class="s on">★</span><span class="s off">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d1" href="lesson3_slides.html">
+        <div class="emoji">🏎️</div>
+        <div class="info">
+          <div class="badge">3강</div>
+          <div class="ttl">크기와 속도를 바꿔요</div>
+          <div class="desc">자동차 경주로 크기·속도를 배워요</div>
+          <div class="stars"><span class="s on">★</span><span class="s off">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d2" href="lesson4_slides.html">
+        <div class="emoji">🚴</div>
+        <div class="info">
+          <div class="badge">4강</div>
+          <div class="ttl">움직임을 코딩해요</div>
+          <div class="desc">블록 색깔별 역할을 알아봐요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d2" href="lesson5_slides.html">
+        <div class="emoji">🎨</div>
+        <div class="info">
+          <div class="badge">5강</div>
+          <div class="ttl">그림판 사용하기</div>
+          <div class="desc">바람개비를 직접 그려요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d2" href="lesson6_slides.html">
+        <div class="emoji">🏀</div>
+        <div class="info">
+          <div class="badge">6강</div>
+          <div class="ttl">농구 게임 만들기</div>
+          <div class="desc">선수와 공을 함께 움직여요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d2" href="lesson7_slides.html">
+        <div class="emoji">🃏</div>
+        <div class="info">
+          <div class="badge">7강</div>
+          <div class="ttl">기억력 게임 만들기</div>
+          <div class="desc">카드를 눌러 그림을 찾아요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d3" href="lesson8_slides.html">
+        <div class="emoji">🌀</div>
+        <div class="info">
+          <div class="badge">8강</div>
+          <div class="ttl">메시지로 미로 게임</div>
+          <div class="desc">화살표로 개구리를 조종해요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </a>
+      <div class="card d2 soon" title="준비 중이에요">
+        <div class="emoji">📷</div>
+        <div class="info">
+          <div class="badge">준비 중 · 9강</div>
+          <div class="ttl">카메라와 마이크</div>
+          <div class="desc">사진과 목소리를 넣어요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </div>
+      <div class="card d3 soon" title="준비 중이에요">
+        <div class="emoji">🚀</div>
+        <div class="info">
+          <div class="badge">준비 중 · 10강</div>
+          <div class="ttl">어몽어스 게임</div>
+          <div class="desc">페이지를 넘겨 장면을 바꿔요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </div>
+      <div class="card d2 soon" title="준비 중이에요">
+        <div class="emoji">🌳</div>
+        <div class="info">
+          <div class="badge">준비 중 · 11강</div>
+          <div class="ttl">숨바꼭질 게임</div>
+          <div class="desc">숨은 친구를 찾아요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </div>
+      <a class="card d2" href="lesson12_slides.html">
+        <div class="emoji">👟</div>
+        <div class="info">
+          <div class="badge">12강</div>
+          <div class="ttl">모습 바꾸기</div>
+          <div class="desc">신발 색이 바뀌는 마법</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d1" href="lesson13_slides.html">
+        <div class="emoji">📚</div>
+        <div class="info">
+          <div class="badge">13강</div>
+          <div class="ttl">샘플 프로젝트 활용</div>
+          <div class="desc">도움말과 예제를 살펴봐요</div>
+          <div class="stars"><span class="s on">★</span><span class="s off">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d2" href="lesson14_slides.html">
+        <div class="emoji">🦇</div>
+        <div class="info">
+          <div class="badge">14강</div>
+          <div class="ttl">여러 방법으로 움직이기</div>
+          <div class="desc">반복·기다리기를 섞어봐요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d3" href="lesson15_slides.html">
+        <div class="emoji">🔴</div>
+        <div class="info">
+          <div class="badge">15강</div>
+          <div class="ttl">점프 게임 만들기</div>
+          <div class="desc">배운 걸 모두 합쳐요</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </a>
+</div>
+
+<h2>🎮 게임 만들기 <span class="line"></span></h2>
+<div class="grid">
+      <a class="card d2" href="game01_traffic_light.html">
+        <div class="emoji">🚦</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">신호등 순서 정하기</div>
+          <div class="desc">순서(시퀀싱)와 메시지</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d2" href="game02_maze.html">
+        <div class="emoji">🌀</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">미로 통과 게임</div>
+          <div class="desc">이동 + 기다리기 조합</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <div class="card d2 soon" title="준비 중이에요">
+        <div class="emoji">🐸</div>
+        <div class="info">
+          <div class="badge">준비 중 · 게임</div>
+          <div class="ttl">벌레잡기 게임</div>
+          <div class="desc">반복과 눌렀을 때</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </div>
+      <a class="card d1" href="game04_ping_pong.html">
+        <div class="emoji">🏓</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">핑퐁 게임</div>
+          <div class="desc">왕복 이동, 처음 위치로</div>
+          <div class="stars"><span class="s on">★</span><span class="s off">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d2" href="game05_3d_driving.html">
+        <div class="emoji">🚗</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">3D 느낌 자동차 게임</div>
+          <div class="desc">커지기로 원근감 만들기</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d3" href="game06_flappy_bird.html">
+        <div class="emoji">🐤</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">플래피 버드 게임</div>
+          <div class="desc">떨어지기와 점프의 겨루기</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </a>
+      <a class="card d3" href="game07_euro2020_football.html">
+        <div class="emoji">⚽</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">유로2020 축구 게임</div>
+          <div class="desc">골키퍼를 제치고 골 넣기</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </a>
+      <a class="card d2" href="game08_timer_clock.html">
+        <div class="emoji">⏰</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">타이머 시계 만들기</div>
+          <div class="desc">반복 횟수 × 기다리기</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s off">★</span></div>
+        </div>
+      </a>
+      <a class="card d3" href="game09_tac_jumping.html">
+        <div class="emoji">🦘</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">Tac 점프 게임</div>
+          <div class="desc">페이지 3개로 게임 구조</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </a>
+      <a class="card d3" href="game10_easter_eggs.html">
+        <div class="emoji">🐰</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">부활절 달걀 모으기</div>
+          <div class="desc">메시지 4개로 상하좌우</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </a>
+      <a class="card d3" href="game11_coin_collecting.html">
+        <div class="emoji">🪙</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">코인 모으기 게임</div>
+          <div class="desc">미로 + 조종 + 아이템</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </a>
+      <a class="card d3" href="game12_shooting.html">
+        <div class="emoji">🚀</div>
+        <div class="info">
+          <div class="badge">게임</div>
+          <div class="ttl">우주선 슈팅 게임</div>
+          <div class="desc">조종 + 발사 + 충돌</div>
+          <div class="stars"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+        </div>
+      </a>
+</div>
+
+<footer>
+  카드를 누르면 수업 자료가 열려요.<br>
+</footer>
+</body>
+</html>
