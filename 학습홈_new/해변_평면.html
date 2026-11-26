@@ -79,6 +79,7 @@ h2{font-size:22px;margin:28px 4px 4px;font-weight:800}
 .game{background:var(--card);border:2px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;position:relative;transition:transform .12s}
 .game:hover{border-color:var(--arc);transform:translateY(-3px)}
 .game svg{display:block;width:100%;height:auto}
+.game .th{display:block;width:100%;aspect-ratio:5/3;object-fit:cover;background:#241a4d;border-bottom:1px solid var(--line)}
 .game .in{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
 .game b{font-size:16.5px}
 .game small{color:var(--dim);font-size:13px;line-height:1.4;flex:1}
@@ -303,7 +304,7 @@ const G = {
 };
 BONUS.forEach(b => {
   const c = document.createElement('div'); c.className = 'game'; c.dataset.id = b[0];
-  c.innerHTML = '<svg viewBox="0 0 200 120">' + (G[b[0]] || '<rect width="200" height="120" fill="#241a4d"/>') + '</svg><button class="chk" title="완료 표시">☆</button><div class="in"><b></b><small></small><div class="row"><button class="play" title="미리 해보기" aria-label="미리 해보기">▶</button><button class="how" title="만드는 방법 교재 열기">교재</button></div></div>';
+  c.innerHTML = '<img class="th" src="thumb/터틀/' + b[0] + '.jpg" alt="" loading="lazy"><button class="chk" title="완료 표시">☆</button><div class="in"><b></b><small></small><div class="row"><button class="play" title="미리 해보기" aria-label="미리 해보기">▶</button><button class="how" title="만드는 방법 교재 열기">교재</button></div></div>';
   c.querySelector('b').textContent = b[1]; c.querySelector('small').textContent = b[3];
   c.querySelector('.play').addEventListener('click', () => { $('mTitle').textContent = b[1]; $('mFrame').src = '터틀게임.html?g=' + b[0]; $('modal').classList.add('show'); });
   c.querySelector('.how').addEventListener('click', () => window.open(BASE + b[2], '_blank'));
