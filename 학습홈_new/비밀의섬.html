@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>비밀의 섬</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#8fd3ee;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1f2a24}
+canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block}
+button{font:inherit;cursor:pointer}
+.hud{position:fixed;left:0;right:0;top:0;padding:14px 18px;display:flex;align-items:center;gap:10px;pointer-events:none}
+.hud>*{pointer-events:auto}
+.logo{font-size:22px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,40,60,.45);margin-right:auto}
+.pill{background:rgba(255,255,255,.95);border:0;border-radius:999px;padding:8px 16px;font-weight:800;font-size:15px;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.pin{position:fixed;left:0;top:0;transform:translate(-50%,-100%);border:0;background:rgba(255,255,255,.97);border-radius:16px;padding:9px 16px 10px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.3);white-space:nowrap;animation:bob 2.2s ease-in-out infinite}
+.pin b{display:block;font-size:17px;font-weight:900}
+.pin small{display:block;font-size:12px;font-weight:700;color:#5b7a6a;margin-top:1px}
+.pin::after{content:"";position:absolute;left:50%;bottom:-8px;width:16px;height:16px;background:inherit;transform:translateX(-50%) rotate(45deg);border-radius:3px;z-index:-1}
+.pin:hover,.pin.on{background:#fff1c9}
+@keyframes bob{0%,100%{margin-top:0}50%{margin-top:-6px}}
+.card{position:fixed;right:22px;top:50%;transform:translate(120%,-50%);width:min(390px,calc(100vw - 32px));background:rgba(255,255,255,.98);border-radius:24px;padding:22px;box-shadow:0 14px 40px rgba(0,0,0,.3);transition:transform .45s cubic-bezier(.2,.9,.3,1)}
+.card.show{transform:translate(0,-50%)}
+.tag{display:inline-block;font-size:13px;font-weight:800;border-radius:999px;padding:4px 12px;margin-bottom:10px;background:#dff3e4;color:#246b3a}
+.card h2{font-size:24px;margin:0 0 6px}
+.card p{font-size:15.5px;line-height:1.6;margin:0 0 14px;color:#4b5a52}
+.col{display:flex;flex-direction:column;gap:8px}
+.bk{display:flex;align-items:center;gap:12px;border:0;border-radius:14px;padding:8px 12px 8px 8px;background:#f2f5f1;text-align:left;width:100%}
+.bk:hover{background:#fff1c9}
+.bk img{width:74px;height:44px;object-fit:cover;border-radius:8px;flex:none;background:#ccc}
+.bk span{display:flex;flex-direction:column;line-height:1.3}
+.bk em{font-style:normal;font-size:12px;font-weight:800;color:#2f8f4e}
+.bk b{font-size:16px}
+.close{margin-top:4px;border:0;border-radius:14px;padding:11px;font-weight:800;background:#eef0ec;color:#4b5a52}
+.say{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:rgba(255,255,255,.96);border-radius:999px;padding:12px 24px;font-size:16px;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.25);white-space:nowrap}
+.fade{position:fixed;inset:0;background:#eef8f2;opacity:0;pointer-events:none;transition:opacity .5s;z-index:40}
+.fade.on{opacity:1}
+.nogl{position:fixed;inset:0;display:none;align-items:center;justify-content:center;font-size:18px;background:#eaf6f2}
+@media (max-width:720px){.card{right:16px;top:auto;bottom:16px;transform:translate(0,130%)}.card.show{transform:translate(0,0)}.say{display:none}}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="hud">
+  <span class="logo">비밀의 섬</span>
+  <span class="pill" id="who">탐험가</span>
+  <button class="pill" id="worldBtn">세계 지도</button>
+</div>
+<div id="pins"></div>
+<div class="say" id="say">어디부터 가 볼까? 눌러 봐.</div>
+<div class="card" id="card">
+  <span class="tag" id="cTag"></span>
+  <h2 id="cTitle"></h2>
+  <p id="cDesc"></p>
+  <div class="col" id="cBtns"></div>
+</div>
+<div class="fade" id="fade"></div>
+<div class="nogl" id="nogl">이 컴퓨터에서는 3D 화면을 띄울 수 없어요.</div>
+<script src="lib/three.min.js"></script>
+<script>
+/* 비밀의 섬 (2026-11-26, 원장님 C안): 오두막처럼 걷지 않는 한 장면. 말풍선 2개(마인크래프트·로블록스) → 카드에 단계별 교재.
+   교재 추가·순서 변경은 아래 BOOKS 만 고치면 됨. 썸네일은 thumb/비밀의섬/<id>.jpg (400×240). */
+(() => {
+const $ = id => document.getElementById(id);
+if (!window.THREE) { $('nogl').style.display = 'flex'; return; }
+const T = THREE;
+let renderer; try { renderer = new T.WebGLRenderer({canvas: $('gl'), antialias: true}); } catch (e) { $('nogl').style.display = 'flex'; return; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+const scene = new T.Scene(); scene.background = new T.Color('#8fd3ee'); scene.fog = new T.Fog('#8fd3ee', 40, 90);
+const camera = new T.PerspectiveCamera(40, 1, 0.5, 200);
+scene.add(new T.HemisphereLight(0xeaf8ff, 0x7a6a4a, 1.25));
+const sun = new T.DirectionalLight(0xfff3d6, 2.5); sun.position.set(-10, 16, 10); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.03;
+Object.assign(sun.shadow.camera, {left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 60}); scene.add(sun);
+const flat = (c, o) => new T.MeshStandardMaterial(Object.assign({color: c, flatShading: true, roughness: .9, metalness: 0}, o || {}));
+const lam = c => new T.MeshLambertMaterial({color: c});
+function box(w, h, d, mat, x, y, z, p) { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; (p || scene).add(m); return m; }
+function cyl(rt, rb, h, seg, mat, x, y, z, p) { const m = new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg), mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; (p || scene).add(m); return m; }
+
+/* 바다와 섬 */
+const sea = new T.Mesh(new T.CircleGeometry(80, 48).rotateX(-Math.PI / 2), new T.MeshStandardMaterial({color: '#2fb3d4', roughness: .3, transparent: true, opacity: .92})); sea.position.y = -0.6; scene.add(sea);
+cyl(13.5, 15, 1.2, 28, flat('#f1d79a'), 0, -0.7, 0);
+cyl(12.2, 13.2, 0.5, 28, flat('#7cc463'), 0, -0.05, -0.5);
+
+/* 왼쪽: 마인크래프트 구역 (블록 땅, 나무, 에이전트, 작업대) */
+const MC = new T.Vector3(-6, 0, -1.5);
+const grassTop = flat('#5fb34a'), dirt = flat('#8a5a34'), stone = flat('#9aa0a6');
+const mcMats = [dirt, dirt, grassTop, dirt, dirt, dirt];
+for (let x = -2; x <= 2; x++) for (let z = -2; z <= 2; z++) {
+  const h = (x === -2 && z < 0) ? 2 : (x === -1 && z === -2) ? 2 : 1;
+  for (let y = 0; y < h; y++) { const m = new T.Mesh(new T.BoxGeometry(1, 1, 1), y === h - 1 ? mcMats : dirt); m.position.set(MC.x + x, 0.2 + y, MC.z + z); m.castShadow = m.receiveShadow = true; scene.add(m); }
+}
+(() => { const tx = MC.x - 1.8, tz = MC.z - 3.2;
+  for (let y = 0; y < 4; y++) box(0.9, 1, 0.9, flat('#7a5230'), tx, 0.7 + y, tz);
+  const leaf = flat('#3f9a3c');
+  [[0,4,0],[1,4,0],[-1,4,0],[0,4,1],[0,4,-1],[1,4,1],[-1,4,-1],[1,4,-1],[-1,4,1],[0,5,0],[1,5,0],[-1,5,0],[0,5,1],[0,5,-1],[0,6,0]].forEach(p => box(1, 1, 1, leaf, tx + p[0], 0.7 + p[1], tz + p[2]));
+})();
+/* 작업대 + 화면 */
+const benchPos = new T.Vector3(MC.x + 0.5, 1.7, MC.z + 0.5);
+(() => { box(1, 1, 1, flat('#a8743f'), benchPos.x, 1.2, benchPos.z); box(1.02, .12, 1.02, flat('#6b4424'), benchPos.x, 1.72, benchPos.z);
+  box(.18, .18, .18, stone, benchPos.x - .25, 1.85, benchPos.z - .2); box(.18, .18, .18, flat('#d9a54a'), benchPos.x + .2, 1.85, benchPos.z + .15); })();
+/* 에이전트 로봇 */
+const agent = new T.Group(); agent.position.set(MC.x + 1.4, 1.2, MC.z + 1.4); scene.add(agent);
+box(.7, .7, .7, flat('#e9ecef'), 0, .35, 0, agent); box(.5, .22, .05, new T.MeshBasicMaterial({color: '#39c5ff'}), 0, .45, .36, agent);
+box(.12, .3, .12, flat('#5b7fb5'), 0, .85, 0, agent);
+
+/* 오른쪽: 로블록스 구역 (스폰, 점프 발판이 나선으로 올라가는 탑, 깃발) */
+const RB = new T.Vector3(5.5, 0, -2);
+(() => {
+  const spawn = box(2.2, .3, 2.2, flat('#9aa3ad'), RB.x - 1.2, .35, RB.z + 2.8);
+  const deco = new T.Mesh(new T.CircleGeometry(.75, 6).rotateX(-Math.PI / 2), new T.MeshBasicMaterial({color: '#1f2a33'})); deco.position.set(RB.x - 1.2, .51, RB.z + 2.8); scene.add(deco);
+  cyl(.5, .5, 7.5, 12, flat('#6c7a89'), RB.x, 3.75, RB.z);
+  const cols = ['#ffd23f', '#ff6b6b', '#4dabf7', '#69db7c', '#b197fc', '#ffa94d', '#ffd23f', '#ff6b6b', '#4dabf7'];
+  for (let i = 0; i < 7; i++) { const a = i * 1.15 + .9, r = 2.1, y = 1 + i * 1;
+    const p = box(1.3, .25, 1.3, flat(cols[i]), RB.x + Math.cos(a) * r, y, RB.z + Math.sin(a) * r); p.rotation.y = -a;
+    if (i === 3) box(1.3, .12, 1.3, flat('#ff2d2d', {emissive: '#ff2d2d', emissiveIntensity: .35}), p.position.x, y + .19, p.position.z).rotation.y = -a; }
+  cyl(.06, .06, 1.6, 6, flat('#f1f3f5'), RB.x, 8.3, RB.z);
+  const flag = box(.9, .55, .05, flat('#2fbf71'), RB.x + .47, 8.75, RB.z); flag.userData.f = 1; scene.userData.flag = flag;
+})();
+const towerTop = new T.Vector3(RB.x, 8.6, RB.z);
+
+/* 야자수 몇 그루와 바위 */
+[[-10.5, 4], [10.5, 4.5], [1, -8.5], [-11, -4]].forEach((p, k) => { cyl(.2, .28, 3.2, 6, flat('#9c6b3f'), p[0], 1.4, p[1]).rotation.z = (k % 2 ? .15 : -.15);
+  for (let i = 0; i < 5; i++) { const l = new T.Mesh(new T.ConeGeometry(.35, 2.2, 4), flat('#3fa34d')); const a = i / 5 * 6.283; l.position.set(p[0] + Math.cos(a) * .8, 3.1, p[1] + Math.sin(a) * .8); l.rotation.z = Math.cos(a) * 1.3; l.rotation.x = -Math.sin(a) * 1.3; l.castShadow = true; scene.add(l); } });
+[[8.5, 6, .7], [-8, 6.5, .5], [11, -2, .6]].forEach(r => { const m = new T.Mesh(new T.DodecahedronGeometry(r[2]), flat('#a3a8ad')); m.position.set(r[0], .3, r[1]); m.castShadow = true; scene.add(m); });
+
+/* 탐험가 */
+const COLORS = ['#ff8a70', '#ffc94d', '#7fd39a', '#6cc4ee', '#8f9df2', '#c79bf2', '#f59ac4', '#f3f1ea'];
+let S = {name: '탐험가', color: 0, hair: 0}; try { const v = JSON.parse(localStorage.getItem('studyhome_new_3d_demo')); if (v) S = Object.assign(S, v); } catch (e) {}
+$('who').textContent = S.name || '탐험가';
+let leaving = false;
+$('worldBtn').onclick = () => { if (leaving) return; leaving = true; $('fade').classList.add('on'); setTimeout(() => { location.href = '시작.html?map=1'; }, 550); };
+const hero = new T.Group(); scene.add(hero);
+(() => { const skin = lam('#ffd9b0'), cloth = lam(COLORS[S.color] || COLORS[0]), hair = lam('#5a3a22'), dark = lam('#4a3626');
+  const mk = (g, m, x, y, z) => { const o = new T.Mesh(g, m); o.position.set(x, y, z); o.castShadow = true; hero.add(o); return o; };
+  mk(new T.CapsuleGeometry(.33, .42, 4, 10), cloth, 0, 1, 0); mk(new T.SphereGeometry(.34, 16, 12), skin, 0, 1.72, 0);
+  mk(new T.SphereGeometry(.37, 16, 10, 0, 6.29, 0, 1.75), hair, 0, 1.75, -.03);
+  mk(new T.SphereGeometry(.045, 8, 6), dark, -.12, 1.75, .31); mk(new T.SphereGeometry(.045, 8, 6), dark, .12, 1.75, .31);
+  [-.17, .17].forEach(x => mk(new T.CapsuleGeometry(.12, .36, 3, 8), lam('#3f4c6b'), x, .32, 0));
+  [-.44, .44].forEach(x => mk(new T.CapsuleGeometry(.095, .34, 3, 8), cloth, x, 1.02, 0)); })();
+hero.scale.setScalar(1.3); hero.position.set(-.3, .2, 3.6);
+
+/* 누를 수 있는 곳 */
+const BOOKS = {
+  mc: [['mc_block', '1단계 · 블록', '코드빌더', '마인크래프트_코드빌더.html'], ['mc_py', '2단계 · 파이썬', '마인크래프트 파이썬', '마인크래프트_파이썬_코딩_학습지.html']],
+  rb: [['rb_basic', '1단계', '점프맵 · 기초', '로블록스_점프맵_기초.html'], ['rb_tower', '2단계', '점프맵 · 타워형', '로블록스_점프맵_타워형.html'], ['rb_deco', '3단계', '점프맵 · 구조물 꾸미기', '로블록스_점프맵_구조물꾸미기.html'], ['rb_lua', '4단계 · Lua', '블록에서 루아로', '로블록스_블록에서_루아로.html']]
+};
+const SPOTS = [
+  {id: 'mc', name: '마인크래프트', sub: '블록 작업대', v: new T.Vector3(MC.x + .5, 4.6, MC.z), tag: '블록 → 파이썬', desc: '에이전트 로봇을 블록으로 움직이고, 그다음엔 파이썬으로 세상을 바꿔요.', focus: [MC.x, 2, MC.z], say: '블록부터 차근차근!', face: -1.1},
+  {id: 'rb', name: '로블록스', sub: '점프 탑', v: new T.Vector3(towerTop.x, towerTop.y + 1.8, towerTop.z), tag: '점프맵 → 루아', desc: '점프맵을 만들고, 탑을 쌓고, 꾸미고, 마지막엔 루아 코드로 게임을 완성해요.', focus: [RB.x, 4.5, RB.z], say: '꼭대기 깃발까지 가 보자!', face: 1.0}
+];
+let selected = null;
+SPOTS.forEach(sp => { const b = document.createElement('button'); b.className = 'pin'; b.innerHTML = '<b>' + sp.name + '</b><small>' + sp.sub + '</small>'; b.onclick = () => select(sp.id); $('pins').appendChild(b); sp.el = b; });
+function select(id) {
+  if (selected === id) return closeCard();
+  selected = id; const sp = SPOTS.find(s => s.id === id);
+  SPOTS.forEach(s => s.el.classList.toggle('on', s.id === id));
+  $('cTag').textContent = sp.tag; $('cTitle').textContent = sp.name; $('cDesc').textContent = sp.desc;
+  $('cBtns').innerHTML = BOOKS[id].map(b => '<button class="bk" data-f="' + b[3] + '"><img src="thumb/비밀의섬/' + b[0] + '.jpg" alt=""><span><em>' + b[1] + '</em><b>' + b[2] + '</b></span></button>').join('') + '<button class="close" id="cClose">닫기</button>';
+  $('cBtns').querySelectorAll('.bk').forEach(x => x.onclick = () => window.open('../' + x.dataset.f, '_blank'));
+  $('cClose').onclick = closeCard;
+  $('card').classList.add('show'); $('say').textContent = sp.say;
+}
+function closeCard() { selected = null; SPOTS.forEach(s => s.el.classList.remove('on')); $('card').classList.remove('show'); $('say').textContent = '어디부터 가 볼까? 눌러 봐.'; }
+
+function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+const clock = new T.Clock(), camPos = new T.Vector3(), camLook = new T.Vector3(), tp = new T.Vector3(), tl = new T.Vector3(), tmp = new T.Vector3();
+let time = 0, snap = true, viewShift = 0;
+(function frame() {
+  requestAnimationFrame(frame);
+  const dt = Math.min(clock.getDelta(), .05); time += dt;
+  const w = innerWidth, h = innerHeight, k = Math.max(1, 1.45 / camera.aspect), sway = Math.sin(time * .25) * .6;
+  if (selected) { const f = SPOTS.find(s => s.id === selected).focus; tp.set(f[0] * .55 + sway * .3, f[1] + 6, 17 * k); tl.set(f[0], f[1], f[2]); }
+  else { tp.set(sway, 12, 25 * k); tl.set(0, 3.2, -1.5); }
+  const kf = snap ? 1 : 1 - Math.exp(-dt * 2.6); camPos.lerp(tp, kf); camLook.lerp(tl, kf); snap = false;
+  camera.position.copy(camPos); camera.lookAt(camLook);
+  const shiftT = selected && w > 720 ? .14 : 0; viewShift += (shiftT - viewShift) * Math.min(1, dt * 3);
+  if (Math.abs(viewShift) > .002) camera.setViewOffset(w, h, w * viewShift, 0, w, h); else camera.clearViewOffset();
+  camera.updateMatrixWorld();
+  agent.position.y = 1.2 + Math.abs(Math.sin(time * 2.2)) * .12; agent.rotation.y = Math.sin(time * .8) * .6;
+  scene.userData.flag.rotation.y = Math.sin(time * 3) * .25;
+  sea.position.y = -.6 + Math.sin(time * .8) * .04;
+  hero.position.y = .2 + Math.sin(time * 2) * .02;
+  const want = selected ? SPOTS.find(s => s.id === selected).face : 0; hero.rotation.y += (want - hero.rotation.y) * Math.min(1, dt * 4);
+  SPOTS.forEach(sp => { tmp.copy(sp.v).project(camera); sp.el.style.display = leaving ? 'none' : 'block'; sp.el.style.left = ((tmp.x * .5 + .5) * w) + 'px'; sp.el.style.top = ((-tmp.y * .5 + .5) * h - 8) + 'px'; });
+  renderer.render(scene, camera);
+})();
+})();
+</script>
+<script src="lib/sync.js"></script>
+</body>
+</html>
