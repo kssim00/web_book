@@ -92,7 +92,7 @@ summary em{font-style:normal;font-size:13px;font-weight:600;color:#7f90a8;margin
 
   <section class="pane on" id="links">
     <div id="linkGroups"></div>
-    <div class="row"><button class="txt" id="addBtn">+ 링크 추가</button><button class="txt" id="editBtn">정리</button></div>
+    <div class="row"><button class="txt" id="addBtn">+ 링크 추가</button><button class="txt" id="editBtn">정리</button><button class="txt" id="expBtn">내보내기</button><button class="txt" id="impBtn">불러오기</button><input type="file" id="impFile" accept=".json,application/json" hidden></div>
     <div class="add" id="addBox">
       <input id="aName" placeholder="이름" size="12">
       <input id="aUrl" placeholder="주소 (https://…)" size="30">
@@ -174,6 +174,37 @@ $('aOk').onclick = () => {
   mine.push({n, u, g: $('aGrp').value}); saveMine(); $('aName').value = $('aUrl').value = ''; paintLinks(); toast('이 컴퓨터에 저장했어요');
 };
 paintLinks();
+
+/* 내보내기·불러오기(2026-11-26): 직접 추가한 링크를 파일로 저장했다가 다른 브라우저·컴퓨터에서 다시 넣는다.
+   불러오기는 지금 있는 링크에 더하기만 한다(같은 분류·같은 주소는 건너뜀, 지우지 않음). */
+$('expBtn').onclick = () => {
+  if (!mine.length) return toast('직접 추가한 링크가 아직 없어요');
+  const d = new Date(), z = n => String(n).padStart(2, '0');
+  const blob = new Blob([JSON.stringify({type: 'codn-teacher-links', v: 1, saved: d.toISOString(), links: mine}, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = '등대_링크_' + d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()) + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('링크 ' + mine.length + '개를 파일로 저장했어요');
+};
+$('impBtn').onclick = () => { $('impFile').value = ''; $('impFile').click(); };
+$('impFile').onchange = () => {
+  const f = $('impFile').files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let arr; try { const j = JSON.parse(r.result); arr = Array.isArray(j) ? j : j.links; } catch (e) {}
+    if (!Array.isArray(arr)) return toast('등대에서 내보낸 파일이 아니에요');
+    const groups = LINKS.map(G => G.g); let add = 0, skip = 0;
+    arr.forEach(x => {
+      if (!x || typeof x.n !== 'string' || typeof x.u !== 'string' || !/^https?:\/\//i.test(x.u)) return;
+      const g = groups.includes(x.g) ? x.g : groups[0];
+      if (mine.some(m => m.g === g && m.u === x.u)) { skip++; return; }
+      mine.push({n: x.n.slice(0, 40), u: x.u, g}); add++;
+    });
+    saveMine(); paintLinks();
+    toast(add ? '링크 ' + add + '개를 불러왔어요' + (skip ? ' (이미 있는 ' + skip + '개는 건너뜀)' : '') : (skip ? '모두 이미 있는 링크예요' : '불러올 링크가 없어요'));
+  };
+  r.readAsText(f, 'utf-8');
+};
 
 /* 수업자료 */
 $('fileNote').textContent = '수업자료는 열기 도우미를 설치한 이 컴퓨터에서만 열려요. (파일은 인터넷에 올리지 않아요)';
